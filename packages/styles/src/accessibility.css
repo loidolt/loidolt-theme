@@ -1,0 +1,73 @@
+/* Deep slice: assumes the token custom properties are already loaded.
+   Import '@loidolt/theme-styles/tokens' (or the whole '@loidolt/theme-styles') first. */
+:where(:focus-visible) {
+  outline: 2px solid var(--loidolt-focus-ring);
+  outline-offset: 2px;
+}
+:where(:focus:not(:focus-visible)) {
+  outline: none;
+}
+/*
+ * A scroll container clips an outset ring against its own edge, and children that fill the
+ * container have nowhere to put one. Draw it inside those instead — same 2px indicator,
+ * just on the other side of the border box. Zero specificity, declared after the rule above,
+ * so it overrides by document order without escalating specificity.
+ */
+:where(.ldt-topbar__nav, .ldt-table-wrap, .ldt-sidebar, .ldt-dialog__body) :where(:focus-visible) {
+  outline-offset: -2px;
+}
+
+.ldt-visually-hidden,
+.ldt-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.ldt-skip-link {
+  position: fixed;
+  z-index: var(--loidolt-z-skip-link);
+  top: 0;
+  left: 0;
+  padding: 0.75rem 1rem;
+  color: var(--loidolt-on-accent);
+  background: var(--loidolt-accent);
+  transform: translateY(-110%);
+}
+.ldt-skip-link:focus {
+  transform: translateY(0);
+}
+.ldt-touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/*
+ * No `!important` here. Inside a cascade layer it would beat even an app's unlayered
+ * `!important`, since importance reverses layer order — an app could not opt a deliberate
+ * animation back in. This file is imported into `loidolt.a11y`, the last of our layers, so
+ * plain declarations already override every component animation while app CSS still wins.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :where(*, *::before, *::after) {
+    scroll-behavior: auto;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(button, input, select, textarea, [role='button']) {
+    border: 1px solid ButtonText;
+  }
+  :where(:focus-visible) {
+    outline-color: Highlight;
+  }
+}

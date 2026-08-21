@@ -1,0 +1,26 @@
+{
+  "name": "@loidolt/theme-catalog",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && vite build",
+    "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@loidolt/theme-svelte": "*",
+    "@loidolt/theme-styles": "*",
+    "@loidolt/theme-tokens": "*"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.70.3",
+    "@sveltejs/vite-plugin-svelte": "^7.3.0",
+    "svelte": "^5.56.10",
+    "svelte-check": "^4.3.2",
+    "typescript": "^6.0.3",
+    "vite": "^8.2.2"
+  }
+}

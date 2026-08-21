@@ -1,0 +1,44 @@
+{
+  "name": "@loidolt/theme-styles",
+  "version": "0.1.0",
+  "description": "Base styles, fonts, accessibility helpers, and utilities for Loidolt applications",
+  "license": "MIT",
+  "type": "module",
+  "style": "./src/index.css",
+  "exports": {
+    ".": "./src/index.css",
+    "./tokens": "./src/tokens.css",
+    "./dark": "./src/dark.css",
+    "./dark-auto": "./src/dark-auto.css",
+    "./base": "./src/base.css",
+    "./accessibility": "./src/accessibility.css",
+    "./utilities": "./src/utilities.css",
+    "./components": "./src/components.css",
+    "./fonts/*": "./src/fonts/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node -e \"console.log('theme-styles: source CSS is publish-ready')\""
+  },
+  "dependencies": {
+    "@loidolt/theme-tokens": "^0.1.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loidolt/loidolt-theme.git",
+    "directory": "packages/styles"
+  }
+}

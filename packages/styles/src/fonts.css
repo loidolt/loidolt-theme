@@ -1,0 +1,23 @@
+/*
+ * WOFF2 only. Support is universal in every browser that can run Svelte 5, and it is ~30%
+ * smaller than the WOFF1 these were converted from.
+ *
+ * Only one weight per family ships. `font-synthesis` is deliberately left at its `auto`
+ * default so `<strong>` and `<em>` still render heavier and slanted; setting it to `none`
+ * without shipping real bold and italic faces silently flattened all emphasis.
+ */
+@font-face {
+  font-family: 'Jost';
+  src: url('./fonts/Jost-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Archivo';
+  src: url('./fonts/Archivo-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

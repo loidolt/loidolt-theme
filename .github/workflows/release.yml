@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+# Never run two releases at once, and never cancel one part-way through publishing.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    # Forks inherit the workflow but not the secrets; skip rather than fail on every fork push.
+    if: github.repository == 'loidolt/loidolt-theme'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      # No `npm run check` here: CI validates this same commit, and `npm run release`
+      # rebuilds the packages before publishing.
+      - uses: changesets/action@v1
+        with:
+          publish: npm run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # setup-node writes an .npmrc that authenticates with NODE_AUTH_TOKEN; NPM_TOKEN alone
+          # leaves the publish unauthenticated and it 401s.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

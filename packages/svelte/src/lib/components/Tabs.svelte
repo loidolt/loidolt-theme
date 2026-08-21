@@ -1,0 +1,63 @@
+<script lang="ts" generics="T extends string = string">
+  import { Tabs as TabsPrimitive } from 'bits-ui';
+  import type { Snippet } from 'svelte';
+  import type { NavItem, Orientation } from '../types.js';
+  import { cx } from '../utils.js';
+
+  interface Props {
+    /** Defaults to the first tab, so a panel is always rendered. */
+    value?: T;
+    tabs: NavItem<T>[];
+    /** Accessible name of the tab list. */
+    label?: string;
+    orientation?: Orientation;
+    children: Snippet<[{ value: T }]>;
+    class?: string;
+    listClass?: string;
+    contentClass?: string;
+    onValueChange?: (value: T) => void;
+    ref?: HTMLElement | null;
+  }
+
+  let {
+    value = $bindable(),
+    tabs,
+    label,
+    orientation = 'horizontal',
+    children,
+    class: className,
+    listClass,
+    contentClass,
+    onValueChange,
+    ref = $bindable(null),
+  }: Props = $props();
+
+  $effect(() => {
+    if (value === undefined && tabs.length > 0) value = tabs[0].value;
+  });
+
+  const active = $derived(value ?? tabs[0]?.value);
+</script>
+
+<TabsPrimitive.Root
+  bind:ref
+  value={active}
+  onValueChange={(next) => {
+    value = next as T;
+    onValueChange?.(next as T);
+  }}
+  {orientation}
+  class={cx('ldt-tabs', className)}
+>
+  <TabsPrimitive.List class={cx('ldt-tabs__list', listClass)} aria-label={label}
+    >{#each tabs as tab (tab.value)}<TabsPrimitive.Trigger
+        class="ldt-tabs__trigger"
+        value={tab.value}
+        disabled={tab.disabled}>{tab.label}</TabsPrimitive.Trigger
+      >{/each}</TabsPrimitive.List
+  >
+  {#each tabs as tab (tab.value)}<TabsPrimitive.Content
+      class={cx('ldt-tabs__content', contentClass)}
+      value={tab.value}>{@render children({ value: tab.value })}</TabsPrimitive.Content
+    >{/each}
+</TabsPrimitive.Root>

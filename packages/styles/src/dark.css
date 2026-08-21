@@ -1,0 +1,10 @@
+/*
+ * Opt-in dark theme. Redefines only the semantic tier, so no component class or prop changes.
+ * Import after the main stylesheet and set `data-theme="dark"` on <html>:
+ *
+ *   @import '@loidolt/theme-styles';
+ *   @import '@loidolt/theme-styles/dark';
+ *
+ * Use '@loidolt/theme-styles/dark-auto' instead to follow the system preference as well.
+ */
+@import '@loidolt/theme-tokens/css/dark';

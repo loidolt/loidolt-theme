@@ -1,0 +1,61 @@
+/* Deep slice: assumes the token custom properties are already loaded.
+   Import '@loidolt/theme-styles/tokens' (or the whole '@loidolt/theme-styles') first. */
+.ldt-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ldt-gap, var(--loidolt-space-4));
+}
+.ldt-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ldt-gap, var(--loidolt-space-2));
+}
+.ldt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--ldt-min, 14rem)), 1fr));
+  gap: var(--ldt-gap, var(--loidolt-space-4));
+}
+.ldt-container {
+  width: min(100% - 2rem, var(--loidolt-size-content));
+  margin-inline: auto;
+}
+/*
+ * Scope helper for theming a subtree. `color` inherits as a *computed* value, so redefining
+ * `--loidolt-text` partway down the tree changes nothing on its own — something inside the
+ * scope has to re-declare it. Put this on the wrapper you redefine tokens on:
+ *
+ *   <div class="ldt-theme" style="--loidolt-surface: #10212c; --loidolt-text: #dceaf2">
+ */
+.ldt-theme {
+  color: var(--loidolt-text);
+  background: var(--loidolt-background);
+}
+.ldt-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ldt-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--loidolt-border) transparent;
+}
+.ldt-utility-text {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
+}
+.ldt-eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--loidolt-text-accent);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-wide);
+  text-transform: uppercase;
+}
+
+@media print {
+  .ldt-print-hidden {
+    display: none !important;
+  }
+}

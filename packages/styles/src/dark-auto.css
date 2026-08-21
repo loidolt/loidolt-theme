@@ -1,0 +1,5 @@
+/*
+ * Dark theme that follows `prefers-color-scheme` and still honours an explicit
+ * `data-theme="light"` or `data-theme="dark"` toggle. See './dark.css' for the manual-only form.
+ */
+@import '@loidolt/theme-tokens/css/dark-auto';

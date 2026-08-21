@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Validate publish contents
+        run: |
+          npm pack --dry-run -w @loidolt/theme-tokens
+          npm pack --dry-run -w @loidolt/theme-styles
+          npm pack --dry-run -w @loidolt/theme-svelte
+          npx --yes publint@latest run packages/tokens
+          npx --yes publint@latest run packages/styles
+          npx --yes publint@latest run packages/svelte
+      - name: Validate published types
+        run: |
+          # CSS entrypoints have no types by design, so they are excluded rather than reported.
+          npx --yes @arethetypeswrong/cli@latest --pack packages/tokens \
+            --exclude-entrypoints css --ignore-rules cjs-resolves-to-esm
+          # `internal-resolution-error` is expected: the declarations import `.svelte` files,
+          # which only a Svelte-aware resolver can follow. The `bundler` column is the one that
+          # matters for consumers, and it stays green.
+          npx --yes @arethetypeswrong/cli@latest --pack packages/svelte \
+            --exclude-entrypoints styles.css \
+            --ignore-rules cjs-resolves-to-esm internal-resolution-error

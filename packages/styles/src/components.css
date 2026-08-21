@@ -1,0 +1,891 @@
+/* Deep slice: assumes the token custom properties are already loaded.
+   Import '@loidolt/theme-styles/tokens' (or the whole '@loidolt/theme-styles') first. */
+.ldt-button {
+  min-height: var(--loidolt-size-control);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--loidolt-space-2);
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  border-radius: var(--loidolt-border-radius);
+  padding: 0.5rem 0.85rem;
+  color: var(--loidolt-text);
+  background: transparent;
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ldt-button:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+}
+.ldt-button--primary {
+  color: var(--loidolt-on-accent);
+  border-color: var(--loidolt-accent);
+  background: var(--loidolt-accent);
+}
+.ldt-button--primary:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-on-accent);
+  border-color: var(--loidolt-accent-hover);
+  background: var(--loidolt-accent-hover);
+}
+.ldt-button--quiet {
+  color: var(--loidolt-text-muted);
+  border-color: var(--loidolt-border);
+}
+.ldt-button--danger {
+  color: var(--loidolt-on-danger);
+  border-color: var(--loidolt-danger);
+  background: var(--loidolt-danger);
+}
+.ldt-button--ghost,
+.ldt-button--text {
+  border-color: transparent;
+  background: transparent;
+}
+.ldt-button--text {
+  /* 1.5rem is the WCAG 2.2 minimum target size; `auto` left this at ~22px. */
+  min-height: 1.5rem;
+  padding: 0.25rem;
+  color: var(--loidolt-text-muted);
+}
+.ldt-button--text:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-text-accent);
+  background: transparent;
+}
+.ldt-button--sm {
+  min-height: var(--loidolt-size-control-sm);
+  padding: 0.38rem 0.65rem;
+  font-size: var(--loidolt-font-size-xs);
+}
+.ldt-button--lg {
+  min-height: var(--loidolt-size-control-lg);
+  padding-inline: 1.2rem;
+}
+.ldt-button:disabled,
+.ldt-button[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ldt-icon-button {
+  width: var(--loidolt-size-control);
+  min-width: var(--loidolt-size-control);
+  padding: 0;
+}
+.ldt-icon-button.ldt-button--sm {
+  width: var(--loidolt-size-control-sm);
+  min-width: var(--loidolt-size-control-sm);
+  padding: 0;
+}
+.ldt-icon-button.ldt-button--lg {
+  width: var(--loidolt-size-control-lg);
+  min-width: var(--loidolt-size-control-lg);
+  padding: 0;
+}
+.ldt-spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ldt-spin 0.7s linear infinite;
+}
+@keyframes ldt-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ldt-field {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.ldt-label,
+.ldt-field__label,
+.ldt-legend {
+  display: flex;
+  justify-content: space-between;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
+}
+.ldt-field__description {
+  margin: 0;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) / 1.5 var(--loidolt-font-utility);
+}
+.ldt-field__error {
+  margin: 0;
+  /* Status *as text on a surface* — not the fill role, which is tuned for `on-danger` ink. */
+  color: var(--loidolt-text-danger);
+  font: var(--loidolt-font-size-xs) / 1.5 var(--loidolt-font-utility);
+}
+.ldt-input,
+.ldt-select,
+.ldt-textarea,
+.ldt-number-field__input {
+  width: 100%;
+  min-height: var(--loidolt-size-control);
+  border: 0;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  border-radius: 0;
+  padding: 0.45rem 0.15rem;
+  color: var(--loidolt-text);
+  background: transparent;
+}
+.ldt-input--boxed,
+.ldt-select--boxed,
+.ldt-textarea--boxed,
+.ldt-number-field--boxed {
+  border: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  padding-inline: 0.65rem;
+  background: var(--loidolt-surface-input);
+}
+/* The focus ring itself comes from the `loidolt.a11y` layer; this only tints the border. */
+.ldt-input:focus-visible,
+.ldt-select:focus-visible,
+.ldt-textarea:focus-visible,
+.ldt-number-field__input:focus-visible {
+  border-color: var(--loidolt-accent);
+}
+.ldt-input[aria-invalid='true'],
+.ldt-select[aria-invalid='true'],
+.ldt-textarea[aria-invalid='true'] {
+  border-color: var(--loidolt-danger);
+}
+.ldt-textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+.ldt-choice {
+  /* The label is the pointer target for the input it wraps, so it carries the 24px minimum. */
+  min-height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.06em;
+}
+.ldt-choice input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--loidolt-accent);
+}
+.ldt-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.ldt-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+.ldt-radio-group--vertical {
+  flex-direction: column;
+}
+.ldt-switch {
+  min-height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+.ldt-switch__track {
+  width: 2.4rem;
+  height: 1.25rem;
+  padding: 2px;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  background: var(--loidolt-surface-alt);
+}
+.ldt-switch__thumb {
+  display: block;
+  width: 0.9rem;
+  height: 0.9rem;
+  background: var(--loidolt-text-muted);
+  transition: transform var(--loidolt-motion-fast) var(--loidolt-motion-easing);
+}
+.ldt-switch[aria-checked='true'] .ldt-switch__track {
+  border-color: var(--loidolt-accent);
+  background: var(--loidolt-accent);
+}
+.ldt-switch[aria-checked='true'] .ldt-switch__thumb {
+  background: var(--loidolt-on-accent);
+  transform: translateX(1.1rem);
+}
+.ldt-number-field {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) 2rem;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-control);
+}
+.ldt-number-field .ldt-number-field__input {
+  border: 0;
+  text-align: center;
+}
+.ldt-number-field__button {
+  border: 0;
+  background: transparent;
+}
+.ldt-number-field__button:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-text-accent);
+  background: var(--loidolt-surface-input);
+}
+.ldt-number-field__button[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ldt-card,
+.ldt-panel {
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+}
+.ldt-card__header,
+.ldt-card__content,
+.ldt-card__footer,
+.ldt-panel__header,
+.ldt-panel__content,
+.ldt-panel__footer {
+  padding: var(--loidolt-space-4);
+}
+.ldt-card__header,
+.ldt-panel__header {
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+}
+.ldt-card__footer,
+.ldt-panel__footer {
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+}
+.ldt-card__title,
+.ldt-panel__title {
+  margin: 0;
+  font-size: var(--loidolt-font-size-lg);
+}
+.ldt-card__description {
+  margin: 0.35rem 0 0;
+  color: var(--loidolt-text-muted);
+  font-family: var(--loidolt-font-utility);
+  font-size: var(--loidolt-font-size-sm);
+}
+.ldt-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.4rem;
+  padding: 0.15rem 0.45rem;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ldt-badge--accent {
+  color: var(--loidolt-on-accent);
+  border-color: var(--loidolt-accent);
+  background: var(--loidolt-accent);
+}
+.ldt-badge--success {
+  color: var(--loidolt-on-success);
+  border-color: var(--loidolt-success);
+  background: var(--loidolt-success);
+}
+.ldt-badge--warning {
+  color: var(--loidolt-on-warning);
+  border-color: var(--loidolt-warning);
+  background: var(--loidolt-warning);
+}
+.ldt-badge--error {
+  color: var(--loidolt-on-danger);
+  border-color: var(--loidolt-danger);
+  background: var(--loidolt-danger);
+}
+.ldt-badge--info {
+  color: var(--loidolt-on-info);
+  border-color: var(--loidolt-info);
+  background: var(--loidolt-info);
+}
+.ldt-separator {
+  width: 100%;
+  height: var(--loidolt-border-width);
+  border: 0;
+  background: var(--loidolt-border);
+}
+.ldt-separator--vertical {
+  width: var(--loidolt-border-width);
+  height: auto;
+  min-height: 1em;
+  align-self: stretch;
+}
+.ldt-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+}
+.ldt-table :where(th, td) {
+  padding: 0.7rem 0.8rem;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+  text-align: left;
+}
+.ldt-table th {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
+}
+.ldt-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.ldt-alert {
+  padding: 0.8rem 1rem;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-left: 3px solid var(--loidolt-info);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+}
+.ldt-alert--info {
+  border-left-color: var(--loidolt-info);
+}
+.ldt-alert--success {
+  border-left-color: var(--loidolt-success);
+}
+.ldt-alert--warning {
+  border-left-color: var(--loidolt-warning);
+}
+.ldt-alert--error {
+  border-left-color: var(--loidolt-danger);
+}
+.ldt-alert__title {
+  margin: 0 0 0.2rem;
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ldt-alert__description {
+  margin: 0;
+  color: var(--loidolt-text-muted);
+}
+.ldt-progress {
+  width: 100%;
+  height: 0.35rem;
+  overflow: hidden;
+  background: var(--loidolt-border-soft);
+}
+.ldt-progress__bar {
+  width: 100%;
+  height: 100%;
+  background: var(--loidolt-accent);
+  /*
+   * Scale rather than animate `width`: a width transition relayouts on every frame, while a
+   * transform is composited. `--ldt-progress-value` is the 0..1 fraction, set by the component.
+   */
+  transform: scaleX(var(--ldt-progress-value, 0));
+  transform-origin: left center;
+  transition: transform var(--loidolt-motion-normal) var(--loidolt-motion-easing);
+}
+.ldt-progress--indeterminate .ldt-progress__bar {
+  width: 40%;
+  transform: none;
+  animation: ldt-progress-slide 1.2s var(--loidolt-motion-easing) infinite;
+}
+@keyframes ldt-progress-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+.ldt-skeleton {
+  min-height: 1rem;
+  background: linear-gradient(
+    90deg,
+    var(--loidolt-border-soft),
+    var(--loidolt-surface),
+    var(--loidolt-border-soft)
+  );
+  background-size: 200% 100%;
+  animation: ldt-shimmer 1.5s linear infinite;
+}
+@keyframes ldt-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+.ldt-toast-viewport {
+  position: fixed;
+  z-index: var(--loidolt-z-toast);
+  right: 1rem;
+  bottom: 1rem;
+  display: grid;
+  width: min(24rem, calc(100vw - 2rem));
+  gap: 0.5rem;
+}
+.ldt-toast {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.4rem 1rem;
+  padding: 0.8rem 1rem;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  border-left: 3px solid var(--loidolt-border-strong);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-popover);
+}
+.ldt-toast--info {
+  border-left-color: var(--loidolt-info);
+}
+.ldt-toast--success {
+  border-left-color: var(--loidolt-success);
+}
+.ldt-toast--warning {
+  border-left-color: var(--loidolt-warning);
+}
+.ldt-toast--error {
+  border-left-color: var(--loidolt-danger);
+}
+.ldt-toast__title {
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ldt-toast__description {
+  grid-column: 1;
+  margin: 0;
+  color: var(--loidolt-text-muted);
+}
+.ldt-toast__dismiss {
+  grid-area: 1 / 2 / span 2 / auto;
+  align-self: start;
+}
+
+.ldt-overlay {
+  position: fixed;
+  z-index: var(--loidolt-z-overlay);
+  inset: 0;
+  background: var(--loidolt-scrim);
+}
+.ldt-dialog {
+  position: fixed;
+  z-index: var(--loidolt-z-dialog);
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: min(var(--ldt-dialog-width, 34rem), calc(100vw - 2rem));
+  max-height: min(48rem, calc(100dvh - 2rem));
+  overflow: hidden;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-modal);
+  transform: translate(-50%, -50%);
+}
+.ldt-dialog--sm {
+  --ldt-dialog-width: 24rem;
+}
+.ldt-dialog--md {
+  --ldt-dialog-width: 34rem;
+}
+.ldt-dialog--lg {
+  --ldt-dialog-width: 46rem;
+}
+.ldt-dialog--xl {
+  --ldt-dialog-width: 60rem;
+}
+.ldt-dialog__header,
+.ldt-dialog__body,
+.ldt-dialog__footer {
+  padding: 1rem 1.25rem;
+}
+.ldt-dialog__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-dialog__body {
+  overflow-y: auto;
+}
+.ldt-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-dialog__title {
+  margin: 0;
+  font-size: var(--loidolt-font-size-lg);
+}
+.ldt-dialog__description {
+  margin: 0.25rem 0 0;
+  color: var(--loidolt-text-muted);
+}
+.ldt-popover,
+.ldt-menu {
+  z-index: var(--loidolt-z-menu);
+  min-width: 13rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0.45rem;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-popover);
+}
+.ldt-menu {
+  display: grid;
+  gap: 0.1rem;
+}
+.ldt-menu__label {
+  padding: 0.45rem 0.55rem 0.3rem;
+  color: var(--loidolt-text-accent);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.ldt-menu__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 0;
+  padding: 0.65rem 0.55rem;
+  color: var(--loidolt-text);
+  background: transparent;
+  text-align: left;
+  text-decoration: none;
+}
+.ldt-menu__item:hover,
+.ldt-menu__item[data-highlighted] {
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+}
+.ldt-menu__item[data-disabled],
+.ldt-menu__item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ldt-menu__separator {
+  height: var(--loidolt-border-width);
+  margin: 0.25rem 0;
+  border: 0;
+  background: var(--loidolt-border-soft);
+}
+.ldt-tooltip {
+  z-index: var(--loidolt-z-tooltip);
+  max-width: 18rem;
+  padding: 0.4rem 0.55rem;
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  box-shadow: var(--loidolt-shadow-popover);
+}
+/*
+ * Bits UI stamps `data-orientation` on the root, list, triggers and panels, so the vertical
+ * layout keys off that rather than needing a second class.
+ */
+.ldt-tabs[data-orientation='vertical'] {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--loidolt-space-4);
+}
+.ldt-tabs__list {
+  display: flex;
+  gap: 2px;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-tabs__list[data-orientation='vertical'] {
+  flex-direction: column;
+  align-items: stretch;
+  border-bottom: 0;
+  border-right: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-tabs__trigger {
+  min-height: var(--loidolt-size-control);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 0 0.85rem;
+  color: var(--loidolt-text-muted);
+  background: transparent;
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ldt-tabs__trigger[data-orientation='vertical'] {
+  border-bottom: 0;
+  border-right: 2px solid transparent;
+  padding: 0 0.85rem;
+  text-align: left;
+}
+.ldt-tabs__trigger[data-state='active'],
+.ldt-tabs__trigger[aria-selected='true'] {
+  color: var(--loidolt-text);
+  border-color: var(--loidolt-accent);
+}
+.ldt-tabs__content[data-orientation='vertical'] {
+  padding-block: 0;
+}
+.ldt-tabs__content {
+  padding-block: 1rem;
+}
+
+.ldt-app-shell {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  /*
+   * Without an explicit column the implicit one is content-sized, so anything too wide for the
+   * viewport — a topbar with many links, a wide table — stretched the entire shell and put the
+   * page into horizontal scroll. `minmax(0, 1fr)` caps it at the container width.
+   */
+  grid-template-columns: minmax(0, 1fr);
+  color: var(--loidolt-text);
+  background: var(--loidolt-background);
+}
+.ldt-app-shell > :where(header, main, footer) {
+  min-width: 0;
+}
+.ldt-topbar {
+  min-width: 0;
+  min-height: var(--loidolt-size-topbar);
+  display: flex;
+  /* Reflow at whatever width runs out of room, rather than only at the compact breakpoint. */
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0 1.35rem;
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+}
+.ldt-brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: baseline;
+  gap: 0.55rem;
+  color: var(--loidolt-text);
+  text-decoration: none;
+}
+.ldt-brand:hover {
+  text-decoration: none;
+}
+.ldt-brand__name {
+  font-size: var(--loidolt-font-size-lg);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.ldt-brand__meta {
+  color: var(--loidolt-text-accent);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.ldt-topbar__nav {
+  /*
+   * Flex items refuse to shrink below their content width without `min-width: 0`, so a nav
+   * with more links than room pushed the whole page into horizontal scroll. Let it shrink,
+   * and scroll on its own when even the wrapped layout cannot fit the links.
+   */
+  min-width: 0;
+  display: flex;
+  align-self: stretch;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.ldt-topbar__actions {
+  min-width: 0;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.ldt-nav-menu {
+  min-height: var(--loidolt-size-control);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 0 0.75rem;
+  color: var(--loidolt-text-muted);
+  background: transparent;
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ldt-nav-menu:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-text);
+}
+.ldt-nav-menu[data-state='open'] {
+  color: var(--loidolt-text);
+}
+.ldt-nav-menu--active,
+.ldt-nav-menu[aria-current='page'] {
+  color: var(--loidolt-text);
+  border-bottom-color: var(--loidolt-accent);
+}
+.ldt-contextbar {
+  min-width: 0;
+  min-height: var(--loidolt-size-contextbar);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 1.35rem;
+  border-block: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-alt);
+}
+.ldt-contextbar__location {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+}
+.ldt-contextbar__section {
+  flex: 0 0 auto;
+  color: var(--loidolt-text-accent);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ldt-contextbar__actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--ldt-gap, var(--loidolt-space-2));
+}
+.ldt-contextbar__title,
+.ldt-contextbar__detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ldt-contextbar__detail {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+}
+.ldt-workspace {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.ldt-workspace--sidebar {
+  grid-template-columns: var(--ldt-sidebar-width, var(--loidolt-size-sidebar)) minmax(0, 1fr);
+}
+.ldt-workspace--inspector {
+  grid-template-columns: minmax(0, 1fr) var(--ldt-inspector-width, var(--loidolt-size-inspector));
+}
+.ldt-workspace--sidebar.ldt-workspace--inspector {
+  grid-template-columns: var(--ldt-sidebar-width, var(--loidolt-size-sidebar)) minmax(0, 1fr) var(
+      --ldt-inspector-width,
+      var(--loidolt-size-inspector)
+    );
+}
+.ldt-sidebar {
+  min-width: 0;
+  overflow-y: auto;
+  padding: 1.25rem;
+  border-right: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+}
+.ldt-sidebar--right {
+  border-right: 0;
+  border-left: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-workspace__main {
+  min-width: 0;
+  padding: var(--loidolt-space-6);
+}
+.ldt-page-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: var(--loidolt-space-6);
+  padding-bottom: var(--loidolt-space-4);
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-page-header__title {
+  margin: 0;
+  font-size: var(--loidolt-font-size-xl);
+}
+.ldt-page-header__description {
+  max-width: 48rem;
+  margin: 0.4rem 0 0;
+  color: var(--loidolt-text-muted);
+}
+.ldt-section {
+  padding-block: var(--loidolt-space-6);
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+}
+.ldt-section__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: var(--loidolt-space-4);
+}
+.ldt-section__title {
+  margin: 0;
+  font-size: var(--loidolt-font-size-lg);
+}
+
+/* Single breakpoint, mirroring `tokens.breakpoints.compact`. */
+@media (max-width: 760px) {
+  .ldt-topbar {
+    min-height: auto;
+    padding-block: 0.75rem;
+    gap: 0.75rem;
+  }
+  .ldt-topbar__actions {
+    width: 100%;
+    margin-left: 0;
+    overflow-x: auto;
+  }
+  .ldt-contextbar {
+    align-items: start;
+  }
+  .ldt-contextbar__location {
+    display: grid;
+    gap: 0.15rem;
+  }
+  .ldt-contextbar__detail {
+    display: none;
+  }
+  .ldt-workspace,
+  .ldt-workspace--sidebar,
+  .ldt-workspace--inspector,
+  .ldt-workspace--sidebar.ldt-workspace--inspector {
+    display: block;
+  }
+  .ldt-sidebar,
+  .ldt-sidebar--right {
+    border: 0;
+    border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+  }
+  .ldt-workspace__main {
+    padding: var(--loidolt-space-4);
+  }
+  .ldt-page-header {
+    align-items: start;
+    flex-direction: column;
+  }
+}

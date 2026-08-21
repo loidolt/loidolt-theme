@@ -1,0 +1,48 @@
+import type { Snippet } from 'svelte';
+
+/** Action colour set — anything the user can press. */
+export type ActionVariant = 'default' | 'primary' | 'quiet' | 'danger' | 'ghost' | 'text';
+
+/** Status colour set — anything that reports state. */
+export type StatusVariant = 'info' | 'success' | 'warning' | 'error';
+
+/** Badge spans both sets: neutral, brand accent, or a status. */
+export type BadgeVariant = 'default' | 'accent' | StatusVariant;
+
+/** Shared control scale. Dialogs extend it with `xl`. */
+export type ControlSize = 'sm' | 'md' | 'lg';
+export type DialogSize = ControlSize | 'xl';
+
+export type Placement = 'top' | 'right' | 'bottom' | 'left';
+export type Alignment = 'start' | 'center' | 'end';
+export type Orientation = 'horizontal' | 'vertical';
+export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
+/** A selectable value with a human label. Used by Select, RadioGroup, Tabs and menus. */
+export interface Option<T extends string = string> {
+  value: T;
+  label: string;
+  disabled?: boolean;
+}
+
+/** `Option` is the single vocabulary for choice lists; `NavItem` is kept as a readable alias. */
+export type NavItem<T extends string = string> = Option<T>;
+
+/** A `DropdownMenu` row. Renders as a link when `href` is set. */
+export interface MenuItem<T extends string = string> extends Option<T> {
+  href?: string;
+  /** Trailing hint, e.g. a keyboard shortcut. */
+  hint?: string;
+  /** Leading visual. */
+  icon?: Snippet;
+  /** Draw a separator above this item. */
+  separatorBefore?: boolean;
+}
+
+/**
+ * Payload of Bits UI's `child` snippet: spread `props` onto your own element to take over
+ * rendering of a trigger without nesting an extra button inside it.
+ */
+export interface TriggerChildProps {
+  props: Record<string, unknown>;
+}

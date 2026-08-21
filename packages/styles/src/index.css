@@ -1,0 +1,20 @@
+/*
+ * Layer order is declared up front so consumers can slot their own layers between ours.
+ *
+ * `loidolt.reset` is intentionally empty and reserved: the reset lives in `base.css` behind
+ * `:where()` (zero specificity), and this slot lets an app opt into its own reset ahead of
+ * our base styles without reordering the rest.
+ *
+ * `loidolt.a11y` is last so the focus ring and the reduced-motion overrides beat component
+ * styles by layer order alone — no `!important` needed, which keeps app CSS able to override
+ * them (unlayered styles outrank every layer for normal declarations).
+ */
+@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.components, loidolt.utilities,
+  loidolt.a11y;
+
+@import '@loidolt/theme-tokens/css' layer(loidolt.tokens);
+@import './fonts.css' layer(loidolt.base);
+@import './base.css' layer(loidolt.base);
+@import './components.css' layer(loidolt.components);
+@import './utilities.css' layer(loidolt.utilities);
+@import './accessibility.css' layer(loidolt.a11y);

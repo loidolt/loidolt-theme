@@ -1,0 +1,51 @@
+{
+  "name": "@loidolt/theme-tokens",
+  "version": "0.1.0",
+  "description": "Typed design tokens for Loidolt applications",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./css": "./dist/tokens.css",
+    "./css/dark": "./dist/dark.css",
+    "./css/dark-auto": "./dist/dark-auto.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean && node scripts/generate-css.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "clean": "rimraf dist"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loidolt/loidolt-theme.git",
+    "directory": "packages/tokens"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "tsup": "^8.5.0",
+    "typescript": "^6.0.3",
+    "rimraf": "^6.0.1",
+    "vitest": "^4.0.0"
+  }
+}

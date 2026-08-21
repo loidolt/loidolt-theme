@@ -1,0 +1,52 @@
+/* Deep slice: assumes the token custom properties are already loaded.
+   Import '@loidolt/theme-styles/tokens' (or the whole '@loidolt/theme-styles') first. */
+:where(*, *::before, *::after) {
+  box-sizing: border-box;
+}
+:where(html) {
+  color-scheme: light;
+  background: var(--loidolt-background);
+  font-family: var(--loidolt-font-display);
+  font-size: 100%;
+  line-height: var(--loidolt-font-line-height-normal);
+}
+:where(body) {
+  min-width: 20rem;
+  min-height: 100dvh;
+  margin: 0;
+  color: var(--loidolt-text);
+  background: var(--loidolt-background);
+  -webkit-font-smoothing: antialiased;
+}
+:where(button, input, select, textarea) {
+  color: inherit;
+  font: inherit;
+}
+:where(button, summary) {
+  cursor: pointer;
+}
+:where(button:disabled, input:disabled, select:disabled, textarea:disabled) {
+  cursor: not-allowed;
+}
+:where(a) {
+  color: var(--loidolt-text-accent);
+  text-underline-offset: 0.18em;
+}
+:where(img, svg, video) {
+  display: block;
+  max-width: 100%;
+}
+:where(h1, h2, h3, h4, p) {
+  margin-block-start: 0;
+}
+:where(h1, h2, h3, h4) {
+  font-weight: 500;
+  line-height: var(--loidolt-font-line-height-tight);
+}
+:where(code, pre, kbd, samp) {
+  font-family: var(--loidolt-font-mono);
+}
+:where(::selection) {
+  color: var(--loidolt-on-accent);
+  background: var(--loidolt-accent);
+}
