@@ -1,6 +1,6 @@
 {
   "name": "@loidolt/theme-svelte",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Accessible Svelte 5 components for Loidolt applications",
   "license": "MIT",
   "type": "module",
@@ -32,8 +32,8 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@loidolt/theme-styles": "^0.1.0",
-    "@loidolt/theme-tokens": "^0.1.0",
+    "@loidolt/theme-styles": "^0.2.0",
+    "@loidolt/theme-tokens": "^0.2.0",
     "bits-ui": "^2.19.0"
   },
   "peerDependencies": {
