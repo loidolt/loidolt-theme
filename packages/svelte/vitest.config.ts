@@ -9,6 +9,9 @@ export default defineConfig({
   plugins: [svelte({ compilerOptions: { runes: true } }), svelteTesting({ autoCleanup: false })],
   test: {
     environment: 'jsdom',
+    // Node's experimental Web Storage global shadows jsdom's implementation but is undefined
+    // without `--localstorage-file`. Browser tests need jsdom's isolated, in-memory storage.
+    execArgv: ['--no-experimental-webstorage'],
     setupFiles: ['./tests/setup.ts'],
     include: ['tests/**/*.test.ts'],
     exclude: ['tests/ssr/**'],
