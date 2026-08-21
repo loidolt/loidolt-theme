@@ -13,7 +13,8 @@
  * just on the other side of the border box. Zero specificity, declared after the rule above,
  * so it overrides by document order without escalating specificity.
  */
-:where(.ldt-topbar__nav, .ldt-table-wrap, .ldt-sidebar, .ldt-dialog__body) :where(:focus-visible) {
+:where(.ldt-topbar__nav, .ldt-table-wrap, .ldt-sidebar, .ldt-dialog__body, .ldt-drawer__body)
+  :where(:focus-visible) {
   outline-offset: -2px;
 }
 

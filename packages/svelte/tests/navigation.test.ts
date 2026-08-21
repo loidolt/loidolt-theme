@@ -1,8 +1,10 @@
-import { render, screen } from '@testing-library/svelte';
+import { render, screen, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
+import Breadcrumbs from '../src/lib/components/Breadcrumbs.svelte';
 import DropdownMenu from '../src/lib/components/DropdownMenu.svelte';
+import Pagination from '../src/lib/components/Pagination.svelte';
 import NavMenu from '../src/lib/components/NavMenu.svelte';
 import Tabs from '../src/lib/components/Tabs.svelte';
 
@@ -18,6 +20,15 @@ async function popupItem(name: string, role = 'menuitem') {
   const item = label.closest(`[role="${role}"]`);
   expect(item, `no [role="${role}"] around "${name}"`).not.toBeNull();
   return item as HTMLElement;
+}
+
+/**
+ * bits-ui moves the highlight in a microtask after the keydown, so an assertion taken straight
+ * after `user.keyboard` reads the previous frame under load.
+ */
+async function expectHighlighted(name: string) {
+  const item = await popupItem(name);
+  await waitFor(() => expect(item).toHaveAttribute('data-highlighted'));
 }
 
 const tabPanel = createRawSnippet<[{ value: string }]>((args) => ({
@@ -83,15 +94,23 @@ describe('DropdownMenu keyboard', () => {
     render(DropdownMenu, { trigger: text('Actions'), items, onSelect });
 
     screen.getByRole('button', { name: 'Actions' }).focus();
-    // Opens the menu; bits-ui moves focus to the first item on the next tick.
     await user.keyboard('{ArrowDown}');
-    await popupItem('Rename');
+
+    /*
+     * Two waits, and both are load-bearing. bits-ui moves focus to the first item a tick after
+     * the menu opens, and arms the roving-focus key handling a little after that: an arrow key
+     * sent in between lands on a focused item and moves nothing. Under a loaded test run that
+     * window is wide enough to hit, which is what made this test flaky before the settle.
+     */
+    const first = await popupItem('Rename');
+    await waitFor(() => expect(first).toHaveFocus());
+    await new Promise((resolve) => setTimeout(resolve, 60));
 
     await user.keyboard('{ArrowDown}');
-    expect(await popupItem('Duplicate')).toHaveAttribute('data-highlighted');
+    await expectHighlighted('Duplicate');
 
     await user.keyboard('{ArrowUp}');
-    expect(await popupItem('Rename')).toHaveAttribute('data-highlighted');
+    await expectHighlighted('Rename');
 
     await user.keyboard('{ArrowDown}{Enter}');
     expect(onSelect).toHaveBeenCalledWith('duplicate');
@@ -142,5 +161,86 @@ describe('NavMenu', () => {
     const trigger = screen.getByTestId('nav-projects');
     await user.click(trigger);
     expect(await popupItem('Overview')).toBeInTheDocument();
+  });
+});
+
+describe('Breadcrumbs', () => {
+  const trail = [
+    { label: 'Projects', href: '/projects' },
+    { label: 'Terrain', href: '/projects/terrain' },
+    { label: 'Contours' },
+  ];
+
+  it('marks the last crumb as the current page and leaves it unlinked', () => {
+    render(Breadcrumbs, { items: trail });
+
+    const current = screen.getByText('Contours');
+    expect(current).toHaveAttribute('aria-current', 'page');
+    expect(current.tagName).toBe('SPAN');
+    expect(screen.getByRole('link', { name: 'Projects' })).toHaveAttribute('href', '/projects');
+  });
+
+  it('never links the final crumb even when it carries an href', () => {
+    render(Breadcrumbs, {
+      items: [
+        { label: 'Projects', href: '/' },
+        { label: 'Here', href: '/here' },
+      ],
+    });
+    expect(screen.queryByRole('link', { name: 'Here' })).not.toBeInTheDocument();
+  });
+
+  it('names its landmark', () => {
+    render(Breadcrumbs, { items: trail, label: 'File path' });
+    expect(screen.getByRole('navigation', { name: 'File path' })).toBeInTheDocument();
+  });
+
+  it('carries the separator as a custom property rather than as text', () => {
+    render(Breadcrumbs, { items: trail, separator: '›' });
+    // In the DOM only as a `::before` value — nothing to select, copy, or read aloud.
+    expect(screen.getByRole('navigation')).toHaveStyle({ '--ldt-breadcrumb-separator': '"›"' });
+    expect(screen.queryByText('›')).not.toBeInTheDocument();
+  });
+});
+
+describe('Pagination', () => {
+  it('marks the current page and moves with the next button', async () => {
+    const user = userEvent.setup();
+    const onPageChange = vi.fn();
+    render(Pagination, { count: 95, perPage: 10, onPageChange });
+
+    expect(screen.getByRole('button', { name: 'Page 1' })).toHaveAttribute('aria-current', 'page');
+
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+    expect(onPageChange).toHaveBeenLastCalledWith(2);
+    expect(screen.getByRole('button', { name: 'Page 2' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('button', { name: 'Page 1' })).not.toHaveAttribute('aria-current');
+  });
+
+  it('jumps to a page from its button', async () => {
+    const user = userEvent.setup();
+    const onPageChange = vi.fn();
+    render(Pagination, { count: 95, perPage: 10, onPageChange });
+
+    await user.click(screen.getByRole('button', { name: 'Page 3' }));
+    expect(onPageChange).toHaveBeenLastCalledWith(3);
+  });
+
+  it('hides the ellipsis from assistive tech', () => {
+    const { container } = render(Pagination, { count: 500, perPage: 10 });
+    const ellipsis = container.querySelector('.ldt-pagination__ellipsis');
+    expect(ellipsis).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('names its landmark and its page buttons', () => {
+    render(Pagination, {
+      count: 30,
+      perPage: 10,
+      label: 'Search results',
+      pageLabel: (page: number) => `Result page ${page}`,
+    });
+
+    expect(screen.getByRole('navigation', { name: 'Search results' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Result page 2' })).toBeInTheDocument();
   });
 });

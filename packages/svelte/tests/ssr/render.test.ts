@@ -2,6 +2,7 @@ import { createRawSnippet } from 'svelte';
 import { render } from 'svelte/server';
 import { describe, expect, it } from 'vitest';
 import * as lib from '../../src/lib/index.js';
+import { createTheme } from '../../src/lib/theme.svelte.js';
 
 /**
  * Server-renders every component with minimal props. This is the README's SSR-safety claim
@@ -24,11 +25,18 @@ const options = [
   { value: 'proof', label: 'Proof' },
 ];
 
+const panel = createRawSnippet<[{ value: string }]>((args) => ({
+  render: () => `<p>Panel ${args().value}</p>`,
+}));
+
 const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
+  ['Accordion', { items: options, children: panel }],
   ['Alert', { title: 'Export ready', children: text('Done.') }],
+  ['AlertDialog', { title: 'Delete file?', open: true, trigger: text('Delete') }],
   ['AppShell', { children: text('Content') }],
   ['Badge', { children: text('New') }],
   ['Brand', { name: 'Loidolt', meta: 'Studio' }],
+  ['Breadcrumbs', { items: [{ label: 'Projects', href: '/' }, { label: 'Terrain' }] }],
   ['Button', { children: text('Save') }],
   ['Button (loading)' as 'Button', { children: text('Save'), loading: true }],
   ['Card', { title: 'Terrain', children: text('Body') }],
@@ -38,14 +46,18 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
     'Dialog',
     { title: 'Confirm', open: true, trigger: text('Open'), children: text('Are you sure?') },
   ],
+  ['Drawer', { title: 'Navigation', open: true, children: text('Links') }],
   ['DropdownMenu', { trigger: text('Actions'), items: options, open: true }],
+  ['EmptyState', { title: 'No projects yet' }],
   ['Field', { label: 'Email', children: fieldControl }],
+  ['Fieldset', { legend: 'Output', children: text('<input />') }],
   ['IconButton', { label: 'Close', children: text('×') }],
   ['Input', { 'aria-label': 'Name' }],
   ['Label', { for: 'x', children: text('Name') }],
   ['NavMenu', { label: 'Projects', items: options }],
   ['NumberField', { label: 'Count' }],
   ['PageHeader', { title: 'Terrain' }],
+  ['Pagination', { count: 120 }],
   ['Panel', { title: 'Layers', children: text('Body') }],
   ['Popover', { trigger: text('Filters'), children: text('Options'), open: true }],
   ['Progress', { value: 40, label: 'Upload' }],
@@ -58,10 +70,13 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Spinner', { label: 'Loading' }],
   ['Switch', { children: text('Live preview') }],
   ['Table', { caption: 'Projects', children: text('<tbody><tr><td>A</td></tr></tbody>') }],
+  ['TableHeader', { children: text('Name') }],
   ['Tabs', { label: 'Views', tabs: options, children: tabPanel }],
   ['Textarea', { 'aria-label': 'Notes' }],
+  ['ThemeToggle', { theme: createTheme({ storageKey: null }) }],
   ['Toast', { title: 'Saved' }],
   ['ToastViewport', { children: text('None yet') }],
+  ['ToggleGroup', { options, label: 'Mode' }],
   ['Tooltip', { content: 'Tip', trigger: text('Info') }],
   ['TooltipProvider', { children: text('Content') }],
   ['Topbar', { brand: text('Loidolt') }],

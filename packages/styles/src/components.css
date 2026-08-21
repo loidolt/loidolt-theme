@@ -190,6 +190,19 @@
   padding: 0;
   border: 0;
 }
+/* A legend is shrink-to-fit by default, which collapses the space-between that pushes the
+   "optional" marker to the far end. */
+.ldt-legend {
+  width: 100%;
+}
+.ldt-fieldset__body {
+  display: grid;
+  gap: var(--ldt-gap, var(--loidolt-space-3));
+  margin-top: 0.35rem;
+}
+.ldt-fieldset > :where(.ldt-field__description, .ldt-field__error) {
+  margin-top: 0.35rem;
+}
 .ldt-radio-group {
   display: flex;
   flex-wrap: wrap;
@@ -387,6 +400,110 @@
 .ldt-table tbody tr:last-child td {
   border-bottom: 0;
 }
+/* Logical values: an `end`-aligned column follows the writing direction rather than pinning
+   itself to the right in RTL. */
+.ldt-table :where(th, td)[data-align='start'] {
+  text-align: start;
+}
+.ldt-table :where(th, td)[data-align='center'] {
+  text-align: center;
+}
+.ldt-table :where(th, td)[data-align='end'] {
+  text-align: end;
+}
+/*
+ * Sticky header. The scroll container has to be bounded or there is nothing to stick within —
+ * `--ldt-table-height` is that bound, and the wrapper switches to two-axis scrolling.
+ */
+.ldt-table-wrap--sticky {
+  max-height: var(--ldt-table-height, 24rem);
+  overflow: auto;
+}
+.ldt-table--sticky thead :where(th) {
+  position: sticky;
+  z-index: var(--loidolt-z-raised);
+  top: 0;
+  background: var(--loidolt-surface-alt);
+  /* `border-collapse: collapse` drops the borders of a sticky cell — the collapsed edge belongs
+     to the table, which scrolls away. An inset shadow is painted by the cell itself and stays. */
+  border-bottom: 0;
+  box-shadow: inset 0 -1px 0 var(--loidolt-border);
+}
+.ldt-table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.ldt-table__sort:hover {
+  color: var(--loidolt-text);
+}
+/* A CSS triangle rather than a glyph: no icon dependency, and nothing that can fall back to
+   tofu in a font that lacks the arrow. */
+.ldt-table__sort-indicator {
+  width: 0;
+  height: 0;
+  border-inline: 0.3rem solid transparent;
+  border-bottom: 0.34rem solid currentColor;
+  opacity: 0;
+}
+.ldt-table__sort:hover .ldt-table__sort-indicator {
+  opacity: 0.4;
+}
+.ldt-table__sort[data-sort='ascending'] .ldt-table__sort-indicator,
+.ldt-table__sort[data-sort='descending'] .ldt-table__sort-indicator {
+  opacity: 1;
+}
+.ldt-table__sort[data-sort='descending'] .ldt-table__sort-indicator {
+  transform: rotate(180deg);
+}
+.ldt-table__empty td {
+  padding: 0;
+  border-bottom: 0;
+}
+/* Inside a table the surrounding rule is already the boundary; a second dashed one reads as a
+   rendering fault. */
+.ldt-table__empty .ldt-empty-state {
+  border: 0;
+}
+.ldt-empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: var(--loidolt-space-10) var(--loidolt-space-6);
+  border: var(--loidolt-border-width) dashed var(--loidolt-border);
+  color: var(--loidolt-text-muted);
+  background: var(--loidolt-surface);
+  text-align: center;
+}
+.ldt-empty-state__icon {
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-xl);
+  line-height: 1;
+}
+.ldt-empty-state__title {
+  margin: 0;
+  color: var(--loidolt-text);
+  font-size: var(--loidolt-font-size-md);
+}
+.ldt-empty-state__description {
+  max-width: 42rem;
+  margin: 0;
+}
+.ldt-empty-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--loidolt-space-2);
+  margin-top: var(--loidolt-space-2);
+}
 
 .ldt-alert {
   padding: 0.8rem 1rem;
@@ -573,6 +690,101 @@
   margin: 0.25rem 0 0;
   color: var(--loidolt-text-muted);
 }
+/*
+ * Drawer: a dialog anchored to an edge. `--ldt-drawer-size` is the measure across that edge —
+ * width for left/right, height for top/bottom — always capped so the scrim stays reachable and
+ * the panel never becomes a full-screen trap with no visible way out.
+ */
+.ldt-drawer {
+  position: fixed;
+  z-index: var(--loidolt-z-dialog);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 0 solid var(--loidolt-border-strong);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-modal);
+}
+.ldt-drawer--left,
+.ldt-drawer--right {
+  inset-block: 0;
+  width: min(var(--ldt-drawer-size, 20rem), calc(100vw - 3rem));
+}
+.ldt-drawer--left {
+  left: 0;
+  border-right-width: var(--loidolt-border-width);
+  animation: ldt-drawer-in-left var(--loidolt-motion-slow) var(--loidolt-motion-easing);
+}
+.ldt-drawer--right {
+  right: 0;
+  border-left-width: var(--loidolt-border-width);
+  animation: ldt-drawer-in-right var(--loidolt-motion-slow) var(--loidolt-motion-easing);
+}
+.ldt-drawer--top,
+.ldt-drawer--bottom {
+  inset-inline: 0;
+  height: min(var(--ldt-drawer-size, 20rem), calc(100dvh - 3rem));
+}
+.ldt-drawer--top {
+  top: 0;
+  border-bottom-width: var(--loidolt-border-width);
+  animation: ldt-drawer-in-top var(--loidolt-motion-slow) var(--loidolt-motion-easing);
+}
+.ldt-drawer--bottom {
+  bottom: 0;
+  border-top-width: var(--loidolt-border-width);
+  animation: ldt-drawer-in-bottom var(--loidolt-motion-slow) var(--loidolt-motion-easing);
+}
+@keyframes ldt-drawer-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes ldt-drawer-in-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes ldt-drawer-in-top {
+  from {
+    transform: translateY(-100%);
+  }
+}
+@keyframes ldt-drawer-in-bottom {
+  from {
+    transform: translateY(100%);
+  }
+}
+.ldt-drawer__header,
+.ldt-drawer__body,
+.ldt-drawer__footer {
+  padding: 1rem 1.25rem;
+}
+.ldt-drawer__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-drawer__body {
+  overflow-y: auto;
+}
+.ldt-drawer__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-drawer__title {
+  margin: 0;
+  font-size: var(--loidolt-font-size-lg);
+}
+.ldt-drawer__description {
+  margin: 0.25rem 0 0;
+  color: var(--loidolt-text-muted);
+}
 .ldt-popover,
 .ldt-menu {
   z-index: var(--loidolt-z-menu);
@@ -693,6 +905,171 @@
   padding-block: 1rem;
 }
 
+.ldt-accordion {
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-accordion__item {
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-accordion__heading {
+  margin: 0;
+}
+.ldt-accordion__trigger {
+  width: 100%;
+  min-height: var(--loidolt-size-control-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 0;
+  padding: 0.75rem 0;
+  color: var(--loidolt-text);
+  background: transparent;
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+.ldt-accordion__trigger:hover:not([data-disabled]) {
+  color: var(--loidolt-text-accent);
+}
+.ldt-accordion__trigger[data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ldt-accordion__indicator {
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
+  border-inline: 0.3rem solid transparent;
+  border-top: 0.34rem solid currentColor;
+  transition: transform var(--loidolt-motion-normal) var(--loidolt-motion-easing);
+}
+.ldt-accordion__trigger[data-state='open'] .ldt-accordion__indicator {
+  transform: rotate(180deg);
+}
+.ldt-accordion__body {
+  padding-bottom: 1rem;
+  color: var(--loidolt-text-muted);
+}
+.ldt-toggle-group {
+  display: inline-flex;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+}
+.ldt-toggle-group[data-orientation='vertical'] {
+  flex-direction: column;
+}
+.ldt-toggle-group__item {
+  min-height: var(--loidolt-size-control);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 0;
+  padding: 0 0.85rem;
+  color: var(--loidolt-text-muted);
+  background: transparent;
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+/* One shared rule between neighbours, so the group reads as a single object rather than a row
+   of separate buttons. */
+.ldt-toggle-group__item + .ldt-toggle-group__item {
+  border-left: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-toggle-group[data-orientation='vertical'] .ldt-toggle-group__item + .ldt-toggle-group__item {
+  border-left: 0;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-toggle-group__item:hover:not([data-disabled], :disabled) {
+  color: var(--loidolt-text);
+}
+.ldt-toggle-group__item[data-state='on'] {
+  color: var(--loidolt-on-accent);
+  background: var(--loidolt-accent);
+}
+.ldt-toggle-group__item[data-state='on']:hover:not([data-disabled], :disabled) {
+  color: var(--loidolt-on-accent);
+  background: var(--loidolt-accent-hover);
+}
+.ldt-toggle-group__item[data-disabled],
+.ldt-toggle-group__item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ldt-toggle-group--sm .ldt-toggle-group__item {
+  min-height: var(--loidolt-size-control-sm);
+  padding: 0 0.65rem;
+  font-size: var(--loidolt-font-size-xs);
+}
+.ldt-toggle-group--lg .ldt-toggle-group__item {
+  min-height: var(--loidolt-size-control-lg);
+  padding: 0 1.2rem;
+}
+.ldt-breadcrumbs__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ldt-breadcrumbs__item {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* Generated content, so the separator is never selected, copied, or read aloud. */
+.ldt-breadcrumbs__item + .ldt-breadcrumbs__item::before {
+  content: var(--ldt-breadcrumb-separator, '/');
+  color: var(--loidolt-text-muted);
+}
+.ldt-breadcrumbs__link,
+.ldt-breadcrumbs__current {
+  overflow: hidden;
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ldt-breadcrumbs__link {
+  color: var(--loidolt-text-muted);
+  text-decoration: none;
+}
+.ldt-breadcrumbs__link:hover {
+  color: var(--loidolt-text-accent);
+  text-decoration: underline;
+}
+.ldt-breadcrumbs__current {
+  color: var(--loidolt-text);
+}
+.ldt-pagination__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+}
+.ldt-pagination__ellipsis {
+  padding-inline: 0.35rem;
+  color: var(--loidolt-text-muted);
+}
+.ldt-pagination__page {
+  min-width: var(--loidolt-size-control-sm);
+}
+.ldt-pagination__page[aria-current='page'],
+/* The base button hover is more specific than a plain `[aria-current]` rule, so the current
+   page needs its own hover or it flips to the neutral inverse surface on the way past. */
+.ldt-pagination__page[aria-current='page']:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-on-accent);
+  border-color: var(--loidolt-accent);
+  background: var(--loidolt-accent);
+}
 .ldt-app-shell {
   min-height: 100dvh;
   display: grid;

@@ -118,8 +118,16 @@ export const zIndex = {
   skipLink: '1000',
 } as const;
 
-/** Breakpoints are not custom properties (`@media` cannot read `var()`), but stay tokenized here. */
-export const breakpoints = { compact: '760px' } as const;
+/**
+ * Breakpoints are not custom properties (`@media` cannot read `var()`), but stay tokenized here
+ * so an app and the library agree on where the layout changes.
+ *
+ * - `compact` — the phone/narrow-tablet break. The only one the package's own CSS uses: below
+ *   it the workspace grid collapses to a single column and the sidebar becomes a stacked block.
+ * - `expanded` — where a sidebar plus content plus inspector all fit at once.
+ * - `wide` — where content stops growing and gutters take the extra room.
+ */
+export const breakpoints = { compact: '760px', expanded: '1024px', wide: '1400px' } as const;
 
 /**
  * The role layer. Every value links to a primitive, so overriding a primitive propagates and
