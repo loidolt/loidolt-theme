@@ -1,6 +1,6 @@
 {
   "name": "@loidolt/theme-catalog",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,9 +12,9 @@
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@loidolt/theme-svelte": "^0.2.0",
-    "@loidolt/theme-styles": "^0.2.0",
-    "@loidolt/theme-tokens": "^0.2.0"
+    "@loidolt/theme-svelte": "^0.3.0",
+    "@loidolt/theme-styles": "^0.3.0",
+    "@loidolt/theme-tokens": "^0.3.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.10",
