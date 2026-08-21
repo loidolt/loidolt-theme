@@ -2,7 +2,12 @@
   import Sidebar from '../../src/lib/components/Sidebar.svelte';
   import Workspace from '../../src/lib/components/Workspace.svelte';
 
-  let { withSidebar = false, withInspector = false } = $props();
+  let {
+    withSidebar = false,
+    withInspector = false,
+    sidebarOpen = true,
+    inspectorOpen = true,
+  } = $props();
 </script>
 
 {#snippet main()}<p>Canvas</p>{/snippet}
@@ -14,4 +19,6 @@
   children={main}
   sidebar={withSidebar ? left : undefined}
   inspector={withInspector ? right : undefined}
+  {sidebarOpen}
+  {inspectorOpen}
 />

@@ -4,9 +4,10 @@
   import type { HeadingLevel, StatusVariant } from '../types.js';
   import { cx } from '../utils.js';
 
-  interface Props extends HTMLAttributes<HTMLDivElement> {
+  interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
     variant?: StatusVariant;
-    title: string;
+    /** Optional heading. Accepts a snippet for rich content; omit it for a body-only alert. */
+    title?: string | Snippet;
     /** Heading element used for the title, so the alert fits the page outline. */
     headingLevel?: HeadingLevel;
     class?: string;
@@ -31,6 +32,8 @@
   role={variant === 'error' ? 'alert' : 'status'}
   {...rest}
 >
-  <svelte:element this={`h${headingLevel}`} class="ldt-alert__title">{title}</svelte:element>
+  {#if title}<svelte:element this={`h${headingLevel}`} class="ldt-alert__title"
+      >{#if typeof title === 'string'}{title}{:else}{@render title()}{/if}</svelte:element
+    >{/if}
   {#if children}<div class="ldt-alert__description">{@render children()}</div>{/if}
 </div>

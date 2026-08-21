@@ -1,22 +1,29 @@
 @import '@loidolt/theme-svelte/styles.css';
 @import '@loidolt/theme-styles/dark';
 
-:root {
-  --catalog-rail: 15rem;
-}
-.catalog-shell {
-  min-height: 100dvh;
-}
-.catalog-nav {
+/*
+ * The documentation site's own chrome. Everything here is unlayered application CSS, which is
+ * the point of the layer order: these plain selectors outrank every `loidolt.*` layer without a
+ * single `!important`.
+ */
+
+/* --- Shell ---------------------------------------------------------------------------- */
+
+/*
+ * Sticky on the shell's header row, not on the bar itself: a sticky element can only travel
+ * inside its containing block, and the bar's own row is exactly its height — it would scroll
+ * straight out of view. The header row's containing block is the whole shell grid.
+ */
+.ldt-app-shell > header {
   position: sticky;
+  z-index: var(--loidolt-z-sticky);
   top: 0;
-  z-index: 20;
 }
-.catalog-nav .ldt-topbar__nav {
-  align-items: stretch;
+.ldt-topbar {
+  border-bottom: 1px solid var(--loidolt-border);
 }
-.catalog-nav-link {
-  min-height: var(--loidolt-size-topbar);
+.docs-nav-link {
+  min-height: var(--loidolt-size-control);
   display: inline-flex;
   align-items: center;
   padding: 0 0.75rem;
@@ -27,176 +34,17 @@
   text-decoration: none;
   text-transform: uppercase;
 }
-.catalog-nav-link:hover {
+.docs-nav-link:hover,
+.docs-nav-link[aria-current='page'] {
   color: var(--loidolt-text);
-  border-color: var(--loidolt-accent);
+  border-bottom-color: var(--loidolt-accent);
   text-decoration: none;
 }
-.catalog-main {
-  width: min(100% - 2rem, 78rem);
-  margin-inline: auto;
-  padding: 3.5rem 0 6rem;
+.docs-page {
+  width: min(100%, 62rem);
+  padding-bottom: 4rem;
 }
-.catalog-hero {
-  min-height: 28rem;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.7fr);
-  gap: clamp(2rem, 8vw, 7rem);
-  align-items: center;
-  padding-block: 2rem 5rem;
-}
-.catalog-hero h1 {
-  max-width: 13ch;
-  /*
-   * `line-height: 0.9` is a deliberate display treatment, but a line box shorter than the em
-   * cannot contain Jost's descenders — the tail of "quietly" painted straight through the
-   * paragraph below. Reserve that ink instead of loosening the leading between the two lines.
-   */
-  margin: 0 0 var(--loidolt-space-5);
-  padding-bottom: 0.14em;
-  font-size: clamp(3rem, 8vw, 6.5rem);
-  letter-spacing: -0.055em;
-  line-height: 0.9;
-}
-.catalog-hero h1 span {
-  color: var(--loidolt-accent);
-}
-.catalog-hero__copy {
-  max-width: 31rem;
-  color: var(--loidolt-text-muted);
-  font-size: 1.05rem;
-}
-.catalog-hero__meta {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  border: 1px solid var(--loidolt-border);
-  background: var(--loidolt-surface);
-}
-.catalog-stat {
-  min-height: 8rem;
-  display: grid;
-  align-content: space-between;
-  padding: 1rem;
-  border-right: 1px solid var(--loidolt-border);
-  border-bottom: 1px solid var(--loidolt-border);
-}
-.catalog-stat:nth-child(2n) {
-  border-right: 0;
-}
-.catalog-stat:nth-last-child(-n + 2) {
-  border-bottom: 0;
-}
-.catalog-stat strong {
-  font-size: 2rem;
-  font-weight: 500;
-}
-.catalog-stat span {
-  color: var(--loidolt-text-muted);
-  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.catalog-section {
-  scroll-margin-top: 5rem;
-  padding-block: 3rem;
-  border-top: 1px solid var(--loidolt-border);
-}
-.catalog-section__head {
-  display: grid;
-  grid-template-columns: 11rem 1fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-.catalog-section__head h2 {
-  margin: 0;
-  font-size: clamp(1.8rem, 4vw, 3rem);
-}
-.catalog-section__head p {
-  max-width: 45rem;
-  margin: 0;
-  color: var(--loidolt-text-muted);
-}
-.catalog-demo {
-  padding: clamp(1rem, 3vw, 2rem);
-  border: 1px solid var(--loidolt-border);
-  background: var(--loidolt-surface);
-}
-.catalog-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-  gap: 1rem;
-}
-.catalog-demo-label {
-  display: block;
-  margin-bottom: 0.75rem;
-  color: var(--loidolt-text-muted);
-  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.catalog-swatch {
-  min-height: 8rem;
-  display: grid;
-  align-content: space-between;
-  padding: 0.8rem;
-  border: 1px solid var(--loidolt-border);
-}
-.catalog-swatch span {
-  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.catalog-editor {
-  min-height: 33rem;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  overflow: hidden;
-  border: 1px solid var(--loidolt-border-strong);
-  background: var(--loidolt-background);
-}
-.catalog-editor .ldt-topbar {
-  min-height: 3.2rem;
-  padding-inline: 1rem;
-}
-.catalog-editor .ldt-contextbar {
-  padding-inline: 1rem;
-}
-.catalog-editor .ldt-workspace {
-  min-height: 27rem;
-}
-.catalog-canvas {
-  min-height: 100%;
-  display: grid;
-  place-items: center;
-  background-color: var(--loidolt-surface-sunken);
-  background-image:
-    linear-gradient(
-      color-mix(in srgb, var(--loidolt-color-canvas-line) 40%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--loidolt-color-canvas-line) 40%, transparent) 1px,
-      transparent 1px
-    );
-  background-size: 20px 20px;
-}
-.catalog-artboard {
-  width: min(70%, 26rem);
-  aspect-ratio: 4 / 3;
-  display: grid;
-  place-items: center;
-  padding: 2rem;
-  border: 1px solid var(--loidolt-border-strong);
-  background: var(--loidolt-surface);
-  box-shadow: var(--loidolt-shadow-artwork);
-  text-align: center;
-}
-.catalog-artboard strong {
-  display: block;
-  font-size: 2rem;
-}
-.catalog-footer {
+.docs-footer {
   padding: 1rem 1.35rem;
   border-top: 1px solid var(--loidolt-border);
   color: var(--loidolt-text-muted);
@@ -205,93 +53,274 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+/* The workspace is the scroll container for the page, so the nav column can stick beside it. */
+.docs-sidenav ul {
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+.docs-sidenav li a {
+  display: block;
+  padding: 0.3rem 0.5rem;
+  border-left: 2px solid transparent;
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-sm);
+  text-decoration: none;
+}
+.docs-sidenav li a:hover {
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-alt);
+  text-decoration: none;
+}
+.docs-sidenav li a[aria-current='page'] {
+  color: var(--loidolt-text);
+  border-left-color: var(--loidolt-accent);
+  background: var(--loidolt-surface-alt);
+}
+
+/* --- Overview ------------------------------------------------------------------------- */
+
+.docs-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.6fr);
+  gap: clamp(2rem, 6vw, 4rem);
+  align-items: center;
+  padding-block: 1rem 3rem;
+}
+.docs-hero h1 {
+  max-width: 13ch;
+  /*
+   * `line-height: 0.9` is a deliberate display treatment, but a line box shorter than the em
+   * cannot contain Jost's descenders — the tail of "quietly" painted straight through the
+   * paragraph below. Reserve that ink instead of loosening the leading between the two lines.
+   */
+  margin: 0 0 var(--loidolt-space-5);
+  padding-bottom: 0.14em;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+}
+.docs-hero h1 span {
+  color: var(--loidolt-accent);
+}
+.docs-lede {
+  max-width: 34rem;
+  margin-bottom: var(--loidolt-space-5);
+  color: var(--loidolt-text-muted);
+  font-size: 1.05rem;
+}
+.docs-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border: 1px solid var(--loidolt-border);
+  background: var(--loidolt-surface);
+}
+.docs-stat {
+  min-height: 7rem;
+  display: grid;
+  align-content: space-between;
+  padding: 1rem;
+  border-right: 1px solid var(--loidolt-border);
+  border-bottom: 1px solid var(--loidolt-border);
+}
+.docs-stat:nth-child(2n) {
+  border-right: 0;
+}
+.docs-stat:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+.docs-stat strong {
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+.docs-stat span {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* --- Component pages ------------------------------------------------------------------ */
+
+.docs-demo {
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border: 1px solid var(--loidolt-border);
+  background: var(--loidolt-surface);
+}
+.docs-demo + .docs-demo {
+  border-top: 0;
+}
+.docs-demo__label {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.docs-note {
+  max-width: 60ch;
+  margin: 0 0 1rem;
+  color: var(--loidolt-text-muted);
+}
+.docs-notes {
+  max-width: 70ch;
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--loidolt-text-muted);
+}
+.docs-notes li + li {
+  margin-top: 0.5rem;
+}
+.docs-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+.docs-card-link:hover .ldt-card {
+  border-color: var(--loidolt-accent);
+}
+/*
+ * Prop types are long by nature (`Snippet<[{ id: string; describedBy?: string }]>`). Let them
+ * wrap inside the cell rather than pushing the table into horizontal scroll on every page.
+ */
+.docs-type {
+  display: inline-block;
+  max-width: 26rem;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.docs-role-chip {
+  width: 1.5rem;
+  height: 1rem;
+  display: inline-block;
+  border: 1px solid var(--loidolt-border);
+  vertical-align: -0.15em;
+}
+
+/* --- Foundations ---------------------------------------------------------------------- */
+
+.docs-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 1rem;
+}
+.docs-swatch {
+  min-height: 7rem;
+  display: grid;
+  align-content: space-between;
+  padding: 0.8rem;
+  border: 1px solid var(--loidolt-border);
+}
+.docs-swatch span {
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.docs-theme-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+}
+.docs-theme-panel {
+  padding: 1rem;
+  border: 1px solid var(--loidolt-border);
+  background: var(--loidolt-surface);
+}
+.docs-scale {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.docs-scale li {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding-block: 0.35rem;
+  border-bottom: 1px solid var(--loidolt-border-soft);
+}
+.docs-space-bar {
+  height: 0.5rem;
+  display: block;
+  background: var(--loidolt-accent);
+}
+
+/* --- Pattern frames ------------------------------------------------------------------- */
+
+.docs-frame {
+  display: grid;
+  grid-template-rows: auto;
+  overflow: hidden;
+  border: 1px solid var(--loidolt-border-strong);
+  background: var(--loidolt-background);
+}
+.docs-frame--tall {
+  min-height: 30rem;
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+.docs-frame .ldt-topbar {
+  position: static;
+  min-height: 3.2rem;
+  padding-inline: 1rem;
+}
+.docs-frame .ldt-contextbar {
+  padding-inline: 1rem;
+}
+.docs-frame .ldt-workspace {
+  min-height: 16rem;
+}
+.docs-canvas {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  background-color: var(--loidolt-surface-sunken);
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--loidolt-border-sunken) 40%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--loidolt-border-sunken) 40%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 20px 20px;
+}
+.docs-artboard {
+  width: min(80%, 24rem);
+  display: grid;
+  gap: 0.35rem;
+  place-items: center;
+  padding: 2rem;
+  border: 1px solid var(--loidolt-border-strong);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-artwork);
+  text-align: center;
+}
+.docs-artboard strong {
+  font-size: 1.6rem;
+}
+.docs-artboard p {
+  margin: 0;
+  color: var(--loidolt-text-muted);
+}
+
+/* --- Code ----------------------------------------------------------------------------- */
+
 pre {
   overflow-x: auto;
-  margin: 0;
+  margin: 0 0 1rem;
   padding: 1rem;
   color: var(--loidolt-text-inverse);
   background: var(--loidolt-surface-inverse);
   font-size: 0.78rem;
 }
+
 @media (max-width: 760px) {
-  .catalog-nav .ldt-topbar__nav {
-    order: 3;
-    width: 100%;
-  }
-  .catalog-hero {
+  .docs-hero {
     grid-template-columns: 1fr;
   }
-  .catalog-section__head {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
+  .ldt-app-shell > header {
+    position: static;
   }
-  .catalog-editor .ldt-workspace {
-    display: grid;
-    grid-template-columns: 9rem minmax(0, 1fr);
-  }
-  .catalog-editor .ldt-sidebar {
-    padding: 0.75rem;
-  }
-}
-
-/*
- * The dark theme comes from `@loidolt/theme-styles/dark` — imported above, activated by
- * `data-theme="dark"`. The override panel below shows the same mechanism scoped to a subtree:
- * redefine semantic roles, change no component.
- */
-.catalog-theme-override {
-  --loidolt-surface: #10212c;
-  --loidolt-surface-alt: #16303f;
-  --loidolt-surface-input: #0b1920;
-  --loidolt-surface-inverse: #dceaf2;
-  --loidolt-text: #dceaf2;
-  --loidolt-text-muted: #9ab4c2;
-  --loidolt-text-inverse: #0b1920;
-  --loidolt-text-accent: #7fd1e8;
-  --loidolt-border: #2b4f63;
-  --loidolt-border-soft: #1d3a4a;
-  --loidolt-border-strong: #7fd1e8;
-  --loidolt-accent: #2f9ec0;
-  --loidolt-accent-hover: #7fd1e8;
-  --loidolt-on-accent: #04141c;
-}
-
-.catalog-theme-pair {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-  gap: 1rem;
-}
-.catalog-theme-panel {
-  padding: 1rem;
-  border: 1px solid var(--loidolt-border);
-  background: var(--loidolt-surface);
-}
-/*
- * Roles are shown as colour chips with their labels on the panel beneath. Painting the label
- * *on* the chip cannot work here: `text` and `text-muted` are themselves dark inks, so any
- * single foreground colour is unreadable on half the set.
- */
-.catalog-roles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
-  gap: 0.75rem;
-  margin-top: 0.75rem;
-}
-.catalog-role {
-  display: grid;
-  gap: 0.2rem;
-  align-content: start;
-}
-.catalog-role__chip {
-  height: 2.75rem;
-  border: 1px solid var(--loidolt-border);
-}
-.catalog-role strong {
-  font-size: var(--loidolt-font-size-sm);
-  font-weight: 500;
-}
-.catalog-role__value {
-  color: var(--loidolt-text-muted);
-  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.04em;
 }

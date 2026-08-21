@@ -34,7 +34,7 @@
   {disabled}
   class={cx(
     'ldt-button ldt-icon-button',
-    `ldt-button--${variant}`,
+    variant !== 'default' && `ldt-button--${variant}`,
     size !== 'md' && `ldt-button--${size}`,
     className
   )}

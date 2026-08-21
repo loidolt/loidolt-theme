@@ -4,22 +4,32 @@
   import type { ActionVariant, ControlSize } from '../types.js';
   import { cx } from '../utils.js';
 
-  type Props = HTMLButtonAttributes &
-    HTMLAnchorAttributes & {
-      variant?: ActionVariant;
-      size?: ControlSize;
-      /** Renders an `<a>` styled as a button. */
-      href?: string;
-      disabled?: boolean;
-      loading?: boolean;
-      /** Visible text swapped in while loading. */
-      loadingText?: string;
-      /** Announced while loading when there is no visible `loadingText`. */
-      loadingLabel?: string;
-      class?: string;
-      children: Snippet;
-      ref?: HTMLButtonElement | HTMLAnchorElement | null;
-    };
+  interface CommonProps {
+    variant?: ActionVariant;
+    size?: ControlSize;
+    disabled?: boolean;
+    loading?: boolean;
+    /** Visible text swapped in while loading. */
+    loadingText?: string;
+    /** Announced while loading when there is no visible `loadingText`. */
+    loadingLabel?: string;
+    class?: string;
+    children: Snippet;
+    ref?: HTMLButtonElement | HTMLAnchorElement | null;
+  }
+
+  // Discriminated on `href`: with it the component renders an `<a>` and accepts anchor
+  // attributes; without it, a `<button>` and button attributes. Button-only attributes
+  // (`formaction`, `type`, …) on an anchor are a type error instead of silent junk.
+  type Props = CommonProps &
+    (
+      | (Omit<HTMLAnchorAttributes, 'class' | 'type'> & {
+          /** Renders an `<a>` styled as a button. */
+          href: string;
+          type?: never;
+        })
+      | (Omit<HTMLButtonAttributes, 'class'> & { href?: never })
+    );
 
   let {
     variant = 'default',
@@ -38,7 +48,12 @@
   }: Props = $props();
 
   const classes = $derived(
-    cx('ldt-button', `ldt-button--${variant}`, size !== 'md' && `ldt-button--${size}`, className)
+    cx(
+      'ldt-button',
+      variant !== 'default' && `ldt-button--${variant}`,
+      size !== 'md' && `ldt-button--${size}`,
+      className
+    )
   );
   const inert = $derived(disabled || loading);
 
@@ -47,7 +62,8 @@
       event.preventDefault();
       return;
     }
-    onclick?.(event as MouseEvent & { currentTarget: EventTarget & HTMLButtonElement });
+    // The union collapses the handler's currentTarget; the branch that rendered us fixes it.
+    (onclick as ((event: MouseEvent) => void) | undefined)?.(event);
   }
 </script>
 
@@ -69,17 +85,23 @@
     aria-disabled={inert || undefined}
     aria-busy={loading || undefined}
     tabindex={inert ? -1 : undefined}
-    {...rest}
+    {...rest as HTMLAnchorAttributes}
     onclick={handleClick}>{@render content()}</a
   >
 {:else}
+  <!--
+    `loading` uses `aria-disabled` + a click guard instead of native `disabled`: disabling
+    the control mid-interaction would drop keyboard focus to <body> and can hide the busy
+    announcement from assistive tech. Explicit `disabled` keeps native semantics.
+  -->
   <button
     bind:this={ref}
     {type}
     class={classes}
-    disabled={inert}
+    disabled={disabled || undefined}
+    aria-disabled={loading && !disabled ? true : undefined}
     aria-busy={loading || undefined}
-    {...rest}
+    {...rest as HTMLButtonAttributes}
     onclick={handleClick}>{@render content()}</button
   >
 {/if}

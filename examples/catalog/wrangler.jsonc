@@ -1,0 +1,31 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "loidolt-theme-docs",
+  "account_id": "1ed4c9678fe4c1bb649b96659a060d9c",
+  "compatibility_date": "2026-08-21",
+
+  /*
+   * Assets-only Worker: there is no `main`, because the site is fully prerendered by
+   * adapter-static and nothing has to run per request. Cloudflare serves the files directly
+   * from its edge, so there is no Worker invocation — and no Worker runtime to keep correct.
+   */
+  "assets": {
+    "directory": "./dist",
+    /*
+     * `auto-trailing-slash` maps /components/button to components/button.html, which is the
+     * shape adapter-static writes with SvelteKit's default `trailingSlash: 'never'`.
+     */
+    "html_handling": "auto-trailing-slash",
+    /* Serves the prerendered /404 page — see src/routes/404/+page.svelte. */
+    "not_found_handling": "404-page",
+  },
+
+  /*
+   * A custom domain, not a route pattern: Cloudflare provisions the DNS record and the
+   * certificate itself, and the hostname is served by this Worker alone. Requires the
+   * loidolt.space zone to live in the account above.
+   */
+  "routes": [{ "pattern": "theme.loidolt.space", "custom_domain": true }],
+
+  "observability": { "enabled": true },
+}

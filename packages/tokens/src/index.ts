@@ -38,6 +38,7 @@ export const colors = {
   orange: '#c65224',
   orangeDark: '#a9441d',
   error: '#9b2822',
+  errorDark: '#7f1f1a',
   success: '#3f5139',
   warning: '#7c4d17',
   info: '#265162',
@@ -85,7 +86,12 @@ export const sizing = {
   content: '75rem',
 } as const;
 
-export const borders = { width: '1px', color: colors.line, radius: '0px' } as const;
+/*
+ * The system is square by design: `radius` is 0 and every control keeps a hard corner. `radiusPill`
+ * is the deliberate exception, reserved for badges — the one element that must not read as
+ * pressable, and reads that way precisely because nothing else is round.
+ */
+export const borders = { width: '1px', radius: '0px', radiusPill: '999px' } as const;
 
 export const shadows = {
   popover: '0 12px 30px color-mix(in srgb, var(--loidolt-shadow-color) 18%, transparent)',
@@ -112,8 +118,16 @@ export const zIndex = {
   skipLink: '1000',
 } as const;
 
-/** Breakpoints are not custom properties (`@media` cannot read `var()`), but stay tokenized here. */
-export const breakpoints = { compact: '760px' } as const;
+/**
+ * Breakpoints are not custom properties (`@media` cannot read `var()`), but stay tokenized here
+ * so an app and the library agree on where the layout changes.
+ *
+ * - `compact` — the phone/narrow-tablet break. The only one the package's own CSS uses: below
+ *   it the workspace grid collapses to a single column and the sidebar becomes a stacked block.
+ * - `expanded` — where a sidebar plus content plus inspector all fit at once.
+ * - `wide` — where content stops growing and gutters take the extra room.
+ */
+export const breakpoints = { compact: '760px', expanded: '1024px', wide: '1400px' } as const;
 
 /**
  * The role layer. Every value links to a primitive, so overriding a primitive propagates and
@@ -135,6 +149,8 @@ const semanticDefs = {
   borderStrong: ref('color-deep'),
   /** Boundary of an input, select, textarea or switch — held to 3:1 against its surface. */
   borderControl: ref('color-line-strong'),
+  /** Decorative rule on the sunken surface (canvas grids, artboard guides). Not a boundary. */
+  borderSunken: ref('color-canvas-line'),
   accent: ref('color-orange'),
   accentHover: ref('color-orange-dark'),
   onAccent: ref('color-white'),
@@ -144,6 +160,7 @@ const semanticDefs = {
    * value: a fill tuned for white ink is too light to read as text, and vice versa.
    */
   danger: ref('color-error'),
+  dangerHover: ref('color-error-dark'),
   onDanger: ref('color-white'),
   textDanger: ref('color-error'),
   success: ref('color-success'),
@@ -167,7 +184,7 @@ const PRIMITIVE_GROUPS: ReadonlyArray<readonly [string, TokenTree]> = [
   ['font', typography],
   ['space', spacing],
   ['size', sizing],
-  ['border', { width: borders.width, color: ref('color-line'), radius: borders.radius }],
+  ['border', borders],
   ['shadow', shadows],
   ['motion', motion],
   ['z', zIndex],
@@ -242,10 +259,12 @@ export const darkSemantic = {
   borderSoft: '#2b2e26',
   borderStrong: '#6a6e5f',
   borderControl: '#787c6b',
+  borderSunken: '#262922',
   accent: '#e0672f',
   accentHover: '#f0895c',
   onAccent: '#161814',
   danger: '#d75f55',
+  dangerHover: '#e07a70',
   onDanger: '#161814',
   textDanger: '#e88b81',
   success: '#7fa074',

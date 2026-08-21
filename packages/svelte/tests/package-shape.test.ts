@@ -18,9 +18,11 @@ const built = existsSync(distPath('index.js'));
 describe.skipIf(!built)('published package shape', () => {
   it('exports every component from the built barrel', async () => {
     const dist = await import(/* @vite-ignore */ pathToFileURL(distPath('index.js')).href);
-    for (const name of ['Button', 'Field', 'Dialog', 'Toast', 'TooltipProvider', 'Workspace']) {
-      expect(dist[name], name).toBeTypeOf('function');
-    }
+    // The source barrel is the contract: a build that drops any export fails here.
+    const src = await import('../src/lib/index.js');
+    const names = Object.keys(src).sort();
+    expect(names.length).toBeGreaterThan(40);
+    expect(Object.keys(dist).sort()).toEqual(names);
     expect(dist.cx).toBeTypeOf('function');
     expect(dist.createToaster).toBeTypeOf('function');
   });

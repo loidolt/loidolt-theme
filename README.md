@@ -7,6 +7,9 @@ orange actions, Jost display type, and Archivo utility text.
 The library is intentionally light-first, Tailwind-free, and free of authentication or
 application-domain code.
 
+**Documentation: [theme.loidolt.space](https://theme.loidolt.space)** — a live example, the
+accessibility contract, and a generated prop table for every component.
+
 ## Packages
 
 | Package                 | Purpose                                                                                                            |
@@ -68,16 +71,18 @@ import `/tokens` (or the whole package) first.
 ### Fonts
 
 Both faces are WOFF2 and are referenced by `fonts.css`. To remove the flash of fallback text,
-preload them from the package's `./fonts/*` export:
+preload them. With a bundler (Vite, webpack), import the file so the href matches the hashed
+URL the bundler gives the font in production — a hardcoded `/node_modules/...` path only works
+in dev:
 
-```html
-<link
-  rel="preload"
-  as="font"
-  type="font/woff2"
-  crossorigin
-  href="/node_modules/@loidolt/theme-styles/src/fonts/Jost-Medium.woff2"
-/>
+```svelte
+<script>
+  import jostUrl from '@loidolt/theme-styles/fonts/Jost-Medium.woff2';
+</script>
+
+<svelte:head>
+  <link rel="preload" as="font" type="font/woff2" crossorigin href={jostUrl} />
+</svelte:head>
 ```
 
 Only one weight per family ships (Jost 500, Archivo 400). `font-synthesis` is left at its
@@ -139,6 +144,8 @@ not have to get the `on-*` inks right yourself:
 Then set `data-theme="dark"` on `<html>`. It redefines only the semantic tier — no component
 class or prop changes.
 
+`createTheme()` is the runtime that sets that attribute — see [Colour scheme](#colour-scheme).
+
 To write your own instead, redefine the same roles:
 
 ```css
@@ -186,14 +193,148 @@ loidolt.utilities, loidolt.a11y`. Unlayered application CSS outranks all of them
 selectors in your app always win — no `!important` needed. `loidolt.reset` is deliberately empty
 and reserved for an app's own reset.
 
+## Colour scheme
+
+`createTheme()` holds the preference, resolves it against `prefers-color-scheme`, writes the
+result to `data-theme`, persists it, and mirrors the choice across tabs. It is callable at module
+scope, which is where an app-wide instance belongs:
+
+```ts
+// src/lib/theme.ts
+import { createTheme } from '@loidolt/theme-svelte';
+
+export const theme = createTheme();
+```
+
+```svelte
+<script lang="ts">
+  import { ThemeToggle } from '@loidolt/theme-svelte';
+  import { theme } from '$lib/theme.js';
+</script>
+
+<ThemeToggle {theme} />
+<!-- or drive it yourself -->
+<button onclick={theme.toggle}>{theme.resolved === 'dark' ? 'Light' : 'Dark'} mode</button>
+```
+
+The **resolved** scheme is always written out, even while the preference is `system`, so one
+store drives both `/dark` and `/dark-auto`: an explicit `data-theme="light"` is exactly what
+`dark-auto` needs to see when a user overrides a dark system.
+
+### No flash on reload
+
+A store created during hydration is too late to paint the first frame. `themeScript()` returns
+the blocking `<head>` snippet that performs the same resolve before the browser paints. It has to
+run **synchronously in `<head>`** — a module script, a deferred script, or anything in `<body>`
+is too late by definition. The output contains no `<`, so it needs no escaping.
+
+```html
+<!-- src/app.html -->
+<head>
+  %sveltekit.head%
+  <script>
+    %loidolt.theme%
+  </script>
+</head>
+```
+
+```ts
+// src/hooks.server.ts
+import { themeScript } from '@loidolt/theme-svelte';
+
+export const handle = ({ event, resolve }) =>
+  resolve(event, {
+    transformPageChunk: ({ html }) => html.replace('%loidolt.theme%', themeScript()),
+  });
+```
+
+Both take the same options (`storageKey`, `attribute`, `defaultPreference`, `defaultScheme`), and
+they must agree: the script decides the first paint, the store decides everything after it.
+
+## Responsive layout
+
+Breakpoints are tokens (`compact` 760px, `expanded` 1024px, `wide` 1400px) but not custom
+properties, because `@media` cannot read `var()`. `breakpointQuery()` turns one into a query and
+`createMediaQuery()` makes it reactive:
+
+```svelte
+<script lang="ts">
+  import {
+    breakpointQuery,
+    createMediaQuery,
+    Drawer,
+    Sidebar,
+    Workspace,
+  } from '@loidolt/theme-svelte';
+
+  const compact = createMediaQuery(breakpointQuery('compact'));
+  let navOpen = $state(false);
+</script>
+
+{#if compact.matches}
+  <Drawer title="Navigation" bind:open={navOpen}>
+    {#snippet trigger()}Menu{/snippet}
+    {@render nav()}
+  </Drawer>
+{/if}
+
+<Workspace sidebarOpen={!compact.matches}>
+  {#snippet sidebar()}<Sidebar label="Navigation">{@render nav()}</Sidebar>{/snippet}
+  <main>...</main>
+</Workspace>
+```
+
+A query created inside a component unsubscribes with it; one created at module scope is yours to
+`destroy()`. On the server `matches` is the `fallback` and nothing subscribes, so markup that
+switches on a query hydrates with the fallback branch and swaps on the first client frame.
+
+`Workspace` collapses a pane by leaving it unrendered rather than hiding it, so nothing inside a
+collapsed pane stays in the tab order.
+
+## Data tables
+
+`Table` owns the scroll region, the caption, and the states around the rows; `TableHeader` is a
+`<th>` that can sort. `aria-sort` sits on the cell, where the spec puts it, while the press target
+is a real button inside it.
+
+```svelte
+{#snippet nothingYet()}
+  <EmptyState title="No cut files yet" description="Import a drawing to get started." />
+{/snippet}
+
+<Table caption="Cut files" sticky columns={2} empty={rows.length === 0 ? nothingYet : undefined}>
+  <thead>
+    <tr>
+      <TableHeader sort={sortOf('name')} onSort={(direction) => sortBy('name', direction)}>
+        Name
+      </TableHeader>
+      <TableHeader align="end">Sheets</TableHeader>
+    </tr>
+  </thead>
+  <tbody>
+    {#each rows as row (row.name)}
+      <tr><td>{row.name}</td><td data-align="end">{row.sheets}</td></tr>
+    {/each}
+  </tbody>
+</Table>
+```
+
+`sticky` needs a bounded scroll container — set `--ldt-table-height` on the wrapper, or the page
+scrolls and nothing sticks. Exactly one column should report a sort; leave the rest at `none`.
+Pass `empty` only when there are no rows, since the component cannot see inside `children` to
+count them.
+
 ## Components
 
-- Actions: `Button` (`variant="text"` covers the former `TextButton`), `IconButton`
-- Forms: `Field`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Checkbox`, `RadioGroup`, `Switch`
-- Surfaces and data: `Card`, `Panel`, `Badge`, `Separator`, `Table`
-- Overlays and navigation: `Dialog`, `Popover`, `DropdownMenu`, `NavMenu`, `Tooltip`, `TooltipProvider`, `Tabs`
+- Actions: `Button` (`variant="text"` covers the former `TextButton`), `IconButton`, `ToggleGroup`
+- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Checkbox`, `RadioGroup`, `Switch`
+- Surfaces: `Card`, `Panel`, `Badge`, `Separator`, `PageHeader`, `Section`
+- Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`
+- Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`
+- Navigation: `Topbar`, `Brand`, `NavMenu`, `Breadcrumbs`, `Tabs`, `Accordion`, `ContextBar`
 - Feedback: `Alert`, `Toast`, `ToastViewport`, `Spinner`, `Skeleton`, `Progress`
-- Layout: `AppShell`, `Topbar`, `Brand`, `ContextBar`, `Workspace`, `Sidebar`, `PageHeader`, `Section`
+- Layout: `AppShell`, `Workspace`, `Sidebar`
+- Theme: `ThemeToggle`
 
 Complex focus, portal, dismissal, and keyboard behavior is powered by Bits UI. Icons remain
 consumer-supplied through snippets, so the theme does not impose an icon library.
@@ -216,6 +357,12 @@ consumer-supplied through snippets, so the theme does not impose an icon library
   `TooltipPrimitive`) for anything the declarative API does not model.
 - **Vocabulary**: actions use `default | primary | quiet | danger | ghost | text`; status uses
   `info | success | warning | error`; sizes are `sm | md | lg` (Dialog adds `xl`).
+- **`Badge` sizing**: `Badge` defaults to `size="inline"`, a compact chip scaled to the text it
+  annotates — right for table cells and running copy. Standing a badge in a row of controls, give
+  it the same size as its neighbours (`size="md"` next to default buttons) so it shares their
+  height instead of sitting at half of it. A sized badge still never reads as pressable: it keeps
+  the pill silhouette (`--loidolt-border-radius-pill`, the system's only rounded corner), a
+  recessed fill, and the wider label tracking, all of which hold without hover.
 - **Headings** are configurable via `headingLevel` on `Alert`, `Card`, `Dialog`, `PageHeader`,
   `Panel`, and `Section`, so components slot into any page outline.
 - **User-facing strings** are props, not literals: `optionalText`, `loadingLabel`, `closeLabel`,
@@ -252,20 +399,44 @@ grouping.
 ## Utilities and types
 
 ```ts
-import { cx } from '@loidolt/theme-svelte';
+import {
+  breakpointQuery,
+  createMediaQuery,
+  createTheme,
+  createToaster,
+  cx,
+  themeScript,
+} from '@loidolt/theme-svelte';
 import type {
   ActionVariant,
   Alignment,
+  BadgeSize,
   BadgeVariant,
+  BreakpointName,
+  ColorScheme,
+  ColumnAlign,
   ControlSize,
+  Crumb,
   DialogSize,
+  Disclosure,
   HeadingLevel,
+  MediaQuery,
+  MediaQueryOptions,
   MenuItem,
   NavItem,
   Option,
   Orientation,
   Placement,
+  SortDirection,
   StatusVariant,
+  Theme,
+  ThemeOptions,
+  ThemePreference,
+  ThemeScriptOptions,
+  Toaster,
+  ToasterOptions,
+  ToastOptions,
+  ToastRecord,
   TriggerChildProps,
 } from '@loidolt/theme-svelte';
 ```
@@ -277,9 +448,31 @@ is safe.
 
 ```sh
 npm install
-npm run dev                 # component catalog
+npm run dev                 # documentation site
 npm run dev -- --port 4321  # arguments are forwarded to Vite
-npm run check               # packages, types, tests, lint, formatting, and catalog build
+npm run check               # packages, types, tests, lint, formatting, and the docs build
+```
+
+The documentation site in `examples/catalog` is the reference consumer: a live example, the
+accessibility notes, and a prop table for every component, plus the foundations and the
+composition patterns. Its prop tables are **generated from the component sources** by
+`examples/catalog/scripts/extract-props.mjs` on every `dev` and `build` — a prop table maintained
+by hand is wrong within a release, so nothing about the props is written twice. The site's own
+component list is checked against the package barrel, and an export with no registry entry is
+reported on the components page rather than quietly missing.
+
+### Deploying the documentation
+
+The site is a fully prerendered static build served from Cloudflare Workers static assets — no
+`main`, so nothing runs per request. `.github/workflows/deploy-docs.yml` deploys every push to
+`main`, and needs two repository secrets: `CLOUDFLARE_API_TOKEN` (a token with _Edit Cloudflare
+Workers_ on the account, plus DNS edit on the `loidolt.space` zone the first time the custom
+domain is provisioned) and `CLOUDFLARE_ACCOUNT_ID`.
+
+To deploy by hand with your own `wrangler login`:
+
+```sh
+npm run deploy:docs
 ```
 
 `npm run check` builds the packages first, which is what lets the published-shape smoke test

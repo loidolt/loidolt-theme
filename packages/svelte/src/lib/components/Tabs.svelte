@@ -1,10 +1,14 @@
 <script lang="ts" generics="T extends string = string">
   import { Tabs as TabsPrimitive } from 'bits-ui';
+  import type { TabsRootProps } from 'bits-ui';
   import type { Snippet } from 'svelte';
   import type { NavItem, Orientation } from '../types.js';
   import { cx } from '../utils.js';
 
-  interface Props {
+  interface Props extends Omit<
+    TabsRootProps,
+    'value' | 'onValueChange' | 'orientation' | 'children' | 'child' | 'class' | 'ref'
+  > {
     /** Defaults to the first tab, so a panel is always rendered. */
     value?: T;
     tabs: NavItem<T>[];
@@ -20,8 +24,10 @@
   }
 
   let {
-    value = $bindable(),
     tabs,
+    // Defaulted at destructure time (not in an effect) so SSR output and the first client
+    // frame already agree with what a parent binding observes.
+    value = $bindable(tabs[0]?.value),
     label,
     orientation = 'horizontal',
     children,
@@ -30,13 +36,14 @@
     contentClass,
     onValueChange,
     ref = $bindable(null),
+    ...rest
   }: Props = $props();
 
-  $effect(() => {
-    if (value === undefined && tabs.length > 0) value = tabs[0].value;
-  });
-
-  const active = $derived(value ?? tabs[0]?.value);
+  // Falls back to the first tab when `value` points at a tab that no longer exists,
+  // so removing the selected tab cannot blank every panel.
+  const active = $derived(
+    value !== undefined && tabs.some((tab) => tab.value === value) ? value : tabs[0]?.value
+  );
 </script>
 
 <TabsPrimitive.Root
@@ -48,6 +55,7 @@
   }}
   {orientation}
   class={cx('ldt-tabs', className)}
+  {...rest}
 >
   <TabsPrimitive.List class={cx('ldt-tabs__list', listClass)} aria-label={label}
     >{#each tabs as tab (tab.value)}<TabsPrimitive.Trigger

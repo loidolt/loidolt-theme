@@ -50,22 +50,30 @@ export function createToaster(options: ToasterOptions = {}): Toaster {
 
   const toasts = $state<ToastRecord[]>([]);
   // Plain Map on purpose: these are timer handles, not UI state, and nothing renders from them.
+  // `startedAt` lives per entry: toasts are pushed at different moments, so a shared start
+  // time would corrupt every other toast's remaining time on pause. `timeout: null` marks a
+  // paused entry holding only its remaining time.
   // eslint-disable-next-line svelte/prefer-svelte-reactivity
-  const timers = new Map<string, { timeout: ReturnType<typeof setTimeout>; remaining: number }>();
-  let startedAt = 0;
+  const timers = new Map<
+    string,
+    { timeout: ReturnType<typeof setTimeout> | null; remaining: number; startedAt: number }
+  >();
   let paused = false;
   let counter = 0;
 
   function clearTimer(id: string) {
     const timer = timers.get(id);
-    if (timer) clearTimeout(timer.timeout);
+    if (timer?.timeout != null) clearTimeout(timer.timeout);
     timers.delete(id);
   }
 
   function arm(id: string, remaining: number) {
     if (!Number.isFinite(remaining) || remaining <= 0) return;
-    startedAt = Date.now();
-    timers.set(id, { timeout: setTimeout(() => dismiss(id), remaining), remaining });
+    timers.set(id, {
+      timeout: setTimeout(() => dismiss(id), remaining),
+      remaining,
+      startedAt: Date.now(),
+    });
   }
 
   function dismiss(id: string) {
@@ -79,7 +87,9 @@ export function createToaster(options: ToasterOptions = {}): Toaster {
     toasts.push({ ...toast, id });
     while (toasts.length > max) dismiss(toasts[0].id);
     if (!paused) arm(id, toast.duration ?? defaultDuration);
-    else timers.set(id, { timeout: 0 as never, remaining: toast.duration ?? defaultDuration });
+    else {
+      timers.set(id, { timeout: null, remaining: toast.duration ?? defaultDuration, startedAt: 0 });
+    }
     return id;
   }
 
@@ -95,10 +105,17 @@ export function createToaster(options: ToasterOptions = {}): Toaster {
     pause() {
       if (paused) return;
       paused = true;
-      const elapsed = Date.now() - startedAt;
+      const now = Date.now();
       for (const [id, timer] of timers) {
+        if (timer.timeout === null) continue;
         clearTimeout(timer.timeout);
-        timers.set(id, { timeout: 0 as never, remaining: Math.max(0, timer.remaining - elapsed) });
+        timers.set(id, {
+          timeout: null,
+          // Floor of 1ms: a toast that expired while paused should dismiss right after
+          // resume — `0` is the "keep until dismissed" sentinel and would strand it.
+          remaining: Math.max(1, timer.remaining - (now - timer.startedAt)),
+          startedAt: 0,
+        });
       }
     },
     resume() {

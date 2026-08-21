@@ -4,15 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && vite build",
-    "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "preview": "vite preview"
+    "props": "node scripts/extract-props.mjs",
+    "dev": "npm run props && vite --host 0.0.0.0",
+    "build": "npm run props && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && vite build",
+    "typecheck": "npm run props && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@loidolt/theme-svelte": "*",
-    "@loidolt/theme-styles": "*",
-    "@loidolt/theme-tokens": "*"
+    "@loidolt/theme-svelte": "^0.1.0",
+    "@loidolt/theme-styles": "^0.1.0",
+    "@loidolt/theme-tokens": "^0.1.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.10",
@@ -21,6 +23,7 @@
     "svelte": "^5.56.10",
     "svelte-check": "^4.3.2",
     "typescript": "^6.0.3",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "wrangler": "^4.125.0"
   }
 }

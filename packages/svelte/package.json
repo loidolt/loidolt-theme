@@ -26,8 +26,9 @@
   },
   "scripts": {
     "build": "svelte-package -i src/lib -o dist && cp src/styles.css dist/styles.css",
+    "prepack": "npm run build",
     "typecheck": "svelte-check --tsconfig ./tsconfig.json",
-    "test": "vitest run",
+    "test": "vitest run && vitest run --config vitest.config.ssr.ts",
     "test:a11y": "vitest run tests/a11y.test.ts",
     "clean": "rimraf dist"
   },

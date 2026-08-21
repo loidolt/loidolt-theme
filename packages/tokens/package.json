@@ -28,6 +28,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean && node scripts/generate-css.mjs",
+    "prepack": "npm run build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "clean": "rimraf dist"

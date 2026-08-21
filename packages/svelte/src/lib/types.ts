@@ -13,6 +13,19 @@ export type BadgeVariant = 'default' | 'accent' | StatusVariant;
 export type ControlSize = 'sm' | 'md' | 'lg';
 export type DialogSize = ControlSize | 'xl';
 
+/**
+ * Badges default to `inline`: a compact chip sized to the text it annotates, for table cells and
+ * running copy. The `ControlSize` steps match the button scale so a badge standing in a row of
+ * controls shares their height instead of floating at half of it.
+ */
+export type BadgeSize = 'inline' | ControlSize;
+
+/** Column sort state. The values are `aria-sort`'s, so they go straight onto the `<th>`. */
+export type SortDirection = 'ascending' | 'descending' | 'none';
+
+/** Horizontal text alignment for a table column. */
+export type ColumnAlign = 'start' | 'center' | 'end';
+
 export type Placement = 'top' | 'right' | 'bottom' | 'left';
 export type Alignment = 'start' | 'center' | 'end';
 export type Orientation = 'horizontal' | 'vertical';
@@ -27,6 +40,19 @@ export interface Option<T extends string = string> {
 
 /** `Option` is the single vocabulary for choice lists; `NavItem` is kept as a readable alias. */
 export type NavItem<T extends string = string> = Option<T>;
+
+/** One step in a breadcrumb trail. The final crumb is the current page and takes no `href`. */
+export interface Crumb {
+  label: string;
+  href?: string;
+}
+
+/** One `Accordion` panel: its heading and the value that identifies it. */
+export interface Disclosure<T extends string = string> {
+  value: T;
+  title: string;
+  disabled?: boolean;
+}
 
 /** A `DropdownMenu` row. Renders as a link when `href` is set. */
 export interface MenuItem<T extends string = string> extends Option<T> {

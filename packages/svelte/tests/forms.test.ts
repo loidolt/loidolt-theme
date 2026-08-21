@@ -9,6 +9,7 @@ import RadioGroup from '../src/lib/components/RadioGroup.svelte';
 import Select from '../src/lib/components/Select.svelte';
 import Textarea from '../src/lib/components/Textarea.svelte';
 import FieldHarness from './fixtures/FieldHarness.svelte';
+import FieldsetHarness from './fixtures/FieldsetHarness.svelte';
 
 const text = (value: string) => createRawSnippet(() => ({ render: () => value }));
 
@@ -182,5 +183,74 @@ describe('NumberField', () => {
 
     await user.click(screen.getByRole('button', { name: 'Increase Layers' }));
     expect(onValueChange).toHaveBeenCalledWith(2);
+  });
+
+  it('chains a consumer onchange after clamping instead of dropping it', async () => {
+    const user = userEvent.setup();
+    const onchange = vi.fn();
+    const onValueChange = vi.fn();
+    render(NumberField, { label: 'Layers', min: 1, max: 9, value: 1, onchange, onValueChange });
+
+    const input = screen.getByLabelText('Layers');
+    await user.clear(input);
+    await user.type(input, '4');
+    await user.tab();
+
+    expect(onValueChange).toHaveBeenLastCalledWith(4);
+    expect(onchange).toHaveBeenCalledOnce();
+  });
+
+  it('disables the spin buttons together with the input', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(NumberField, {
+      label: 'Layers',
+      min: 1,
+      max: 9,
+      value: 5,
+      disabled: true,
+      onValueChange,
+    });
+
+    expect(screen.getByLabelText('Layers')).toBeDisabled();
+    const increase = screen.getByRole('button', { name: 'Increase Layers' });
+    expect(increase).toBeDisabled();
+    await user.click(increase);
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+});
+
+describe('Fieldset', () => {
+  it('names the group and wires a shared description', () => {
+    render(FieldsetHarness, {
+      legend: 'Output formats',
+      description: 'At least one is required.',
+    });
+
+    const group = screen.getByRole('group', { name: 'Output formats' });
+    expect(group).toHaveAccessibleDescription('At least one is required.');
+  });
+
+  it('announces a group-level error once, not once per control', () => {
+    render(FieldsetHarness, { legend: 'Output formats', error: 'Choose a format' });
+
+    const alerts = screen.getAllByRole('alert');
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0]).toHaveTextContent('Choose a format');
+    expect(screen.getByRole('group')).toHaveAccessibleDescription('Choose a format');
+  });
+
+  it('marks the group optional in the legend', () => {
+    render(FieldsetHarness, { legend: 'Notes', optional: true, optionalText: 'If you like' });
+    expect(screen.getByRole('group', { name: /Notes/ })).toBeInTheDocument();
+    expect(screen.getByText('If you like')).toBeInTheDocument();
+  });
+
+  it('keeps the controls it wraps reachable', async () => {
+    const user = userEvent.setup();
+    render(FieldsetHarness, { legend: 'Output formats' });
+
+    await user.click(screen.getByRole('checkbox', { name: 'SVG' }));
+    expect(screen.getByRole('checkbox', { name: 'SVG' })).toBeChecked();
   });
 });

@@ -13,7 +13,8 @@
  * just on the other side of the border box. Zero specificity, declared after the rule above,
  * so it overrides by document order without escalating specificity.
  */
-:where(.ldt-topbar__nav, .ldt-table-wrap, .ldt-sidebar, .ldt-dialog__body) :where(:focus-visible) {
+:where(.ldt-topbar__nav, .ldt-table-wrap, .ldt-sidebar, .ldt-dialog__body, .ldt-drawer__body)
+  :where(:focus-visible) {
   outline-offset: -2px;
 }
 
@@ -55,10 +56,17 @@
  * plain declarations already override every component animation while app CSS still wins.
  */
 @media (prefers-reduced-motion: reduce) {
-  :where(*, *::before, *::after) {
+  /* Pseudo-elements are invalid inside `:where()` and get dropped from its forgiving
+     list, so they are listed separately — animations on `::before`/`::after` must slow
+     down too. Delays are zeroed so nothing appears to hang waiting on a dead animation. */
+  *,
+  ::before,
+  ::after {
     scroll-behavior: auto;
+    animation-delay: 0.01ms;
     animation-duration: 0.01ms;
     animation-iteration-count: 1;
+    transition-delay: 0.01ms;
     transition-duration: 0.01ms;
   }
 }

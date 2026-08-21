@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
+import AlertDialog from '../src/lib/components/AlertDialog.svelte';
 import DropdownMenu from '../src/lib/components/DropdownMenu.svelte';
 import Popover from '../src/lib/components/Popover.svelte';
 import Tabs from '../src/lib/components/Tabs.svelte';
@@ -178,5 +179,66 @@ describe('Tabs orientation', () => {
     for (const selector of ['.ldt-tabs', '.ldt-tabs__list', '.ldt-tabs__trigger']) {
       expect(css, selector).toContain(`${selector}[data-orientation='vertical']`);
     }
+  });
+});
+
+describe('AlertDialog', () => {
+  const open = async (user: ReturnType<typeof userEvent.setup>) => {
+    await user.click(screen.getByRole('button', { name: 'Delete' }));
+    return screen.getByRole('alertdialog', { name: 'Delete terrain.svg?' });
+  };
+
+  const props = (extra: Record<string, unknown>) => ({
+    title: 'Delete terrain.svg?',
+    description: 'This cannot be undone.',
+    trigger: text('<span>Delete</span>'),
+    confirmLabel: 'Delete file',
+    confirmVariant: 'danger' as const,
+    ...extra,
+  });
+
+  it('confirms through its action button and closes', async () => {
+    const user = userEvent.setup();
+    const onConfirm = vi.fn();
+    render(AlertDialog, props({ onConfirm }));
+
+    const dialog = await open(user);
+    expect(dialog).toHaveAccessibleDescription('This cannot be undone.');
+
+    await user.click(screen.getByRole('button', { name: 'Delete file' }));
+    expect(onConfirm).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+  });
+
+  it('cancels without confirming', async () => {
+    const user = userEvent.setup();
+    const onConfirm = vi.fn();
+    const onCancel = vi.fn();
+    render(AlertDialog, props({ onConfirm, onCancel }));
+
+    await open(user);
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(onConfirm).not.toHaveBeenCalled();
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+  });
+
+  it('offers no dismiss affordance beyond the two answers', () => {
+    render(AlertDialog, { title: 'Discard changes?', open: true });
+
+    // No close "×": a confirmation you can dismiss by missing is not a confirmation.
+    const buttons = screen.getAllByRole('button').map((button) => button.textContent?.trim());
+    expect(buttons).toEqual(['Cancel', 'Confirm']);
+  });
+
+  it('colours the confirm button by variant', () => {
+    render(AlertDialog, { title: 'Delete?', open: true, confirmVariant: 'danger' });
+    expect(screen.getByRole('button', { name: 'Confirm' })).toHaveClass('ldt-button--danger');
+  });
+
+  it('leaves the default variant unmodified, like Button does', () => {
+    render(AlertDialog, { title: 'Continue?', open: true, confirmVariant: 'default' });
+    expect(screen.getByRole('button', { name: 'Confirm' }).className).toBe('ldt-button');
   });
 });

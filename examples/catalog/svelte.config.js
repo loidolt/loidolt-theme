@@ -6,7 +6,12 @@ const config = {
   preprocess: vitePreprocess(),
   kit: {
     adapter: adapter({ pages: 'dist', assets: 'dist', strict: true }),
-    paths: { relative: true },
+    /*
+     * Absolute asset paths. The site is served from the root of its own domain, and the 404 page
+     * has to work at *any* depth — with relative paths, `404.html` served for /a/b/c would look
+     * for its stylesheet under /a/b/_app and find nothing.
+     */
+    paths: { relative: false },
   },
 };
 

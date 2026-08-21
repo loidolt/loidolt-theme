@@ -36,12 +36,23 @@ describe('theme tokens', () => {
     expect(css).toContain('--loidolt-font-line-height-tight: 1.15');
     expect(css).toContain('--loidolt-color-panel-alt:');
     expect(css).toContain('--loidolt-size-control-sm:');
+    expect(css).toContain('--loidolt-border-radius-pill: 999px');
     expect([...declared].filter((name) => /[A-Z]/.test(name))).toEqual([]);
   });
 
   it('emits token-to-token links as var() references, not resolved values', () => {
-    expect(css).toContain('--loidolt-border-color: var(--loidolt-color-line)');
+    expect(css).toContain('--loidolt-accent-hover: var(--loidolt-color-orange-dark)');
     expect(css).toContain('--loidolt-surface: var(--loidolt-color-panel)');
+  });
+
+  it('never emits a var() reference to a token that is not declared', () => {
+    // Guards both `ref()` links and raw `var(--loidolt-…)` strings embedded in values
+    // (shadows, scrim): renaming a token must not leave dangling references behind.
+    for (const source of [css, generateDarkCss('auto')]) {
+      for (const [, name] of source.matchAll(/var\((--loidolt-[a-z0-9-]+)\)/g)) {
+        expect(declared.has(name), `dangling token reference ${name}`).toBe(true);
+      }
+    }
   });
 
   it('keeps every declaration name unique', () => {
@@ -119,12 +130,15 @@ describe.each([
     ['accent text on surface-alt', t.textAccent, t.surfaceAlt],
     ['muted text on background', t.textMuted, t.background],
     ['muted text on surface', t.textMuted, t.surface],
+    // The recessed fill a default badge sits on.
+    ['muted text on the sunken surface', t.textMuted, t.surfaceSunken],
     ['body text on background', t.text, t.background],
     ['body text on surface', t.text, t.surface],
     ['inverse text on the inverse surface', t.textInverse, t.surfaceInverse],
     ['on-accent over accent', t.onAccent, t.accent],
     ['on-accent over accent hover', t.onAccent, t.accentHover],
     ['on-danger over danger', t.onDanger, t.danger],
+    ['on-danger over danger hover', t.onDanger, t.dangerHover],
     ['on-success over success', t.onSuccess, t.success],
     ['on-warning over warning', t.onWarning, t.warning],
     ['on-info over info', t.onInfo, t.info],
