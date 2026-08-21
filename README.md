@@ -7,6 +7,9 @@ orange actions, Jost display type, and Archivo utility text.
 The library is intentionally light-first, Tailwind-free, and free of authentication or
 application-domain code.
 
+**Documentation: [theme.loidolt.space](https://theme.loidolt.space)** — a live example, the
+accessibility contract, and a generated prop table for every component.
+
 ## Packages
 
 | Package                 | Purpose                                                                                                            |
@@ -457,6 +460,20 @@ composition patterns. Its prop tables are **generated from the component sources
 by hand is wrong within a release, so nothing about the props is written twice. The site's own
 component list is checked against the package barrel, and an export with no registry entry is
 reported on the components page rather than quietly missing.
+
+### Deploying the documentation
+
+The site is a fully prerendered static build served from Cloudflare Workers static assets — no
+`main`, so nothing runs per request. `.github/workflows/deploy-docs.yml` deploys every push to
+`main`, and needs two repository secrets: `CLOUDFLARE_API_TOKEN` (a token with _Edit Cloudflare
+Workers_ on the account, plus DNS edit on the `loidolt.space` zone the first time the custom
+domain is provisioned) and `CLOUDFLARE_ACCOUNT_ID`.
+
+To deploy by hand with your own `wrangler login`:
+
+```sh
+npm run deploy:docs
+```
 
 `npm run check` builds the packages first, which is what lets the published-shape smoke test
 run; a bare `npm test` on a fresh clone passes and skips that one file.

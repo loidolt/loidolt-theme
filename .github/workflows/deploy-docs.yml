@@ -1,0 +1,42 @@
+name: Deploy docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deploy at a time, and never cancel one in flight: a half-uploaded asset manifest is
+# worse than a queued run.
+concurrency:
+  group: deploy-docs
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Forks have neither the secrets nor any business publishing to this domain.
+    if: github.repository == 'loidolt/loidolt-theme'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: docs
+      url: https://theme.loidolt.space
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # The docs read the packages' built output, and their prop tables are generated from the
+      # component sources during this build.
+      - run: npm run build:packages
+      - run: npm run build -w @loidolt/theme-catalog
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: examples/catalog
+          command: deploy
