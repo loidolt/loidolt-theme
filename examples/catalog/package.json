@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && vite build",
-    "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "props": "node scripts/extract-props.mjs",
+    "dev": "npm run props && vite --host 0.0.0.0",
+    "build": "npm run props && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && vite build",
+    "typecheck": "npm run props && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "preview": "vite preview"
   },
   "dependencies": {
