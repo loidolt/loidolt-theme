@@ -183,4 +183,38 @@ describe('NumberField', () => {
     await user.click(screen.getByRole('button', { name: 'Increase Layers' }));
     expect(onValueChange).toHaveBeenCalledWith(2);
   });
+
+  it('chains a consumer onchange after clamping instead of dropping it', async () => {
+    const user = userEvent.setup();
+    const onchange = vi.fn();
+    const onValueChange = vi.fn();
+    render(NumberField, { label: 'Layers', min: 1, max: 9, value: 1, onchange, onValueChange });
+
+    const input = screen.getByLabelText('Layers');
+    await user.clear(input);
+    await user.type(input, '4');
+    await user.tab();
+
+    expect(onValueChange).toHaveBeenLastCalledWith(4);
+    expect(onchange).toHaveBeenCalledOnce();
+  });
+
+  it('disables the spin buttons together with the input', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(NumberField, {
+      label: 'Layers',
+      min: 1,
+      max: 9,
+      value: 5,
+      disabled: true,
+      onValueChange,
+    });
+
+    expect(screen.getByLabelText('Layers')).toBeDisabled();
+    const increase = screen.getByRole('button', { name: 'Increase Layers' });
+    expect(increase).toBeDisabled();
+    await user.click(increase);
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
 });

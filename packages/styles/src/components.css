@@ -41,6 +41,13 @@
   border-color: var(--loidolt-danger);
   background: var(--loidolt-danger);
 }
+/* Without this, the base hover would flip a destructive button to the neutral inverse
+   surface — the danger affordance must survive hover. */
+.ldt-button--danger:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-on-danger);
+  border-color: var(--loidolt-danger-hover);
+  background: var(--loidolt-danger-hover);
+}
 .ldt-button--ghost,
 .ldt-button--text {
   border-color: transparent;
@@ -277,16 +284,46 @@
   font-family: var(--loidolt-font-utility);
   font-size: var(--loidolt-font-size-sm);
 }
+/*
+ * A badge reports state; it is never pressable. Standing at control height it would otherwise be
+ * indistinguishable from a button, so three things separate them, none of which depend on hover:
+ * the pill silhouette against the system's hard corners, the recessed fill instead of a raised
+ * one, and text that stays a step smaller than button text at every size.
+ */
 .ldt-badge {
   display: inline-flex;
   align-items: center;
   min-height: 1.4rem;
-  padding: 0.15rem 0.45rem;
+  padding: 0.15rem 0.5rem;
   border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-radius: var(--loidolt-border-radius-pill);
   color: var(--loidolt-text-muted);
+  background: var(--loidolt-surface-sunken);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.08em;
+  /* The label voice (`.ldt-eyebrow`, `.ldt-field__label`), not the tighter control voice. */
+  letter-spacing: var(--loidolt-font-tracking-wide);
   text-transform: uppercase;
+}
+/*
+ * Size steps take the button scale's *box* so a badge in a row of controls lines up with them,
+ * but not its type scale — the smaller text is part of what marks the badge as inert. Without a
+ * size class the badge keeps its compact inline metrics, which is what table cells and running
+ * copy want.
+ */
+.ldt-badge--sm {
+  min-height: var(--loidolt-size-control-sm);
+  padding: 0.38rem 0.7rem;
+  line-height: 1;
+}
+.ldt-badge--md {
+  min-height: var(--loidolt-size-control);
+  padding: 0.5rem 0.9rem;
+  line-height: 1;
+}
+.ldt-badge--lg {
+  min-height: var(--loidolt-size-control-lg);
+  padding: 0.5rem 1.25rem;
+  line-height: 1;
 }
 .ldt-badge--accent {
   color: var(--loidolt-on-accent);
@@ -571,10 +608,21 @@
   text-align: left;
   text-decoration: none;
 }
-.ldt-menu__item:hover,
+.ldt-menu__item:hover:not(:disabled, [data-disabled]),
 .ldt-menu__item[data-highlighted] {
   color: var(--loidolt-text-inverse);
   background: var(--loidolt-surface-inverse);
+}
+/* Exposed to assistive tech (no aria-hidden): a shortcut nobody can hear may as well
+   not exist. Muted normally; inherits the inverse ink while highlighted. */
+.ldt-menu__hint {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: 0.08em;
+}
+.ldt-menu__item:hover:not(:disabled, [data-disabled]) .ldt-menu__hint,
+.ldt-menu__item[data-highlighted] .ldt-menu__hint {
+  color: inherit;
 }
 .ldt-menu__item[data-disabled],
 .ldt-menu__item:disabled {

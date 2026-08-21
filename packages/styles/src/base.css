@@ -1,6 +1,11 @@
 /* Deep slice: assumes the token custom properties are already loaded.
    Import '@loidolt/theme-styles/tokens' (or the whole '@loidolt/theme-styles') first. */
-:where(*, *::before, *::after) {
+/* Pseudo-elements are invalid inside `:where()` and get dropped from its forgiving list,
+   so they are listed separately. `*` already has zero specificity; `::before`/`::after`
+   carry (0,0,1), the minimum a pseudo-element can have. */
+*,
+::before,
+::after {
   box-sizing: border-box;
 }
 :where(html) {
@@ -46,7 +51,8 @@
 :where(code, pre, kbd, samp) {
   font-family: var(--loidolt-font-mono);
 }
-:where(::selection) {
+/* Pseudo-elements cannot appear inside `:where()`; bare `::selection` is (0,0,1). */
+::selection {
   color: var(--loidolt-on-accent);
   background: var(--loidolt-accent);
 }

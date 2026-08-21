@@ -54,6 +54,7 @@ export type { Toaster, ToasterOptions, ToastOptions, ToastRecord } from './toast
 export type {
   ActionVariant,
   Alignment,
+  BadgeSize,
   BadgeVariant,
   ControlSize,
   DialogSize,

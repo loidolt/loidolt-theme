@@ -6,6 +6,7 @@
   import { Tooltip as TooltipPrimitive } from 'bits-ui';
   import { setContext, type Snippet } from 'svelte';
 
+  // Renderless: no element of its own, so there are no rest attributes to forward.
   interface Props {
     /** Delay before the first tooltip in the group opens. */
     delayDuration?: number;

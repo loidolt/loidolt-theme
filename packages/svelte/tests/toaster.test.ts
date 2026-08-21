@@ -49,6 +49,37 @@ describe('createToaster', () => {
     expect(toaster.toasts).toHaveLength(0);
   });
 
+  it('tracks remaining time independently for toasts pushed at different moments', () => {
+    // Regression: a single shared start timestamp meant pausing measured every toast's
+    // elapsed time from the most recent push, inflating older toasts' remaining time.
+    const toaster = createToaster({ duration: 1000 });
+    toaster.push({ title: 'First' });
+    vi.advanceTimersByTime(800); // First has 200ms left
+    toaster.push({ title: 'Second' }); // Second has 1000ms left
+    vi.advanceTimersByTime(100); // First: 100ms left, Second: 900ms left
+    toaster.pause();
+    vi.advanceTimersByTime(60_000);
+    toaster.resume();
+
+    vi.advanceTimersByTime(100);
+    expect(toaster.toasts.map((toast) => toast.title)).toEqual(['Second']);
+    vi.advanceTimersByTime(799);
+    expect(toaster.toasts).toHaveLength(1);
+    vi.advanceTimersByTime(1);
+    expect(toaster.toasts).toHaveLength(0);
+  });
+
+  it('dismisses a toast that expired while paused shortly after resume', () => {
+    const toaster = createToaster({ duration: 100 });
+    toaster.push({ title: 'Fleeting' });
+    vi.advanceTimersByTime(99);
+    toaster.pause();
+    vi.advanceTimersByTime(10_000);
+    toaster.resume();
+    vi.advanceTimersByTime(5);
+    expect(toaster.toasts).toHaveLength(0);
+  });
+
   it('drops the oldest toast past the maximum', () => {
     const toaster = createToaster({ max: 2 });
     toaster.push({ title: 'One' });

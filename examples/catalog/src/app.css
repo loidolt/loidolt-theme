@@ -171,12 +171,12 @@
   background-color: var(--loidolt-surface-sunken);
   background-image:
     linear-gradient(
-      color-mix(in srgb, var(--loidolt-color-canvas-line) 40%, transparent) 1px,
+      color-mix(in srgb, var(--loidolt-border-sunken) 40%, transparent) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--loidolt-color-canvas-line) 40%, transparent) 1px,
+      color-mix(in srgb, var(--loidolt-border-sunken) 40%, transparent) 1px,
       transparent 1px
     );
   background-size: 20px 20px;

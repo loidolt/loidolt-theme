@@ -14,6 +14,7 @@
     "./accessibility": "./src/accessibility.css",
     "./utilities": "./src/utilities.css",
     "./components": "./src/components.css",
+    "./fonts": "./src/fonts.css",
     "./fonts/*": "./src/fonts/*",
     "./package.json": "./package.json"
   },

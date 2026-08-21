@@ -13,6 +13,13 @@ export type BadgeVariant = 'default' | 'accent' | StatusVariant;
 export type ControlSize = 'sm' | 'md' | 'lg';
 export type DialogSize = ControlSize | 'xl';
 
+/**
+ * Badges default to `inline`: a compact chip sized to the text it annotates, for table cells and
+ * running copy. The `ControlSize` steps match the button scale so a badge standing in a row of
+ * controls shares their height instead of floating at half of it.
+ */
+export type BadgeSize = 'inline' | ControlSize;
+
 export type Placement = 'top' | 'right' | 'bottom' | 'left';
 export type Alignment = 'start' | 'center' | 'end';
 export type Orientation = 'horizontal' | 'vertical';

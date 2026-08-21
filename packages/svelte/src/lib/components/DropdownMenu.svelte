@@ -58,13 +58,13 @@
         {#if item.href}
           <a {...props} href={item.href}
             >{#if item.icon}{@render item.icon()}{/if}<span>{item.label}</span>{#if item.hint}<span
-                aria-hidden="true">{item.hint}</span
+                class="ldt-menu__hint">{item.hint}</span
               >{/if}</a
           >
         {:else}
           <button {...props} type="button"
             >{#if item.icon}{@render item.icon()}{/if}<span>{item.label}</span>{#if item.hint}<span
-                aria-hidden="true">{item.hint}</span
+                class="ldt-menu__hint">{item.hint}</span
               >{/if}</button
           >
         {/if}

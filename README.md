@@ -68,16 +68,18 @@ import `/tokens` (or the whole package) first.
 ### Fonts
 
 Both faces are WOFF2 and are referenced by `fonts.css`. To remove the flash of fallback text,
-preload them from the package's `./fonts/*` export:
+preload them. With a bundler (Vite, webpack), import the file so the href matches the hashed
+URL the bundler gives the font in production — a hardcoded `/node_modules/...` path only works
+in dev:
 
-```html
-<link
-  rel="preload"
-  as="font"
-  type="font/woff2"
-  crossorigin
-  href="/node_modules/@loidolt/theme-styles/src/fonts/Jost-Medium.woff2"
-/>
+```svelte
+<script>
+  import jostUrl from '@loidolt/theme-styles/fonts/Jost-Medium.woff2';
+</script>
+
+<svelte:head>
+  <link rel="preload" as="font" type="font/woff2" crossorigin href={jostUrl} />
+</svelte:head>
 ```
 
 Only one weight per family ships (Jost 500, Archivo 400). `font-synthesis` is left at its
@@ -216,6 +218,12 @@ consumer-supplied through snippets, so the theme does not impose an icon library
   `TooltipPrimitive`) for anything the declarative API does not model.
 - **Vocabulary**: actions use `default | primary | quiet | danger | ghost | text`; status uses
   `info | success | warning | error`; sizes are `sm | md | lg` (Dialog adds `xl`).
+- **`Badge` sizing**: `Badge` defaults to `size="inline"`, a compact chip scaled to the text it
+  annotates — right for table cells and running copy. Standing a badge in a row of controls, give
+  it the same size as its neighbours (`size="md"` next to default buttons) so it shares their
+  height instead of sitting at half of it. A sized badge still never reads as pressable: it keeps
+  the pill silhouette (`--loidolt-border-radius-pill`, the system's only rounded corner), a
+  recessed fill, and the wider label tracking, all of which hold without hover.
 - **Headings** are configurable via `headingLevel` on `Alert`, `Card`, `Dialog`, `PageHeader`,
   `Panel`, and `Section`, so components slot into any page outline.
 - **User-facing strings** are props, not literals: `optionalText`, `loadingLabel`, `closeLabel`,
@@ -256,6 +264,7 @@ import { cx } from '@loidolt/theme-svelte';
 import type {
   ActionVariant,
   Alignment,
+  BadgeSize,
   BadgeVariant,
   ControlSize,
   DialogSize,

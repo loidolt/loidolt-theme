@@ -1,10 +1,11 @@
 <script lang="ts" generics="T extends string = string">
   import type { Snippet } from 'svelte';
+  import type { HTMLButtonAttributes } from 'svelte/elements';
   import DropdownMenu from './DropdownMenu.svelte';
   import type { Alignment, MenuItem, Placement } from '../types.js';
   import { cx } from '../utils.js';
 
-  interface Props {
+  interface Props extends Omit<HTMLButtonAttributes, 'children' | 'class' | 'type'> {
     open?: boolean;
     /** Trigger text. */
     label: string;
@@ -36,11 +37,15 @@
     menuClass,
     onSelect,
     onOpenChange,
+    ...rest
   }: Props = $props();
 </script>
 
 {#snippet navTrigger({ props }: { props: Record<string, unknown> })}
+  <!-- `rest` first: the menu's trigger wiring (from `props`) and this component's own
+       attributes are policy and must win over forwarded attributes. -->
   <button
+    {...rest}
     {...props}
     type="button"
     class={cx('ldt-nav-menu', active && 'ldt-nav-menu--active', className)}

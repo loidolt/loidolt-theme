@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@loidolt/theme-svelte": "*",
-    "@loidolt/theme-styles": "*",
-    "@loidolt/theme-tokens": "*"
+    "@loidolt/theme-svelte": "^0.1.0",
+    "@loidolt/theme-styles": "^0.1.0",
+    "@loidolt/theme-tokens": "^0.1.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.10",

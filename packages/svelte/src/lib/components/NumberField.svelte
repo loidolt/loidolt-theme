@@ -29,7 +29,9 @@
     decrementLabel = (name) => `Decrease ${name}`,
     incrementLabel = (name) => `Increase ${name}`,
     boxed = false,
+    disabled = false,
     onValueChange,
+    onchange,
     class: className,
     inputClass,
     ref = $bindable(null),
@@ -52,6 +54,7 @@
   <button
     class="ldt-number-field__button"
     type="button"
+    {disabled}
     aria-label={decrementLabel(label)}
     aria-disabled={atMin || undefined}
     onclick={() => !atMin && set(value - step)}>−</button
@@ -64,13 +67,21 @@
     min={Number.isFinite(min) ? min : undefined}
     max={Number.isFinite(max) ? max : undefined}
     {step}
+    {disabled}
     aria-label={label}
     {...rest}
-    onchange={(event) => set(Number(event.currentTarget.value))}
+    onchange={(event) => {
+      // `Number('')` is 0, not NaN — a cleared field must hit the documented fallback,
+      // not silently clamp to zero.
+      const raw = event.currentTarget.value;
+      set(raw === '' ? NaN : Number(raw));
+      onchange?.(event);
+    }}
   />
   <button
     class="ldt-number-field__button"
     type="button"
+    {disabled}
     aria-label={incrementLabel(label)}
     aria-disabled={atMax || undefined}
     onclick={() => !atMax && set(value + step)}>+</button

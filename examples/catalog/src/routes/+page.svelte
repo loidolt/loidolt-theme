@@ -214,7 +214,7 @@ import { Button, Field, Input } from '@loidolt/theme-svelte';`;
               <span class="catalog-demo-label">Default</span>
               <div class="ldt-cluster">
                 <Button variant="primary">Export</Button><Button variant="quiet">Cancel</Button
-                ><Badge variant="accent">Live</Badge>
+                ><Badge variant="accent" size="md">Live</Badge>
               </div>
               <div class="catalog-roles">
                 {#each semanticRoles as [role, value] (role)}<div class="catalog-role">
@@ -227,7 +227,7 @@ import { Button, Field, Input } from '@loidolt/theme-svelte';`;
               <span class="catalog-demo-label">Overridden</span>
               <div class="ldt-cluster">
                 <Button variant="primary">Export</Button><Button variant="quiet">Cancel</Button
-                ><Badge variant="accent">Live</Badge>
+                ><Badge variant="accent" size="md">Live</Badge>
               </div>
               <div class="catalog-roles">
                 {#each semanticRoles as [role] (role)}<div class="catalog-role">
@@ -436,7 +436,7 @@ import { Button, Field, Input } from '@loidolt/theme-svelte';`;
               items={menuItems}
               onSelect={(value) => (selectedMenu = value)}
               >{#snippet trigger()}File{/snippet}</DropdownMenu
-            ><Badge>{selectedMenu}</Badge>
+            ><Badge size="md">{selectedMenu}</Badge>
             <NavMenu
               label="Libraries"
               groupLabel="Reusable resources"

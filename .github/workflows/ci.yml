@@ -33,17 +33,18 @@ jobs:
           npm pack --dry-run -w @loidolt/theme-tokens
           npm pack --dry-run -w @loidolt/theme-styles
           npm pack --dry-run -w @loidolt/theme-svelte
-          npx --yes publint@latest run packages/tokens
-          npx --yes publint@latest run packages/styles
-          npx --yes publint@latest run packages/svelte
+          # Pinned so a tool release cannot flip CI red on an untouched repo.
+          npx --yes publint@0.3.24 run packages/tokens
+          npx --yes publint@0.3.24 run packages/styles
+          npx --yes publint@0.3.24 run packages/svelte
       - name: Validate published types
         run: |
           # CSS entrypoints have no types by design, so they are excluded rather than reported.
-          npx --yes @arethetypeswrong/cli@latest --pack packages/tokens \
-            --exclude-entrypoints css --ignore-rules cjs-resolves-to-esm
+          npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/tokens \
+            --exclude-entrypoints css css/dark css/dark-auto --ignore-rules cjs-resolves-to-esm
           # `internal-resolution-error` is expected: the declarations import `.svelte` files,
           # which only a Svelte-aware resolver can follow. The `bundler` column is the one that
           # matters for consumers, and it stays green.
-          npx --yes @arethetypeswrong/cli@latest --pack packages/svelte \
+          npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/svelte \
             --exclude-entrypoints styles.css \
             --ignore-rules cjs-resolves-to-esm internal-resolution-error

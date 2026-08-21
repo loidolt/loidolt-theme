@@ -4,12 +4,24 @@ import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
 import { axe } from 'vitest-axe';
 import Alert from '../src/lib/components/Alert.svelte';
+import AppShell from '../src/lib/components/AppShell.svelte';
 import Badge from '../src/lib/components/Badge.svelte';
+import Brand from '../src/lib/components/Brand.svelte';
 import Button from '../src/lib/components/Button.svelte';
 import Card from '../src/lib/components/Card.svelte';
 import Checkbox from '../src/lib/components/Checkbox.svelte';
+import ContextBar from '../src/lib/components/ContextBar.svelte';
 import Dialog from '../src/lib/components/Dialog.svelte';
+import DropdownMenu from '../src/lib/components/DropdownMenu.svelte';
 import IconButton from '../src/lib/components/IconButton.svelte';
+import Input from '../src/lib/components/Input.svelte';
+import Label from '../src/lib/components/Label.svelte';
+import PageHeader from '../src/lib/components/PageHeader.svelte';
+import Panel from '../src/lib/components/Panel.svelte';
+import Popover from '../src/lib/components/Popover.svelte';
+import Section from '../src/lib/components/Section.svelte';
+import Tabs from '../src/lib/components/Tabs.svelte';
+import Topbar from '../src/lib/components/Topbar.svelte';
 import NumberField from '../src/lib/components/NumberField.svelte';
 import Progress from '../src/lib/components/Progress.svelte';
 import RadioGroup from '../src/lib/components/RadioGroup.svelte';
@@ -28,12 +40,39 @@ import WorkspaceHarness from './fixtures/WorkspaceHarness.svelte';
 
 const text = (value: string) => createRawSnippet(() => ({ render: () => value }));
 
+/** Snippet whose markup uses the parameter Tabs passes to its panel. */
+const tabPanel = createRawSnippet<[{ value: string }]>((args) => ({
+  render: () => `<p>Panel ${args().value}</p>`,
+}));
+
 const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown>]> = [
   [
     'Alert',
     Alert,
     { title: 'Export ready', children: text('All checks passed.'), variant: 'success' },
   ],
+  ['Alert (body only)', Alert, { children: text('2 fields need attention.') }],
+  ['AppShell', AppShell, { children: text('<p>Content</p>') }],
+  ['Brand', Brand, { name: 'Loidolt', meta: 'Studio' }],
+  ['ContextBar', ContextBar, { section: 'Files', title: 'terrain.svg' }],
+  ['Input', Input, { 'aria-label': 'Project name' }],
+  ['Label', Label, { for: 'field-1', children: text('Project name') }],
+  ['PageHeader', PageHeader, { eyebrow: 'Projects', title: 'Terrain' }],
+  ['Panel', Panel, { title: 'Layers', children: text('<p>Contents</p>') }],
+  ['Section', Section, { title: 'Recent', children: text('<p>Contents</p>') }],
+  [
+    'Tabs',
+    Tabs,
+    {
+      label: 'Project views',
+      tabs: [
+        { value: 'design', label: 'Design' },
+        { value: 'proof', label: 'Proof' },
+      ],
+      children: tabPanel,
+    },
+  ],
+  ['Topbar', Topbar, { brand: text('<span>Loidolt</span>') }],
   ['Badge', Badge, { children: text('Ready'), variant: 'success' }],
   ['Button', Button, { children: text('Create project'), variant: 'primary' }],
   ['Card', Card, { title: 'Terrain project', children: text('Details'), headingLevel: 2 }],
@@ -101,6 +140,32 @@ describe('component accessibility', () => {
       footer: text('<button type="button">Confirm</button>'),
     });
     await user.click(view.getByRole('button', { name: 'Open export' }));
+    expect((await axe(document.body)).violations).toEqual([]);
+  });
+
+  it('has no violations while a dropdown menu is open', async () => {
+    const user = userEvent.setup();
+    const view = render(DropdownMenu, {
+      trigger: text('Actions'),
+      groupLabel: 'Project',
+      items: [
+        { value: 'rename', label: 'Rename', hint: '⌘R' },
+        { value: 'delete', label: 'Delete' },
+      ],
+    });
+    await user.click(view.getByRole('button', { name: 'Actions' }));
+    // Floating content stays visibility:hidden in jsdom; wait on text, not role-by-name.
+    await view.findByText('Rename');
+    expect((await axe(document.body)).violations).toEqual([]);
+  });
+
+  it('has no violations while a popover is open', async () => {
+    const user = userEvent.setup();
+    const view = render(Popover, {
+      trigger: text('Filters'),
+      children: text('<p>Filter options.</p>'),
+    });
+    await user.click(view.getByRole('button', { name: 'Filters' }));
     expect((await axe(document.body)).violations).toEqual([]);
   });
 });

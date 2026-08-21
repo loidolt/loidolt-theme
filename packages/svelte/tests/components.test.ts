@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
+import Badge from '../src/lib/components/Badge.svelte';
 import Button from '../src/lib/components/Button.svelte';
 import Dialog from '../src/lib/components/Dialog.svelte';
 import Progress from '../src/lib/components/Progress.svelte';
@@ -20,7 +21,8 @@ const stylesheet = (file: string) => path.join(process.cwd(), '..', 'styles', 's
 
 /** Every declaration block whose selector list mentions `selector`. */
 const rulesFor = (css: string, selector: string): string[] =>
-  [...css.matchAll(/([^{}]+)\{([^}]*)\}/g)]
+  // Comments are stripped first: one sitting above a rule otherwise lands in its selector capture.
+  [...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^}]*)\}/g)]
     .filter(([, selectors]) => selectors.split(',').some((one) => one.trim() === selector))
     .map(([, , body]) => body);
 
@@ -39,8 +41,25 @@ describe('Button', () => {
       loading: true,
       loadingText: 'Generating',
     });
+    // Loading must not use native `disabled`: that would drop keyboard focus to <body>
+    // mid-interaction. The control stays focusable, announces busy, and guards activation.
+    const button = screen.getByRole('button');
+    expect(button).not.toBeDisabled();
+    expect(button).toHaveAttribute('aria-disabled', 'true');
+    expect(button).toHaveAttribute('aria-busy', 'true');
+    await user.click(button);
+    expect(onclick).toHaveBeenCalledOnce();
+  });
+
+  it('uses native disabled for the explicit disabled state', async () => {
+    render(Button, { children: text('Generate'), disabled: true });
     expect(screen.getByRole('button')).toBeDisabled();
-    expect(screen.getByRole('button')).toHaveAttribute('aria-busy', 'true');
+  });
+
+  it('emits no modifier class for the default variant', () => {
+    render(Button, { children: text('Open') });
+    expect(screen.getByRole('button')).toHaveClass('ldt-button');
+    expect(screen.getByRole('button').className).not.toContain('ldt-button--default');
   });
 
   it('keeps the loading live region mounted so the message is announced', async () => {
@@ -213,6 +232,55 @@ describe('Workspace', () => {
     const workspace = screen.getByTestId('workspace');
     expect(workspace).toHaveClass('ldt-workspace--sidebar');
     expect(workspace).toHaveClass('ldt-workspace--inspector');
+  });
+});
+
+describe('Badge', () => {
+  it('stays a compact inline chip until a control size is asked for', () => {
+    const { container } = render(Badge, { children: text('Draft') });
+    expect(container.querySelector('.ldt-badge')?.className).toBe('ldt-badge');
+  });
+
+  it('takes a control size alongside its variant', () => {
+    const { container } = render(Badge, {
+      children: text('Live'),
+      variant: 'accent',
+      size: 'md',
+    });
+    const badge = container.querySelector('.ldt-badge');
+    expect(badge).toHaveClass('ldt-badge--accent', 'ldt-badge--md');
+  });
+
+  it('never looks pressable, at any size and without needing hover', () => {
+    // Matching the control height made badges read as buttons; these are the marks that
+    // separate them while the boxes stay aligned.
+    const css = readFileSync(stylesheet('components.css'), 'utf8');
+    const base = rulesFor(css, '.ldt-badge').join('\n');
+
+    expect(base).toContain('border-radius: var(--loidolt-border-radius-pill)');
+    expect(rulesFor(css, '.ldt-button').join('\n')).toContain(
+      'border-radius: var(--loidolt-border-radius)'
+    );
+    // Recessed rather than raised, and never the strong stroke that marks a control.
+    expect(base).toContain('background: var(--loidolt-surface-sunken)');
+    expect(base).not.toContain('--loidolt-border-strong');
+    // The label typographic voice, not the control one.
+    expect(base).toContain('letter-spacing: var(--loidolt-font-tracking-wide)');
+    // Badge type stays a step under button type: no size step may promote it.
+    for (const step of ['.ldt-badge--sm', '.ldt-badge--md', '.ldt-badge--lg']) {
+      expect(rulesFor(css, step).join('\n'), step).not.toContain('font-size');
+    }
+  });
+
+  it('sizes each step to the same track as the matching button', () => {
+    // A sized badge exists to sit in a row of controls, so its box has to match theirs.
+    const css = readFileSync(stylesheet('components.css'), 'utf8');
+    const heightOf = (selector: string) =>
+      /min-height:\s*([^;]+);/.exec(rulesFor(css, selector).join('\n'))?.[1].trim();
+
+    expect(heightOf('.ldt-badge--sm')).toBe(heightOf('.ldt-button--sm'));
+    expect(heightOf('.ldt-badge--md')).toBe(heightOf('.ldt-button'));
+    expect(heightOf('.ldt-badge--lg')).toBe(heightOf('.ldt-button--lg'));
   });
 });
 
