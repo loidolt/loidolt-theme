@@ -1,0 +1,129 @@
+.ldt-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+}
+.ldt-table :where(th, td) {
+  padding: 0.7rem 0.8rem;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+  text-align: left;
+}
+.ldt-table th {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
+}
+.ldt-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+/* Logical values: an `end`-aligned column follows the writing direction rather than pinning
+   itself to the right in RTL. */
+.ldt-table :where(th, td)[data-align='start'] {
+  text-align: start;
+}
+.ldt-table :where(th, td)[data-align='center'] {
+  text-align: center;
+}
+.ldt-table :where(th, td)[data-align='end'] {
+  text-align: end;
+}
+/*
+ * Sticky header. The scroll container has to be bounded or there is nothing to stick within —
+ * `--ldt-table-height` is that bound, and the wrapper switches to two-axis scrolling.
+ */
+.ldt-table-wrap--sticky {
+  max-height: var(--ldt-table-height, 24rem);
+  overflow: auto;
+}
+.ldt-table--sticky thead :where(th) {
+  position: sticky;
+  z-index: var(--loidolt-z-raised);
+  top: 0;
+  background: var(--loidolt-surface-alt);
+  /* `border-collapse: collapse` drops the borders of a sticky cell — the collapsed edge belongs
+     to the table, which scrolls away. An inset shadow is painted by the cell itself and stays. */
+  border-bottom: 0;
+  box-shadow: inset 0 -1px 0 var(--loidolt-border);
+}
+.ldt-table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.ldt-table__sort:hover {
+  color: var(--loidolt-text);
+}
+/* A CSS triangle rather than a glyph: no icon dependency, and nothing that can fall back to
+   tofu in a font that lacks the arrow. */
+.ldt-table__sort-indicator {
+  width: 0;
+  height: 0;
+  border-inline: 0.3rem solid transparent;
+  border-bottom: 0.34rem solid currentColor;
+  opacity: 0;
+}
+.ldt-table__sort:hover .ldt-table__sort-indicator {
+  opacity: 0.4;
+}
+.ldt-table__sort[data-sort='ascending'] .ldt-table__sort-indicator,
+.ldt-table__sort[data-sort='descending'] .ldt-table__sort-indicator {
+  opacity: 1;
+}
+.ldt-table__sort[data-sort='descending'] .ldt-table__sort-indicator {
+  transform: rotate(180deg);
+}
+.ldt-table__empty td {
+  padding: 0;
+  border-bottom: 0;
+}
+/* Inside a table the surrounding rule is already the boundary; a second dashed one reads as a
+   rendering fault. */
+.ldt-table__empty .ldt-empty-state {
+  border: 0;
+}
+.ldt-empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: var(--loidolt-space-10) var(--loidolt-space-6);
+  border: var(--loidolt-border-width) dashed var(--loidolt-border);
+  color: var(--loidolt-text-muted);
+  background: var(--loidolt-surface);
+  text-align: center;
+}
+.ldt-empty-state__icon {
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-xl);
+  line-height: 1;
+}
+.ldt-empty-state__title {
+  margin: 0;
+  color: var(--loidolt-text);
+  font-size: var(--loidolt-font-size-md);
+}
+.ldt-empty-state__description {
+  max-width: 42rem;
+  margin: 0;
+}
+.ldt-empty-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--loidolt-space-2);
+  margin-top: var(--loidolt-space-2);
+}

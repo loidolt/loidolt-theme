@@ -19,6 +19,8 @@
     "deploy:docs": "npm run build:packages && npm run deploy -w @loidolt/theme-catalog",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run build && playwright test",
+    "audit": "npm audit --audit-level=moderate",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

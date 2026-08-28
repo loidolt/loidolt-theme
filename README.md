@@ -217,6 +217,9 @@ export const theme = createTheme();
 <button onclick={theme.toggle}>{theme.resolved === 'dark' ? 'Light' : 'Dark'} mode</button>
 ```
 
+`ThemeToggle` is a single icon button that cycles light, dark, then system. Its accessible name
+and native tooltip report the active preference; set `showSystem={false}` for a two-scheme cycle.
+
 The **resolved** scheme is always written out, even while the preference is `system`, so one
 store drives both `/dark` and `/dark-auto`: an explicit `data-theme="light"` is exactly what
 `dark-auto` needs to see when a user overrides a dark system.
@@ -389,6 +392,9 @@ consumer-supplied through snippets, so the theme does not impose an icon library
 
 `ToastViewport` is the single live region — `Toast` deliberately carries no `role="status"`, so
 nothing is announced twice.
+
+Component-scoped toaster instances release their timers automatically. A module-scoped singleton
+must call `toaster.destroy()` when its application lifetime ends.
 
 ### Tooltips
 

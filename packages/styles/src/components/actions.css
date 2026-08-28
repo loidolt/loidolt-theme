@@ -1,0 +1,107 @@
+/* Deep slice: assumes the token custom properties are already loaded.
+   Import '@loidolt/theme-styles/tokens' (or the whole '@loidolt/theme-styles') first. */
+.ldt-button {
+  min-height: var(--loidolt-size-control);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--loidolt-space-2);
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  border-radius: var(--loidolt-border-radius);
+  padding: 0.5rem 0.85rem;
+  color: var(--loidolt-text);
+  background: transparent;
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ldt-button:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+}
+.ldt-button--primary {
+  color: var(--loidolt-on-accent);
+  border-color: var(--loidolt-accent);
+  background: var(--loidolt-accent);
+}
+.ldt-button--primary:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-on-accent);
+  border-color: var(--loidolt-accent-hover);
+  background: var(--loidolt-accent-hover);
+}
+.ldt-button--quiet {
+  color: var(--loidolt-text-muted);
+  border-color: var(--loidolt-border);
+}
+.ldt-button--danger {
+  color: var(--loidolt-on-danger);
+  border-color: var(--loidolt-danger);
+  background: var(--loidolt-danger);
+}
+/* Without this, the base hover would flip a destructive button to the neutral inverse
+   surface — the danger affordance must survive hover. */
+.ldt-button--danger:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-on-danger);
+  border-color: var(--loidolt-danger-hover);
+  background: var(--loidolt-danger-hover);
+}
+.ldt-button--ghost,
+.ldt-button--text {
+  border-color: transparent;
+  background: transparent;
+}
+.ldt-button--text {
+  /* 1.5rem is the WCAG 2.2 minimum target size; `auto` left this at ~22px. */
+  min-height: 1.5rem;
+  padding: 0.25rem;
+  color: var(--loidolt-text-muted);
+}
+.ldt-button--text:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-text-accent);
+  background: transparent;
+}
+.ldt-button--sm {
+  min-height: var(--loidolt-size-control-sm);
+  padding: 0.38rem 0.65rem;
+  font-size: var(--loidolt-font-size-xs);
+}
+.ldt-button--lg {
+  min-height: var(--loidolt-size-control-lg);
+  padding-inline: 1.2rem;
+}
+.ldt-button:disabled,
+.ldt-button[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ldt-icon-button {
+  width: var(--loidolt-size-control);
+  min-width: var(--loidolt-size-control);
+  padding: 0;
+}
+.ldt-icon-button.ldt-button--sm {
+  width: var(--loidolt-size-control-sm);
+  min-width: var(--loidolt-size-control-sm);
+  padding: 0;
+}
+.ldt-icon-button.ldt-button--lg {
+  width: var(--loidolt-size-control-lg);
+  min-width: var(--loidolt-size-control-lg);
+  padding: 0;
+}
+.ldt-spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ldt-spin 0.7s linear infinite;
+}
+@keyframes ldt-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

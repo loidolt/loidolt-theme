@@ -1,0 +1,111 @@
+.ldt-card,
+.ldt-panel {
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+}
+.ldt-card__header,
+.ldt-card__content,
+.ldt-card__footer,
+.ldt-panel__header,
+.ldt-panel__content,
+.ldt-panel__footer {
+  padding: var(--loidolt-space-4);
+}
+.ldt-card__header,
+.ldt-panel__header {
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+}
+.ldt-card__footer,
+.ldt-panel__footer {
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+}
+.ldt-card__title,
+.ldt-panel__title {
+  margin: 0;
+  font-size: var(--loidolt-font-size-lg);
+}
+.ldt-card__description {
+  margin: 0.35rem 0 0;
+  color: var(--loidolt-text-muted);
+  font-family: var(--loidolt-font-utility);
+  font-size: var(--loidolt-font-size-sm);
+}
+/*
+ * A badge reports state; it is never pressable. Standing at control height it would otherwise be
+ * indistinguishable from a button, so three things separate them, none of which depend on hover:
+ * the pill silhouette against the system's hard corners, the recessed fill instead of a raised
+ * one, and text that stays a step smaller than button text at every size.
+ */
+.ldt-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.4rem;
+  padding: 0.15rem 0.5rem;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-radius: var(--loidolt-border-radius-pill);
+  color: var(--loidolt-text-muted);
+  background: var(--loidolt-surface-sunken);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  /* The label voice (`.ldt-eyebrow`, `.ldt-field__label`), not the tighter control voice. */
+  letter-spacing: var(--loidolt-font-tracking-wide);
+  text-transform: uppercase;
+}
+/*
+ * Size steps take the button scale's *box* so a badge in a row of controls lines up with them,
+ * but not its type scale — the smaller text is part of what marks the badge as inert. Without a
+ * size class the badge keeps its compact inline metrics, which is what table cells and running
+ * copy want.
+ */
+.ldt-badge--sm {
+  min-height: var(--loidolt-size-control-sm);
+  padding: 0.38rem 0.7rem;
+  line-height: 1;
+}
+.ldt-badge--md {
+  min-height: var(--loidolt-size-control);
+  padding: 0.5rem 0.9rem;
+  line-height: 1;
+}
+.ldt-badge--lg {
+  min-height: var(--loidolt-size-control-lg);
+  padding: 0.5rem 1.25rem;
+  line-height: 1;
+}
+.ldt-badge--accent {
+  color: var(--loidolt-on-accent);
+  border-color: var(--loidolt-accent);
+  background: var(--loidolt-accent);
+}
+.ldt-badge--success {
+  color: var(--loidolt-on-success);
+  border-color: var(--loidolt-success);
+  background: var(--loidolt-success);
+}
+.ldt-badge--warning {
+  color: var(--loidolt-on-warning);
+  border-color: var(--loidolt-warning);
+  background: var(--loidolt-warning);
+}
+.ldt-badge--error {
+  color: var(--loidolt-on-danger);
+  border-color: var(--loidolt-danger);
+  background: var(--loidolt-danger);
+}
+.ldt-badge--info {
+  color: var(--loidolt-on-info);
+  border-color: var(--loidolt-info);
+  background: var(--loidolt-info);
+}
+.ldt-separator {
+  width: 100%;
+  height: var(--loidolt-border-width);
+  border: 0;
+  background: var(--loidolt-border);
+}
+.ldt-separator--vertical {
+  width: var(--loidolt-border-width);
+  height: auto;
+  min-height: 1em;
+  align-self: stretch;
+}

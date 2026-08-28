@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
@@ -12,12 +12,22 @@ import Separator from '../src/lib/components/Separator.svelte';
 import Switch from '../src/lib/components/Switch.svelte';
 import Table from '../src/lib/components/Table.svelte';
 import Toast from '../src/lib/components/Toast.svelte';
+import SwitchFormHarness from './fixtures/SwitchFormHarness.svelte';
 import WorkspaceHarness from './fixtures/WorkspaceHarness.svelte';
 
 const text = (value: string) => createRawSnippet(() => ({ render: () => value }));
 
 /** Sibling package's source, resolved from the package root Vitest runs in. */
 const stylesheet = (file: string) => path.join(process.cwd(), '..', 'styles', 'src', file);
+
+const componentStyles = () => {
+  const directory = stylesheet('components');
+  return readdirSync(directory)
+    .filter((file) => file.endsWith('.css'))
+    .sort()
+    .map((file) => readFileSync(path.join(directory, file), 'utf8'))
+    .join('\n');
+};
 
 /** Every declaration block whose selector list mentions `selector`. */
 const rulesFor = (css: string, selector: string): string[] =>
@@ -115,6 +125,16 @@ describe('Switch', () => {
     const hidden = container.querySelector('input[name="preview"]');
     expect(hidden).toBeInTheDocument();
     expect(hidden).toBeChecked();
+  });
+  it('restores its initial state when its form resets', async () => {
+    const user = userEvent.setup();
+    const { container } = render(SwitchFormHarness);
+    const control = screen.getByRole('switch', { name: 'Live preview' });
+    await user.click(control);
+    expect(control).toHaveAttribute('aria-checked', 'false');
+    await user.click(screen.getByRole('button', { name: 'Reset' }));
+    expect(control).toHaveAttribute('aria-checked', 'true');
+    expect(container.querySelector('input[name="preview"]')).toBeChecked();
   });
 });
 
@@ -254,7 +274,7 @@ describe('Badge', () => {
   it('never looks pressable, at any size and without needing hover', () => {
     // Matching the control height made badges read as buttons; these are the marks that
     // separate them while the boxes stay aligned.
-    const css = readFileSync(stylesheet('components.css'), 'utf8');
+    const css = componentStyles();
     const base = rulesFor(css, '.ldt-badge').join('\n');
 
     expect(base).toContain('border-radius: var(--loidolt-border-radius-pill)');
@@ -274,7 +294,7 @@ describe('Badge', () => {
 
   it('sizes each step to the same track as the matching button', () => {
     // A sized badge exists to sit in a row of controls, so its box has to match theirs.
-    const css = readFileSync(stylesheet('components.css'), 'utf8');
+    const css = componentStyles();
     const heightOf = (selector: string) =>
       /min-height:\s*([^;]+);/.exec(rulesFor(css, selector).join('\n'))?.[1].trim();
 
@@ -288,7 +308,7 @@ describe('layout robustness', () => {
   // jsdom has no layout engine, so these assert the *rules* that produced the geometry bugs
   // rather than measuring boxes. Each one maps to a defect found by the browser audit.
   // `import.meta.url` is rewritten to a non-`file:` URL under the jsdom environment.
-  const styles = () => readFileSync(stylesheet('components.css'), 'utf8');
+  const styles = () => componentStyles();
 
   it('caps the app shell grid at the container width', () => {
     // An implicit, content-sized column let a wide topbar stretch the whole page.
@@ -334,7 +354,7 @@ describe('layout robustness', () => {
 
 describe('focus indication', () => {
   const a11y = () => readFileSync(stylesheet('accessibility.css'), 'utf8');
-  const components = () => readFileSync(stylesheet('components.css'), 'utf8');
+  const components = () => componentStyles();
 
   it('never suppresses the ring from a component rule', () => {
     // `.ldt-input:focus { outline: 0 }` used to beat the shared `:focus-visible` rule.

@@ -208,16 +208,28 @@ export function themeScript(options: ThemeScriptOptions = {}): string {
     tag = false,
   } = options;
 
-  // JSON.stringify keeps a caller-supplied key or attribute from breaking out of its literal.
-  const key = JSON.stringify(storageKey);
-  const attr = JSON.stringify(attribute);
-  const fallback = JSON.stringify(defaultPreference);
-  const scheme = JSON.stringify(defaultScheme);
+  // JSON string escaping alone leaves `<` intact, including a literal `</script>` that would end
+  // an inline script element. Escaping HTML-significant characters and the two JavaScript line
+  // separators keeps every option inside its string literal in both source-only and tagged forms.
+  const serialize = (value: string | null) =>
+    JSON.stringify(value)
+      .replaceAll('<', '\\u003c')
+      .replaceAll('>', '\\u003e')
+      .replaceAll('&', '\\u0026')
+      .replaceAll('\u2028', '\\u2028')
+      .replaceAll('\u2029', '\\u2029');
+
+  const key = serialize(storageKey);
+  const attr = serialize(attribute);
+  const fallback = serialize(defaultPreference);
+  const scheme = serialize(defaultScheme);
 
   const source =
     `(function(){try{` +
-    `var p=${key}===null?null:localStorage.getItem(${key});` +
-    `if(p!=="light"&&p!=="dark"&&p!=="system")p=${fallback};` +
+    `var p=${fallback};` +
+    // Storage failure must not skip system resolution and attribute application.
+    `try{var v=${key}===null?null:localStorage.getItem(${key});` +
+    `if(v==="light"||v==="dark"||v==="system")p=v;}catch(e){}` +
     `var s=${scheme};` +
     `if(typeof matchMedia==="function")s=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";` +
     `document.documentElement.setAttribute(${attr},p==="system"?s:p);` +

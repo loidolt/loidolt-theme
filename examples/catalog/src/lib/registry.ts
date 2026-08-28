@@ -410,9 +410,10 @@ export const entries: Entry[] = [
     slug: 'theme-toggle',
     name: 'ThemeToggle',
     group: 'Theme',
-    summary: 'The light / dark / system picker, wired to `createTheme()`.',
+    summary: 'A compact icon button that cycles light / dark / system, wired to `createTheme()`.',
     notes: [
-      'Keep the system option unless you have a reason not to: without it, a user who has not chosen is locked to whichever scheme they landed on.',
+      'The icon and accessible name show the active preference; each press advances to the next one.',
+      'Keep system in the cycle unless you have a reason not to: it lets the theme continue following the device preference.',
     ],
   },
 ];

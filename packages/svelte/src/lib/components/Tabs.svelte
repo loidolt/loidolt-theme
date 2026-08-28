@@ -44,6 +44,16 @@
   const active = $derived(
     value !== undefined && tabs.some((tab) => tab.value === value) ? value : tabs[0]?.value
   );
+
+  // Keep the public binding honest when a dynamic collection removes the selected tab. Effects
+  // do not run during SSR, so the server render remains side-effect free while the client and its
+  // parent converge on the fallback that is already being displayed.
+  $effect(() => {
+    if (active !== undefined && value !== active) {
+      value = active;
+      onValueChange?.(active);
+    }
+  });
 </script>
 
 <TabsPrimitive.Root

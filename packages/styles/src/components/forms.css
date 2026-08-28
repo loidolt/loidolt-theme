@@ -1,0 +1,157 @@
+.ldt-field {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.ldt-label,
+.ldt-field__label,
+.ldt-legend {
+  display: flex;
+  justify-content: space-between;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
+}
+.ldt-field__description {
+  margin: 0;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) / 1.5 var(--loidolt-font-utility);
+}
+.ldt-field__error {
+  margin: 0;
+  /* Status *as text on a surface* — not the fill role, which is tuned for `on-danger` ink. */
+  color: var(--loidolt-text-danger);
+  font: var(--loidolt-font-size-xs) / 1.5 var(--loidolt-font-utility);
+}
+.ldt-input,
+.ldt-select,
+.ldt-textarea,
+.ldt-number-field__input {
+  width: 100%;
+  min-height: var(--loidolt-size-control);
+  border: 0;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  border-radius: 0;
+  padding: 0.45rem 0.15rem;
+  color: var(--loidolt-text);
+  background: transparent;
+}
+.ldt-input--boxed,
+.ldt-select--boxed,
+.ldt-textarea--boxed,
+.ldt-number-field--boxed {
+  border: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  padding-inline: 0.65rem;
+  background: var(--loidolt-surface-input);
+}
+/* The focus ring itself comes from the `loidolt.a11y` layer; this only tints the border. */
+.ldt-input:focus-visible,
+.ldt-select:focus-visible,
+.ldt-textarea:focus-visible,
+.ldt-number-field__input:focus-visible {
+  border-color: var(--loidolt-accent);
+}
+.ldt-input[aria-invalid='true'],
+.ldt-select[aria-invalid='true'],
+.ldt-textarea[aria-invalid='true'] {
+  border-color: var(--loidolt-danger);
+}
+.ldt-textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+.ldt-choice {
+  /* The label is the pointer target for the input it wraps, so it carries the 24px minimum. */
+  min-height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.06em;
+}
+.ldt-choice input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--loidolt-accent);
+}
+.ldt-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+/* A legend is shrink-to-fit by default, which collapses the space-between that pushes the
+   "optional" marker to the far end. */
+.ldt-legend {
+  width: 100%;
+}
+.ldt-fieldset__body {
+  display: grid;
+  gap: var(--ldt-gap, var(--loidolt-space-3));
+  margin-top: 0.35rem;
+}
+.ldt-fieldset > :where(.ldt-field__description, .ldt-field__error) {
+  margin-top: 0.35rem;
+}
+.ldt-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+.ldt-radio-group--vertical {
+  flex-direction: column;
+}
+.ldt-switch {
+  min-height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+.ldt-switch__track {
+  width: 2.4rem;
+  height: 1.25rem;
+  padding: 2px;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  background: var(--loidolt-surface-alt);
+}
+.ldt-switch__thumb {
+  display: block;
+  width: 0.9rem;
+  height: 0.9rem;
+  background: var(--loidolt-text-muted);
+  transition: transform var(--loidolt-motion-fast) var(--loidolt-motion-easing);
+}
+.ldt-switch[aria-checked='true'] .ldt-switch__track {
+  border-color: var(--loidolt-accent);
+  background: var(--loidolt-accent);
+}
+.ldt-switch[aria-checked='true'] .ldt-switch__thumb {
+  background: var(--loidolt-on-accent);
+  transform: translateX(1.1rem);
+}
+.ldt-number-field {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) 2rem;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-control);
+}
+.ldt-number-field .ldt-number-field__input {
+  border: 0;
+  text-align: center;
+}
+.ldt-number-field__button {
+  border: 0;
+  background: transparent;
+}
+.ldt-number-field__button:hover:not(:disabled, [aria-disabled='true']) {
+  color: var(--loidolt-text-accent);
+  background: var(--loidolt-surface-input);
+}
+.ldt-number-field__button[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

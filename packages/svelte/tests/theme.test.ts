@@ -202,7 +202,7 @@ describe('createTheme', () => {
 
 describe('themeScript', () => {
   /** Runs the generated source against a stub document, the way a head script would. */
-  function run(source: string, stored: string | null, prefersDark: boolean) {
+  function run(source: string, stored: string | null | Error, prefersDark: boolean) {
     const set = vi.fn();
     const fn = new Function('localStorage', 'matchMedia', 'document', `${source};`) as (
       storage: { getItem: (key: string) => string | null },
@@ -211,7 +211,14 @@ describe('themeScript', () => {
     ) => void;
 
     fn(
-      { getItem: () => stored },
+      {
+        getItem: () =>
+          stored instanceof Error
+            ? (() => {
+                throw stored;
+              })()
+            : stored,
+      },
       prefersDark === undefined ? undefined : () => ({ matches: prefersDark }),
       { documentElement: { setAttribute: set } }
     );
@@ -238,9 +245,21 @@ describe('themeScript', () => {
     expect(run(source, null, false)).toHaveBeenCalledWith('data-mode', 'dark');
   });
 
+  it('still applies the fallback when storage throws', () => {
+    expect(run(themeScript(), new Error('blocked'), true)).toHaveBeenCalledWith(
+      'data-theme',
+      'dark'
+    );
+  });
+
   it('contains no `<`, so it needs no escaping inside a script element', () => {
     expect(themeScript()).not.toContain('<');
     expect(themeScript({ tag: true })).toMatch(/^<script>.*<\/script>$/s);
+  });
+  it('escapes caller strings that could end an inline script', () => {
+    const source = themeScript({ storageKey: '</script><script>globalThis.pwned=1</script>' });
+    expect(source).not.toContain('<');
+    expect(source).toContain('\\u003c/script\\u003e');
   });
 });
 

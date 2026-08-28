@@ -1,27 +1,22 @@
 <script lang="ts">
-  import type { HTMLAttributes } from 'svelte/elements';
-  import type { ControlSize, Option } from '../types.js';
+  import type { HTMLButtonAttributes } from 'svelte/elements';
+  import type { ControlSize } from '../types.js';
   import type { Theme, ThemePreference } from '../theme.svelte.js';
-  import ToggleGroup from './ToggleGroup.svelte';
+  import { cx } from '../utils.js';
 
-  interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+  interface Props extends Omit<HTMLButtonAttributes, 'children' | 'aria-label'> {
     /** The store from `createTheme()`. */
     theme: Theme;
-    /** Narrowed from the DOM attribute: the group this spreads onto rejects `null`. */
-    id?: string;
-    /** Accessible name of the group. */
+    /** Accessible name for the preference represented by the icon. */
     label?: string;
     lightLabel?: string;
     darkLabel?: string;
     systemLabel?: string;
-    /**
-     * Offers "system" alongside the two schemes. Worth keeping: without it a user who has not
-     * chosen is silently locked to whichever scheme they happened to land on.
-     */
+    /** Include "system" in the cycle. */
     showSystem?: boolean;
     size?: ControlSize;
     class?: string;
-    ref?: HTMLDivElement | null;
+    ref?: HTMLButtonElement | null;
   }
 
   let {
@@ -33,30 +28,106 @@
     showSystem = true,
     size = 'sm',
     class: className,
+    disabled = false,
+    type = 'button',
+    title,
+    onclick,
     ref = $bindable(null),
     ...rest
   }: Props = $props();
 
-  const options = $derived<Option<ThemePreference>[]>([
-    { value: 'light', label: lightLabel },
-    { value: 'dark', label: darkLabel },
-    ...(showSystem ? [{ value: 'system' as const, label: systemLabel }] : []),
-  ]);
+  const preferences = $derived<ThemePreference[]>(
+    showSystem ? ['light', 'dark', 'system'] : ['light', 'dark']
+  );
+
+  // If the system option is hidden, represent the scheme that is actually showing and toggle
+  // away from it on the first press.
+  const activePreference = $derived<ThemePreference>(
+    !showSystem && theme.preference === 'system' ? theme.resolved : theme.preference
+  );
+  const currentIndex = $derived(preferences.indexOf(activePreference));
+  const nextPreference = $derived(preferences[(currentIndex + 1) % preferences.length]);
+
+  const preferenceLabel = (preference: ThemePreference) => {
+    if (preference === 'light') return lightLabel;
+    if (preference === 'dark') return darkLabel;
+    return systemLabel;
+  };
+
+  const currentLabel = $derived(preferenceLabel(activePreference));
+  const nextLabel = $derived(preferenceLabel(nextPreference));
+  const buttonLabel = $derived(`${label}: ${currentLabel}`);
+  const buttonTitle = $derived(title ?? `${buttonLabel} → ${nextLabel}`);
 </script>
 
-<!--
-  A segmented scheme picker wired to `createTheme()`. Pressing the pressed option is ignored: a
-  toggle group deselects on a second press, and "no colour scheme" is not a state a page can be in.
--->
-<ToggleGroup
-  bind:ref
-  {options}
-  {label}
-  {size}
-  value={theme.preference}
-  onValueChange={(next) => {
-    if (next) theme.preference = next as ThemePreference;
+<!-- A native button gives the three-state cycle standard keyboard behavior in one compact target. -->
+<button
+  bind:this={ref}
+  {type}
+  {disabled}
+  aria-label={buttonLabel}
+  title={buttonTitle}
+  class={cx(
+    'ldt-button ldt-icon-button ldt-button--ghost',
+    size !== 'md' && `ldt-button--${size}`,
+    className
+  )}
+  data-theme-preference={activePreference}
+  onclick={(event) => {
+    theme.preference = nextPreference;
+    onclick?.(event);
   }}
-  class={className}
   {...rest}
-/>
+>
+  {#if activePreference === 'light'}
+    <svg
+      data-theme-icon="light"
+      aria-hidden="true"
+      focusable="false"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="square"
+    >
+      <circle cx="12" cy="12" r="3.5" />
+      <path
+        d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"
+      />
+    </svg>
+  {:else if activePreference === 'dark'}
+    <svg
+      data-theme-icon="dark"
+      aria-hidden="true"
+      focusable="false"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linejoin="miter"
+    >
+      <path d="M20.4 15.4A8.5 8.5 0 0 1 8.6 3.6 8.5 8.5 0 1 0 20.4 15.4Z" />
+    </svg>
+  {:else}
+    <svg
+      data-theme-icon="system"
+      aria-hidden="true"
+      focusable="false"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="square"
+      stroke-linejoin="miter"
+    >
+      <rect x="3" y="4" width="18" height="13" />
+      <path d="M9 21h6M12 17v4" />
+    </svg>
+  {/if}
+</button>

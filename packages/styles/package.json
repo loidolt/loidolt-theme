@@ -24,9 +24,6 @@
   "sideEffects": [
     "**/*.css"
   ],
-  "engines": {
-    "node": ">=22"
-  },
   "scripts": {
     "build": "node -e \"console.log('theme-styles: source CSS is publish-ready')\""
   },

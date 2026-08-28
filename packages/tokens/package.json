@@ -23,9 +23,6 @@
   "sideEffects": [
     "**/*.css"
   ],
-  "engines": {
-    "node": ">=22"
-  },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean && node scripts/generate-css.mjs",
     "prepack": "npm run build",

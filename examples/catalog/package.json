@@ -8,6 +8,7 @@
     "dev": "npm run props && vite --host 0.0.0.0",
     "build": "npm run props && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && vite build",
     "typecheck": "npm run props && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "test": "npm run props && node scripts/check-integrity.mjs",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler deploy"
   },

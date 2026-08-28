@@ -1,3 +1,4 @@
+import { onDestroy } from 'svelte';
 import type { StatusVariant } from './types.js';
 
 export interface ToastOptions {
@@ -30,6 +31,8 @@ export interface Toaster {
   pause(): void;
   /** Resumes with the time each toast had left — call on pointer leave / focus out. */
   resume(): void;
+  /** Clears the queue and every timer. Automatic for a component-scoped instance. */
+  destroy(): void;
 }
 
 /**
@@ -47,6 +50,15 @@ export interface Toaster {
  */
 export function createToaster(options: ToasterOptions = {}): Toaster {
   const { duration: defaultDuration = 5000, max = 5 } = options;
+
+  if (!Number.isInteger(max) || max < 1) {
+    throw new RangeError('createToaster: `max` must be a positive integer');
+  }
+  const validDuration = (duration: number) =>
+    duration === Infinity || (Number.isFinite(duration) && duration >= 0);
+  if (!validDuration(defaultDuration)) {
+    throw new RangeError('createToaster: `duration` must be non-negative or Infinity');
+  }
 
   const toasts = $state<ToastRecord[]>([]);
   // Plain Map on purpose: these are timer handles, not UI state, and nothing renders from them.
@@ -83,14 +95,33 @@ export function createToaster(options: ToasterOptions = {}): Toaster {
   }
 
   function push(toast: ToastOptions): string {
+    const duration = toast.duration ?? defaultDuration;
+    if (!validDuration(duration)) {
+      throw new RangeError('createToaster: toast `duration` must be non-negative or Infinity');
+    }
     const id = `ldt-toast-${++counter}`;
     toasts.push({ ...toast, id });
     while (toasts.length > max) dismiss(toasts[0].id);
-    if (!paused) arm(id, toast.duration ?? defaultDuration);
+    if (!paused) arm(id, duration);
     else {
-      timers.set(id, { timeout: null, remaining: toast.duration ?? defaultDuration, startedAt: 0 });
+      timers.set(id, { timeout: null, remaining: duration, startedAt: 0 });
     }
     return id;
+  }
+
+  const destroy = () => {
+    for (const timer of timers.values()) {
+      if (timer.timeout !== null) clearTimeout(timer.timeout);
+    }
+    timers.clear();
+    toasts.splice(0);
+    paused = false;
+  };
+
+  try {
+    onDestroy(destroy);
+  } catch {
+    /* module scope: the caller owns `destroy()` */
   }
 
   return {
@@ -126,5 +157,6 @@ export function createToaster(options: ToasterOptions = {}): Toaster {
         arm(id, timer.remaining);
       }
     },
+    destroy,
   };
 }

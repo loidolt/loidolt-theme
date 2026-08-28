@@ -1,0 +1,276 @@
+.ldt-overlay {
+  position: fixed;
+  z-index: var(--loidolt-z-overlay);
+  inset: 0;
+  background: var(--loidolt-scrim);
+}
+.ldt-dialog {
+  position: fixed;
+  z-index: var(--loidolt-z-dialog);
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: min(var(--ldt-dialog-width, 34rem), calc(100vw - 2rem));
+  max-height: min(48rem, calc(100dvh - 2rem));
+  overflow: hidden;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-modal);
+  transform: translate(-50%, -50%);
+}
+.ldt-dialog--sm {
+  --ldt-dialog-width: 24rem;
+}
+.ldt-dialog--md {
+  --ldt-dialog-width: 34rem;
+}
+.ldt-dialog--lg {
+  --ldt-dialog-width: 46rem;
+}
+.ldt-dialog--xl {
+  --ldt-dialog-width: 60rem;
+}
+.ldt-dialog__header,
+.ldt-dialog__body,
+.ldt-dialog__footer {
+  padding: 1rem 1.25rem;
+}
+.ldt-dialog__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-dialog__body {
+  overflow-y: auto;
+}
+.ldt-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-dialog__title {
+  margin: 0;
+  font-size: var(--loidolt-font-size-lg);
+}
+.ldt-dialog__description {
+  margin: 0.25rem 0 0;
+  color: var(--loidolt-text-muted);
+}
+/*
+ * Drawer: a dialog anchored to an edge. `--ldt-drawer-size` is the measure across that edge —
+ * width for left/right, height for top/bottom — always capped so the scrim stays reachable and
+ * the panel never becomes a full-screen trap with no visible way out.
+ */
+.ldt-drawer {
+  position: fixed;
+  z-index: var(--loidolt-z-dialog);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 0 solid var(--loidolt-border-strong);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-modal);
+}
+.ldt-drawer--left,
+.ldt-drawer--right {
+  inset-block: 0;
+  width: min(var(--ldt-drawer-size, 20rem), calc(100vw - 3rem));
+}
+.ldt-drawer--left {
+  left: 0;
+  border-right-width: var(--loidolt-border-width);
+  animation: ldt-drawer-in-left var(--loidolt-motion-slow) var(--loidolt-motion-easing);
+}
+.ldt-drawer--right {
+  right: 0;
+  border-left-width: var(--loidolt-border-width);
+  animation: ldt-drawer-in-right var(--loidolt-motion-slow) var(--loidolt-motion-easing);
+}
+.ldt-drawer--top,
+.ldt-drawer--bottom {
+  inset-inline: 0;
+  height: min(var(--ldt-drawer-size, 20rem), calc(100dvh - 3rem));
+}
+.ldt-drawer--top {
+  top: 0;
+  border-bottom-width: var(--loidolt-border-width);
+  animation: ldt-drawer-in-top var(--loidolt-motion-slow) var(--loidolt-motion-easing);
+}
+.ldt-drawer--bottom {
+  bottom: 0;
+  border-top-width: var(--loidolt-border-width);
+  animation: ldt-drawer-in-bottom var(--loidolt-motion-slow) var(--loidolt-motion-easing);
+}
+@keyframes ldt-drawer-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes ldt-drawer-in-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes ldt-drawer-in-top {
+  from {
+    transform: translateY(-100%);
+  }
+}
+@keyframes ldt-drawer-in-bottom {
+  from {
+    transform: translateY(100%);
+  }
+}
+.ldt-drawer__header,
+.ldt-drawer__body,
+.ldt-drawer__footer {
+  padding: 1rem 1.25rem;
+}
+.ldt-drawer__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-drawer__body {
+  overflow-y: auto;
+}
+.ldt-drawer__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-drawer__title {
+  margin: 0;
+  font-size: var(--loidolt-font-size-lg);
+}
+.ldt-drawer__description {
+  margin: 0.25rem 0 0;
+  color: var(--loidolt-text-muted);
+}
+.ldt-popover,
+.ldt-menu {
+  z-index: var(--loidolt-z-menu);
+  min-width: 13rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0.45rem;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-popover);
+}
+.ldt-menu {
+  display: grid;
+  gap: 0.1rem;
+}
+.ldt-menu__label {
+  padding: 0.45rem 0.55rem 0.3rem;
+  color: var(--loidolt-text-accent);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.ldt-menu__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 0;
+  padding: 0.65rem 0.55rem;
+  color: var(--loidolt-text);
+  background: transparent;
+  text-align: left;
+  text-decoration: none;
+}
+.ldt-menu__item:hover:not(:disabled, [data-disabled]),
+.ldt-menu__item[data-highlighted] {
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+}
+/* Exposed to assistive tech (no aria-hidden): a shortcut nobody can hear may as well
+   not exist. Muted normally; inherits the inverse ink while highlighted. */
+.ldt-menu__hint {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: 0.08em;
+}
+.ldt-menu__item:hover:not(:disabled, [data-disabled]) .ldt-menu__hint,
+.ldt-menu__item[data-highlighted] .ldt-menu__hint {
+  color: inherit;
+}
+.ldt-menu__item[data-disabled],
+.ldt-menu__item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ldt-menu__separator {
+  height: var(--loidolt-border-width);
+  margin: 0.25rem 0;
+  border: 0;
+  background: var(--loidolt-border-soft);
+}
+.ldt-tooltip {
+  z-index: var(--loidolt-z-tooltip);
+  max-width: 18rem;
+  padding: 0.4rem 0.55rem;
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  box-shadow: var(--loidolt-shadow-popover);
+}
+/*
+ * Bits UI stamps `data-orientation` on the root, list, triggers and panels, so the vertical
+ * layout keys off that rather than needing a second class.
+ */
+.ldt-tabs[data-orientation='vertical'] {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--loidolt-space-4);
+}
+.ldt-tabs__list {
+  display: flex;
+  gap: 2px;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-tabs__list[data-orientation='vertical'] {
+  flex-direction: column;
+  align-items: stretch;
+  border-bottom: 0;
+  border-right: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-tabs__trigger {
+  min-height: var(--loidolt-size-control);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 0 0.85rem;
+  color: var(--loidolt-text-muted);
+  background: transparent;
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ldt-tabs__trigger[data-orientation='vertical'] {
+  border-bottom: 0;
+  border-right: 2px solid transparent;
+  padding: 0 0.85rem;
+  text-align: left;
+}
+.ldt-tabs__trigger[data-state='active'],
+.ldt-tabs__trigger[aria-selected='true'] {
+  color: var(--loidolt-text);
+  border-color: var(--loidolt-accent);
+}
+.ldt-tabs__content[data-orientation='vertical'] {
+  padding-block: 0;
+}
+.ldt-tabs__content {
+  padding-block: 1rem;
+}

@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
@@ -11,6 +11,15 @@ import Tabs from '../src/lib/components/Tabs.svelte';
 import Tooltip from '../src/lib/components/Tooltip.svelte';
 
 const text = (value: string) => createRawSnippet(() => ({ render: () => value }));
+
+const componentStyles = () => {
+  const directory = path.join(process.cwd(), '..', 'styles', 'src', 'components');
+  return readdirSync(directory)
+    .filter((file) => file.endsWith('.css'))
+    .sort()
+    .map((file) => readFileSync(path.join(directory, file), 'utf8'))
+    .join('\n');
+};
 
 /**
  * Floating content keeps `visibility: hidden` until Floating UI measures it, and jsdom never
@@ -172,10 +181,7 @@ describe('Tabs orientation', () => {
   });
 
   it('ships styles for that orientation rather than leaving the prop inert', () => {
-    const css = readFileSync(
-      path.join(process.cwd(), '..', 'styles', 'src', 'components.css'),
-      'utf8'
-    );
+    const css = componentStyles();
     for (const selector of ['.ldt-tabs', '.ldt-tabs__list', '.ldt-tabs__trigger']) {
       expect(css, selector).toContain(`${selector}[data-orientation='vertical']`);
     }

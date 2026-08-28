@@ -14,3 +14,7 @@ examples/catalog/src/lib/generated/
 
 # Wrangler build/state cache
 .wrangler
+
+# Browser and coverage test artifacts
+playwright-report
+test-results

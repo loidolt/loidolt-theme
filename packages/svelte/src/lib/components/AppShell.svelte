@@ -4,6 +4,7 @@
   import { cx } from '../utils.js';
 
   interface Props extends HTMLAttributes<HTMLDivElement> {
+    /** Complete banner/header content, such as `Topbar`; rendered without another landmark wrapper. */
     header?: Snippet;
     children: Snippet;
     footer?: Snippet;
@@ -25,7 +26,7 @@
 </script>
 
 <div bind:this={ref} class={cx('ldt-app-shell', className)} {...rest}>
-  {#if header}<header>{@render header()}</header>{/if}
+  {#if header}{@render header()}{/if}
   <main id={mainId}>{@render children()}</main>
   {#if footer}<footer>{@render footer()}</footer>{/if}
 </div>

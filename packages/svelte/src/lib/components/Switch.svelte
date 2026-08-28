@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import type { Snippet } from 'svelte';
   import type { HTMLButtonAttributes } from 'svelte/elements';
   import { cx } from '../utils.js';
@@ -20,6 +21,7 @@
     checked = $bindable(false),
     disabled = false,
     name,
+    form,
     value = 'on',
     onCheckedChange,
     onclick,
@@ -28,6 +30,20 @@
     ref = $bindable(null),
     ...rest
   }: Props = $props();
+
+  let input = $state<HTMLInputElement | null>(null);
+  const initialChecked = checked;
+
+  onMount(() => {
+    const owner = input?.form;
+    if (!owner) return;
+    const reset = () => {
+      checked = initialChecked;
+      onCheckedChange?.(checked);
+    };
+    owner.addEventListener('reset', reset);
+    return () => owner.removeEventListener('reset', reset);
+  });
 
   function handleClick(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
     if (disabled) return;
@@ -43,6 +59,7 @@
   role="switch"
   aria-checked={checked}
   {disabled}
+  {form}
   class={cx('ldt-switch', className)}
   {...rest}
   onclick={handleClick}
@@ -51,11 +68,13 @@
   {#if children}<span>{@render children()}</span>{/if}
 </button>
 {#if name}<input
+    bind:this={input}
     type="checkbox"
     class="ldt-sr-only"
     tabindex="-1"
     aria-hidden="true"
     {name}
+    {form}
     {value}
     {checked}
     {disabled}

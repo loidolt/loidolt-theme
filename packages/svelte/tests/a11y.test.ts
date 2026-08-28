@@ -49,6 +49,12 @@ import WorkspaceHarness from './fixtures/WorkspaceHarness.svelte';
 
 const text = (value: string) => createRawSnippet(() => ({ render: () => value }));
 
+// jsdom cannot compute pseudo-element styles, which makes axe's contrast rule emit misleading
+// "not implemented" warnings. Chromium owns that style-dependent rule in tests/e2e; this suite
+// keeps the fast semantic checks.
+const scan = (element: Element) =>
+  axe(element, { rules: { 'color-contrast': { enabled: false } } });
+
 /** Snippet whose markup uses the parameter Tabs passes to its panel. */
 const tabPanel = createRawSnippet<[{ value: string }]>((args) => ({
   render: () => `<p>Panel ${args().value}</p>`,
@@ -196,7 +202,7 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
 describe('component accessibility', () => {
   it.each(cases)('has no axe violations: %s', async (_name, Component, props) => {
     const view = render(Component, props);
-    expect((await axe(view.container)).violations).toEqual([]);
+    expect((await scan(view.container)).violations).toEqual([]);
     view.unmount();
   });
 
@@ -209,7 +215,7 @@ describe('component accessibility', () => {
       footer: text('<button type="button">Confirm</button>'),
     });
     await user.click(view.getByRole('button', { name: 'Open export' }));
-    expect((await axe(document.body)).violations).toEqual([]);
+    expect((await scan(document.body)).violations).toEqual([]);
   });
 
   it('has no violations while a drawer is open', async () => {
@@ -220,7 +226,7 @@ describe('component accessibility', () => {
       children: text('<p>Links go here.</p>'),
     });
     await user.click(view.getByRole('button', { name: 'Menu' }));
-    expect((await axe(document.body)).violations).toEqual([]);
+    expect((await scan(document.body)).violations).toEqual([]);
   });
 
   it('has no violations while a confirmation is open', async () => {
@@ -232,7 +238,7 @@ describe('component accessibility', () => {
       confirmVariant: 'danger',
     });
     await user.click(view.getByRole('button', { name: 'Delete' }));
-    expect((await axe(document.body)).violations).toEqual([]);
+    expect((await scan(document.body)).violations).toEqual([]);
   });
 
   it('has no violations while a dropdown menu is open', async () => {
@@ -248,7 +254,7 @@ describe('component accessibility', () => {
     await user.click(view.getByRole('button', { name: 'Actions' }));
     // Floating content stays visibility:hidden in jsdom; wait on text, not role-by-name.
     await view.findByText('Rename');
-    expect((await axe(document.body)).violations).toEqual([]);
+    expect((await scan(document.body)).violations).toEqual([]);
   });
 
   it('has no violations while a popover is open', async () => {
@@ -258,6 +264,6 @@ describe('component accessibility', () => {
       children: text('<p>Filter options.</p>'),
     });
     await user.click(view.getByRole('button', { name: 'Filters' }));
-    expect((await axe(document.body)).violations).toEqual([]);
+    expect((await scan(document.body)).violations).toEqual([]);
   });
 });

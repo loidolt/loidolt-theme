@@ -139,49 +139,63 @@ describe('ThemeToggle', () => {
     localStorage.clear();
   });
 
-  it('reflects and changes the theme preference', async () => {
+  it('cycles through light, dark and system from one icon button', async () => {
     const user = userEvent.setup();
     const theme = createTheme({ storageKey: null });
-    render(ThemeToggle, { theme });
+    const { container } = render(ThemeToggle, { theme });
 
-    expect(screen.getByRole('radio', { name: 'System' })).toBeChecked();
+    expect(screen.getByRole('button', { name: 'Colour scheme: System' })).toHaveAttribute(
+      'title',
+      'Colour scheme: System → Light'
+    );
+    expect(container.querySelector('[data-theme-icon="system"]')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('radio', { name: 'Dark' }));
-    expect(theme.preference).toBe('dark');
-    expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
-
-    theme.destroy();
-  });
-
-  it('ignores a second press on the pressed option', async () => {
-    const user = userEvent.setup();
-    const theme = createTheme({ storageKey: null });
-    render(ThemeToggle, { theme });
-
-    await user.click(screen.getByRole('radio', { name: 'Light' }));
-    // A toggle group deselects on a repeat press; "no colour scheme" is not a state.
-    await user.click(screen.getByRole('radio', { name: 'Light' }));
-
+    await user.click(screen.getByRole('button', { name: 'Colour scheme: System' }));
     expect(theme.preference).toBe('light');
     expect(document.documentElement).toHaveAttribute('data-theme', 'light');
+    expect(container.querySelector('[data-theme-icon="light"]')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Colour scheme: Light' }));
+    expect(theme.preference).toBe('dark');
+    expect(document.documentElement).toHaveAttribute('data-theme', 'dark');
+    expect(container.querySelector('[data-theme-icon="dark"]')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Colour scheme: Dark' }));
+    expect(theme.preference).toBe('system');
+    expect(container.querySelector('[data-theme-icon="system"]')).toBeInTheDocument();
 
     theme.destroy();
   });
 
-  it('can drop the system option', () => {
+  it('can drop system from the cycle', async () => {
+    const user = userEvent.setup();
     const theme = createTheme({ storageKey: null });
     render(ThemeToggle, { theme, showSystem: false });
 
-    expect(screen.queryByRole('radio', { name: 'System' })).not.toBeInTheDocument();
+    // The test environment resolves system to light, so the compact two-state control starts
+    // there and toggles directly to dark.
+    await user.click(screen.getByRole('button', { name: 'Colour scheme: Light' }));
+    expect(theme.preference).toBe('dark');
+    await user.click(screen.getByRole('button', { name: 'Colour scheme: Dark' }));
+    expect(theme.preference).toBe('light');
+    expect(screen.queryByRole('button', { name: /System/ })).not.toBeInTheDocument();
     theme.destroy();
   });
 
   it('takes localised labels', () => {
     const theme = createTheme({ storageKey: null });
-    render(ThemeToggle, { theme, label: 'Farbschema', lightLabel: 'Hell', darkLabel: 'Dunkel' });
+    render(ThemeToggle, {
+      theme,
+      label: 'Farbschema',
+      lightLabel: 'Hell',
+      darkLabel: 'Dunkel',
+      systemLabel: 'Systemeinstellung',
+    });
 
-    expect(screen.getByRole('radiogroup', { name: 'Farbschema' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'Hell' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Farbschema: Systemeinstellung' })).toHaveAttribute(
+      'title',
+      'Farbschema: Systemeinstellung → Hell'
+    );
     theme.destroy();
   });
 });

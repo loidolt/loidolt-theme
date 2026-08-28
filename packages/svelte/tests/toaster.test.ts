@@ -88,6 +88,27 @@ describe('createToaster', () => {
     expect(toaster.toasts.map((toast) => toast.title)).toEqual(['Two', 'Three']);
   });
 
+  it('rejects invalid bounds before creating timers or queue entries', () => {
+    expect(() => createToaster({ max: 0 })).toThrow(RangeError);
+    expect(() => createToaster({ max: -1 })).toThrow(RangeError);
+    expect(() => createToaster({ max: 1.5 })).toThrow(RangeError);
+    expect(() => createToaster({ duration: -1 })).toThrow(RangeError);
+
+    const toaster = createToaster();
+    expect(() => toaster.push({ title: 'Invalid', duration: Number.NaN })).toThrow(RangeError);
+    expect(toaster.toasts).toHaveLength(0);
+  });
+
+  it('destroys its timers and queue idempotently', () => {
+    const toaster = createToaster({ duration: 1000 });
+    toaster.push({ title: 'Saved' });
+    toaster.destroy();
+    toaster.destroy();
+    expect(toaster.toasts).toHaveLength(0);
+    vi.advanceTimersByTime(1000);
+    expect(toaster.toasts).toHaveLength(0);
+  });
+
   it('drives a rendered viewport, including auto-dismiss', async () => {
     render(ToasterHarness);
     expect(screen.queryByText('Export queued')).not.toBeInTheDocument();
