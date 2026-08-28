@@ -1,5 +1,20 @@
 # @loidolt/theme-tokens
 
+## 0.4.0
+
+### Minor Changes
+
+- [`62305ae`](https://github.com/loidolt/loidolt-theme/commit/62305ae65328caa27e0ab2346d2d770c4dc4d4d8) Thanks [@loidolt](https://github.com/loidolt)! - Thirteen new components for review and dashboard surfaces: Thumbnail (framed media box on a sunken or paper surface), CommentList, CodeBlock (select-all + copy), StatusDot, Marker (dot/pin), RecordStepper, FloatingBar, Filmstrip, ListRow, FileInput, SwatchGroup, Stat, and SegmentedNav (a segmented control of real links). New `--loidolt-surface-paper` token stays white in both themes so artwork previews read true.
+
+### Patch Changes
+
+- [`31648e2`](https://github.com/loidolt/loidolt-theme/commit/31648e2feb3e5ae257a4219e318e2c594fa9e56d) Thanks [@loidolt](https://github.com/loidolt)! - Harden inline theme bootstrapping, toaster lifecycle and validation, dynamic tabs, switch form
+  resets, and AppShell landmark composition. Relax package-only Node engine restrictions and add
+  package-local documentation.
+
+  Split component CSS into maintainable domain files without changing its public entry point, and
+  add coverage, catalog-integrity, package, and real-browser accessibility verification.
+
 ## 0.3.0
 
 ### Minor Changes

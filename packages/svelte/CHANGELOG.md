@@ -1,5 +1,34 @@
 # @loidolt/theme-svelte
 
+## 0.4.0
+
+### Minor Changes
+
+- [`31648e2`](https://github.com/loidolt/loidolt-theme/commit/31648e2feb3e5ae257a4219e318e2c594fa9e56d) Thanks [@loidolt](https://github.com/loidolt)! - Replace the segmented `ThemeToggle` picker with a compact icon button that cycles through light,
+  dark, and system preferences. The button exposes its current preference through its accessible
+  name and tooltip, keeps localised labels and sizing, and still supports a light/dark-only cycle.
+
+- [`62305ae`](https://github.com/loidolt/loidolt-theme/commit/62305ae65328caa27e0ab2346d2d770c4dc4d4d8) Thanks [@loidolt](https://github.com/loidolt)! - Card accepts `href` and renders the whole card as one block-level link (`.ldt-card--link`, hover accent border). The content region is now always full width — a behavioral CSS change that only affects cards whose root was externally turned into a centering flex/grid container, which previously collapsed intrinsic-less content (viewBox-only SVGs) to its fallback size.
+
+- [`62305ae`](https://github.com/loidolt/loidolt-theme/commit/62305ae65328caa27e0ab2346d2d770c4dc4d4d8) Thanks [@loidolt](https://github.com/loidolt)! - Thirteen new components for review and dashboard surfaces: Thumbnail (framed media box on a sunken or paper surface), CommentList, CodeBlock (select-all + copy), StatusDot, Marker (dot/pin), RecordStepper, FloatingBar, Filmstrip, ListRow, FileInput, SwatchGroup, Stat, and SegmentedNav (a segmented control of real links). New `--loidolt-surface-paper` token stays white in both themes so artwork previews read true.
+
+- [`62305ae`](https://github.com/loidolt/loidolt-theme/commit/62305ae65328caa27e0ab2346d2d770c4dc4d4d8) Thanks [@loidolt](https://github.com/loidolt)! - Dialog, AlertDialog, Drawer, and Popover accept `triggerVariant` and `triggerSize`, composing the default trigger's button classes instead of consumers hand-assembling `ldt-button …` strings. An explicit `triggerClass` still wins wholesale; Popover keeps its quiet default.
+
+- [`62305ae`](https://github.com/loidolt/loidolt-theme/commit/62305ae65328caa27e0ab2346d2d770c4dc4d4d8) Thanks [@loidolt](https://github.com/loidolt)! - Workspace gains a `header` snippet — a full-width row above the panes for a ContextBar or toolbar — and a `mainClass` prop so consumers stop reaching into `.ldt-workspace__main` from outside.
+
+### Patch Changes
+
+- [`31648e2`](https://github.com/loidolt/loidolt-theme/commit/31648e2feb3e5ae257a4219e318e2c594fa9e56d) Thanks [@loidolt](https://github.com/loidolt)! - Harden inline theme bootstrapping, toaster lifecycle and validation, dynamic tabs, switch form
+  resets, and AppShell landmark composition. Relax package-only Node engine restrictions and add
+  package-local documentation.
+
+  Split component CSS into maintainable domain files without changing its public entry point, and
+  add coverage, catalog-integrity, package, and real-browser accessibility verification.
+
+- Updated dependencies [[`62305ae`](https://github.com/loidolt/loidolt-theme/commit/62305ae65328caa27e0ab2346d2d770c4dc4d4d8), [`62305ae`](https://github.com/loidolt/loidolt-theme/commit/62305ae65328caa27e0ab2346d2d770c4dc4d4d8), [`62305ae`](https://github.com/loidolt/loidolt-theme/commit/62305ae65328caa27e0ab2346d2d770c4dc4d4d8), [`31648e2`](https://github.com/loidolt/loidolt-theme/commit/31648e2feb3e5ae257a4219e318e2c594fa9e56d), [`62305ae`](https://github.com/loidolt/loidolt-theme/commit/62305ae65328caa27e0ab2346d2d770c4dc4d4d8)]:
+  - @loidolt/theme-styles@0.4.0
+  - @loidolt/theme-tokens@0.4.0
+
 ## 0.3.0
 
 ### Minor Changes
