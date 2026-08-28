@@ -16,6 +16,7 @@
     Topbar,
     Workspace,
   } from '@loidolt/theme-svelte';
+  import CodeBlock from '$lib/components/CodeBlock.svelte';
   import Demo from '$lib/components/Demo.svelte';
 
   /*
@@ -123,7 +124,7 @@ ${endScript}
       </div>
     </Workspace>
   </div>
-  <pre>{collapse}</pre>
+  <CodeBlock code={collapse} />
 </Section>
 
 <Section title="Narrow viewports" headingLevel={2}>
@@ -143,7 +144,7 @@ ${endScript}
       </nav>
     </Drawer>
   </Demo>
-  <pre>{responsive}</pre>
+  <CodeBlock code={responsive} />
 </Section>
 
 <Section title="Data states" headingLevel={2}>
@@ -152,5 +153,5 @@ ${endScript}
     covers the first, <code>EmptyState</code> the second, and <code>Alert</code> the last. The table cannot
     count your rows, so decide the empty case where the data is.
   </p>
-  <pre>{emptyTable}</pre>
+  <CodeBlock code={emptyTable} />
 </Section>

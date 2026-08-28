@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Badge, Button, PageHeader, Section, Table, TableHeader } from '@loidolt/theme-svelte';
   import { breakpoints, colors, semantic, spacing, typography } from '@loidolt/theme-tokens';
+  import CodeBlock from '$lib/components/CodeBlock.svelte';
   import Demo from '$lib/components/Demo.svelte';
 
   const primitives = [
@@ -138,7 +139,7 @@ export const handle = ({ event, resolve }) =>
     hairline, while <code>--loidolt-border-control</code> is the boundary of an input, held to 3:1 because
     that border is the only thing identifying the control.
   </p>
-  <pre>{theming}</pre>
+  <CodeBlock code={theming} />
 </Section>
 
 <Section title="Dark mode" headingLevel={2}>
@@ -146,13 +147,13 @@ export const handle = ({ event, resolve }) =>
     A tested dark theme ships with the package — every pair is asserted at WCAG AA, including the
     <code>on-*</code> inks, so you do not have to get them right yourself.
   </p>
-  <pre>{darkMode}</pre>
+  <CodeBlock code={darkMode} />
   <p class="docs-note">
     The runtime that drives it is <code>createTheme()</code>, with
     <code>themeScript()</code> for the first paint. This site uses exactly this setup; the picker in
     the top bar is <code>ThemeToggle</code>.
   </p>
-  <pre>{runtime}</pre>
+  <CodeBlock code={runtime} />
 </Section>
 
 <Section title="Type and space" headingLevel={2}>
@@ -194,7 +195,7 @@ export const handle = ({ event, resolve }) =>
 </Section>
 
 <Section title="Cascade layers" headingLevel={2}>
-  <pre>{layers}</pre>
+  <CodeBlock code={layers} />
   <p class="docs-note">
     Unlayered application CSS outranks every one of these, so a plain selector in your app always
     wins — no <code>!important</code> needed. <code>loidolt.reset</code> is deliberately empty and

@@ -46,11 +46,16 @@
   color: var(--loidolt-text-muted);
 }
 .ldt-toggle-group {
+  max-width: 100%;
   display: inline-flex;
+  overflow-x: auto;
   border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
 }
 .ldt-toggle-group[data-orientation='vertical'] {
   flex-direction: column;
+  overflow: visible;
 }
 .ldt-toggle-group__item {
   min-height: var(--loidolt-size-control);
@@ -132,6 +137,9 @@
   white-space: nowrap;
 }
 .ldt-breadcrumbs__link {
+  min-height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
   color: var(--loidolt-text-muted);
   text-decoration: none;
 }

@@ -43,22 +43,35 @@
   gap: 1rem;
   border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
 }
+.ldt-dialog__header > :first-child,
+.ldt-drawer__header > :first-child {
+  min-width: 0;
+}
 .ldt-dialog__body {
   overflow-y: auto;
 }
 .ldt-dialog__footer {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.5rem;
   border-top: var(--loidolt-border-width) solid var(--loidolt-border);
 }
+.ldt-dialog__footer .ldt-button,
+.ldt-drawer__footer .ldt-button {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
 .ldt-dialog__title {
   margin: 0;
   font-size: var(--loidolt-font-size-lg);
+  overflow-wrap: anywhere;
 }
 .ldt-dialog__description {
   margin: 0.25rem 0 0;
   color: var(--loidolt-text-muted);
+  overflow-wrap: anywhere;
 }
 /*
  * Drawer: a dialog anchored to an edge. `--ldt-drawer-size` is the measure across that edge —
@@ -143,6 +156,7 @@
 }
 .ldt-drawer__footer {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.5rem;
   border-top: var(--loidolt-border-width) solid var(--loidolt-border);
@@ -150,10 +164,12 @@
 .ldt-drawer__title {
   margin: 0;
   font-size: var(--loidolt-font-size-lg);
+  overflow-wrap: anywhere;
 }
 .ldt-drawer__description {
   margin: 0.25rem 0 0;
   color: var(--loidolt-text-muted);
+  overflow-wrap: anywhere;
 }
 .ldt-popover,
 .ldt-menu {
@@ -230,19 +246,27 @@
  * Bits UI stamps `data-orientation` on the root, list, triggers and panels, so the vertical
  * layout keys off that rather than needing a second class.
  */
+.ldt-tabs {
+  min-width: 0;
+}
 .ldt-tabs[data-orientation='vertical'] {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
   gap: var(--loidolt-space-4);
 }
 .ldt-tabs__list {
+  max-width: 100%;
   display: flex;
   gap: 2px;
+  overflow-x: auto;
   border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
 }
 .ldt-tabs__list[data-orientation='vertical'] {
   flex-direction: column;
   align-items: stretch;
+  overflow: visible;
   border-bottom: 0;
   border-right: var(--loidolt-border-width) solid var(--loidolt-border);
 }
@@ -273,4 +297,17 @@
 }
 .ldt-tabs__content {
   padding-block: 1rem;
+}
+
+@media (max-width: 760px) {
+  .ldt-tabs[data-orientation='vertical'] {
+    display: block;
+  }
+  .ldt-tabs__list[data-orientation='vertical'] {
+    border-right: 0;
+    border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+  }
+  .ldt-tabs__content[data-orientation='vertical'] {
+    padding-block: 1rem;
+  }
 }

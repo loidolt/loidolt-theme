@@ -294,6 +294,14 @@ switches on a query hydrates with the fallback branch and swaps on the first cli
 `Workspace` collapses a pane by leaving it unrendered rather than hiding it, so nothing inside a
 collapsed pane stays in the tab order.
 
+`Workspace` also responds to its available container width when it is directly inside
+`AppShell`. For a standalone or deeply nested workspace, put `ldt-workspace-container` on its
+nearest sizing wrapper; the panes stack when that wrapper is 760px or narrower. The viewport media
+query remains as a fallback for existing markup.
+
+On coarse-pointer devices, interactive components expand to 44px touch targets while mouse and
+keyboard layouts retain the compact density shown by the size tokens.
+
 ## Data tables
 
 `Table` owns the scroll region, the caption, and the states around the rows; `TableHeader` is a

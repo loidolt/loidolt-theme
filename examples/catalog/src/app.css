@@ -163,6 +163,10 @@
   margin: 0 0 1rem;
   color: var(--loidolt-text-muted);
 }
+.docs-note code,
+.docs-notes code {
+  overflow-wrap: anywhere;
+}
 .docs-notes {
   max-width: 70ch;
   margin: 0;
@@ -248,6 +252,7 @@
 /* --- Pattern frames ------------------------------------------------------------------- */
 
 .docs-frame {
+  container: loidolt-workspace / inline-size;
   display: grid;
   grid-template-rows: auto;
   overflow: hidden;
@@ -322,5 +327,14 @@ pre {
   }
   .ldt-app-shell > header {
     position: static;
+  }
+}
+
+@media (pointer: coarse) {
+  .docs-nav-link,
+  .docs-sidenav li a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
 }

@@ -14,6 +14,13 @@
 .ldt-app-shell > :where(header, main, footer) {
   min-width: 0;
 }
+.ldt-app-shell > main,
+.ldt-workspace-container {
+  /* Workspace normally sits directly in AppShell's main row. Naming that row as an inline-size
+     container lets the same compact layout work when the shell itself is embedded or split. The
+     utility covers standalone workspaces without imposing a wrapper element in the component. */
+  container: loidolt-workspace / inline-size;
+}
 .ldt-topbar {
   min-width: 0;
   min-height: var(--loidolt-size-topbar);
@@ -240,5 +247,24 @@
   .ldt-page-header {
     align-items: start;
     flex-direction: column;
+  }
+}
+
+/* Container-aware counterpart to the viewport fallback above. Consumers rendering Workspace
+   outside AppShell can put `ldt-workspace-container` on its nearest sizing wrapper. */
+@container loidolt-workspace (max-width: 760px) {
+  .ldt-workspace,
+  .ldt-workspace--sidebar,
+  .ldt-workspace--inspector,
+  .ldt-workspace--sidebar.ldt-workspace--inspector {
+    display: block;
+  }
+  .ldt-sidebar,
+  .ldt-sidebar--right {
+    border: 0;
+    border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
+  }
+  .ldt-workspace__main {
+    padding: var(--loidolt-space-4);
   }
 }

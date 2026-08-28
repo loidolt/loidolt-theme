@@ -13,7 +13,15 @@
  * just on the other side of the border box. Zero specificity, declared after the rule above,
  * so it overrides by document order without escalating specificity.
  */
-:where(.ldt-topbar__nav, .ldt-table-wrap, .ldt-sidebar, .ldt-dialog__body, .ldt-drawer__body)
+:where(
+    .ldt-topbar__nav,
+    .ldt-table-wrap,
+    .ldt-sidebar,
+    .ldt-dialog__body,
+    .ldt-drawer__body,
+    .ldt-tabs__list,
+    .ldt-toggle-group
+  )
   :where(:focus-visible) {
   outline-offset: -2px;
 }
@@ -47,6 +55,35 @@
 .ldt-touch-target {
   min-width: 44px;
   min-height: 44px;
+}
+
+/* Preserve the compact visual density for mouse/keyboard layouts, but give touch-first devices
+   the 44px target size recommended for comfortable coarse-pointer operation. */
+@media (pointer: coarse) {
+  :where(
+    .ldt-button,
+    .ldt-nav-menu,
+    .ldt-tabs__trigger,
+    .ldt-toggle-group__item,
+    .ldt-input,
+    .ldt-select,
+    .ldt-number-field__input,
+    .ldt-choice,
+    .ldt-switch,
+    .ldt-number-field__button,
+    .ldt-menu__item
+  ) {
+    min-height: 44px;
+  }
+  :where(.ldt-icon-button, .ldt-number-field__button) {
+    min-width: 44px;
+  }
+  :where(.ldt-icon-button) {
+    width: 44px;
+  }
+  .ldt-number-field {
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+  }
 }
 
 /*

@@ -2,6 +2,7 @@
   import { base } from '$app/paths';
   import * as theme from '@loidolt/theme-svelte';
   import { Badge, Button, Card, Section } from '@loidolt/theme-svelte';
+  import CodeBlock from '$lib/components/CodeBlock.svelte';
 
   /*
    * Assembled from two pieces on purpose: a closing script tag written literally anywhere in
@@ -56,8 +57,8 @@ ${endScript}
 </section>
 
 <Section title="Install" headingLevel={2}>
-  <pre>{install}</pre>
-  <pre>{usage}</pre>
+  <CodeBlock code={install} />
+  <CodeBlock code={usage} />
 </Section>
 
 <Section title="What the packages are" headingLevel={2}>
