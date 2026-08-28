@@ -2,7 +2,7 @@
   import { Dialog as DialogPrimitive } from 'bits-ui';
   import type { Snippet } from 'svelte';
   import type { DialogContentProps } from 'bits-ui';
-  import type { HeadingLevel, TriggerChildProps } from '../types.js';
+  import type { ActionVariant, ControlSize, HeadingLevel, TriggerChildProps } from '../types.js';
   import { cx } from '../utils.js';
 
   type Props = Omit<DialogContentProps, 'children' | 'class' | 'child'> & {
@@ -15,6 +15,9 @@
     trigger?: Snippet;
     /** Full control of the trigger element — receives the props Bits needs on it. */
     triggerChild?: Snippet<[TriggerChildProps]>;
+    /** Button variant for the default trigger. An explicit `triggerClass` wins wholesale. */
+    triggerVariant?: ActionVariant;
+    triggerSize?: ControlSize;
     triggerClass?: string;
     children: Snippet;
     footer?: Snippet;
@@ -35,7 +38,9 @@
     side = 'left',
     trigger,
     triggerChild,
-    triggerClass = 'ldt-button',
+    triggerVariant,
+    triggerSize,
+    triggerClass,
     children,
     footer,
     headingLevel = 2,
@@ -47,6 +52,16 @@
     ref = $bindable(null),
     ...rest
   }: Props = $props();
+
+  // An explicit triggerClass keeps today's contract and wins outright.
+  const triggerClasses = $derived(
+    triggerClass ??
+      cx(
+        'ldt-button',
+        triggerVariant && triggerVariant !== 'default' && `ldt-button--${triggerVariant}`,
+        triggerSize && triggerSize !== 'md' && `ldt-button--${triggerSize}`
+      )
+  );
 </script>
 
 <!--
@@ -60,7 +75,7 @@
       >{#snippet child(childProps)}{@render triggerChild(
           childProps
         )}{/snippet}</DialogPrimitive.Trigger
-    >{:else if trigger}<DialogPrimitive.Trigger class={triggerClass}
+    >{:else if trigger}<DialogPrimitive.Trigger class={triggerClasses}
       >{@render trigger()}</DialogPrimitive.Trigger
     >{/if}
   <DialogPrimitive.Portal>

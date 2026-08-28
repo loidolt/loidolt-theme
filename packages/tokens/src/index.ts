@@ -138,6 +138,8 @@ const semanticDefs = {
   surface: ref('color-panel'),
   surfaceAlt: ref('color-panel-alt'),
   surfaceSunken: ref('color-canvas'),
+  /** Artwork-on-paper backing: stays white in every theme so previews read true. */
+  surfacePaper: ref('color-white'),
   surfaceInverse: ref('color-deep'),
   surfaceInput: ref('color-white'),
   text: ref('color-deep'),
@@ -249,6 +251,7 @@ export const darkSemantic = {
   surface: '#1e211c',
   surfaceAlt: '#24271f',
   surfaceSunken: '#101210',
+  surfacePaper: '#ffffff',
   surfaceInverse: '#ebe7dc',
   surfaceInput: '#24271f',
   text: '#ebe7dc',

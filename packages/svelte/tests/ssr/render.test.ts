@@ -29,6 +29,10 @@ const panel = createRawSnippet<[{ value: string }]>((args) => ({
   render: () => `<p>Panel ${args().value}</p>`,
 }));
 
+const stripItem = createRawSnippet<[{ id: string }, boolean]>((entry) => ({
+  render: () => `<span>${entry().id}</span>`,
+}));
+
 const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Accordion', { items: options, children: panel }],
   ['Alert', { title: 'Export ready', children: text('Done.') }],
@@ -41,6 +45,8 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Button (loading)' as 'Button', { children: text('Save'), loading: true }],
   ['Card', { title: 'Terrain', children: text('Body') }],
   ['Checkbox', { label: 'Guides' }],
+  ['CodeBlock', { code: 'sk_live_abc', copyable: true }],
+  ['CommentList', { items: [{ id: 'c1', author: 'Jane', body: 'Looks good.', marker: 1 }] }],
   ['ContextBar', { section: 'Files', title: 'terrain.svg' }],
   [
     'Dialog',
@@ -50,10 +56,16 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['DropdownMenu', { trigger: text('Actions'), items: options, open: true }],
   ['EmptyState', { title: 'No projects yet' }],
   ['Field', { label: 'Email', children: fieldControl }],
+  ['FileInput', { 'aria-label': 'Artwork file' }],
+  ['Filmstrip', { items: [{ id: 'a' }, { id: 'b' }], label: 'Outputs', item: stripItem }],
+  ['FloatingBar', { label: 'Zoom', children: text('+') }],
   ['Fieldset', { legend: 'Output', children: text('<input />') }],
   ['IconButton', { label: 'Close', children: text('×') }],
   ['Input', { 'aria-label': 'Name' }],
   ['Label', { for: 'x', children: text('Name') }],
+  ['ListRow', { children: text('Row') }],
+  ['ListRow (link)' as 'ListRow', { children: text('Row'), href: '/x', selected: true }],
+  ['Marker', { number: 3, label: 'Comment 3' }],
   ['NavMenu', { label: 'Projects', items: options }],
   ['NumberField', { label: 'Count' }],
   ['PageHeader', { title: 'Terrain' }],
@@ -62,12 +74,20 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Popover', { trigger: text('Filters'), children: text('Options'), open: true }],
   ['Progress', { value: 40, label: 'Upload' }],
   ['RadioGroup', { label: 'Mode', options }],
+  ['RecordStepper', { index: 0, total: 5 }],
   ['Section', { title: 'Recent', children: text('Body') }],
+  ['SegmentedNav', { items: [{ label: 'R1', href: '#r1', current: true }] }],
   ['Select', { label: 'Format', options }],
   ['Separator', {}],
   ['Sidebar', { children: text('Nav') }],
   ['Skeleton', {}],
   ['Spinner', { label: 'Loading' }],
+  ['Stat', { value: 12, label: 'Artworks' }],
+  ['StatusDot', { variant: 'success', label: 'Approved' }],
+  [
+    'SwatchGroup',
+    { label: 'Color', options: [{ value: 'a', color: '#c94f2a', label: 'Terracotta' }] },
+  ],
   ['Switch', { children: text('Live preview') }],
   ['Table', { caption: 'Projects', children: text('<tbody><tr><td>A</td></tr></tbody>') }],
   ['TableHeader', { children: text('Name') }],
@@ -77,6 +97,7 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Toast', { title: 'Saved' }],
   ['ToastViewport', { children: text('None yet') }],
   ['ToggleGroup', { options, label: 'Mode' }],
+  ['Thumbnail', { alt: '', src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>' }],
   ['Tooltip', { content: 'Tip', trigger: text('Info') }],
   ['TooltipProvider', { children: text('Content') }],
   ['Topbar', { brand: text('Loidolt') }],

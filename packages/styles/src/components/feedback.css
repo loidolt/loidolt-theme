@@ -120,3 +120,58 @@
   grid-area: 1 / 2 / span 2 / auto;
   align-self: start;
 }
+/* A colored dot that reports state where a Badge would be too loud. */
+.ldt-status-dot {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: var(--loidolt-border-radius-pill);
+  background: var(--loidolt-text-muted);
+  opacity: 0.5;
+  flex: none;
+}
+.ldt-status-dot--accent {
+  background: var(--loidolt-accent);
+  opacity: 1;
+}
+.ldt-status-dot--success {
+  background: var(--loidolt-success);
+  opacity: 1;
+}
+.ldt-status-dot--warning {
+  background: var(--loidolt-warning);
+  opacity: 1;
+}
+.ldt-status-dot--error {
+  background: var(--loidolt-danger);
+  opacity: 1;
+}
+.ldt-status-dot--info {
+  background: var(--loidolt-info);
+  opacity: 1;
+}
+/* A numbered accent chip — dot form for lists, pin form for points on a canvas. */
+.ldt-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.25rem;
+  border-radius: var(--loidolt-border-radius-pill);
+  color: var(--loidolt-on-accent);
+  background: var(--loidolt-accent);
+  font-size: var(--loidolt-font-size-xs);
+  font-weight: 700;
+  white-space: nowrap;
+  flex: none;
+}
+.ldt-marker--pin {
+  min-width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50% 50% 50% 0;
+  box-shadow: var(--loidolt-shadow-popover);
+}
+.ldt-marker--active {
+  outline: 2px solid var(--loidolt-surface);
+}

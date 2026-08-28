@@ -2,7 +2,13 @@
   import { AlertDialog as AlertDialogPrimitive } from 'bits-ui';
   import type { Snippet } from 'svelte';
   import type { AlertDialogContentProps } from 'bits-ui';
-  import type { ActionVariant, DialogSize, HeadingLevel, TriggerChildProps } from '../types.js';
+  import type {
+    ActionVariant,
+    ControlSize,
+    DialogSize,
+    HeadingLevel,
+    TriggerChildProps,
+  } from '../types.js';
   import { cx } from '../utils.js';
 
   type Props = Omit<AlertDialogContentProps, 'children' | 'class' | 'child'> & {
@@ -14,6 +20,9 @@
     trigger?: Snippet;
     /** Full control of the trigger element — receives the props Bits needs on it. */
     triggerChild?: Snippet<[TriggerChildProps]>;
+    /** Button variant for the default trigger. An explicit `triggerClass` wins wholesale. */
+    triggerVariant?: ActionVariant;
+    triggerSize?: ControlSize;
     triggerClass?: string;
     /** Extra body content between the description and the buttons. */
     children?: Snippet;
@@ -38,7 +47,9 @@
     description,
     trigger,
     triggerChild,
-    triggerClass = 'ldt-button',
+    triggerVariant,
+    triggerSize,
+    triggerClass,
     children,
     confirmLabel = 'Confirm',
     cancelLabel = 'Cancel',
@@ -53,6 +64,16 @@
     ref = $bindable(null),
     ...rest
   }: Props = $props();
+
+  // An explicit triggerClass keeps today's contract and wins outright.
+  const triggerClasses = $derived(
+    triggerClass ??
+      cx(
+        'ldt-button',
+        triggerVariant && triggerVariant !== 'default' && `ldt-button--${triggerVariant}`,
+        triggerSize && triggerSize !== 'md' && `ldt-button--${triggerSize}`
+      )
+  );
 </script>
 
 <!--
@@ -66,7 +87,7 @@
       >{#snippet child(childProps)}{@render triggerChild(
           childProps
         )}{/snippet}</AlertDialogPrimitive.Trigger
-    >{:else if trigger}<AlertDialogPrimitive.Trigger class={triggerClass}
+    >{:else if trigger}<AlertDialogPrimitive.Trigger class={triggerClasses}
       >{@render trigger()}</AlertDialogPrimitive.Trigger
     >{/if}
   <AlertDialogPrimitive.Portal>

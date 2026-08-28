@@ -4,6 +4,8 @@
   import { cx } from '../utils.js';
 
   interface Props extends HTMLAttributes<HTMLDivElement> {
+    /** Full-width row above the panes — a ContextBar or toolbar. */
+    header?: Snippet;
     sidebar?: Snippet;
     children: Snippet;
     inspector?: Snippet;
@@ -16,16 +18,20 @@
     /** The same for the inspector column. */
     inspectorOpen?: boolean;
     class?: string;
+    /** Extra classes for the main pane, replacing consumer reach-ins on `__main`. */
+    mainClass?: string;
     ref?: HTMLDivElement | null;
   }
 
   let {
+    header,
     sidebar,
     children,
     inspector,
     sidebarOpen = true,
     inspectorOpen = true,
     class: className,
+    mainClass,
     ref = $bindable(null),
     ...rest
   }: Props = $props();
@@ -39,13 +45,15 @@
   bind:this={ref}
   class={cx(
     'ldt-workspace',
+    header && 'ldt-workspace--header',
     showSidebar && 'ldt-workspace--sidebar',
     showInspector && 'ldt-workspace--inspector',
     className
   )}
   {...rest}
 >
+  {#if header}<div class="ldt-workspace__header">{@render header()}</div>{/if}
   {#if showSidebar}{@render sidebar!()}{/if}
-  <div class="ldt-workspace__main">{@render children()}</div>
+  <div class={cx('ldt-workspace__main', mainClass)}>{@render children()}</div>
   {#if showInspector}{@render inspector!()}{/if}
 </div>

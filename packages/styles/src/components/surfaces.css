@@ -4,6 +4,21 @@
   color: var(--loidolt-text);
   background: var(--loidolt-surface);
 }
+/* An anchor card: the whole surface is the link. */
+.ldt-card--link {
+  display: block;
+  color: var(--loidolt-text);
+  text-decoration: none;
+}
+.ldt-card--link:hover {
+  border-color: var(--loidolt-accent);
+  text-decoration: none;
+}
+/* Full width even when a consumer turns the card into a centering flex/grid container —
+   otherwise viewBox-only SVGs and other intrinsic-less content collapse to their fallback size. */
+.ldt-card__content {
+  width: 100%;
+}
 .ldt-card__header,
 .ldt-card__content,
 .ldt-card__footer,
@@ -96,6 +111,53 @@
   color: var(--loidolt-on-info);
   border-color: var(--loidolt-info);
   background: var(--loidolt-info);
+}
+/* A framed media box: fixed ratio, sunken or paper surface, contained content. */
+.ldt-thumbnail {
+  display: grid;
+  place-items: center;
+  margin: 0;
+  aspect-ratio: var(--ldt-thumbnail-ratio, 4 / 3);
+  overflow: hidden;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  background: var(--loidolt-surface-sunken);
+}
+.ldt-thumbnail--paper {
+  background: var(--loidolt-surface-paper);
+}
+.ldt-thumbnail__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ldt-thumbnail--cover .ldt-thumbnail__image {
+  object-fit: cover;
+}
+/* A dashboard tile: one hero number over a utility label; the link form invites a click. */
+.ldt-stat {
+  display: block;
+  padding: var(--loidolt-space-4);
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  text-decoration: none;
+}
+a.ldt-stat:hover {
+  border-color: var(--loidolt-accent);
+  text-decoration: none;
+}
+.ldt-stat__value {
+  margin: 0;
+  font-family: var(--loidolt-font-display);
+  font-size: var(--loidolt-font-size-xl);
+  font-weight: 600;
+}
+.ldt-stat__label {
+  margin: 0.25rem 0 0;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
 }
 .ldt-separator {
   width: 100%;

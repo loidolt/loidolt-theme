@@ -105,3 +105,26 @@
     transform: rotate(360deg);
   }
 }
+/* A pressable row: full-width, hover surface, optional selected state. Link or button. */
+.ldt-list-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--loidolt-space-2);
+  border: 0;
+  padding: var(--loidolt-space-1) var(--loidolt-space-2);
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ldt-list-row:hover {
+  background: var(--loidolt-surface-sunken);
+  text-decoration: none;
+}
+.ldt-list-row--selected {
+  box-shadow: inset 2px 0 0 var(--loidolt-accent);
+  background: var(--loidolt-surface-sunken);
+}

@@ -85,7 +85,8 @@
 .ldt-toggle-group__item:hover:not([data-disabled], :disabled) {
   color: var(--loidolt-text);
 }
-.ldt-toggle-group__item[data-state='on'] {
+.ldt-toggle-group__item[data-state='on'],
+.ldt-toggle-group__item[aria-current='page'] {
   color: var(--loidolt-on-accent);
   background: var(--loidolt-accent);
 }
@@ -170,4 +171,70 @@
   color: var(--loidolt-on-accent);
   border-color: var(--loidolt-accent);
   background: var(--loidolt-accent);
+}
+/* A segmented control whose options are real links — ToggleGroup's shape for navigation.
+   Items reuse .ldt-toggle-group__item; aria-current="page" is the pressed state. */
+.ldt-segmented-nav {
+  max-width: 100%;
+  display: inline-flex;
+  overflow-x: auto;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+}
+.ldt-segmented-nav .ldt-toggle-group__item {
+  text-decoration: none;
+}
+.ldt-segmented-nav__hint {
+  color: inherit;
+  opacity: 0.7;
+  font-size: var(--loidolt-font-size-xs);
+}
+/* A selectable rail of thumbnails: listbox semantics, scroll-into-view, compact flip. */
+.ldt-filmstrip {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--loidolt-space-2);
+}
+.ldt-filmstrip--horizontal {
+  flex-direction: row;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-bottom: var(--loidolt-space-1);
+}
+.ldt-filmstrip__item {
+  display: grid;
+  gap: var(--loidolt-space-1);
+  padding: var(--loidolt-space-1);
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: inherit;
+  background: none;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.ldt-filmstrip--horizontal .ldt-filmstrip__item {
+  flex: none;
+  width: 4.5rem;
+}
+.ldt-filmstrip__item:hover {
+  background: var(--loidolt-surface-sunken);
+}
+.ldt-filmstrip__item[aria-selected='true'] {
+  border-color: var(--loidolt-accent);
+  outline: var(--loidolt-border-width) solid var(--loidolt-accent);
+}
+/* Vertical strips flip to a horizontal rail when the workspace container goes compact. */
+@container loidolt-workspace (max-width: 760px) {
+  .ldt-filmstrip:not(.ldt-filmstrip--horizontal) {
+    flex-direction: row;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-bottom: var(--loidolt-space-1);
+  }
+  .ldt-filmstrip:not(.ldt-filmstrip--horizontal) .ldt-filmstrip__item {
+    flex: none;
+    width: 4.5rem;
+  }
 }

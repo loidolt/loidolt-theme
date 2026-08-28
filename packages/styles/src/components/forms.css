@@ -155,3 +155,47 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+/* A file picker in the system's input clothes. */
+.ldt-file-input::file-selector-button {
+  margin-inline-end: var(--loidolt-space-2);
+  border: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  padding: 0.25rem 0.65rem;
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.ldt-file-input::file-selector-button:hover {
+  color: var(--loidolt-text-accent);
+}
+/* A palette as a real radio group: one pressed swatch, arrow-key movement. */
+.ldt-swatch-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--loidolt-space-1);
+}
+.ldt-swatch-group__swatch {
+  display: inline-block;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 2px solid transparent;
+  background: var(--ldt-swatch);
+  cursor: pointer;
+}
+.ldt-swatch-group--sm .ldt-swatch-group__swatch {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.ldt-swatch-group__swatch:has(input:checked) {
+  border-color: var(--loidolt-accent);
+}
+.ldt-swatch-group__swatch:has(input:focus-visible) {
+  outline: 2px solid var(--loidolt-focus-ring);
+  outline-offset: 1px;
+}
+.ldt-swatch-group__swatch:has(input:disabled) {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

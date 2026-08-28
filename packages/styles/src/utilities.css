@@ -11,6 +11,12 @@
   align-items: center;
   gap: var(--ldt-gap, var(--loidolt-space-2));
 }
+.ldt-cluster--between {
+  justify-content: space-between;
+}
+.ldt-cluster--end {
+  justify-content: flex-end;
+}
 .ldt-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--ldt-min, 14rem)), 1fr));
@@ -30,6 +36,12 @@
 .ldt-theme {
   color: var(--loidolt-text);
   background: var(--loidolt-background);
+}
+/* Muted body voice for meta lines (author · timestamp). Unlike .ldt-utility-text it keeps
+   sentence case and the body face, so names and dates stay readable. */
+.ldt-muted {
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-sm);
 }
 .ldt-truncate {
   overflow: hidden;

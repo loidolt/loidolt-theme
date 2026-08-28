@@ -62,6 +62,17 @@ export const entries: Entry[] = [
   },
 
   {
+    slug: 'list-row',
+    name: 'ListRow',
+    group: 'Actions',
+    summary: 'A pressable row: hover surface, optional selected state, link or button by `href`.',
+    notes: [
+      '`selected` maps to `aria-current` on links and `aria-pressed` on buttons.',
+      'The row is transparent until hovered — it belongs in lists and rails, not as a standalone button.',
+    ],
+  },
+
+  {
     slug: 'field',
     name: 'Field',
     group: 'Forms',
@@ -140,10 +151,32 @@ export const entries: Entry[] = [
   },
 
   {
+    slug: 'file-input',
+    name: 'FileInput',
+    group: 'Forms',
+    summary: 'A file picker in the system\'s input clothes — Input cannot be `type="file"`.',
+    notes: ['`onFiles` fires only when at least one file is chosen; `onchange` still forwards.'],
+  },
+  {
+    slug: 'swatch-group',
+    name: 'SwatchGroup',
+    group: 'Forms',
+    summary: 'A palette as a real radio group — one pressed swatch, arrow-key movement.',
+    notes: [
+      'Each swatch is a native radio with a visually hidden input, so keyboard and form semantics come from the platform.',
+      'Name every color via `label` when the value alone would not identify it.',
+    ],
+  },
+
+  {
     slug: 'card',
     name: 'Card',
     group: 'Surfaces',
     summary: 'A titled block of content with an optional footer.',
+    notes: [
+      'With `href` the whole card is one block-level link — the hover accent border says so.',
+      'The content region is always full width, so intrinsic-less children (viewBox-only SVGs) fill the card even when a consumer centers it.',
+    ],
   },
   {
     slug: 'panel',
@@ -170,6 +203,22 @@ export const entries: Entry[] = [
     summary: 'A rule between content, horizontal or vertical.',
   },
   {
+    slug: 'thumbnail',
+    name: 'Thumbnail',
+    group: 'Surfaces',
+    summary: 'A framed media box: fixed ratio, sunken or paper surface, contained content.',
+    notes: [
+      '`surface="paper"` stays white in every theme so artwork previews read true.',
+      'Pass `children` instead of `src` for inline SVG or canvas content.',
+    ],
+  },
+  {
+    slug: 'stat',
+    name: 'Stat',
+    group: 'Surfaces',
+    summary: 'A dashboard tile: one hero number over a utility label, optionally a link.',
+  },
+  {
     slug: 'badge',
     name: 'Badge',
     group: 'Surfaces',
@@ -189,6 +238,7 @@ export const entries: Entry[] = [
       'The scroll region carries `tabindex="0"`: without it a scrollable region is unreachable by keyboard.',
       '`sticky` needs a bounded container — set `--ldt-table-height`, or the page scrolls and nothing sticks.',
       'Pass `empty` only when there are no rows; the component cannot see inside `children` to count them.',
+      'A trailing action cell takes `class="ldt-table__actions"`: right-aligned, nowrap, inline forms.',
     ],
   },
   {
@@ -216,6 +266,47 @@ export const entries: Entry[] = [
     notes: [
       '`count` is the number of items, not the number of pages.',
       'The ellipsis is `aria-hidden`: read between page numbers it is noise, and the buttons either side already say where the trail jumps.',
+    ],
+  },
+
+  {
+    slug: 'code-block',
+    name: 'CodeBlock',
+    group: 'Data',
+    summary:
+      'A monospace block for tokens and URLs — select-all by default, one-press copy on request.',
+    notes: [
+      'Copy success is announced through a persistently mounted status region.',
+      'Clipboard access can be denied; the text stays selectable either way.',
+    ],
+  },
+  {
+    slug: 'comment-list',
+    name: 'CommentList',
+    group: 'Data',
+    summary:
+      'A message thread: author, meta line, pre-wrapped body, with optional numbered markers.',
+    notes: [
+      '`meta` is a preformatted string — the theme adds no timestamps or separators of its own.',
+      '`activeId` is kept in view as it changes; `onItemHover` fires only for markered items, for syncing a canvas pin.',
+    ],
+  },
+  {
+    slug: 'record-stepper',
+    name: 'RecordStepper',
+    group: 'Data',
+    summary:
+      "Previous/next through an ordered set with an 'n of N' readout — Pagination's sibling for one-at-a-time review.",
+    notes: ['`index` is 0-based; the readout and `format` receive it 1-based.'],
+  },
+  {
+    slug: 'filmstrip',
+    name: 'Filmstrip',
+    group: 'Data',
+    summary: 'A selectable rail of thumbnails — listbox semantics and scroll-into-view built in.',
+    notes: [
+      'Vertical rails flip horizontal on their own when the workspace container goes compact.',
+      'Options are individually tabbable; a roving tabindex is deliberately deferred.',
     ],
   },
 
@@ -262,12 +353,26 @@ export const entries: Entry[] = [
   },
 
   {
+    slug: 'status-dot',
+    name: 'StatusDot',
+    group: 'Feedback',
+    summary: 'A colored dot that reports state where a Badge is too loud, named by `label`.',
+    notes: ['`label` is required: color alone must never carry the state.'],
+  },
+  {
+    slug: 'marker',
+    name: 'Marker',
+    group: 'Feedback',
+    summary: 'A numbered accent chip — dot form for lists, pin form for points on a canvas.',
+  },
+
+  {
     slug: 'dialog',
     name: 'Dialog',
     group: 'Overlays',
     summary: 'A modal for a task the page cannot hold.',
     notes: [
-      '`class` targets the portaled content, not the trigger. `triggerClass` styles the trigger, and `triggerChild` replaces it outright.',
+      '`class` targets the portaled content, not the trigger. `triggerVariant`/`triggerSize` pick the button clothes; an explicit `triggerClass` wins wholesale, and `triggerChild` replaces the trigger outright.',
       'Focus, portalling, dismissal, and the escape key come from Bits UI.',
     ],
   },
@@ -280,6 +385,7 @@ export const entries: Entry[] = [
       'No close affordance and no outside-click dismissal: a confirmation you can dismiss by missing is not one.',
       'Focus opens on Cancel, so a stray Enter cannot confirm a destructive action.',
       'Confirming closes the dialog. Work that has to keep it open can set the bindable `open` back to `true`.',
+      '`triggerVariant`/`triggerSize` pick the trigger button clothes; an explicit `triggerClass` wins wholesale.',
     ],
   },
   {
@@ -290,6 +396,7 @@ export const entries: Entry[] = [
     notes: [
       '`--ldt-drawer-size` is the measure across the anchored edge, always capped so the scrim stays reachable.',
       'Same primitive as `Dialog`: focus is trapped, Escape closes, the page behind is inert.',
+      '`triggerVariant`/`triggerSize` pick the trigger button clothes; an explicit `triggerClass` wins wholesale.',
     ],
   },
   {
@@ -297,6 +404,9 @@ export const entries: Entry[] = [
     name: 'Popover',
     group: 'Overlays',
     summary: 'Non-modal content anchored to a trigger.',
+    notes: [
+      'The default trigger wears the quiet button; `triggerVariant`/`triggerSize` change that, and an explicit `triggerClass` wins wholesale.',
+    ],
   },
   {
     slug: 'dropdown-menu',
@@ -330,6 +440,9 @@ export const entries: Entry[] = [
     name: 'Topbar',
     group: 'Navigation',
     summary: 'The application bar: brand, navigation, actions.',
+    notes: [
+      'Plain nav links take the `.ldt-topbar__link` class; the router marks the active page with `aria-current="page"`.',
+    ],
   },
   {
     slug: 'brand',
@@ -352,6 +465,17 @@ export const entries: Entry[] = [
     notes: [
       'The last crumb is the current page: never a link, and marked `aria-current="page"`.',
       'The separator is generated content, so it is never selected, copied, or read aloud.',
+    ],
+  },
+  {
+    slug: 'segmented-nav',
+    name: 'SegmentedNav',
+    group: 'Navigation',
+    summary:
+      "A segmented control whose options are real links — ToggleGroup's shape for navigation.",
+    notes: [
+      '`aria-current="page"` is both the semantic and the pressed style.',
+      'Use ToggleGroup when the choice changes state on the page; use this when it navigates.',
     ],
   },
   {
@@ -394,6 +518,8 @@ export const entries: Entry[] = [
     notes: [
       'Columns follow the panes that are actually rendered — no sidebar snippet, no sidebar column.',
       '`sidebarOpen` and `inspectorOpen` collapse a pane by leaving it unrendered, so nothing collapsed stays in the tab order.',
+      'The `header` snippet renders a full-width row above the panes — the home for a ContextBar or toolbar.',
+      '`mainClass` styles the main pane without reaching into `.ldt-workspace__main` from outside.',
     ],
   },
   {
@@ -403,6 +529,17 @@ export const entries: Entry[] = [
     summary: 'A complementary column beside the canvas.',
     notes: [
       '`label` only matters when several complementary regions need telling apart — for a single sidebar it just repeats the role.',
+    ],
+  },
+
+  {
+    slug: 'floating-bar',
+    name: 'FloatingBar',
+    group: 'Layout',
+    summary:
+      'A toolbar pinned to a corner of a positioned container — zoom controls, canvas actions.',
+    notes: [
+      'The parent must be `position: relative`; the bar is a pointer-events island above stage content.',
     ],
   },
 

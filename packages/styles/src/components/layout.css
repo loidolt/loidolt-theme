@@ -99,6 +99,26 @@
   color: var(--loidolt-text);
   border-bottom-color: var(--loidolt-accent);
 }
+/* Plain topbar navigation link — the anchor sibling of .ldt-nav-menu's dropdown trigger.
+   Router marks the active page with aria-current="page". */
+.ldt-topbar__link {
+  display: inline-flex;
+  align-items: center;
+  align-self: stretch;
+  border-bottom: 2px solid transparent;
+  padding: 0 0.85rem;
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-sm);
+  text-decoration: none;
+}
+.ldt-topbar__link:hover {
+  color: var(--loidolt-text);
+  text-decoration: none;
+}
+.ldt-topbar__link[aria-current='page'] {
+  color: var(--loidolt-text);
+  border-bottom-color: var(--loidolt-accent);
+}
 .ldt-contextbar {
   min-width: 0;
   min-height: var(--loidolt-size-contextbar);
@@ -158,6 +178,14 @@
       var(--loidolt-size-inspector)
     );
 }
+/* An optional header row (ContextBar, toolbars) above the panes, spanning every column. */
+.ldt-workspace--header {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.ldt-workspace__header {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
 .ldt-sidebar {
   min-width: 0;
   overflow-y: auto;
@@ -173,6 +201,39 @@
 .ldt-workspace__main {
   min-width: 0;
   padding: var(--loidolt-space-6);
+}
+/* A toolbar floated over a positioned container (canvas, map, viewer). The parent must be
+   position: relative; the bar is a pointer-events island above the stage content. */
+.ldt-floating-bar {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: var(--loidolt-space-1);
+  padding: var(--loidolt-space-1);
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-radius: var(--loidolt-border-radius);
+  background: var(--loidolt-surface);
+  z-index: var(--loidolt-z-raised);
+  pointer-events: auto;
+}
+.ldt-floating-bar--vertical {
+  flex-direction: column;
+}
+.ldt-floating-bar--top-start {
+  top: var(--loidolt-space-3);
+  left: var(--loidolt-space-3);
+}
+.ldt-floating-bar--top-end {
+  top: var(--loidolt-space-3);
+  right: var(--loidolt-space-3);
+}
+.ldt-floating-bar--bottom-start {
+  bottom: var(--loidolt-space-3);
+  left: var(--loidolt-space-3);
+}
+.ldt-floating-bar--bottom-end {
+  bottom: var(--loidolt-space-3);
+  right: var(--loidolt-space-3);
 }
 .ldt-page-header {
   display: flex;

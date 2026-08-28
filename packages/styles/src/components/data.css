@@ -127,3 +127,72 @@
   gap: var(--loidolt-space-2);
   margin-top: var(--loidolt-space-2);
 }
+/* Trailing action cell in a data table: content hugs the right edge, inline forms welcome. */
+.ldt-table__actions {
+  text-align: end;
+  white-space: nowrap;
+}
+.ldt-table__actions form {
+  display: inline;
+}
+.ldt-table__actions > :not(:first-child) {
+  margin-inline-start: var(--loidolt-space-2);
+}
+/* A message thread: author + meta line over a pre-wrapped body, optional numbered marker. */
+.ldt-comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--loidolt-space-2);
+}
+.ldt-comment {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--loidolt-space-2);
+  padding: var(--loidolt-space-1) var(--loidolt-space-2);
+}
+.ldt-comment--active {
+  background: color-mix(in srgb, var(--loidolt-accent) 12%, transparent);
+}
+.ldt-comment__content {
+  min-width: 0;
+}
+.ldt-comment__meta {
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-sm);
+}
+.ldt-comment__body {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+/* A monospace block for tokens and URLs — select-all text, optional one-press copy. */
+.ldt-code-block {
+  display: flex;
+  align-items: center;
+  gap: var(--loidolt-space-2);
+  padding: var(--loidolt-space-2) var(--loidolt-space-3);
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  background: var(--loidolt-surface-sunken);
+}
+.ldt-code-block__code {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--loidolt-font-mono);
+  font-size: var(--loidolt-font-size-sm);
+  word-break: break-all;
+}
+.ldt-code-block--selectable .ldt-code-block__code {
+  user-select: all;
+}
+/* Previous/next through an ordered set with an "n of N" readout — Pagination's sibling. */
+.ldt-record-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--loidolt-space-1);
+}
+.ldt-record-stepper__count {
+  white-space: nowrap;
+}
