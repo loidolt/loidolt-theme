@@ -1,6 +1,8 @@
 /* Deep slice: assumes the token custom properties are already loaded.
    Import '@loidolt/theme-styles/tokens' (or the whole '@loidolt/theme-styles') first. */
 .ldt-button {
+  max-width: 100%;
+  min-width: 0;
   min-height: var(--loidolt-size-control);
   display: inline-flex;
   align-items: center;
@@ -13,10 +15,12 @@
   background: transparent;
   font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
   letter-spacing: 0.08em;
-  line-height: 1;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  text-align: center;
   text-decoration: none;
   text-transform: uppercase;
-  white-space: nowrap;
+  white-space: normal;
 }
 .ldt-button:hover:not(:disabled, [aria-disabled='true']) {
   color: var(--loidolt-text-inverse);

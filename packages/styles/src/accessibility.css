@@ -24,6 +24,8 @@
   )
   :where(:focus-visible) {
   outline-offset: -2px;
+  /* Follow the control's accessible foreground pairing so inset focus stays visible on fills. */
+  outline-color: currentColor;
 }
 
 .ldt-visually-hidden,

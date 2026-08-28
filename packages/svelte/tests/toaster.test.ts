@@ -26,6 +26,13 @@ describe('createToaster', () => {
     expect(toaster.toasts).toHaveLength(0);
   });
 
+  it('keeps toasts persistent by default', () => {
+    const toaster = createToaster();
+    toaster.push({ title: 'Pinned' });
+    vi.advanceTimersByTime(60_000);
+    expect(toaster.toasts).toHaveLength(1);
+  });
+
   it('keeps a toast with a non-finite duration until dismissed', () => {
     const toaster = createToaster();
     toaster.push({ title: 'Pinned', duration: 0 });

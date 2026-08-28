@@ -97,7 +97,7 @@
       class={cx('ldt-dialog', size && `ldt-dialog--${size}`, className)}
       {...rest}
     >
-      <header class="ldt-dialog__header">
+      <div class="ldt-dialog__header">
         <div>
           <AlertDialogPrimitive.Title level={headingLevel} class="ldt-dialog__title"
             >{title}</AlertDialogPrimitive.Title
@@ -105,9 +105,9 @@
               >{description}</AlertDialogPrimitive.Description
             >{/if}
         </div>
-      </header>
+      </div>
       {#if children}<div class="ldt-dialog__body">{@render children()}</div>{/if}
-      <footer class="ldt-dialog__footer">
+      <div class="ldt-dialog__footer">
         <AlertDialogPrimitive.Cancel
           class="ldt-button ldt-button--quiet"
           onclick={() => onCancel?.()}>{cancelLabel}</AlertDialogPrimitive.Cancel
@@ -124,7 +124,7 @@
             open = false;
           }}>{confirmLabel}</AlertDialogPrimitive.Action
         >
-      </footer>
+      </div>
     </AlertDialogPrimitive.Content>
   </AlertDialogPrimitive.Portal>
 </AlertDialogPrimitive.Root>

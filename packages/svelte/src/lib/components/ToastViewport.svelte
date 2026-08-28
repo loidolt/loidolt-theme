@@ -33,6 +33,7 @@
   aria-live={politeness}
   aria-relevant="additions text"
   {...rest}
+  role="log"
 >
   {@render children()}
 </div>

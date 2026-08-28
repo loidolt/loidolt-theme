@@ -85,7 +85,7 @@
       class={cx('ldt-drawer', `ldt-drawer--${side}`, className)}
       {...rest}
     >
-      <header class="ldt-drawer__header">
+      <div class="ldt-drawer__header">
         <div>
           <DialogPrimitive.Title level={headingLevel} class="ldt-drawer__title"
             >{title}</DialogPrimitive.Title
@@ -97,9 +97,9 @@
             class="ldt-button ldt-icon-button ldt-button--ghost"
             aria-label={closeLabel}>×</DialogPrimitive.Close
           >{/if}
-      </header>
+      </div>
       <div class="ldt-drawer__body ldt-scrollbar">{@render children()}</div>
-      {#if footer}<footer class="ldt-drawer__footer">{@render footer()}</footer>{/if}
+      {#if footer}<div class="ldt-drawer__footer">{@render footer()}</div>{/if}
     </DialogPrimitive.Content>
   </DialogPrimitive.Portal>
 </DialogPrimitive.Root>

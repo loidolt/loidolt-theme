@@ -8,7 +8,12 @@
 
 <button type="button" onclick={() => toaster.push({ title: 'Export queued' })}>Raise</button>
 
-<ToastViewport onpointerenter={toaster.pause} onpointerleave={toaster.resume}>
+<ToastViewport
+  onpointerenter={toaster.pause}
+  onpointerleave={toaster.resume}
+  onfocusin={toaster.pause}
+  onfocusout={toaster.resume}
+>
   {#each toaster.toasts as toast (toast.id)}
     <Toast
       title={toast.title}

@@ -86,7 +86,7 @@
       class={cx('ldt-dialog', size && `ldt-dialog--${size}`, className)}
       {...rest}
     >
-      <header class="ldt-dialog__header">
+      <div class="ldt-dialog__header">
         <div>
           <DialogPrimitive.Title level={headingLevel} class="ldt-dialog__title"
             >{title}</DialogPrimitive.Title
@@ -98,9 +98,9 @@
             class="ldt-button ldt-icon-button ldt-button--ghost"
             aria-label={closeLabel}>×</DialogPrimitive.Close
           >{/if}
-      </header>
+      </div>
       <div class="ldt-dialog__body">{@render children()}</div>
-      {#if footer}<footer class="ldt-dialog__footer">{@render footer()}</footer>{/if}
+      {#if footer}<div class="ldt-dialog__footer">{@render footer()}</div>{/if}
     </DialogPrimitive.Content>
   </DialogPrimitive.Portal>
 </DialogPrimitive.Root>

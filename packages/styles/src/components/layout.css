@@ -11,10 +11,10 @@
   color: var(--loidolt-text);
   background: var(--loidolt-background);
 }
-.ldt-app-shell > :where(header, main, footer) {
+.ldt-app-shell > :where(header, main, footer, .ldt-app-shell__main) {
   min-width: 0;
 }
-.ldt-app-shell > main,
+.ldt-app-shell > :where(main, .ldt-app-shell__main),
 .ldt-workspace-container {
   /* Workspace normally sits directly in AppShell's main row. Naming that row as an inline-size
      container lets the same compact layout work when the shell itself is embedded or split. The
@@ -289,7 +289,10 @@
     gap: 0.15rem;
   }
   .ldt-contextbar__detail {
-    display: none;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
   .ldt-workspace,
   .ldt-workspace--sidebar,

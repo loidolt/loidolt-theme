@@ -187,7 +187,6 @@
 }
 .ldt-segmented-nav__hint {
   color: inherit;
-  opacity: 0.7;
   font-size: var(--loidolt-font-size-xs);
 }
 /* A selectable rail of thumbnails: listbox semantics, scroll-into-view, compact flip. */

@@ -73,6 +73,7 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ],
   ['Alert (body only)', Alert, { children: text('2 fields need attention.') }],
   ['AppShell', AppShell, { children: text('<p>Content</p>') }],
+  ['AppShell (embedded)', AppShell, { children: text('<p>Content</p>'), embedded: true }],
   [
     'Accordion',
     Accordion,

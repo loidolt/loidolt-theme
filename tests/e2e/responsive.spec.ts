@@ -69,6 +69,54 @@ test.describe('responsive catalog', () => {
     expect(groups.every((group) => group.scrollWidth > group.clientWidth)).toBe(true);
   });
 
+  test('buttons and context details preserve content at compact widths', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop-chromium', 'One narrow viewport is sufficient.');
+    await page.setViewportSize({ width: 320, height: 568 });
+
+    await page.goto('/components/button');
+    const button = page.locator('#docs-content .ldt-button').first();
+    await button.evaluate((element) => {
+      element.textContent =
+        'Create a localized fabrication package with every selected drawing and attachment';
+    });
+    const buttonRoot = await page.locator('html').evaluate(dimensions);
+    const buttonSize = await button.evaluate(dimensions);
+    expect(buttonRoot.scrollWidth).toBeLessThanOrEqual(buttonRoot.clientWidth);
+    expect(buttonSize.scrollWidth).toBeLessThanOrEqual(buttonSize.clientWidth);
+
+    await page.goto('/components/context-bar');
+    const detail = page.locator('.ldt-contextbar__detail');
+    await expect(detail).toBeVisible();
+    await expect(detail).toContainText('Real-data preview ready');
+  });
+
+  test('selected inset controls retain a 3:1 focus indicator', async ({ page }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== 'desktop-chromium',
+      'One browser contrast check is sufficient.'
+    );
+    await page.goto('/components/toggle-group');
+    const selected = page.locator('.ldt-toggle-group__item[data-state="on"]').first();
+    await selected.focus();
+    const colors = await selected.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { background: style.backgroundColor, outline: style.outlineColor };
+    });
+    const channels = (value: string) => (value.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+    const luminance = (value: string) => {
+      const linear = channels(value).map((channel) => {
+        const normalized = channel / 255;
+        return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    };
+    const lighter = Math.max(luminance(colors.background), luminance(colors.outline));
+    const darker = Math.min(luminance(colors.background), luminance(colors.outline));
+    expect((lighter + 0.05) / (darker + 0.05)).toBeGreaterThanOrEqual(3);
+  });
+
   test('embedded workspaces stack based on their container, not only the viewport', async ({
     page,
   }, testInfo) => {

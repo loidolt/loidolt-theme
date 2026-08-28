@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button, createToaster, Toast, ToastViewport } from '@loidolt/theme-svelte';
 
-  const toaster = createToaster({ duration: 6000 });
+  const toaster = createToaster();
 </script>
 
 <div class="ldt-cluster">
@@ -21,7 +21,12 @@
   </Button>
 </div>
 
-<ToastViewport onpointerenter={toaster.pause} onpointerleave={toaster.resume}>
+<ToastViewport
+  onpointerenter={toaster.pause}
+  onpointerleave={toaster.resume}
+  onfocusin={toaster.pause}
+  onfocusout={toaster.resume}
+>
   {#each toaster.toasts as toast (toast.id)}
     <Toast {...toast} onDismiss={() => toaster.dismiss(toast.id)} />
   {/each}

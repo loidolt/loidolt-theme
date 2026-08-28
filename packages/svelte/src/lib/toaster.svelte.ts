@@ -14,7 +14,7 @@ export interface ToastRecord extends ToastOptions {
 }
 
 export interface ToasterOptions {
-  /** Default `duration` for toasts that do not set one. */
+  /** Default `duration` for toasts that do not set one. Defaults to persistent (`0`). */
   duration?: number;
   /** Oldest toasts past this count are dropped. */
   max?: number;
@@ -41,7 +41,12 @@ export interface Toaster {
  *
  * ```svelte
  * const toaster = createToaster();
- * <ToastViewport onpointerenter={toaster.pause} onpointerleave={toaster.resume}>
+ * <ToastViewport
+ *   onpointerenter={toaster.pause}
+ *   onpointerleave={toaster.resume}
+ *   onfocusin={toaster.pause}
+ *   onfocusout={toaster.resume}
+ * >
  *   {#each toaster.toasts as toast (toast.id)}
  *     <Toast {...toast} onDismiss={() => toaster.dismiss(toast.id)} />
  *   {/each}
@@ -49,7 +54,7 @@ export interface Toaster {
  * ```
  */
 export function createToaster(options: ToasterOptions = {}): Toaster {
-  const { duration: defaultDuration = 5000, max = 5 } = options;
+  const { duration: defaultDuration = 0, max = 5 } = options;
 
   if (!Number.isInteger(max) || max < 1) {
     throw new RangeError('createToaster: `max` must be a positive integer');

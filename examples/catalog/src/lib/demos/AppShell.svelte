@@ -3,7 +3,7 @@
 </script>
 
 <div class="docs-frame">
-  <AppShell mainId="demo-app-shell-main">
+  <AppShell mainId="demo-app-shell-main" embedded>
     {#snippet header()}
       <Topbar navLabel="Demo">
         {#snippet brand()}<Brand name="Topo Studio" meta="Shell" />{/snippet}
