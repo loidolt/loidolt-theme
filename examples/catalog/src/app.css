@@ -167,6 +167,13 @@
 .docs-notes code {
   overflow-wrap: anywhere;
 }
+.docs-prose-sample {
+  --ldt-prose-width: 60ch;
+  margin-top: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--loidolt-border);
+  background: var(--loidolt-surface);
+}
 .docs-notes {
   max-width: 70ch;
   margin: 0;
