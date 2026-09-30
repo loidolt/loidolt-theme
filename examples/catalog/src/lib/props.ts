@@ -15,6 +15,8 @@ export interface PropDoc {
 }
 
 export interface ComponentDocs {
+  /** Which package the component ships in (`svelte`, `charts`, `maps`, `docs`). */
+  package: string;
   /** Types the props extend or intersect — the attributes forwarded to the root element. */
   bases: string[];
   props: PropDoc[];

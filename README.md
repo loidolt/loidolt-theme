@@ -12,11 +12,18 @@ accessibility contract, and a generated prop table for every component.
 
 ## Packages
 
-| Package                 | Purpose                                                                                                            |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `@loidolt/theme-tokens` | Typed colour, typography, spacing, sizing, border, shadow, z-index, and motion values plus generated CSS variables |
-| `@loidolt/theme-styles` | Bundled fonts, base styles, accessibility helpers, component classes, and layout utilities                         |
-| `@loidolt/theme-svelte` | Accessible Svelte 5 controls, overlays, feedback, surfaces, and application layouts                                |
+| Package                 | Purpose                                                                                                               |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `@loidolt/theme-tokens` | Typed colour, typography, spacing, sizing, border, shadow, z-index, and motion values plus generated CSS variables    |
+| `@loidolt/theme-styles` | Bundled fonts, base styles, accessibility helpers, component classes, and layout utilities                            |
+| `@loidolt/theme-svelte` | Accessible Svelte 5 controls, overlays, feedback, surfaces, and application layouts                                   |
+| `@loidolt/theme-charts` | Accessible ECharts charts painted from the tokens, each with a data-table alternative ([README](packages/charts))     |
+| `@loidolt/theme-maps`   | Accessible MapLibre maps on a token-coloured basemap, with keyboard markers and layer tools ([README](packages/maps)) |
+| `@loidolt/theme-docs`   | Safe, server-rendered Markdown documentation: pages, contents, highlighted code, diagrams ([README](packages/docs))   |
+
+The last three are optional. Each has its own heavy peer (`echarts`, `maplibre-gl`, and optionally
+`shiki`/`mermaid`), so an app that draws no charts never installs ECharts. All six are released
+together on one version.
 
 ## Requirements
 
@@ -188,10 +195,12 @@ The catalog ships a live example of both (a dark-mode switch and a side-by-side 
 
 ### Cascade layers
 
-Styles are published in `@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.components,
-loidolt.utilities, loidolt.a11y`. Unlayered application CSS outranks all of them, so plain
-selectors in your app always win — no `!important` needed. `loidolt.reset` is deliberately empty
-and reserved for an app's own reset.
+Styles are published in `@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.vendor,
+loidolt.components, loidolt.utilities, loidolt.a11y`. Unlayered application CSS outranks all of
+them, so plain selectors in your app always win — no `!important` needed. `loidolt.reset` is
+deliberately empty and reserved for an app's own reset. `loidolt.vendor` holds third-party CSS a
+loidolt package ships with (MapLibre's, for `@loidolt/theme-maps`), so our component styles can
+restyle it.
 
 ## Colour scheme
 
@@ -253,6 +262,30 @@ export const handle = ({ event, resolve }) =>
 
 Both take the same options (`storageKey`, `attribute`, `defaultPreference`, `defaultScheme`), and
 they must agree: the script decides the first paint, the store decides everything after it.
+
+### Colours for canvas and WebGL
+
+Charts and maps paint on a canvas, which cannot read `var()`. `createTokenColors()` reads
+semantic roles off the page as concrete hex values — so an app's own theme reaches the canvas —
+and follows every theme change, bumping `version` when the colours actually change:
+
+```ts
+import { createTokenColors } from '@loidolt/theme-svelte';
+import { chartRoles } from '@loidolt/theme-tokens';
+
+const palette = createTokenColors(chartRoles, { element: () => node });
+// palette.colors.categorical → ['#c65224', '#2f6f8a', …] in light, the dark set in dark
+```
+
+Pass the element you paint into, so a scoped `data-theme` subtree is honoured. On the server,
+and anywhere the page cannot be read, it falls back to the reference light or dark values
+(`chartColors()`, `mapColors()` and `roleValue()` in `@loidolt/theme-tokens` give the same
+values without a DOM).
+
+The tokens include eight categorical series colours (`--loidolt-chart-1` … `-8`), a five-step
+sequential ramp, a seven-step diverging ramp centred on a neutral, gain/loss colours and the
+basemap roles (`--loidolt-map-*`). Each is checked in both themes: every series holds 3:1
+against every surface and stays visibly distinct from the others, and map labels hold 4.5:1.
 
 ## Responsive layout
 
@@ -399,6 +432,44 @@ Every rule weighs zero specificity: a component class inside prose (`.ldt-button
 that should read as UI rather than content. Code blocks keep a background written inline by a
 highlighter such as Shiki. `--ldt-prose-size` scales the text and `--ldt-prose-width` caps the
 measure.
+
+## Charts, maps and documentation
+
+These live in their own packages, and each README covers it in full. In short:
+
+```svelte
+<script lang="ts">
+  import { LineChart } from '@loidolt/theme-charts';
+  import { MapView, MapMarker } from '@loidolt/theme-maps';
+  import { Markdown } from '@loidolt/theme-docs';
+</script>
+
+<LineChart title="Sheets per month" {data} dataTable="toggle" />
+
+<MapView label="Workshop" center={[-122.66, 45.51]} zoom={13}>
+  <MapMarker lngLat={[-122.66, 45.51]} label="Workshop" />
+</MapView>
+
+<Markdown source={guide} />
+```
+
+- **[`@loidolt/theme-charts`](packages/charts)** — `LineChart`, `BarChart`, `PieChart`,
+  `ScatterChart`, `RadarChart`, `FunnelChart`, `GaugeChart`, `HeatmapChart`, `TreemapChart`,
+  `CandlestickChart`, `SankeyChart`, and `Chart` for any ECharts option. Every chart is a named
+  figure with a generated description and its data as a real table. The chart colours
+  (`--loidolt-chart-*`) are read live, so a theme change recolours the chart in place.
+- **[`@loidolt/theme-maps`](packages/maps)** — `MapView`, `MapSource`, seven layer types,
+  `MapMarker` (a named button), `MapPopup`, legends, `BasemapSwitcher`, `MapFeatureList`,
+  `LayerManager` and `DeckOverlay`. The default basemap draws
+  [OpenFreeMap](https://openfreemap.org) vector tiles in the `--loidolt-map-*` colours;
+  `basemap="blank"` needs no network. `@loidolt/theme-maps/core` adds routing, distance,
+  spatial-index and level-of-detail helpers that run anywhere, including a worker. Import
+  `@loidolt/theme-maps/styles.css` next to the theme stylesheet.
+- **[`@loidolt/theme-docs`](packages/docs)** — `Markdown`, `MarkdownPage`, `CodeSnippet`,
+  `MermaidDiagram`, `TableOfContents`, `TocPanel`, `DocsHub` and `DocsCard`, over
+  `renderMarkdown` (also in `@loidolt/theme-docs/core` for a `load`). Raw HTML is escaped and
+  URLs are allow-listed unless you opt in. Shiki highlighting follows the
+  `--loidolt-syntax-*` tokens.
 
 ## Components
 

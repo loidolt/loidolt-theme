@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/svelte';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { createRawSnippet } from 'svelte';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -20,6 +20,16 @@ async function popupItem(name: string, role = 'menuitemcheckbox') {
   const item = labels.map((label) => label.closest(`[role="${role}"]`)).find(Boolean);
   expect(item, `no [role="${role}"] around "${name}"`).toBeTruthy();
   return item as HTMLElement;
+}
+
+/**
+ * Closes the open menu and waits for the page to take clicks again: Bits leaves
+ * `pointer-events: none` on <body> for a short delay after a menu closes, and a click inside that
+ * window fails or not depending on the runner's speed.
+ */
+async function closeMenu(user: ReturnType<typeof userEvent.setup>) {
+  await user.keyboard('{Escape}');
+  await waitFor(() => expect(document.body.style.pointerEvents).not.toBe('none'));
 }
 
 afterEach(() => vi.useRealTimers());
@@ -86,7 +96,7 @@ describe('DataTable', () => {
     expect(acrylic).toHaveTextContent('4');
     await user.click(acrylic);
     await user.click(await popupItem('cork'));
-    await user.keyboard('{Escape}');
+    await closeMenu(user);
     expect(screen.getByRole('status')).toHaveTextContent('of 8');
     expect(screen.getByRole('button', { name: /Stock/ })).toHaveTextContent('2');
 
@@ -101,7 +111,7 @@ describe('DataTable', () => {
     await user.click(screen.getByRole('button', { name: 'Columns' }));
     expect(screen.queryByText('Layers', { selector: '[role="menuitemcheckbox"] span' })).toBeNull();
     await user.click(await popupItem('Stock'));
-    await user.keyboard('{Escape}');
+    await closeMenu(user);
     expect(screen.queryByRole('columnheader', { name: 'Stock' })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Columns' }));

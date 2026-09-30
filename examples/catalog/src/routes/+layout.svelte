@@ -1,5 +1,6 @@
 <script lang="ts">
   import '../app.css';
+  import '$lib/loaders.js';
   import { base } from '$app/paths';
   import { page } from '$app/state';
   import {

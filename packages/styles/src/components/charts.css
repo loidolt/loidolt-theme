@@ -1,0 +1,39 @@
+/* @loidolt/theme-charts. The chart itself is painted by ECharts from the same tokens (read at
+   runtime through `createTokenColors`); this file styles everything around the canvas. */
+.ldt-chart {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  margin: 0;
+}
+/* The label voice, as a stat's label: a chart caption names data, it is not a heading. */
+.ldt-chart__title {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
+}
+.ldt-chart__canvas,
+.ldt-chart__state {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: var(--ldt-chart-height, 20rem);
+}
+.ldt-chart__canvas[hidden] {
+  display: none;
+}
+.ldt-chart__state.ldt-empty-state {
+  height: auto;
+  min-height: var(--ldt-chart-height, 20rem);
+  align-content: center;
+}
+.ldt-chart__alert :where(p) {
+  margin: 0 0 0.5rem;
+}
+.ldt-chart__table-toggle {
+  justify-self: start;
+}
+.ldt-chart__table[hidden] {
+  display: none;
+}

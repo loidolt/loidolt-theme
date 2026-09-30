@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { routes } from './routes';
 
 const widths = [320, 360, 390, 768, 844];

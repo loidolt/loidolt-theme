@@ -1,0 +1,10 @@
+/*
+ * MapLibre's own stylesheet, slotted into the `loidolt.vendor` cascade layer. The layer order
+ * is restated first so it holds whichever of this file and `@loidolt/theme-styles` is imported
+ * first: the base resets must not reach MapLibre's controls, and the map styles in
+ * `@loidolt/theme-styles` must be able to restyle them.
+ */
+@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.vendor, loidolt.components,
+  loidolt.utilities, loidolt.a11y;
+
+@import 'maplibre-gl/dist/maplibre-gl.css' layer(loidolt.vendor);

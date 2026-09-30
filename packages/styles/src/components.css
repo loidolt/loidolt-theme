@@ -7,4 +7,7 @@
 @import './components/selection.css';
 @import './components/layout.css';
 @import './components/media.css';
+@import './components/charts.css';
+@import './components/maps.css';
 @import './components/prose.css';
+@import './components/docs.css';

@@ -7,12 +7,26 @@ export interface Entry {
   slug: string;
   /** Exported component name, and the key into the generated prop data. */
   name: string;
+  /** The package it is imported from, when that is not `@loidolt/theme-svelte`. */
+  package?: PackageId;
   group: Group;
   /** One line: what it is, and when to reach for it. */
   summary: string;
   /** Things worth knowing before using it — accessibility contracts, gotchas, related parts. */
   notes?: string[];
 }
+
+export const PACKAGES = {
+  svelte: '@loidolt/theme-svelte',
+  charts: '@loidolt/theme-charts',
+  maps: '@loidolt/theme-maps',
+  docs: '@loidolt/theme-docs',
+} as const;
+
+export type PackageId = keyof typeof PACKAGES;
+
+/** The npm package an entry is imported from. */
+export const packageOf = (entry: Entry) => PACKAGES[entry.package ?? 'svelte'];
 
 export const GROUPS = [
   'Actions',
@@ -24,6 +38,9 @@ export const GROUPS = [
   'Navigation',
   'Layout',
   'Media',
+  'Charts',
+  'Maps',
+  'Docs',
   'Theme',
 ] as const;
 
@@ -850,6 +867,386 @@ export const entries: Entry[] = [
       'Slides are named groups ("2 of 5: Canyon relief"). The slide area is a polite live region while the user drives it, and silent while it rotates on its own.',
       '`autoplay` pauses while the pointer or focus is inside, always offers a pause button (WCAG 2.2.2), and starts paused when the user prefers reduced motion.',
     ],
+  },
+  {
+    slug: 'chart',
+    name: 'Chart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'Any ECharts option, themed from the tokens and wrapped as an accessible figure.',
+    notes: [
+      'Takes an option or a function of the theme colours. Whatever the option leaves unset — palette, axes, gridlines, tooltip, legend — comes from the tokens, read live off the page, so a theme change recolours the chart in place.',
+      'A `<figure>` whose caption names the picture (`role="img"`), with `description` read after it. Pass `table` for the data itself: rendered for assistive tech by default, behind a disclosure button with `dataTable="toggle"`, or always with `visible`.',
+      'Updates replace the option, so a series removed from the data leaves the chart. `merge` keeps zoom and legend state instead.',
+      'ECharts loads in the browser only. The server renders the caption, description and table, and if ECharts cannot load at all the chart says so and shows its table.',
+    ],
+  },
+  {
+    slug: 'chart-data-table',
+    name: 'ChartDataTable',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'A chart’s data as a table — the non-visual alternative every chart carries.',
+    notes: [
+      'Each chart’s `…Table()` helper in `@loidolt/theme-charts/core` builds the rows. First cells are row headers; numbers are right-aligned and formatted with `valueFormat`.',
+      '`visuallyHidden` keeps it for assistive tech only, as a plain table rather than a scroll region, so no invisible tab stop is left for keyboard users.',
+    ],
+  },
+  {
+    slug: 'line-chart',
+    name: 'LineChart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'Lines over shared categories — trends over time. `area` fills under them.',
+    notes: [
+      'Its description reads each series’ trend and extremes ("Birch ply rises, from a low of 42 in Jan to a high of 92 in Nov").',
+      'Points show for 12 or fewer categories. `null` values leave a gap rather than drawing through zero.',
+    ],
+  },
+  {
+    slug: 'bar-chart',
+    name: 'BarChart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'Bars, vertical or horizontal, side by side or stacked.',
+    notes: [
+      'Horizontal bars suit long category names and read top-down in data order.',
+      '`decal` adds a pattern to each series, so a reader never has to tell series apart by colour alone.',
+    ],
+  },
+  {
+    slug: 'pie-chart',
+    name: 'PieChart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'Parts of a whole. `innerRadius` makes it a donut with a centre label.',
+    notes: [
+      'Negative values throw — a part of a whole cannot be less than nothing. The data table adds each part’s share.',
+      'Labels printed on slices take whichever ink reads better on that slice.',
+    ],
+  },
+  {
+    slug: 'funnel-chart',
+    name: 'FunnelChart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'Stages narrowing from first to last, such as a conversion funnel.',
+  },
+  {
+    slug: 'scatter-chart',
+    name: 'ScatterChart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'Points on two value axes, with optional least-squares trend lines.',
+    notes: [
+      'A trend line is skipped for a series whose x values are all equal, where the fit is undefined.',
+    ],
+  },
+  {
+    slug: 'radar-chart',
+    name: 'RadarChart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'Several series compared across the same measures.',
+  },
+  {
+    slug: 'gauge-chart',
+    name: 'GaugeChart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'One reading on a scale, filled in the accent colour or shown with a needle.',
+  },
+  {
+    slug: 'heatmap-chart',
+    name: 'HeatmapChart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'A grid of values coloured on the sequential ramp.',
+    notes: [
+      'The ramp runs from least to most in both themes; in dark it gets lighter toward "most", so the busiest cells always stand out from the surface.',
+    ],
+  },
+  {
+    slug: 'treemap-chart',
+    name: 'TreemapChart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'Nested sizes as rectangles; click a group to zoom into it.',
+    notes: ['The data table lists every node by its path ("Sheet stock › Cork").'],
+  },
+  {
+    slug: 'candlestick-chart',
+    name: 'CandlestickChart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'Open, high, low and close per period, with optional volume and zoom.',
+    notes: [
+      'Rises and falls take the gain and loss tokens; pass `upColor` and `downColor` for markets that use the opposite convention.',
+    ],
+  },
+  {
+    slug: 'sankey-chart',
+    name: 'SankeyChart',
+    package: 'charts',
+    group: 'Charts',
+    summary: 'Flows between named nodes, sized by volume.',
+    notes: ['Links to unknown nodes, loops and zero-sized flows throw before ECharts sees them.'],
+  },
+  {
+    slug: 'map-view',
+    name: 'MapView',
+    package: 'maps',
+    group: 'Maps',
+    summary:
+      'A MapLibre map on the loidolt basemap, recoloured with the theme and moved by keyboard as well as pointer.',
+    notes: [
+      'The default basemap is drawn in the loidolt palette from OpenFreeMap’s free, keyless OpenMapTiles tiles; `basemap="blank"` draws land colour only and makes no network requests. Pass `tiles` to use another OpenMapTiles-schema provider, or `mapStyle` for a style of your own.',
+      'The canvas is named by `label` and described by `description` plus a sentence on the keyboard controls. Arrow keys pan and + and − zoom when it has focus; after a keyboard move, where the map landed is announced.',
+      'A theme change repaints the basemap in place — no reload — and data layers with a paint function follow it too.',
+      '`center` and `zoom` are bindable both ways. MapLibre loads in the browser only; the server renders the frame and description, and a browser without WebGL gets a message instead of a broken canvas.',
+    ],
+  },
+  {
+    slug: 'map-source',
+    name: 'MapSource',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'GeoJSON (or any MapLibre source) for the layers inside it, with optional clustering.',
+    notes: [
+      'Replace the `data` object to update the map in place; the layers drawing it are untouched.',
+      'Layers inside a `MapSource` pick up its id. Clusters come with `clusterColor()`, `clusterRadius()` and `expandCluster()` from `/core`.',
+    ],
+  },
+  {
+    slug: 'fill-layer',
+    name: 'FillLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Polygons filled from a source, in the first series colour unless told otherwise.',
+    notes: [
+      '`paint` merges over themed defaults; pass a function of the colours to follow light and dark. Only changed properties are sent to MapLibre.',
+      'Features with an id get a `hover` feature state, for `feature-state` expressions.',
+    ],
+  },
+  {
+    slug: 'line-layer',
+    name: 'LineLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Lines — routes, boundaries, outlines — in the accent colour by default.',
+  },
+  {
+    slug: 'circle-layer',
+    name: 'CircleLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Points as circles, with a ring in the surface colour so they stand off the basemap.',
+  },
+  {
+    slug: 'symbol-layer',
+    name: 'SymbolLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Text and icons placed on features, labelled in the map label colour with a halo.',
+    notes: [
+      'Label fonts come from the glyph server (Noto Sans on OpenFreeMap), not the page’s fonts.',
+    ],
+  },
+  {
+    slug: 'fill-extrusion-layer',
+    name: 'FillExtrusionLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Polygons raised into 3D by a height property.',
+  },
+  {
+    slug: 'heatmap-layer',
+    name: 'HeatmapLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Point density as a heatmap, coloured on the sequential ramp.',
+  },
+  {
+    slug: 'raster-layer',
+    name: 'RasterLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Raster tiles or a georeferenced image, such as a scanned plan.',
+  },
+  {
+    slug: 'map-marker',
+    name: 'MapMarker',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'The loidolt pin on a map: a real button with a name, and an optional popup.',
+    notes: [
+      'The pin points from its bottom-left corner, so it is anchored there. A marker with nothing to do is a named image rather than a dead tab stop.',
+      'With a `popup`, pressing the marker opens it and moves focus in; Escape or the close button closes it and focus returns to the marker.',
+    ],
+  },
+  {
+    slug: 'map-popup',
+    name: 'MapPopup',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'A non-modal panel pointing at a spot on the map.',
+    notes: [
+      'Named by `label`; focus moves in when it opens and back when it closes. Square, on the surface, without MapLibre’s tip.',
+    ],
+  },
+  {
+    slug: 'map-control',
+    name: 'MapControl',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Any content as a map control, stacked in a corner with MapLibre’s own.',
+  },
+  {
+    slug: 'map-legend',
+    name: 'MapLegend',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'A key for the colours on a map — categories or a continuous ramp.',
+    notes: [
+      'Inside a `MapView` it becomes a map control; outside one it sits in the page flow beside the map.',
+    ],
+  },
+  {
+    slug: 'map-legend-group',
+    name: 'MapLegendGroup',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Several legends in one control, each collapsible.',
+  },
+  {
+    slug: 'coordinate-display',
+    name: 'CoordinateDisplay',
+    package: 'maps',
+    group: 'Maps',
+    summary:
+      'The coordinate under the pointer, or at the centre for keyboard users, with the zoom.',
+  },
+  {
+    slug: 'basemap-switcher',
+    name: 'BasemapSwitcher',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'A toggle between the loidolt basemap, the plain one, and styles of your own.',
+  },
+  {
+    slug: 'map-feature-list',
+    name: 'MapFeatureList',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Every place on a map as a list — the non-visual way to find one and go to it.',
+    notes: [
+      'Choosing an item flies the map there (or jumps, for reduced motion). Place it beside the map and pass the bound `map`.',
+    ],
+  },
+  {
+    slug: 'layer-manager',
+    name: 'LayerManager',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'A map control listing its layers, to show, fade and reorder them.',
+    notes: [
+      'Lists every layer placed with a layer component, topmost first, named by each layer’s `label`. Pass `layers` to offer only some.',
+      'Reorder with the arrow buttons, or Alt + ↑ and ↓ anywhere in a row. Each move is announced ("Stops moved to position 1 of 4") and focus stays with the moved layer.',
+      'Opacity sets every opacity property the layer type has — both text and icon for a symbol layer.',
+    ],
+  },
+  {
+    slug: 'deck-overlay',
+    name: 'DeckOverlay',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'deck.gl layers drawn on the map, for data too large or too 3D for MapLibre alone.',
+    notes: [
+      "deck.gl is an optional peer. Register it once with `setDeckLoader(() => import('@deck.gl/mapbox'))`; until then the overlay draws nothing and calls `onUnavailable`.",
+      'Drawn on its own canvas over the map by default. `interleaved` puts deck.gl layers among the map’s own, but needs a deck.gl release that supports your MapLibre major — deck.gl 9.4 does not yet support MapLibre 6.',
+    ],
+  },
+  {
+    slug: 'markdown',
+    name: 'Markdown',
+    package: 'docs',
+    group: 'Docs',
+    summary:
+      'Markdown rendered into loidolt prose — safe by default, highlighted and diagrammed in the browser.',
+    notes: [
+      'Raw HTML in the markdown is shown as text, and links and images keep only safe URLs (`javascript:` and friends are dropped). Turn on `allowHtml` only for markdown you wrote, or with a `sanitize` hook.',
+      'The first render is synchronous, so the whole document is in the server’s HTML. With Shiki registered (`setHighlighterLoader`), code is highlighted on the syntax tokens, so it follows light and dark with no second pass.',
+      'Admonitions (`:::note`, `> [!TIP]`), footnotes, definition lists and task lists all render with their accessible names; every code block is keyboard-reachable and has a copy button.',
+      'Mermaid fences become named pictures when Mermaid is registered, with the source kept in a disclosure beneath, and are redrawn in the theme’s colours when it changes.',
+    ],
+  },
+  {
+    slug: 'markdown-page',
+    name: 'MarkdownPage',
+    package: 'docs',
+    group: 'Docs',
+    summary:
+      'A whole documentation page: title and description from frontmatter, the document, its contents and previous/next links.',
+    notes: [
+      'The document’s own `#` heading becomes the page title and is left out of the body, so the page has exactly one level-1 heading.',
+      'The contents sit beside the page on wide screens and behind an "On this page" button on narrow ones.',
+    ],
+  },
+  {
+    slug: 'code-snippet',
+    name: 'CodeSnippet',
+    package: 'docs',
+    group: 'Docs',
+    summary: 'One highlighted block of code, with an optional filename and a copy button.',
+    notes: [
+      'Distinct from `CodeBlock` in `@loidolt/theme-svelte`, which is a single selectable value such as a key or a command.',
+    ],
+  },
+  {
+    slug: 'mermaid-diagram',
+    name: 'MermaidDiagram',
+    package: 'docs',
+    group: 'Docs',
+    summary:
+      'A Mermaid diagram as a named picture, with a written description and its source to hand.',
+    notes: [
+      '`label` names the picture and `description` says what it shows — a diagram is only as accessible as its words. Until it is drawn, or if Mermaid is unavailable, the source stands in.',
+    ],
+  },
+  {
+    slug: 'table-of-contents',
+    name: 'TableOfContents',
+    package: 'docs',
+    group: 'Docs',
+    summary: 'The headings of a page, marking the one being read.',
+    notes: [
+      'The current heading is `aria-current="location"`. Scroll tracking looks only inside `container`, and stops when unmounted.',
+    ],
+  },
+  {
+    slug: 'toc-panel',
+    name: 'TocPanel',
+    package: 'docs',
+    group: 'Docs',
+    summary: 'A table of contents beside the page, or behind a button on narrow screens.',
+    notes: [
+      'Both forms render on the server and CSS picks one by width, so nothing jumps on load. Following a link closes the drawer.',
+    ],
+  },
+  {
+    slug: 'docs-hub',
+    name: 'DocsHub',
+    package: 'docs',
+    group: 'Docs',
+    summary: 'An index of documentation: sections, each a grid of page cards.',
+  },
+  {
+    slug: 'docs-card',
+    name: 'DocsCard',
+    package: 'docs',
+    group: 'Docs',
+    summary: 'A page in a docs index — the whole card is the link.',
+    notes: ['External links open in a new tab and say so to assistive tech.'],
   },
 ];
 

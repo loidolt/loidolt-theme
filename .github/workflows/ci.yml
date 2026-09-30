@@ -29,7 +29,7 @@ jobs:
       - run: npm ci
       - run: npm run audit
       - run: npm run check
-      - run: npm run test:coverage -w @loidolt/theme-svelte
+      - run: npm run test:coverage --workspaces --if-present
       - name: Install browser used by end-to-end tests
         run: npx playwright install --with-deps chromium
       - name: Verify accessibility and keyboard behavior in Chromium
@@ -39,10 +39,16 @@ jobs:
           npm pack --dry-run -w @loidolt/theme-tokens
           npm pack --dry-run -w @loidolt/theme-styles
           npm pack --dry-run -w @loidolt/theme-svelte
+          npm pack --dry-run -w @loidolt/theme-charts
+          npm pack --dry-run -w @loidolt/theme-maps
+          npm pack --dry-run -w @loidolt/theme-docs
           # Pinned so a tool release cannot flip CI red on an untouched repo.
           npx --yes publint@0.3.24 run packages/tokens
           npx --yes publint@0.3.24 run packages/styles
           npx --yes publint@0.3.24 run packages/svelte
+          npx --yes publint@0.3.24 run packages/charts
+          npx --yes publint@0.3.24 run packages/maps
+          npx --yes publint@0.3.24 run packages/docs
       - name: Validate published types
         run: |
           # CSS entrypoints have no types by design, so they are excluded rather than reported.
@@ -53,4 +59,14 @@ jobs:
           # matters for consumers, and it stays green.
           npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/svelte \
             --exclude-entrypoints styles.css \
+            --ignore-rules cjs-resolves-to-esm internal-resolution-error
+          # The chart, map and docs packages add a `/core` subpath. Subpath exports do not exist
+          # for node10 resolution at all, and these packages are ESM for bundlers; `node16` is
+          # the profile that matters.
+          npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/charts --profile node16 \
+            --ignore-rules cjs-resolves-to-esm internal-resolution-error
+          npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/maps --profile node16 \
+            --exclude-entrypoints styles.css \
+            --ignore-rules cjs-resolves-to-esm internal-resolution-error
+          npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/docs --profile node16 \
             --ignore-rules cjs-resolves-to-esm internal-resolution-error

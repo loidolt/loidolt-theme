@@ -1,0 +1,323 @@
+/* @loidolt/theme-maps. The map itself is painted by MapLibre from the same tokens (read at
+   runtime through `createTokenColors`); this file dresses MapLibre's controls, popups and
+   attribution, and the loidolt pieces placed on the map. It sits in `loidolt.components`, after
+   the `loidolt.vendor` layer MapLibre's own stylesheet goes in, so it wins without `!important`. */
+.ldt-map {
+  position: relative;
+  min-width: 0;
+  height: var(--ldt-map-height, 25rem);
+  overflow: hidden;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  background: var(--loidolt-map-land);
+}
+.ldt-map__canvas {
+  position: absolute;
+  inset: 0;
+}
+.ldt-map__canvas[hidden],
+.ldt-map__children[hidden] {
+  display: none;
+}
+.ldt-map__alert {
+  margin: 0.75rem;
+}
+.ldt-map :where(.maplibregl-map) {
+  color: var(--loidolt-text);
+  font: var(--loidolt-font-size-sm) / var(--loidolt-font-line-height-normal)
+    var(--loidolt-font-utility);
+}
+
+/* Controls stay above markers, which can be placed anywhere — including under a corner. */
+.ldt-map
+  :where(
+    .maplibregl-ctrl-top-left,
+    .maplibregl-ctrl-top-right,
+    .maplibregl-ctrl-bottom-left,
+    .maplibregl-ctrl-bottom-right
+  ) {
+  z-index: var(--loidolt-z-raised);
+}
+
+/* Control groups: square, hairline-bordered, on the surface — the toolbar look. */
+.ldt-map .maplibregl-ctrl-group {
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  border-radius: 0;
+  background: var(--loidolt-surface);
+  box-shadow: none;
+}
+.ldt-map .maplibregl-ctrl-group button {
+  width: 2rem;
+  height: 2rem;
+  color: var(--loidolt-text);
+}
+.ldt-map .maplibregl-ctrl-group button + button {
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-map .maplibregl-ctrl-group button:not(:disabled):hover {
+  background: var(--loidolt-surface-alt);
+}
+.ldt-map .maplibregl-ctrl-group button:focus-visible {
+  box-shadow: none;
+}
+/* MapLibre's icons are dark images, invisible on a dark surface. Masks of our own glyphs, filled
+   with the text colour, follow every theme. */
+.ldt-map .maplibregl-ctrl button .maplibregl-ctrl-icon {
+  background-image: none;
+  background-color: currentColor;
+  mask: var(--ldt-map-icon) center / 1rem 1rem no-repeat;
+}
+.ldt-map .maplibregl-ctrl-zoom-in {
+  --ldt-map-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 3v10M3 8h10' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E");
+}
+.ldt-map .maplibregl-ctrl-zoom-out {
+  --ldt-map-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8h10' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E");
+}
+.ldt-map .maplibregl-ctrl-compass {
+  --ldt-map-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 2 11 8H5z'/%3E%3Cpath d='M5 8h6L8 14z' fill-opacity='.35'/%3E%3C/svg%3E");
+}
+.ldt-map .maplibregl-ctrl-fullscreen,
+.ldt-map .maplibregl-ctrl-shrink {
+  --ldt-map-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5'%3E%3Cpath d='M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4'/%3E%3C/svg%3E");
+}
+.ldt-map .maplibregl-ctrl-geolocate {
+  --ldt-map-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5'%3E%3Cpath d='M8 1v3M8 12v3M1 8h3M12 8h3'/%3E%3Crect x='4.5' y='4.5' width='7' height='7'/%3E%3C/svg%3E");
+}
+.ldt-map .maplibregl-ctrl-geolocate.maplibregl-ctrl-geolocate-active {
+  color: var(--loidolt-accent);
+}
+.ldt-map .maplibregl-ctrl-attrib-button {
+  --ldt-map-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M7 7h2v6H7zM7 3h2v2H7z'/%3E%3C/svg%3E");
+}
+
+/* Attribution: required by the tile licence, so readable — just quiet. */
+.ldt-map .maplibregl-ctrl-attrib,
+.ldt-map .maplibregl-ctrl-attrib.maplibregl-compact {
+  border-radius: 0;
+  color: var(--loidolt-text-muted);
+  background: var(--loidolt-surface);
+  font-size: var(--loidolt-font-size-xs);
+}
+.ldt-map .maplibregl-ctrl-attrib a {
+  display: inline-block;
+  padding-block: 0.35rem;
+  color: var(--loidolt-text);
+  line-height: 1.5;
+}
+.ldt-map .maplibregl-ctrl-attrib-button {
+  border-radius: 0;
+  background-color: transparent;
+}
+.ldt-map .maplibregl-ctrl-scale {
+  border-color: var(--loidolt-text-muted);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  font-size: var(--loidolt-font-size-xs);
+}
+
+/* Controls of our own: legends, coordinates, the basemap switcher. */
+.ldt-map-control {
+  padding: 0.5rem 0.65rem;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+}
+.ldt-map-control.ldt-basemap-switcher {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.ldt-map-legend {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 9rem;
+  max-width: 16rem;
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+}
+.ldt-map-legend__title,
+.ldt-map-legend__summary {
+  margin: 0;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
+}
+.ldt-map-legend__summary {
+  cursor: pointer;
+}
+.ldt-map-legend__section {
+  display: grid;
+  gap: 0.35rem;
+}
+.ldt-map-legend__items {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ldt-map-legend__item {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.ldt-map-legend__key {
+  flex: none;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--ldt-legend-color);
+}
+.ldt-map-legend__key--line {
+  height: 0.2rem;
+}
+.ldt-map-legend__key--dot {
+  border-radius: var(--loidolt-border-radius-pill);
+}
+.ldt-map-legend__ramp {
+  height: 0.6rem;
+}
+.ldt-map-legend__ends {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-xs);
+}
+.ldt-map-coordinates {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0;
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The layer manager: a titled list of switches, sliders and move buttons. */
+.ldt-layer-manager {
+  min-width: 13rem;
+  max-width: min(18rem, calc(100vw - 4rem));
+  /* Never taller than the map, so it cannot run into the controls in the corner below it. */
+  max-height: calc(var(--ldt-map-height, 25rem) - 4.5rem);
+  overflow-y: auto;
+}
+.ldt-layer-manager__title {
+  margin: 0;
+}
+.ldt-layer-manager__toggle {
+  width: 100%;
+  padding: 0.15rem 0;
+  border: 0;
+  color: var(--loidolt-text-muted);
+  background: none;
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-align: start;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.ldt-layer-manager__list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ldt-layer-manager__list[hidden] {
+  display: none;
+}
+.ldt-layer-manager__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem 0.5rem;
+  align-items: center;
+  padding-top: 0.5rem;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+}
+.ldt-layer-manager__row:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.ldt-layer-manager__move {
+  display: flex;
+  gap: 0.15rem;
+}
+.ldt-layer-manager__opacity {
+  grid-column: 1 / -1;
+}
+
+/* Markers: the loidolt pin or dot, in a button that takes focus. */
+.ldt-map-marker {
+  display: block;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: none;
+  cursor: pointer;
+}
+span.ldt-map-marker {
+  cursor: default;
+}
+
+/* Popups: square, on the surface, no tip — the same frame as a popover. */
+.ldt-map-popup .maplibregl-popup-content {
+  padding: 0;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  border-radius: 0;
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-popover);
+}
+.ldt-map-popup .maplibregl-popup-tip {
+  display: none;
+}
+.ldt-map-popup__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.25rem;
+  max-width: min(18rem, 80vw);
+  padding: 0.5rem 0.35rem 0.6rem 0.75rem;
+}
+.ldt-map-popup__body > :first-child {
+  margin-top: 0.3rem;
+}
+.ldt-map-popup__body > :last-child {
+  margin-bottom: 0;
+}
+
+/* The feature list: every place on the map, as rows. */
+.ldt-map-features__list {
+  margin: 0;
+  padding: 0;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+  list-style: none;
+}
+.ldt-map-features__item {
+  display: grid;
+  gap: 0.1rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+  border-left: 3px solid transparent;
+  color: var(--loidolt-text);
+  background: none;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.ldt-map-features__item:hover {
+  background: var(--loidolt-surface-alt);
+}
+.ldt-map-features__item[aria-current='true'] {
+  border-left-color: var(--loidolt-accent);
+  background: var(--loidolt-surface-alt);
+}
+.ldt-map-features__description {
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-sm);
+}
+
+@media (forced-colors: active) {
+  .ldt-map .maplibregl-ctrl button .maplibregl-ctrl-icon {
+    background-color: ButtonText;
+  }
+}
