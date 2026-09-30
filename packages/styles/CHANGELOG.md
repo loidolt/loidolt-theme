@@ -1,5 +1,152 @@
 # @loidolt/theme-styles
 
+## 0.6.0
+
+### Minor Changes
+
+- [#8](https://github.com/loidolt/loidolt-theme/pull/8) [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3) Thanks [@loidolt](https://github.com/loidolt)! - Add behaviour helpers for custom surfaces, a live region, and a skip link.
+
+  - **Attachments.** `escapeKey`, `clickOutside`, `autofocus`, `rovingFocus` and `focusTrap` give
+    markup you build yourself the keyboard and focus contract the library's own overlays and groups
+    already have. They are Svelte attachments, so they never run during SSR.
+  - **`createAnnouncer()` and `LiveRegion`.** Speak status changes without moving focus. The
+    announcer empties the region between messages, so a repeated message is still announced, and
+    clears stale text after `clearAfter`.
+  - **`SkipLink`** jumps keyboard users past repeated navigation. It also moves focus to the
+    target, so the next Tab continues from the content.
+  - **`describedBy(...ids)`** builds an `aria-describedby` value, or `undefined` when there are no
+    ids. `Field` and `Fieldset` now use it.
+  - **Tokens:** WCAG contrast helpers (`getContrastRatio`, `meetsContrast`, `validateContrast`,
+    `getContrastTextColor`) and named `aspectRatio` frames, emitted as `--loidolt-aspect-*`.
+  - **Styles:** `.ldt-sr-only-focusable`, `.ldt-touch-target-expand`, `.ldt-line-clamp` (with
+    `--ldt-lines`), and `.ldt-print-visible`.
+
+- [#8](https://github.com/loidolt/loidolt-theme/pull/8) [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3) Thanks [@loidolt](https://github.com/loidolt)! - Add `Combobox`, `MultiSelect`, `Slider`, `PasswordInput`, `OTPInput` and `Avatar`.
+
+  - **`Combobox` / `MultiSelect`:** searchable choice over `Option`s or labelled `OptionGroup`s.
+    - Filtering ignores case and accents by default. `filter={false}` plus a debounced
+      `onQueryChange` hands the search to a server.
+    - The result count is announced through a live region that stays mounted.
+    - `MultiSelect` shows picks as removable square `.ldt-chip`s, honours `max`, and removes the
+      last pick on Backspace.
+  - **`Slider`:** one value or a range (pass an array), with `formatValue` driving
+    `aria-valuetext`. `onValueCommit` fires only when the user settles on a value. Thumbs use
+    exact positioning, so the server render never shifts on hydration.
+  - **`PasswordInput`:** the reveal button keeps one name and reports its state with
+    `aria-pressed`.
+  - **`OTPInput`:** built on Bits' PinInput. One real input handles paste, SMS autofill and
+    assistive tech. Spaces and dashes are removed from pasted codes, and `groupSize` adds visual
+    gaps.
+  - **`Avatar`:** a photo, falling back to initials, with one stable accessible name.
+
+  The Bits `Avatar`, `Combobox`, `PinInput` and `Slider` namespaces are re-exported as
+  `*Primitive`. New shared types are `OptionGroup` and `ChoiceOption`.
+
+- [#8](https://github.com/loidolt/loidolt-theme/pull/8) [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3) Thanks [@loidolt](https://github.com/loidolt)! - Extend existing components with capabilities ported from classic-theme.
+
+  - **`DropdownMenu`:** `items` also takes `group`, `checkbox`, `radio` and `sub` entries (headings,
+    toggles, one-of-many choices, nested menus), reported through the new `onCheckedChange` and
+    `onValueChange` callbacks.
+    - Items gain `destructive` and `shortcut`. `shortcut` sets `aria-keyshortcuts` and is shown as
+      the hint.
+    - `items` is now typed `MenuEntry[]`. Existing `MenuItem[]` arrays still type-check.
+  - **Toaster:**
+    - `ToastOptions.action` adds one follow-up button.
+    - `toaster.update(id, patch)` changes a toast in place.
+    - `success`/`info`/`warning`/`error` are shortcuts, and `error` stays until dismissed by
+      default.
+    - `Toast` renders the action or an `actions` snippet, and no longer leaks `duration` as an
+      attribute when spread from the queue. `ToastViewport` takes a `position`.
+  - **`Select`:** `{ label, options }` entries render as native `<optgroup>`s.
+  - **`Dialog`:** a `header` snippet (the title stays the accessible name), `headerActions`, and
+    `size="full"`.
+  - **`Badge`:** `count` with `max`, a visually hidden `label`, a `live` mode, and a leading `dot`.
+    `children` is now optional.
+  - **`RadioGroup`:** per-option `description`, linked through `aria-describedby`.
+  - **`NumberField`:** `nullable` (clearing yields `null`), `readonly` that also locks the
+    steppers, and `hideSteppers`.
+  - **`Tooltip`:** `arrow`.
+  - **`Progress`:** status `variant`, `size`, and `showValue` with `formatValue`, which also drives
+    `aria-valuetext`.
+  - **`Skeleton`:** shape variants (`text` with `lines`, `title`, `avatar`, `button`, `card`).
+  - **`Spinner`:** `size`.
+
+- [#8](https://github.com/loidolt/loidolt-theme/pull/8) [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3) Thanks [@loidolt](https://github.com/loidolt)! - Add `DataTable`, `DataTableSearch`, `DataTableFacetedFilter`, `DataTableColumnVisibility` and
+  `DataTablePagination`, rendering `createDataTable()` state with the existing `Table`,
+  `TableHeader`, `Pagination`, `Checkbox`, `DropdownMenu` and `EmptyState`.
+
+  - **Rows:** paged or virtual tables report `aria-rowcount` and `aria-rowindex`. Rows can be
+    selected by checkbox (with an indeterminate select-all) or by radio.
+  - **Cells:** editable cells are buttons that become fields, where Enter saves and Escape restores.
+    `hideBelow` drops columns on narrow screens.
+  - **States:** loading placeholders and an empty state are built in.
+  - **Filters:** the faceted filter shows counts and supports true multi-value filtering. The
+    search re-syncs when the table is reset.
+  - **Footer:** the pagination footer announces the visible range.
+
+- [#8](https://github.com/loidolt/loidolt-theme/pull/8) [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3) Thanks [@loidolt](https://github.com/loidolt)! - Add `Toolbar`, `FilterPanel` and `ActiveFilterChips` for filterable lists.
+
+  - **`Toolbar`:** a labelled row of list controls with an `end` cluster, on the recessed surface.
+    `roving` turns it into an ARIA `toolbar` with a single tab stop.
+  - **`FilterPanel`:** expands under a consumer-owned toggle and lays filters out on an auto-fit
+    grid. Collapsed controls are `inert`, so they leave the tab order while the height still
+    animates. Offers "Clear all" when filters are active.
+  - **`ActiveFilterChips`:** one removable square chip per active filter. Focus stays in the group
+    as chips are removed.
+
+- [#8](https://github.com/loidolt/loidolt-theme/pull/8) [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3) Thanks [@loidolt](https://github.com/loidolt)! - Add `MediaGrid`, `Lightbox` and `MediaCarousel` for collections of images, video, audio and
+  embeds.
+
+  - **`MediaGrid`:** one tab stop with arrow-key movement. Tiles name their media kind, the grid
+    can be laid out as masonry, and it opens a `Lightbox` on the pressed item.
+  - **`Lightbox`:** a full-screen dialog.
+    - Keyboard and swipe navigation.
+    - Zoom and pan from `createMediaZoom()`.
+    - Preloads the neighbouring items, and has a filmstrip of thumbnails.
+    - Announces each move once, and offers a download link for images.
+  - **`MediaCarousel`:** follows the WAI-ARIA carousel pattern.
+    - Slides are named groups. The live region is polite when the user drives it and off while it
+      autoplays.
+    - Autoplay pauses on hover and focus, and has a visible pause button.
+    - It starts paused under `prefers-reduced-motion`.
+
+- [#8](https://github.com/loidolt/loidolt-theme/pull/8) [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3) Thanks [@loidolt](https://github.com/loidolt)! - Add media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed` and `AspectRatio`, with upgrades to
+  `Thumbnail`.
+
+  - **Players:** controls in this system's language on the inverse surface, all built from native
+    elements.
+    - The seek bar speaks positions as words.
+    - Shortcuts: Space/K play, arrows seek and change volume, M mutes, F goes full screen,
+      C toggles captions.
+    - Captions, speed, picture-in-picture and full screen.
+  - **HLS:** plays natively in Safari, and elsewhere through hls.js, now an **optional** peer
+    dependency registered with `setHlsLoader()`.
+  - **`MediaEmbed`:** YouTube and Vimeo behind a click-to-load facade using their no-tracking
+    hosts. It fetches no provider thumbnail unless you pass one. Unlike classic-theme, it puts
+    Vimeo's start time in the URL fragment where Vimeo reads it.
+  - **Engines:** `createMediaPlayer()`, `createHlsSource()` and `createMediaZoom()` for your own
+    media UI, plus `formatDuration`, `formatDurationSpoken`, `parseEmbedUrl`, `buildEmbedSrc`,
+    `inferMediaKind` and related helpers.
+  - **`Thumbnail`:** takes named `ratio`s, `srcset`/`sizes`, `loading`, a `fallback` for failed
+    images and an `overlay`. It shimmers while loading and reports `data-status`.
+
+- [#8](https://github.com/loidolt/loidolt-theme/pull/8) [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3) Thanks [@loidolt](https://github.com/loidolt)! - Add `SignaturePad`: draw a signature with a mouse, pen or finger, or type a name as the
+  keyboard-accessible alternative.
+
+  - **Output:** both modes produce a PNG. Drawn signatures also keep their strokes and an SVG, and
+    `name` submits the PNG with a form.
+  - **Validation:** a length check keeps a stray dot from counting as a signature.
+  - **Styling:** the ink follows the theme, and the canvas is sized to the device's pixel ratio.
+  - **Helpers:** the pure `strokeLength`, `strokePath`, `strokesToSvg` and `validateSignature`
+    are exported for server-side checks.
+  - **Left out from classic-theme:** Google Fonts injection, `userAgent` capture and the built-in
+    consent checkbox.
+
+### Patch Changes
+
+- Updated dependencies [[`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3)]:
+  - @loidolt/theme-tokens@0.6.0
+
 ## 0.5.0
 
 ### Minor Changes
