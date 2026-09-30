@@ -1,0 +1,298 @@
+/* @loidolt/theme-docs. Rendered markdown takes `.ldt-prose` for its typography; this file adds
+   what markdown documentation needs beyond it — code frames and highlighting, admonitions,
+   footnotes, diagrams, the table of contents, and the page around them. */
+
+/* --- Headings that link to themselves ------------------------------------------------------- */
+.ldt-heading-anchor {
+  color: inherit;
+  text-decoration: none;
+}
+.ldt-heading-anchor:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--loidolt-accent);
+  text-underline-offset: 0.2em;
+}
+
+/* --- Code ------------------------------------------------------------------------------------ */
+/* Shiki's CSS-variables theme reads `--ldt-syntax-*`; mapping them to the syntax tokens makes
+   highlighted code follow the light and dark themes with no second render. */
+.ldt-code {
+  --ldt-syntax-foreground: var(--loidolt-text-inverse);
+  --ldt-syntax-background: var(--loidolt-surface-inverse);
+  --ldt-syntax-token-keyword: var(--loidolt-syntax-keyword);
+  --ldt-syntax-token-string: var(--loidolt-syntax-string);
+  --ldt-syntax-token-string-expression: var(--loidolt-syntax-string);
+  --ldt-syntax-token-comment: var(--loidolt-syntax-comment);
+  --ldt-syntax-token-constant: var(--loidolt-syntax-constant);
+  --ldt-syntax-token-function: var(--loidolt-syntax-function);
+  --ldt-syntax-token-parameter: var(--loidolt-syntax-parameter);
+  --ldt-syntax-token-punctuation: var(--loidolt-syntax-punctuation);
+  --ldt-syntax-token-link: var(--loidolt-syntax-function);
+  margin: 0 0 1.1em;
+  min-width: 0;
+}
+.ldt-code__header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2rem;
+  padding: 0 0 0 0.75rem;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-bottom: 0;
+  color: var(--loidolt-text-muted);
+  background: var(--loidolt-surface-alt);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-mono);
+}
+.ldt-code__filename {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ldt-code__copy {
+  flex: none;
+  margin-inline-start: auto;
+  min-height: 2rem;
+  padding: 0 0.75rem;
+  border: 0;
+  border-inline-start: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text);
+  background: none;
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.ldt-code__copy:hover {
+  background: var(--loidolt-surface);
+}
+.ldt-code__pre {
+  margin: 0;
+  padding: 0.9em 1.1em;
+  overflow-x: auto;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--ldt-syntax-foreground);
+  background: var(--ldt-syntax-background);
+  font: 0.85em / var(--loidolt-font-line-height-normal) var(--loidolt-font-mono);
+  tab-size: 2;
+}
+.ldt-code__pre code {
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+}
+
+/* --- Admonitions ----------------------------------------------------------------------------- */
+.ldt-admonition {
+  margin: 0 0 1.1em;
+}
+.ldt-admonition .ldt-alert__title {
+  margin: 0 0 0.25rem;
+}
+.ldt-admonition .ldt-alert__description > :last-child {
+  margin-bottom: 0;
+}
+
+/* --- Footnotes ------------------------------------------------------------------------------- */
+.ldt-footnote-ref a {
+  padding-inline: 0.1em;
+  text-decoration: none;
+}
+.ldt-footnotes {
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text-muted);
+  font-size: 0.9em;
+}
+.ldt-unsafe-link {
+  text-decoration: underline dotted;
+}
+
+/* --- Diagrams -------------------------------------------------------------------------------- */
+.ldt-mermaid {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1.1em;
+  padding: 1rem;
+  overflow-x: auto;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  background: var(--loidolt-background);
+}
+.ldt-mermaid__diagram[hidden] {
+  display: none;
+}
+.ldt-mermaid__diagram svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+.ldt-mermaid__caption {
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-sm);
+}
+.ldt-mermaid__source summary {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.ldt-mermaid__source pre,
+.ldt-mermaid__fallback,
+pre.ldt-mermaid {
+  margin: 0.5rem 0 0;
+  white-space: pre-wrap;
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-mono);
+}
+
+/* --- Table of contents ----------------------------------------------------------------------- */
+.ldt-toc {
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+}
+.ldt-toc__title {
+  margin: 0 0 0.5rem;
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-xs);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
+}
+.ldt-toc__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ldt-toc__item {
+  padding-inline-start: calc(var(--ldt-toc-level, 0) * 0.85rem);
+}
+.ldt-toc__link {
+  display: flex;
+  align-items: center;
+  min-block-size: 1.5rem;
+  padding: 0.2rem 0 0.2rem 0.65rem;
+  border-inline-start: 2px solid var(--loidolt-border-soft);
+  color: var(--loidolt-text-muted);
+  text-decoration: none;
+}
+.ldt-toc__link:hover {
+  color: var(--loidolt-text);
+}
+.ldt-toc__link[aria-current='location'] {
+  border-inline-start-color: var(--loidolt-accent);
+  color: var(--loidolt-text);
+}
+.ldt-toc-panel__wide {
+  position: sticky;
+  top: var(--ldt-docs-top, calc(var(--loidolt-size-topbar) + 1rem));
+  max-height: calc(100vh - var(--ldt-docs-top, calc(var(--loidolt-size-topbar) + 1rem)) - 1rem);
+  overflow-y: auto;
+}
+.ldt-toc-panel__compact {
+  display: none;
+}
+/* The contents go behind a button where there is no room beside the page for them. */
+@media (max-width: 1023.98px) {
+  .ldt-toc-panel__wide {
+    display: none;
+  }
+  .ldt-toc-panel__compact {
+    display: block;
+  }
+}
+
+/* --- The page -------------------------------------------------------------------------------- */
+.ldt-markdown-page {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+}
+.ldt-markdown-page__main {
+  min-width: 0;
+}
+@media (min-width: 1024px) {
+  .ldt-markdown-page--toc {
+    grid-template-columns: minmax(0, 1fr) 14rem;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  .ldt-markdown-page--toc .ldt-markdown-page__toc {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .ldt-markdown-page--toc .ldt-markdown-page__main {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
+.ldt-markdown-page__pager {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-markdown-page__pager a {
+  display: grid;
+  gap: 0.15rem;
+  min-width: min(14rem, 100%);
+  padding: 0.65rem 0.9rem;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text);
+  text-decoration: none;
+}
+.ldt-markdown-page__pager a:hover {
+  border-color: var(--loidolt-border-strong);
+}
+.ldt-markdown-page__next {
+  margin-inline-start: auto;
+  text-align: end;
+}
+.ldt-markdown-page__direction {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-transform: uppercase;
+}
+
+/* --- Docs index ------------------------------------------------------------------------------ */
+.ldt-docs-hub {
+  display: grid;
+  gap: 2.25rem;
+}
+.ldt-docs-hub__title {
+  margin: 0;
+}
+.ldt-docs-hub__description {
+  margin: 0.35rem 0 0;
+  color: var(--loidolt-text-muted);
+}
+.ldt-docs-hub__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(16rem, 100%), 1fr));
+  gap: 1rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ldt-docs-hub__grid > li {
+  display: grid;
+}
+/* A docs card is often only a heading and a line; drop the empty body and its rule. */
+.ldt-docs-card .ldt-card__content:empty {
+  display: none;
+}
+.ldt-docs-card .ldt-card__header:has(+ .ldt-card__content:empty) {
+  border-bottom: 0;
+}
+.ldt-docs-card__eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--loidolt-text-accent);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-wide);
+  text-transform: uppercase;
+}

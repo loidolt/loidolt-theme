@@ -25,7 +25,10 @@
     .ldt-media-grid,
     .ldt-map,
     .ldt-map-features__list,
-    .ldt-layer-manager
+    .ldt-layer-manager,
+    .ldt-code__pre,
+    .ldt-toc-panel__wide,
+    .ldt-mermaid
   )
   :where(:focus-visible) {
   outline-offset: -2px;
@@ -119,7 +122,9 @@
     .ldt-media-carousel__control,
     .ldt-map-features__item,
     .ldt-map .maplibregl-ctrl-group button,
-    .ldt-layer-manager__toggle
+    .ldt-layer-manager__toggle,
+    .ldt-code__copy,
+    .ldt-toc__link
   ) {
     min-height: 44px;
   }

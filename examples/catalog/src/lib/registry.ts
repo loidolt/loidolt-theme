@@ -1166,6 +1166,88 @@ export const entries: Entry[] = [
       'Drawn on its own canvas over the map by default. `interleaved` puts deck.gl layers among the map’s own, but needs a deck.gl release that supports your MapLibre major — deck.gl 9.4 does not yet support MapLibre 6.',
     ],
   },
+  {
+    slug: 'markdown',
+    name: 'Markdown',
+    package: 'docs',
+    group: 'Docs',
+    summary:
+      'Markdown rendered into loidolt prose — safe by default, highlighted and diagrammed in the browser.',
+    notes: [
+      'Raw HTML in the markdown is shown as text, and links and images keep only safe URLs (`javascript:` and friends are dropped). Turn on `allowHtml` only for markdown you wrote, or with a `sanitize` hook.',
+      'The first render is synchronous, so the whole document is in the server’s HTML. With Shiki registered (`setHighlighterLoader`), code is highlighted on the syntax tokens, so it follows light and dark with no second pass.',
+      'Admonitions (`:::note`, `> [!TIP]`), footnotes, definition lists and task lists all render with their accessible names; every code block is keyboard-reachable and has a copy button.',
+      'Mermaid fences become named pictures when Mermaid is registered, with the source kept in a disclosure beneath, and are redrawn in the theme’s colours when it changes.',
+    ],
+  },
+  {
+    slug: 'markdown-page',
+    name: 'MarkdownPage',
+    package: 'docs',
+    group: 'Docs',
+    summary:
+      'A whole documentation page: title and description from frontmatter, the document, its contents and previous/next links.',
+    notes: [
+      'The document’s own `#` heading becomes the page title and is left out of the body, so the page has exactly one level-1 heading.',
+      'The contents sit beside the page on wide screens and behind an "On this page" button on narrow ones.',
+    ],
+  },
+  {
+    slug: 'code-snippet',
+    name: 'CodeSnippet',
+    package: 'docs',
+    group: 'Docs',
+    summary: 'One highlighted block of code, with an optional filename and a copy button.',
+    notes: [
+      'Distinct from `CodeBlock` in `@loidolt/theme-svelte`, which is a single selectable value such as a key or a command.',
+    ],
+  },
+  {
+    slug: 'mermaid-diagram',
+    name: 'MermaidDiagram',
+    package: 'docs',
+    group: 'Docs',
+    summary:
+      'A Mermaid diagram as a named picture, with a written description and its source to hand.',
+    notes: [
+      '`label` names the picture and `description` says what it shows — a diagram is only as accessible as its words. Until it is drawn, or if Mermaid is unavailable, the source stands in.',
+    ],
+  },
+  {
+    slug: 'table-of-contents',
+    name: 'TableOfContents',
+    package: 'docs',
+    group: 'Docs',
+    summary: 'The headings of a page, marking the one being read.',
+    notes: [
+      'The current heading is `aria-current="location"`. Scroll tracking looks only inside `container`, and stops when unmounted.',
+    ],
+  },
+  {
+    slug: 'toc-panel',
+    name: 'TocPanel',
+    package: 'docs',
+    group: 'Docs',
+    summary: 'A table of contents beside the page, or behind a button on narrow screens.',
+    notes: [
+      'Both forms render on the server and CSS picks one by width, so nothing jumps on load. Following a link closes the drawer.',
+    ],
+  },
+  {
+    slug: 'docs-hub',
+    name: 'DocsHub',
+    package: 'docs',
+    group: 'Docs',
+    summary: 'An index of documentation: sections, each a grid of page cards.',
+  },
+  {
+    slug: 'docs-card',
+    name: 'DocsCard',
+    package: 'docs',
+    group: 'Docs',
+    summary: 'A page in a docs index — the whole card is the link.',
+    notes: ['External links open in a new tab and say so to assistive tech.'],
+  },
 ];
 
 export const bySlug = new Map(entries.map((entry) => [entry.slug, entry]));

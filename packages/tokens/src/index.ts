@@ -78,6 +78,19 @@ export const colors = {
     6: '#c96f3d',
     7: '#9b3a17',
   },
+  /**
+   * Code highlighting. Code sits on the inverse surface — dark in the light theme — so these are
+   * the light inks; the dark theme's code block is light, and takes dark ones.
+   */
+  syntax: {
+    keyword: '#f0895c',
+    string: '#a3c197',
+    comment: '#b5ae9c',
+    constant: '#e2b56c',
+    function: '#8fc0d4',
+    parameter: '#d3a8cf',
+    punctuation: '#d8d2c4',
+  },
   /** Basemap fills. Quiet by design: the data drawn on top carries the colour. */
   map: {
     water: '#b9cdd3',
@@ -270,6 +283,14 @@ const semanticDefs = {
   mapBoundary: ref('color-line-strong'),
   mapLabel: ref('color-deep'),
   mapLabelHalo: ref('color-panel'),
+  /* Code highlighting, on the inverse surface where code blocks sit. */
+  syntaxKeyword: ref('color-syntax-keyword'),
+  syntaxString: ref('color-syntax-string'),
+  syntaxComment: ref('color-syntax-comment'),
+  syntaxConstant: ref('color-syntax-constant'),
+  syntaxFunction: ref('color-syntax-function'),
+  syntaxParameter: ref('color-syntax-parameter'),
+  syntaxPunctuation: ref('color-syntax-punctuation'),
 } as const satisfies Record<string, string | TokenRef>;
 
 type TokenTree = { readonly [key: string]: string | TokenRef | TokenTree };
@@ -407,6 +428,13 @@ export const darkSemantic = {
   mapBoundary: '#787c6b',
   mapLabel: '#ebe7dc',
   mapLabelHalo: '#161814',
+  syntaxKeyword: '#a9441d',
+  syntaxString: '#3f5139',
+  syntaxComment: '#5f5b50',
+  syntaxConstant: '#7c4d17',
+  syntaxFunction: '#265162',
+  syntaxParameter: '#7a4a78',
+  syntaxPunctuation: '#474a42',
 } as const satisfies Record<keyof typeof semanticDefs, string>;
 
 export type ColorScheme = 'light' | 'dark';
@@ -495,6 +523,25 @@ export const mapRoles = {
   categorical: chartRoles.categorical,
   sequential: chartRoles.sequential,
 } as const satisfies RoleSpec;
+
+/** The roles code is highlighted with, and the surface it sits on. */
+export const syntaxRoles = {
+  background: 'surfaceInverse',
+  text: 'textInverse',
+  keyword: 'syntaxKeyword',
+  string: 'syntaxString',
+  comment: 'syntaxComment',
+  constant: 'syntaxConstant',
+  function: 'syntaxFunction',
+  parameter: 'syntaxParameter',
+  punctuation: 'syntaxPunctuation',
+} as const satisfies RoleSpec;
+
+export type SyntaxColors = ResolvedRoles<typeof syntaxRoles>;
+
+/** Syntax colours in the reference theme. */
+export const syntaxColors = (scheme: ColorScheme = 'light'): SyntaxColors =>
+  resolveRoles(syntaxRoles, scheme);
 
 export type ChartColors = ResolvedRoles<typeof chartRoles>;
 export type MapColors = ResolvedRoles<typeof mapRoles>;

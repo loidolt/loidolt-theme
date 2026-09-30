@@ -16,6 +16,7 @@ import {
   getLuminance,
   mapColors,
   resolveRoles,
+  syntaxColors,
   roleValue,
   roleVar,
   meetsContrast,
@@ -335,6 +336,31 @@ describe.each(['light', 'dark'] as const)('data visualisation colours (%s)', (sc
     expect(contrast(map.label, map.labelHalo)).toBeGreaterThanOrEqual(4.5);
     expect(contrast(map.label, map.water)).toBeGreaterThanOrEqual(3);
     expect(contrast(map.label, map.park)).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe.each(['light', 'dark'] as const)('syntax colours (%s)', (scheme) => {
+  const syntax = syntaxColors(scheme);
+
+  it('holds every token colour at 4.5:1 on the code surface', () => {
+    for (const [role, colour] of Object.entries(syntax)) {
+      if (role === 'background') continue;
+      expect(contrast(colour, syntax.background), role).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('keeps keywords, strings, functions and constants apart', () => {
+    const inks = [
+      syntax.keyword,
+      syntax.string,
+      syntax.function,
+      syntax.constant,
+      syntax.parameter,
+    ];
+    for (let i = 0; i < inks.length; i++) {
+      for (let j = i + 1; j < inks.length; j++)
+        expect(deltaE(inks[i], inks[j])).toBeGreaterThan(15);
+    }
   });
 });
 
