@@ -5,6 +5,7 @@
   import Demo from '$lib/components/Demo.svelte';
   import PropsTable from '$lib/components/PropsTable.svelte';
   import RichText from '$lib/components/RichText.svelte';
+  import { packageOf } from '$lib/registry';
 
   let { data } = $props();
 
@@ -37,6 +38,10 @@
   description={data.entry.summary}
   headingLevel={1}
 />
+
+<p class="docs-note">
+  <code>{`import { ${data.entry.name} } from '${packageOf(data.entry)}';`}</code>
+</p>
 
 <Section title="Example" headingLevel={2}>
   {#if demo}

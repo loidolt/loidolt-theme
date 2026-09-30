@@ -7,12 +7,26 @@ export interface Entry {
   slug: string;
   /** Exported component name, and the key into the generated prop data. */
   name: string;
+  /** The package it is imported from, when that is not `@loidolt/theme-svelte`. */
+  package?: PackageId;
   group: Group;
   /** One line: what it is, and when to reach for it. */
   summary: string;
   /** Things worth knowing before using it — accessibility contracts, gotchas, related parts. */
   notes?: string[];
 }
+
+export const PACKAGES = {
+  svelte: '@loidolt/theme-svelte',
+  charts: '@loidolt/theme-charts',
+  maps: '@loidolt/theme-maps',
+  docs: '@loidolt/theme-docs',
+} as const;
+
+export type PackageId = keyof typeof PACKAGES;
+
+/** The npm package an entry is imported from. */
+export const packageOf = (entry: Entry) => PACKAGES[entry.package ?? 'svelte'];
 
 export const GROUPS = [
   'Actions',
@@ -24,6 +38,9 @@ export const GROUPS = [
   'Navigation',
   'Layout',
   'Media',
+  'Charts',
+  'Maps',
+  'Docs',
   'Theme',
 ] as const;
 

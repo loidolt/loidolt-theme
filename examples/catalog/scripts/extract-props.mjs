@@ -11,9 +11,9 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
+import { PACKAGES } from './packages.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const componentsDir = path.resolve(here, '../../../packages/svelte/src/lib/components');
 const outFile = path.resolve(here, '../src/lib/generated/props.json');
 
 /** Pulls the instance `<script>` out of a component, with its offset kept for nothing but sanity. */
@@ -174,18 +174,31 @@ function extract(name, source) {
   return { bases: [...new Set(bases)], props };
 }
 
-const files = (await readdir(componentsDir)).filter((file) => file.endsWith('.svelte')).sort();
 const result = {};
+let count = 0;
 
-for (const file of files) {
-  const name = path.basename(file, '.svelte');
-  result[name] = extract(name, await readFile(path.join(componentsDir, file), 'utf8'));
+for (const pkg of PACKAGES) {
+  const dir = fileURLToPath(pkg.components);
+  const files = (await readdir(dir)).filter((file) => file.endsWith('.svelte')).sort();
+  for (const file of files) {
+    const name = path.basename(file, '.svelte');
+    // Component names share one catalog namespace (one URL, one demo file each).
+    if (result[name])
+      throw new Error(`${name} is defined by both ${result[name].package} and ${pkg.id}`);
+    result[name] = {
+      package: pkg.id,
+      ...extract(name, await readFile(path.join(dir, file), 'utf8')),
+    };
+    count += 1;
+  }
 }
 
+const sorted = Object.fromEntries(Object.entries(result).sort(([a], [b]) => a.localeCompare(b)));
+
 await mkdir(path.dirname(outFile), { recursive: true });
-await writeFile(outFile, `${JSON.stringify(result, null, 2)}\n`);
+await writeFile(outFile, `${JSON.stringify(sorted, null, 2)}\n`);
 
 const total = Object.values(result).reduce((sum, entry) => sum + entry.props.length, 0);
 console.log(
-  `props: ${files.length} components, ${total} props → ${path.relative(process.cwd(), outFile)}`
+  `props: ${count} components, ${total} props → ${path.relative(process.cwd(), outFile)}`
 );
