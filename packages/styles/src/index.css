@@ -8,9 +8,14 @@
  * `loidolt.a11y` is last so the focus ring and the reduced-motion overrides beat component
  * styles by layer order alone — no `!important` needed, which keeps app CSS able to override
  * them (unlayered styles outrank every layer for normal declarations).
+ *
+ * `loidolt.vendor` holds third-party stylesheets a loidolt package ships with — MapLibre's, for
+ * `@loidolt/theme-maps`. Vendor CSS left unlayered would outrank every layer here; slotted after
+ * `base` and before `components`, our resets cannot break it and our component styles can
+ * restyle it, whichever order the two stylesheets are imported in.
  */
-@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.components, loidolt.utilities,
-  loidolt.a11y;
+@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.vendor, loidolt.components,
+  loidolt.utilities, loidolt.a11y;
 
 @import '@loidolt/theme-tokens/css' layer(loidolt.tokens);
 @import './fonts.css' layer(loidolt.base);

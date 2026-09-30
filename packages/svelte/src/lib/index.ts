@@ -164,6 +164,14 @@ export type {
   DataTableSort,
   DataTableState,
 } from './data-table.svelte.js';
+export {
+  colorSchemeOf,
+  createTokenColors,
+  normalizeColor,
+  observeColorScheme,
+  readRoleColor,
+} from './token-colors.svelte.js';
+export type { TokenColors, TokenColorsOptions } from './token-colors.svelte.js';
 export { createAnnouncer } from './announcer.svelte.js';
 export type { Announcer, AnnouncerOptions, Politeness } from './announcer.svelte.js';
 export { createToaster } from './toaster.svelte.js';

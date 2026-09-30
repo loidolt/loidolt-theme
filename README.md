@@ -188,10 +188,12 @@ The catalog ships a live example of both (a dark-mode switch and a side-by-side 
 
 ### Cascade layers
 
-Styles are published in `@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.components,
-loidolt.utilities, loidolt.a11y`. Unlayered application CSS outranks all of them, so plain
-selectors in your app always win — no `!important` needed. `loidolt.reset` is deliberately empty
-and reserved for an app's own reset.
+Styles are published in `@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.vendor,
+loidolt.components, loidolt.utilities, loidolt.a11y`. Unlayered application CSS outranks all of
+them, so plain selectors in your app always win — no `!important` needed. `loidolt.reset` is
+deliberately empty and reserved for an app's own reset. `loidolt.vendor` holds third-party CSS a
+loidolt package ships with (MapLibre's, for `@loidolt/theme-maps`), so our component styles can
+restyle it.
 
 ## Colour scheme
 
@@ -253,6 +255,30 @@ export const handle = ({ event, resolve }) =>
 
 Both take the same options (`storageKey`, `attribute`, `defaultPreference`, `defaultScheme`), and
 they must agree: the script decides the first paint, the store decides everything after it.
+
+### Colours for canvas and WebGL
+
+Charts and maps paint on a canvas, which cannot read `var()`. `createTokenColors()` reads
+semantic roles off the page as concrete hex values — so an app's own theme reaches the canvas —
+and follows every theme change, bumping `version` when the colours actually change:
+
+```ts
+import { createTokenColors } from '@loidolt/theme-svelte';
+import { chartRoles } from '@loidolt/theme-tokens';
+
+const palette = createTokenColors(chartRoles, { element: () => node });
+// palette.colors.categorical → ['#c65224', '#2f6f8a', …] in light, the dark set in dark
+```
+
+Pass the element you paint into, so a scoped `data-theme` subtree is honoured. On the server,
+and anywhere the page cannot be read, it falls back to the reference light or dark values
+(`chartColors()`, `mapColors()` and `roleValue()` in `@loidolt/theme-tokens` give the same
+values without a DOM).
+
+The tokens include eight categorical series colours (`--loidolt-chart-1` … `-8`), a five-step
+sequential ramp, a seven-step diverging ramp centred on a neutral, gain/loss colours and the
+basemap roles (`--loidolt-map-*`). Each is checked in both themes: every series holds 3:1
+against every surface and stays visibly distinct from the others, and map labels hold 4.5:1.
 
 ## Responsive layout
 

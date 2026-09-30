@@ -3,7 +3,10 @@ import { describe, expect, it } from 'vitest';
 import {
   aspectRatio,
   colors,
+  chartColors,
+  chartRoles,
   contrastRequirements,
+  cssVarName,
   darkSemantic,
   flattenTokens,
   generateCss,
@@ -11,6 +14,10 @@ import {
   getContrastRatio,
   getContrastTextColor,
   getLuminance,
+  mapColors,
+  resolveRoles,
+  roleValue,
+  roleVar,
   meetsContrast,
   semantic,
   tokens,
@@ -45,6 +52,15 @@ describe('theme tokens', () => {
     expect(css).toContain('--loidolt-size-control-sm:');
     expect(css).toContain('--loidolt-border-radius-pill: 999px');
     expect([...declared].filter((name) => /[A-Z]/.test(name))).toEqual([]);
+  });
+
+  it('gives a trailing number its own segment without renaming anything else', () => {
+    expect(cssVarName(['chart1'])).toBe('--loidolt-chart-1');
+    expect(cssVarName(['chartSequential5'])).toBe('--loidolt-chart-sequential-5');
+    expect(css).toContain('--loidolt-color-series-1: #c65224');
+    expect(css).toContain('--loidolt-space-10: 2.5rem');
+    // A letter glued to a digit would be unreachable from hand-written CSS.
+    expect([...declared].filter((name) => /[a-z]\d/.test(name))).toEqual([]);
   });
 
   it('emits token-to-token links as var() references, not resolved values', () => {
@@ -201,9 +217,7 @@ describe('dark theme', () => {
   it('only overrides variables the light theme defines', () => {
     const declared = new Set(flattenTokens().map(([name]) => name));
     for (const name of Object.keys(darkSemantic)) {
-      expect(
-        declared.has(`--loidolt-${name.replace(/[A-Z]/g, (l) => `-${l.toLowerCase()}`)}`)
-      ).toBe(true);
+      expect(declared.has(cssVarName([name]))).toBe(true);
     }
   });
 });
@@ -255,5 +269,88 @@ describe('aspect ratios', () => {
     expect(aspectRatio.video).toBe('16 / 9');
     expect(css).toContain('--loidolt-aspect-square: 1 / 1;');
     expect(css).toContain('--loidolt-aspect-portrait: 3 / 4;');
+  });
+});
+
+/** CIE76 distance in Lab — enough to tell whether two series colours read as different. */
+function deltaE(a: string, b: string): number {
+  const lab = (hex: string) => {
+    const channel = (offset: number) => {
+      const value = parseInt(hex.slice(offset, offset + 2), 16) / 255;
+      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    };
+    const [r, g, b] = [channel(1), channel(3), channel(5)];
+    const xyz = [
+      (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047,
+      0.2126 * r + 0.7152 * g + 0.0722 * b,
+      (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883,
+    ].map((v) => (v > 0.008856 ? Math.cbrt(v) : 7.787 * v + 16 / 116));
+    return [116 * xyz[1] - 16, 500 * (xyz[0] - xyz[1]), 200 * (xyz[1] - xyz[2])];
+  };
+  const [x, y] = [lab(a), lab(b)];
+  return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]);
+}
+
+describe.each(['light', 'dark'] as const)('data visualisation colours (%s)', (scheme) => {
+  const chart = chartColors(scheme);
+  const map = mapColors(scheme);
+  const surfaces = [chart.background, chart.surface, roleValue('surfaceAlt', scheme)];
+
+  it('holds every series, gain and loss at 3:1 against every surface', () => {
+    for (const colour of [...chart.categorical, chart.positive, chart.negative]) {
+      for (const surface of surfaces) {
+        expect(contrast(colour, surface), `${colour} on ${surface}`).toBeGreaterThanOrEqual(3);
+      }
+    }
+  });
+
+  it('keeps the series visibly apart from one another', () => {
+    const { categorical } = chart;
+    for (let i = 0; i < categorical.length; i++) {
+      for (let j = i + 1; j < categorical.length; j++) {
+        expect(deltaE(categorical[i], categorical[j]), `${i + 1} vs ${j + 1}`).toBeGreaterThan(15);
+      }
+    }
+  });
+
+  it('runs the sequential ramp steadily from least to most', () => {
+    // "Most" is the step furthest from the surface, so the ramp's contrast only ever grows.
+    const steps = chart.sequential.map((colour) => contrast(colour, chart.surface));
+    for (let i = 1; i < steps.length; i++) expect(steps[i]).toBeGreaterThan(steps[i - 1]);
+    expect(steps.at(-1)).toBeGreaterThanOrEqual(3);
+  });
+
+  it('centres the diverging ramp on the step nearest the surface', () => {
+    const steps = chart.diverging.map((colour) => contrast(colour, chart.surface));
+    const quietest = steps.indexOf(Math.min(...steps));
+    expect(quietest).toBe(3);
+    expect(steps[0]).toBeGreaterThanOrEqual(3);
+    expect(steps[6]).toBeGreaterThanOrEqual(3);
+    for (let i = 1; i <= 3; i++) expect(steps[i]).toBeLessThan(steps[i - 1]);
+    for (let i = 4; i < 7; i++) expect(steps[i]).toBeGreaterThan(steps[i - 1]);
+  });
+
+  it('keeps map labels readable on land and water', () => {
+    expect(contrast(map.label, map.land)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(map.label, map.labelHalo)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(map.label, map.water)).toBeGreaterThanOrEqual(3);
+    expect(contrast(map.label, map.park)).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe('role resolution', () => {
+  it('resolves singles and lists, from the reference theme or a live reader', () => {
+    expect(roleVar('chart1')).toBe('--loidolt-chart-1');
+    expect(roleValue('chart1')).toBe(colors.series[1]);
+    expect(roleValue('chart1', 'dark')).toBe(darkSemantic.chart1);
+    expect(chartColors().categorical).toHaveLength(8);
+    expect(resolveRoles({ ink: 'text', pair: ['accent', 'surface'] }, 'dark')).toEqual({
+      ink: darkSemantic.text,
+      pair: [darkSemantic.accent, darkSemantic.surface],
+    });
+    const read = (role: string) => `read:${role}`;
+    expect(resolveRoles({ first: chartRoles.categorical }, 'light', read).first[0]).toBe(
+      'read:chart1'
+    );
   });
 });
