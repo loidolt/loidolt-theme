@@ -41,6 +41,20 @@
   border: 0 !important;
 }
 
+/* Hidden until it, or something inside it, takes focus — for a "skip" or "back to top" link
+   that should not occupy the layout for pointer users. */
+.ldt-sr-only-focusable:not(:focus, :focus-within) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 .ldt-skip-link {
   position: fixed;
   z-index: var(--loidolt-z-skip-link);
@@ -57,6 +71,20 @@
 .ldt-touch-target {
   min-width: 44px;
   min-height: 44px;
+}
+/* Enlarges the hit area without moving anything: a small glyph button in dense UI keeps its
+   visual size, and an invisible 44px square centred on it takes the press. */
+.ldt-touch-target-expand {
+  position: relative;
+}
+.ldt-touch-target-expand::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
 }
 
 /* Preserve the compact visual density for mouse/keyboard layouts, but give touch-first devices

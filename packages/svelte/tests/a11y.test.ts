@@ -35,7 +35,9 @@ import RadioGroup from '../src/lib/components/RadioGroup.svelte';
 import Select from '../src/lib/components/Select.svelte';
 import Separator from '../src/lib/components/Separator.svelte';
 import Skeleton from '../src/lib/components/Skeleton.svelte';
+import SkipLink from '../src/lib/components/SkipLink.svelte';
 import Spinner from '../src/lib/components/Spinner.svelte';
+import LiveRegion from '../src/lib/components/LiveRegion.svelte';
 import Switch from '../src/lib/components/Switch.svelte';
 import Table from '../src/lib/components/Table.svelte';
 import Textarea from '../src/lib/components/Textarea.svelte';
@@ -156,7 +158,9 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ],
   ['Separator (vertical)', Separator, { orientation: 'vertical' }],
   ['Skeleton', Skeleton, { width: 120, height: 16 }],
+  ['SkipLink', SkipLink, { targetId: 'main' }],
   ['Spinner', Spinner, { label: 'Generating preview' }],
+  ['LiveRegion', LiveRegion, { message: 'Three results' }],
   ['Switch', Switch, { children: text('Live preview') }],
   [
     'Table',

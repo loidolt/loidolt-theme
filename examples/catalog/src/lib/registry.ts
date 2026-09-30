@@ -360,6 +360,17 @@ export const entries: Entry[] = [
     notes: ['`label` is required: color alone must never carry the state.'],
   },
   {
+    slug: 'live-region',
+    name: 'LiveRegion',
+    group: 'Feedback',
+    summary: 'A status region that speaks changes to screen readers without moving focus.',
+    notes: [
+      'Mount it once and change `message`. A region inserted together with its text is silent in most screen readers.',
+      'Pair it with `createAnnouncer()`, which clears the region between messages so a repeated message is still announced, and empties it again after `clearAfter` so no stale text lingers.',
+      '`politeness="assertive"` interrupts the user — keep it for errors that need immediate attention.',
+    ],
+  },
+  {
     slug: 'marker',
     name: 'Marker',
     group: 'Feedback',
@@ -456,6 +467,17 @@ export const entries: Entry[] = [
     group: 'Navigation',
     summary: 'A topbar section that opens a menu of destinations.',
     notes: ['`active` marks the trigger with `aria-current="page"`, not just a class.'],
+  },
+  {
+    slug: 'skip-link',
+    name: 'SkipLink',
+    group: 'Navigation',
+    summary:
+      'The first focusable element on a page: jumps keyboard users past repeated navigation.',
+    notes: [
+      'Hidden until focused. Place it first in `<body>`, before the top bar.',
+      'Activation also moves focus to the target (adding `tabindex="-1"` when it is not focusable), so the next Tab continues from the content rather than the top of the page.',
+    ],
   },
   {
     slug: 'breadcrumbs',

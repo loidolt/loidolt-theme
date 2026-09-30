@@ -1,13 +1,20 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import {
+  aspectRatio,
   colors,
+  contrastRequirements,
   darkSemantic,
   flattenTokens,
   generateCss,
   generateDarkCss,
+  getContrastRatio,
+  getContrastTextColor,
+  getLuminance,
+  meetsContrast,
   semantic,
   tokens,
+  validateContrast,
 } from './index.js';
 
 const css = generateCss();
@@ -119,18 +126,7 @@ describe('stylesheet variable references', () => {
   });
 });
 
-/** Relative luminance and contrast ratio per WCAG 2.1 §1.4.3. */
-const luminance = (hex: string) => {
-  const [r, g, b] = [1, 3, 5]
-    .map((index) => parseInt(hex.slice(index, index + 2), 16) / 255)
-    .map((channel) => (channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4));
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-};
-
-const contrast = (a: string, b: string) => {
-  const [high, low] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-  return (high + 0.05) / (low + 0.05);
-};
+const contrast = getContrastRatio;
 
 describe.each([
   ['light', semantic],
@@ -209,5 +205,55 @@ describe('dark theme', () => {
         declared.has(`--loidolt-${name.replace(/[A-Z]/g, (l) => `-${l.toLowerCase()}`)}`)
       ).toBe(true);
     }
+  });
+});
+
+describe('contrast utilities', () => {
+  it('measures the extremes and is order-independent', () => {
+    expect(getLuminance('#000')).toBe(0);
+    expect(getLuminance('#ffffff')).toBe(1);
+    expect(getContrastRatio('#000000', '#fff')).toBeCloseTo(21, 5);
+    expect(getContrastRatio('#fff', '#000')).toBe(getContrastRatio('#000', '#fff'));
+    expect(getContrastRatio('#c65224', '#c65224')).toBe(1);
+  });
+
+  it('agrees with a published reference pair', () => {
+    // #767676 on white is the classic "just passes AA" grey.
+    expect(getContrastRatio('#767676', '#ffffff')).toBeCloseTo(4.54, 2);
+    expect(meetsContrast('#767676', '#ffffff')).toBe(true);
+    expect(meetsContrast('#777777', '#ffffff')).toBe(false);
+    expect(meetsContrast('#777777', '#ffffff', { size: 'large' })).toBe(true);
+    expect(meetsContrast('#767676', '#ffffff', { level: 'AAA' })).toBe(false);
+  });
+
+  it('reports every threshold at once', () => {
+    expect(validateContrast('#767676', '#ffffff')).toEqual({
+      ratio: expect.closeTo(4.54, 2),
+      ratioString: '4.54:1',
+      passesAANormal: true,
+      passesAALarge: true,
+      passesAAANormal: false,
+      passesAAALarge: true,
+    });
+    expect(contrastRequirements.AAA.normal).toBe(7);
+  });
+
+  it('picks whichever ink measures better, defaulting to the theme inks', () => {
+    expect(getContrastTextColor(colors.orange)).toBe('#f5f2e9');
+    expect(getContrastTextColor(colors.paper)).toBe(colors.deep);
+    expect(getContrastTextColor('#ffff00', { dark: '#000', light: '#fff' })).toBe('#000');
+  });
+
+  it('rejects anything that is not a hex colour', () => {
+    expect(() => getLuminance('red')).toThrow(RangeError);
+    expect(() => getContrastRatio('#12345', '#fff')).toThrow(/getContrastRatio: invalid hex/);
+  });
+});
+
+describe('aspect ratios', () => {
+  it('emits each named frame as a CSS aspect-ratio value', () => {
+    expect(aspectRatio.video).toBe('16 / 9');
+    expect(css).toContain('--loidolt-aspect-square: 1 / 1;');
+    expect(css).toContain('--loidolt-aspect-portrait: 3 / 4;');
   });
 });

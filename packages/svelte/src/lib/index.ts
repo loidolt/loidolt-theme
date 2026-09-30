@@ -24,6 +24,7 @@ export { default as IconButton } from './components/IconButton.svelte';
 export { default as Input } from './components/Input.svelte';
 export { default as Label } from './components/Label.svelte';
 export { default as ListRow } from './components/ListRow.svelte';
+export { default as LiveRegion } from './components/LiveRegion.svelte';
 export { default as Marker } from './components/Marker.svelte';
 export { default as NavMenu } from './components/NavMenu.svelte';
 export { default as NumberField } from './components/NumberField.svelte';
@@ -40,6 +41,7 @@ export { default as Select } from './components/Select.svelte';
 export { default as Separator } from './components/Separator.svelte';
 export { default as Sidebar } from './components/Sidebar.svelte';
 export { default as Skeleton } from './components/Skeleton.svelte';
+export { default as SkipLink } from './components/SkipLink.svelte';
 export { default as Spinner } from './components/Spinner.svelte';
 export { default as Stat } from './components/Stat.svelte';
 export { default as StatusDot } from './components/StatusDot.svelte';
@@ -75,7 +77,17 @@ export {
   Tooltip as TooltipPrimitive,
 } from 'bits-ui';
 
-export { cx } from './utils.js';
+export { cx, describedBy } from './utils.js';
+export { autofocus, clickOutside, escapeKey, focusTrap, rovingFocus } from './attachments.js';
+export type {
+  AutofocusOptions,
+  ClickOutsideOptions,
+  EscapeKeyOptions,
+  FocusTrapOptions,
+  RovingFocusOptions,
+} from './attachments.js';
+export { createAnnouncer } from './announcer.svelte.js';
+export type { Announcer, AnnouncerOptions, Politeness } from './announcer.svelte.js';
 export { createToaster } from './toaster.svelte.js';
 export type { Toaster, ToasterOptions, ToastOptions, ToastRecord } from './toaster.svelte.js';
 export { createTheme, themeScript } from './theme.svelte.js';
