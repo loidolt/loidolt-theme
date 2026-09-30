@@ -98,10 +98,10 @@ server matches the client and hydration never re-labels a control. Nothing touch
 
 ### Two variable prefixes
 
-| Prefix        | Meaning                                                                                                                                                                                                |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `--loidolt-*` | The public token contract. Primitives (`--loidolt-color-*`) and semantic roles (`--loidolt-surface`). Override these to theme the system.                                                              |
-| `--ldt-*`     | Per-component knobs read at a single call site — `--ldt-dialog-width`, `--ldt-sidebar-width`, `--ldt-inspector-width`, `--ldt-gap`, `--ldt-min`. Set them inline or on a wrapper to tune one instance. |
+| Prefix        | Meaning                                                                                                                                                                                                                    |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--loidolt-*` | The public token contract. Primitives (`--loidolt-color-*`) and semantic roles (`--loidolt-surface`). Override these to theme the system.                                                                                  |
+| `--ldt-*`     | Per-component knobs read at a single call site — `--ldt-dialog-width`, `--ldt-sidebar-width`, `--ldt-inspector-width`, `--ldt-gap`, `--ldt-min`, `--ldt-prose-size`. Set them inline or on a wrapper to tune one instance. |
 
 ### Tokens have two tiers
 
@@ -334,6 +334,25 @@ is a real button inside it.
 scrolls and nothing sticks. Exactly one column should report a sort; leave the rest at `none`.
 Pass `empty` only when there are no rows, since the component cannot see inside `children` to
 count them.
+
+## Long-form content
+
+Rendered Markdown, documentation and help text get their typography from one class:
+
+```svelte
+<article class="ldt-prose" style="--ldt-prose-size: 0.9375rem">
+  {@html renderedMarkdown}
+  <div class="ldt-not-prose">…ordinary UI inside the article…</div>
+</article>
+```
+
+`.ldt-prose` styles headings, lists (including GFM task lists), blockquotes, inline and block
+code, tables, images, `details`, and rules, using only semantic tokens, so it follows dark mode.
+Every rule weighs zero specificity: a component class inside prose (`.ldt-button`,
+`.ldt-card`, `.ldt-table`) always wins, and `.ldt-not-prose` is only needed for bare elements
+that should read as UI rather than content. Code blocks keep a background written inline by a
+highlighter such as Shiki. `--ldt-prose-size` scales the text and `--ldt-prose-width` caps the
+measure.
 
 ## Components
 
