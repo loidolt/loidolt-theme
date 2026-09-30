@@ -332,3 +332,66 @@
     padding: var(--loidolt-space-4);
   }
 }
+/* A row of list controls — search, filters, view options — on the recessed surface. */
+.ldt-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--loidolt-space-2);
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  padding: var(--loidolt-space-2) var(--loidolt-space-3);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-alt);
+}
+.ldt-toolbar--vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+.ldt-toolbar__end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--loidolt-space-2);
+  margin-inline-start: auto;
+}
+.ldt-toolbar--vertical .ldt-toolbar__end {
+  flex-direction: column;
+  align-items: stretch;
+  margin-inline-start: 0;
+  margin-block-start: auto;
+}
+
+/*
+ * A filter area that expands under its toggle. Rows animate from `0fr` to `1fr`, which lets the
+ * height follow the content without measuring it.
+ */
+.ldt-filter-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--loidolt-motion-slow) var(--loidolt-motion-easing);
+}
+.ldt-filter-panel[data-state='open'] {
+  grid-template-rows: 1fr;
+}
+.ldt-filter-panel__clip {
+  min-height: 0;
+  overflow: hidden;
+}
+.ldt-filter-panel__body {
+  margin-top: var(--loidolt-space-2);
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  padding: var(--loidolt-space-4);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-alt);
+}
+.ldt-filter-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--ldt-min, 12rem)), 1fr));
+  align-items: end;
+  gap: var(--ldt-gap, var(--loidolt-space-4));
+}
+.ldt-filter-panel__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--loidolt-space-3);
+}

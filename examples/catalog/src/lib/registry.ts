@@ -349,6 +349,17 @@ export const entries: Entry[] = [
   },
 
   {
+    slug: 'active-filter-chips',
+    name: 'ActiveFilterChips',
+    group: 'Data',
+    summary: 'The filters narrowing a list, each removable on its own, with Clear all.',
+    notes: [
+      'Renders nothing when there are no filters and no `children`, so it can stay in the layout unconditionally.',
+      'Removing a chip moves focus to the chip that took its place, else the one before, else the group, so keyboard users never land back on `<body>`.',
+      'Label chips the way a user would say the filter aloud: "Status: Ready", not "ready".',
+    ],
+  },
+  {
     slug: 'code-block',
     name: 'CodeBlock',
     group: 'Data',
@@ -670,6 +681,28 @@ export const entries: Entry[] = [
     notes: [
       'The icon and accessible name show the active preference; each press advances to the next one.',
       'Keep system in the cycle unless you have a reason not to: it lets the theme continue following the device preference.',
+    ],
+  },
+  {
+    slug: 'toolbar',
+    name: 'Toolbar',
+    group: 'Layout',
+    summary:
+      'A labelled row of list controls — search, filters, view options — with an end cluster.',
+    notes: [
+      'By default it is a labelled `group`: Tab moves between controls. That is right when it holds a text field or a control that owns its arrow keys, such as a `ToggleGroup`.',
+      '`roving` makes it an ARIA `toolbar` with one tab stop; arrow keys move between the controls marked `data-roving-item`.',
+    ],
+  },
+  {
+    slug: 'filter-panel',
+    name: 'FilterPanel',
+    group: 'Layout',
+    summary: 'A filter area that expands under its toggle, on an auto-fit grid.',
+    notes: [
+      'The toggle is yours: a `Button` with `aria-expanded` and `aria-controls` pointing at the panel `id`.',
+      'Closed, the controls are `inert` — out of the tab order and the accessibility tree — while the height still animates.',
+      'Set `--ldt-min` to change the column width. "Clear all" appears when `activeCount` is above zero and `onClear` is given.',
     ],
   },
 ];

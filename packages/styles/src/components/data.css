@@ -196,3 +196,18 @@
 .ldt-record-stepper__count {
   white-space: nowrap;
 }
+/* The filters narrowing a list, each removable on its own. Sits under the list's toolbar. */
+.ldt-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--loidolt-space-2);
+}
+.ldt-filter-chips__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--loidolt-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

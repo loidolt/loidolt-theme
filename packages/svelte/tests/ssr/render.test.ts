@@ -35,6 +35,7 @@ const stripItem = createRawSnippet<[{ id: string }, boolean]>((entry) => ({
 
 const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Accordion', { items: options, children: panel }],
+  ['ActiveFilterChips', { items: options, onRemove: () => {}, onClearAll: () => {} }],
   ['Alert', { title: 'Export ready', children: text('Done.') }],
   ['AlertDialog', { title: 'Delete file?', open: true, trigger: text('Delete') }],
   ['AppShell', { children: text('Content') }],
@@ -59,6 +60,7 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['EmptyState', { title: 'No projects yet' }],
   ['Field', { label: 'Email', children: fieldControl }],
   ['FileInput', { 'aria-label': 'Artwork file' }],
+  ['FilterPanel', { open: true, activeCount: 1, onClear: () => {}, children: text('Filters') }],
   ['Filmstrip', { items: [{ id: 'a' }, { id: 'b' }], label: 'Outputs', item: stripItem }],
   ['FloatingBar', { label: 'Zoom', children: text('+') }],
   ['Fieldset', { legend: 'Output', children: text('<input />') }],
@@ -106,6 +108,7 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['ToastViewport', { children: text('None yet') }],
   ['ToggleGroup', { options, label: 'Mode' }],
   ['Thumbnail', { alt: '', src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>' }],
+  ['Toolbar', { label: 'Tools', roving: true, children: text('Search'), end: text('View') }],
   ['Tooltip', { content: 'Tip', trigger: text('Info') }],
   ['TooltipProvider', { children: text('Content') }],
   ['Topbar', { brand: text('Loidolt') }],

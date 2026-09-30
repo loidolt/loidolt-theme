@@ -4,6 +4,9 @@ import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
 import { axe } from 'vitest-axe';
 import Accordion from '../src/lib/components/Accordion.svelte';
+import ActiveFilterChips from '../src/lib/components/ActiveFilterChips.svelte';
+import FilterPanel from '../src/lib/components/FilterPanel.svelte';
+import Toolbar from '../src/lib/components/Toolbar.svelte';
 import Alert from '../src/lib/components/Alert.svelte';
 import AlertDialog from '../src/lib/components/AlertDialog.svelte';
 import AppShell from '../src/lib/components/AppShell.svelte';
@@ -196,6 +199,29 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
     { label: 'Cutting', value: 3, max: 12, showValue: true, variant: 'success' },
   ],
   ['Skeleton (lines)', Skeleton, { variant: 'text', lines: 3 }],
+  [
+    'ActiveFilterChips',
+    ActiveFilterChips,
+    {
+      items: [{ value: 'status', label: 'Status: Ready' }],
+      onRemove: () => {},
+      onClearAll: () => {},
+    },
+  ],
+  [
+    'FilterPanel',
+    FilterPanel,
+    { open: true, activeCount: 1, onClear: () => {}, children: text('Filters') },
+  ],
+  [
+    'Toolbar',
+    Toolbar,
+    {
+      label: 'Sheet tools',
+      roving: true,
+      children: text('<button data-roving-item>Filter</button>'),
+    },
+  ],
   ['Spinner', Spinner, { label: 'Generating preview' }],
   ['LiveRegion', LiveRegion, { message: 'Three results' }],
   ['Switch', Switch, { children: text('Live preview') }],
