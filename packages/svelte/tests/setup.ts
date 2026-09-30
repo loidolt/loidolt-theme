@@ -48,3 +48,23 @@ if (typeof window.CSS?.supports !== 'function') {
 if (typeof document.elementFromPoint !== 'function') {
   document.elementFromPoint = () => null;
 }
+
+// jsdom's media elements cannot play: `play()` logs "not implemented" and `paused` never
+// changes. Just enough of a player for the controls to be tested against.
+type PlayableMedia = HTMLMediaElement & { __paused?: boolean };
+Object.defineProperty(HTMLMediaElement.prototype, 'paused', {
+  configurable: true,
+  get(this: PlayableMedia) {
+    return this.__paused ?? true;
+  },
+});
+HTMLMediaElement.prototype.play = function (this: PlayableMedia) {
+  this.__paused = false;
+  this.dispatchEvent(new Event('play'));
+  return Promise.resolve();
+};
+HTMLMediaElement.prototype.pause = function (this: PlayableMedia) {
+  this.__paused = true;
+  this.dispatchEvent(new Event('pause'));
+};
+HTMLMediaElement.prototype.load = function () {};

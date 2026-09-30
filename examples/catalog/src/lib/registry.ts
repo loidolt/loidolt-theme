@@ -23,6 +23,7 @@ export const GROUPS = [
   'Overlays',
   'Navigation',
   'Layout',
+  'Media',
   'Theme',
 ] as const;
 
@@ -276,6 +277,8 @@ export const entries: Entry[] = [
     notes: [
       '`surface="paper"` stays white in every theme so artwork previews read true.',
       'Pass `children` instead of `src` for inline SVG or canvas content.',
+      '`ratio` also takes the named frames (`photo`, `video`, `square`, `portrait`, `wide`). While the image loads the frame shimmers; if it fails, `fallback` (or an empty frame that still carries the alt text) takes its place.',
+      '`srcset` and `sizes` serve responsive images; `overlay` layers a badge or duration over the corner.',
     ],
   },
   {
@@ -737,6 +740,17 @@ export const entries: Entry[] = [
     ],
   },
   {
+    slug: 'aspect-ratio',
+    name: 'AspectRatio',
+    group: 'Layout',
+    summary:
+      'A box that keeps its shape — `video`, `photo`, `square`, `portrait`, `wide` or any ratio.',
+    notes: [
+      'Uses native `aspect-ratio`, so the space is reserved before the image or video inside has loaded, and the page does not jump.',
+      'Images, videos and iframes placed directly inside fill the box.',
+    ],
+  },
+  {
     slug: 'toolbar',
     name: 'Toolbar',
     group: 'Layout',
@@ -756,6 +770,38 @@ export const entries: Entry[] = [
       'The toggle is yours: a `Button` with `aria-expanded` and `aria-controls` pointing at the panel `id`.',
       'Closed, the controls are `inert` — out of the tab order and the accessibility tree — while the height still animates.',
       'Set `--ldt-min` to change the column width. "Clear all" appears when `activeCount` is above zero and `onClear` is given.',
+    ],
+  },
+  {
+    slug: 'video-player',
+    name: 'VideoPlayer',
+    group: 'Media',
+    summary:
+      "A video with this system's controls: seek, volume, speed, captions, picture-in-picture and full screen.",
+    notes: [
+      'Every control is a native element — buttons, range inputs, a select — so keyboard and screen-reader support come from the platform. The seek bar speaks positions as words ("1 minute 5 seconds of 4 minutes").',
+      'Shortcuts work while focus is in the player: Space or K plays, the arrows seek and change volume, M mutes, F goes full screen, C toggles captions.',
+      'Provide `tracks` with captions for any video with speech (WCAG 1.2.2).',
+      'An `.m3u8` source plays as HLS — natively in Safari, elsewhere through hls.js once you register it with `setHlsLoader()`. hls.js is an optional peer, so apps that never stream do not ship it.',
+      '`controls="native"` hands over to the browser\'s controls; `autoplay` implies `muted`, as browsers require.',
+    ],
+  },
+  {
+    slug: 'audio-player',
+    name: 'AudioPlayer',
+    group: 'Media',
+    summary: 'Audio with a title, artist, artwork and the shared control bar.',
+    notes: ['The title names the player for assistive tech; artwork is decorative.'],
+  },
+  {
+    slug: 'media-embed',
+    name: 'MediaEmbed',
+    group: 'Media',
+    summary: 'A YouTube or Vimeo video behind a click-to-load facade.',
+    notes: [
+      'Nothing is requested from the provider until the user presses play, and then only from its no-tracking host (`youtube-nocookie.com`, Vimeo with `dnt=1`).',
+      'No thumbnail is fetched from the provider by default, since that request alone would reveal the visit; pass a `poster` of your own, or `embedThumbnail()` if the request is acceptable.',
+      'Once loaded, focus moves into the player so keyboard users carry on where the button was. `title` names both the button and the iframe.',
     ],
   },
 ];

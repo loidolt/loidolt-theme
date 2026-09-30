@@ -107,7 +107,10 @@
     .ldt-combobox,
     .ldt-password-input,
     .ldt-chip,
-    .ldt-data-table__edit
+    .ldt-data-table__edit,
+    .ldt-media-controls__button,
+    .ldt-media-controls__speed,
+    .ldt-media-controls__range
   ) {
     min-height: 44px;
   }
@@ -116,7 +119,8 @@
     .ldt-number-field__button,
     .ldt-combobox__trigger,
     .ldt-password-input__toggle,
-    .ldt-chip__remove
+    .ldt-chip__remove,
+    .ldt-media-controls__button
   ) {
     min-width: 44px;
   }

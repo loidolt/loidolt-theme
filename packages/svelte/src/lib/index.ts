@@ -3,6 +3,8 @@ export { default as ActiveFilterChips } from './components/ActiveFilterChips.sve
 export { default as Alert } from './components/Alert.svelte';
 export { default as AlertDialog } from './components/AlertDialog.svelte';
 export { default as AppShell } from './components/AppShell.svelte';
+export { default as AspectRatio } from './components/AspectRatio.svelte';
+export { default as AudioPlayer } from './components/AudioPlayer.svelte';
 export { default as Avatar } from './components/Avatar.svelte';
 export { default as Badge } from './components/Badge.svelte';
 export { default as Brand } from './components/Brand.svelte';
@@ -35,6 +37,7 @@ export { default as Label } from './components/Label.svelte';
 export { default as ListRow } from './components/ListRow.svelte';
 export { default as LiveRegion } from './components/LiveRegion.svelte';
 export { default as Marker } from './components/Marker.svelte';
+export { default as MediaEmbed } from './components/MediaEmbed.svelte';
 export { default as MultiSelect } from './components/MultiSelect.svelte';
 export { default as NavMenu } from './components/NavMenu.svelte';
 export { default as NumberField } from './components/NumberField.svelte';
@@ -73,6 +76,7 @@ export { default as Toolbar } from './components/Toolbar.svelte';
 export { default as Tooltip } from './components/Tooltip.svelte';
 export { default as TooltipProvider } from './components/TooltipProvider.svelte';
 export { default as Topbar } from './components/Topbar.svelte';
+export { default as VideoPlayer } from './components/VideoPlayer.svelte';
 export { default as Workspace } from './components/Workspace.svelte';
 
 /**
@@ -104,6 +108,42 @@ export type {
   FocusTrapOptions,
   RovingFocusOptions,
 } from './attachments.js';
+export {
+  buildEmbedSrc,
+  embedThumbnail,
+  formatDuration,
+  formatDurationSpoken,
+  inferMediaKind,
+  isHlsSource,
+  mediaLabel,
+  mediaThumbnail,
+  parseEmbedUrl,
+  resolveAspectRatio,
+  toMediaSources,
+} from './media-utils.js';
+export type {
+  AspectRatioName,
+  AudioMediaItem,
+  EmbedMediaItem,
+  EmbedProvider,
+  EmbedSrcOptions,
+  ImageMediaItem,
+  MediaItem,
+  MediaKind,
+  MediaSourceEntry,
+  MediaTextTrack,
+  ParsedEmbed,
+  VideoMediaItem,
+} from './media-utils.js';
+export { createMediaPlayer } from './media-player.svelte.js';
+export type { MediaPlayer, MediaPlayerOptions, MediaTrackInfo } from './media-player.svelte.js';
+export { createMediaZoom } from './media-zoom.svelte.js';
+export type { MediaZoom, MediaZoomOptions } from './media-zoom.svelte.js';
+export { canPlayHlsNatively, loadHls, setHlsLoader } from './hls.js';
+export type { HlsConstructor, HlsErrorData, HlsInstance, HlsLoader } from './hls.js';
+export { createHlsSource } from './hls.svelte.js';
+export type { HlsSource, HlsSourceOptions, HlsStatus } from './hls.svelte.js';
+export type { MediaPlayerLabels } from './internal/media/labels.js';
 export { createDataTable } from './data-table.svelte.js';
 export type {
   DataTableColumn,

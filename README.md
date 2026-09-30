@@ -390,7 +390,8 @@ server data, set `manual: { sorting, filtering, pagination }` and `rowCount`, an
 - Feedback: `Alert`, `Toast`, `ToastViewport`, `Progress`, `Spinner`, `Skeleton`, `StatusDot`, `LiveRegion`, `Marker`
 - Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`
 - Navigation: `Topbar`, `Brand`, `NavMenu`, `SkipLink`, `Breadcrumbs`, `SegmentedNav`, `Tabs`, `Accordion`, `ContextBar`
-- Layout: `AppShell`, `Workspace`, `Sidebar`, `FloatingBar`, `Toolbar`, `FilterPanel`
+- Layout: `AppShell`, `Workspace`, `Sidebar`, `FloatingBar`, `AspectRatio`, `Toolbar`, `FilterPanel`
+- Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`
 - Theme: `ThemeToggle`
 
 Complex focus, portal, dismissal, and keyboard behavior is powered by Bits UI. Icons remain
@@ -455,6 +456,37 @@ must call `toaster.destroy()` when its application lifetime ends.
 Wrap the application once in `TooltipProvider` so the skip-delay grouping works across every
 tooltip. A `Tooltip` without a provider ancestor creates its own, which is correct but loses
 grouping.
+
+## Media
+
+`VideoPlayer` and `AudioPlayer` put this system's controls on native media elements;
+`MediaEmbed` shows YouTube and Vimeo behind a click-to-load facade, so nothing is requested from
+the provider until the user presses play.
+
+```svelte
+<VideoPlayer
+  label="Cutting a bracket"
+  src="/media/cut.webm"
+  tracks={[{ src: '/media/cut.en.vtt', srclang: 'en', label: 'English' }]}
+/>
+<MediaEmbed url="https://youtu.be/aqz-KE-bpKQ" title="Assembly guide" />
+```
+
+HLS playlists (`.m3u8`) play natively in Safari. Elsewhere they need hls.js, an optional peer
+dependency the package never imports itself; register it once and only apps that stream pay for
+it:
+
+```ts
+import { setHlsLoader } from '@loidolt/theme-svelte';
+
+setHlsLoader(() => import('hls.js').then((module) => module.default));
+```
+
+The players are built on `createMediaPlayer()` — reactive state and commands over any `<video>`
+or `<audio>` (`{@attach player.attach}`) — for when you want your own controls.
+`createMediaZoom()` provides pinch, trackpad and drag-to-pan zoom for an image in a frame, and
+`formatDuration`, `formatDurationSpoken`, `parseEmbedUrl`, `buildEmbedSrc` and `inferMediaKind`
+are exported for your own media UI.
 
 ## Behaviour helpers
 

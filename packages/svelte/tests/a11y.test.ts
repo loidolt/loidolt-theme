@@ -4,6 +4,10 @@ import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
 import { axe } from 'vitest-axe';
 import Accordion from '../src/lib/components/Accordion.svelte';
+import AspectRatio from '../src/lib/components/AspectRatio.svelte';
+import AudioPlayer from '../src/lib/components/AudioPlayer.svelte';
+import MediaEmbed from '../src/lib/components/MediaEmbed.svelte';
+import VideoPlayer from '../src/lib/components/VideoPlayer.svelte';
 import DataTableColumnVisibility from '../src/lib/components/DataTableColumnVisibility.svelte';
 import DataTableFacetedFilter from '../src/lib/components/DataTableFacetedFilter.svelte';
 import DataTablePagination from '../src/lib/components/DataTablePagination.svelte';
@@ -249,6 +253,20 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ['DataTableFacetedFilter', DataTableFacetedFilter, { table: sheetTable(), column: 'stock' }],
   ['DataTableColumnVisibility', DataTableColumnVisibility, { table: sheetTable() }],
   ['DataTablePagination', DataTablePagination, { table: sheetTable() }],
+  ['AspectRatio', AspectRatio, { ratio: 'photo', children: text('Frame') }],
+  [
+    'VideoPlayer',
+    VideoPlayer,
+    {
+      src: 'cut.mp4',
+      label: 'Cutting demo',
+      tracks: [{ src: 'en.vtt', srclang: 'en', label: 'English' }],
+    },
+  ],
+  ['AudioPlayer', AudioPlayer, { src: 'talk.mp3', title: 'Shop talk', artist: 'Loidolt' }],
+  ['MediaEmbed', MediaEmbed, { url: 'https://youtu.be/dQw4w9WgXcQ', title: 'Assembly guide' }],
+  // The loaded state is an iframe, which axe-core cannot enter under jsdom; its title is
+  // asserted in media.test.ts instead.
   ['Spinner', Spinner, { label: 'Generating preview' }],
   ['LiveRegion', LiveRegion, { message: 'Three results' }],
   ['Switch', Switch, { children: text('Live preview') }],

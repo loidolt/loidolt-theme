@@ -48,6 +48,8 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Alert', { title: 'Export ready', children: text('Done.') }],
   ['AlertDialog', { title: 'Delete file?', open: true, trigger: text('Delete') }],
   ['AppShell', { children: text('Content') }],
+  ['AspectRatio', { ratio: 'square', children: text('Box') }],
+  ['AudioPlayer', { src: 'talk.mp3', title: 'Shop talk', artwork: 'a.jpg' }],
   ['Avatar', { name: 'Ada Lovelace', src: '/ada.png' }],
   ['Badge', { children: text('New') }],
   ['Brand', { name: 'Loidolt', meta: 'Studio' }],
@@ -86,6 +88,7 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['ListRow', { children: text('Row') }],
   ['ListRow (link)' as 'ListRow', { children: text('Row'), href: '/x', selected: true }],
   ['LiveRegion', { message: 'Saved' }],
+  ['MediaEmbed', { url: 'https://youtu.be/dQw4w9WgXcQ', title: 'Guide', poster: 'still.jpg' }],
   ['Marker', { number: 3, label: 'Comment 3' }],
   ['MultiSelect', { label: 'Stock', value: ['design'], options }],
   ['NavMenu', { label: 'Projects', items: options }],
@@ -128,6 +131,14 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Tooltip', { content: 'Tip', trigger: text('Info') }],
   ['TooltipProvider', { children: text('Content') }],
   ['Topbar', { brand: text('Loidolt') }],
+  [
+    'VideoPlayer',
+    {
+      src: 'live.m3u8',
+      label: 'Live',
+      tracks: [{ src: 'en.vtt', srclang: 'en', label: 'English' }],
+    },
+  ],
   ['Workspace', { children: text('Main') }],
 ];
 
