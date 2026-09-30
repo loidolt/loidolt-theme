@@ -247,6 +247,8 @@
 .ldt-page-header__title {
   margin: 0;
   font-size: var(--loidolt-font-size-xl);
+  /* A long unbroken title — a file name, an identifier — must still reflow at 320px. */
+  overflow-wrap: anywhere;
 }
 .ldt-page-header__description {
   max-width: 48rem;

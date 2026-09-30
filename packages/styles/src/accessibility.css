@@ -106,7 +106,8 @@
     .ldt-listbox__item,
     .ldt-combobox,
     .ldt-password-input,
-    .ldt-chip
+    .ldt-chip,
+    .ldt-data-table__edit
   ) {
     min-height: 44px;
   }

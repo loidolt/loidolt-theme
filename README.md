@@ -335,12 +335,58 @@ scrolls and nothing sticks. Exactly one column should report a sort; leave the r
 Pass `empty` only when there are no rows, since the component cannot see inside `children` to
 count them.
 
+### Data-driven tables
+
+`createDataTable()` holds the state — sorting, search, column filters, paging, selection and
+column visibility — and `DataTable` with its companions renders it:
+
+```svelte
+<script lang="ts">
+  import {
+    createDataTable,
+    DataTable,
+    DataTableFacetedFilter,
+    DataTablePagination,
+    DataTableSearch,
+    Toolbar,
+  } from '@loidolt/theme-svelte';
+
+  let { sheets } = $props();
+
+  const table = createDataTable({
+    get data() {
+      return sheets;
+    },
+    columns: [
+      { id: 'name', header: 'Name', sortable: true },
+      { id: 'stock', header: 'Stock' },
+      { id: 'layers', header: 'Layers', sortable: true, align: 'end' },
+    ],
+    getRowId: (sheet) => sheet.id,
+    pageSize: 25,
+    selection: 'multiple',
+  });
+</script>
+
+<Toolbar label="Sheet tools">
+  <DataTableSearch {table} />
+  <DataTableFacetedFilter {table} column="stock" />
+</Toolbar>
+<DataTable {table} caption="Cut sheets" />
+<DataTablePagination {table} />
+```
+
+The engine is independent of the component: `table.sortOf(id)` feeds `TableHeader`, `table.page`
+feeds `Pagination`, and `table.rows` is the page to render if you build the markup yourself. For
+server data, set `manual: { sorting, filtering, pagination }` and `rowCount`, and fetch in
+`onSortChange`, `onSearchChange`, `onFiltersChange` and `onPageChange`.
+
 ## Components
 
 - Actions: `Button` (`variant="text"` covers the former `TextButton`), `IconButton`, `ToggleGroup`, `ListRow`
 - Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Combobox`, `MultiSelect`, `Slider`, `PasswordInput`, `OTPInput`, `Checkbox`, `RadioGroup`, `Switch`, `FileInput`, `SwatchGroup`
 - Surfaces: `Card`, `Panel`, `Section`, `PageHeader`, `Separator`, `Thumbnail`, `Stat`, `Avatar`, `Badge`
-- Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`, `ActiveFilterChips`, `CodeBlock`, `CommentList`, `RecordStepper`, `Filmstrip`
+- Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`, `DataTable`, `DataTableSearch`, `DataTableFacetedFilter`, `DataTableColumnVisibility`, `DataTablePagination`, `ActiveFilterChips`, `CodeBlock`, `CommentList`, `RecordStepper`, `Filmstrip`
 - Feedback: `Alert`, `Toast`, `ToastViewport`, `Progress`, `Spinner`, `Skeleton`, `StatusDot`, `LiveRegion`, `Marker`
 - Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`
 - Navigation: `Topbar`, `Brand`, `NavMenu`, `SkipLink`, `Breadcrumbs`, `SegmentedNav`, `Tabs`, `Accordion`, `ContextBar`

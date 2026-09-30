@@ -349,6 +349,59 @@ export const entries: Entry[] = [
   },
 
   {
+    slug: 'data-table',
+    name: 'DataTable',
+    group: 'Data',
+    summary:
+      'A table driven by `createDataTable()`: sorting, search, filters, paging, selection and in-place editing.',
+    notes: [
+      'State lives in `createDataTable()`, not the component, so the search, filter, column and pagination parts all drive the same table — and you can read or change it from code.',
+      'Pass `data` through a getter (`get data() { return rows; }`) to keep the table in step with changing rows.',
+      'Paged or virtual, the table reports `aria-rowcount` and each row its `aria-rowindex`, so screen readers announce "row 27 of 43" rather than "row 2 of 8".',
+      "`selection: 'multiple'` adds a checkbox column with a select-all that is indeterminate when some rows on the page are selected. `'single'` uses radios.",
+      '`editable` columns become buttons that turn into a field: Enter or leaving saves through `onCellEdit`, Escape restores the old value.',
+      '`hideBelow` drops a column on narrow screens while keeping it searchable and sortable. `virtual` renders only the rows in view; rows must have a fixed height and the wrapper needs `sticky` with `--ldt-table-height`.',
+      'For server data set `manual` and `rowCount`, and fetch in the `on…Change` callbacks.',
+    ],
+  },
+  {
+    slug: 'data-table-search',
+    name: 'DataTableSearch',
+    group: 'Data',
+    summary:
+      'A search field bound to a data table — across every searchable column, or one `column`.',
+    notes: [
+      'Debounced by 200ms; raise `debounce` for a server search. The field re-syncs when the table is reset or cleared elsewhere.',
+    ],
+  },
+  {
+    slug: 'data-table-faceted-filter',
+    name: 'DataTableFacetedFilter',
+    group: 'Data',
+    summary: 'A menu of checkboxes that filters a column to the chosen values, with counts.',
+    notes: [
+      'Counts come from rows passing every other filter, so each choice shows what picking it would add.',
+      "Choices default to the column's `filterOptions`, else the distinct values in the data.",
+    ],
+  },
+  {
+    slug: 'data-table-column-visibility',
+    name: 'DataTableColumnVisibility',
+    group: 'Data',
+    summary: "A menu that shows and hides a data table's columns.",
+    notes: ['Columns with `hideable: false` are left out of the menu.'],
+  },
+  {
+    slug: 'data-table-pagination',
+    name: 'DataTablePagination',
+    group: 'Data',
+    summary: "A data table's footer: the visible range, rows per page, and the page trail.",
+    notes: [
+      'The range line is a polite status region, so paging or filtering is announced.',
+      'Pass `pageSizes={[]}` to hide the rows-per-page picker.',
+    ],
+  },
+  {
     slug: 'active-filter-chips',
     name: 'ActiveFilterChips',
     group: 'Data',

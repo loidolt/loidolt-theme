@@ -4,6 +4,12 @@ import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
 import { axe } from 'vitest-axe';
 import Accordion from '../src/lib/components/Accordion.svelte';
+import DataTableColumnVisibility from '../src/lib/components/DataTableColumnVisibility.svelte';
+import DataTableFacetedFilter from '../src/lib/components/DataTableFacetedFilter.svelte';
+import DataTablePagination from '../src/lib/components/DataTablePagination.svelte';
+import DataTableSearch from '../src/lib/components/DataTableSearch.svelte';
+import { createDataTable } from '../src/lib/data-table.svelte.js';
+import DataTableHarness from './fixtures/DataTableHarness.svelte';
 import ActiveFilterChips from '../src/lib/components/ActiveFilterChips.svelte';
 import FilterPanel from '../src/lib/components/FilterPanel.svelte';
 import Toolbar from '../src/lib/components/Toolbar.svelte';
@@ -57,6 +63,16 @@ import FieldHarness from './fixtures/FieldHarness.svelte';
 import FieldsetHarness from './fixtures/FieldsetHarness.svelte';
 import TableHarness from './fixtures/TableHarness.svelte';
 import WorkspaceHarness from './fixtures/WorkspaceHarness.svelte';
+
+const sheetTable = () =>
+  createDataTable({
+    data: Array.from({ length: 12 }, (_, index) => ({ name: `Sheet ${index}`, stock: 'birch' })),
+    columns: [
+      { id: 'name', header: 'Name', sortable: true },
+      { id: 'stock', header: 'Stock' },
+    ],
+    pageSize: 5,
+  });
 
 const text = (value: string) => createRawSnippet(() => ({ render: () => value }));
 
@@ -222,6 +238,17 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
       children: text('<button data-roving-item>Filter</button>'),
     },
   ],
+  ['DataTable', DataTableHarness, { options: { selection: 'multiple' } }],
+  [
+    'DataTable (single, editable)',
+    DataTableHarness,
+    { options: { selection: 'single' }, editable: true, onEdit: () => {} },
+  ],
+  ['DataTable (empty)', DataTableHarness, { count: 0 }],
+  ['DataTableSearch', DataTableSearch, { table: sheetTable() }],
+  ['DataTableFacetedFilter', DataTableFacetedFilter, { table: sheetTable(), column: 'stock' }],
+  ['DataTableColumnVisibility', DataTableColumnVisibility, { table: sheetTable() }],
+  ['DataTablePagination', DataTablePagination, { table: sheetTable() }],
   ['Spinner', Spinner, { label: 'Generating preview' }],
   ['LiveRegion', LiveRegion, { message: 'Three results' }],
   ['Switch', Switch, { children: text('Live preview') }],

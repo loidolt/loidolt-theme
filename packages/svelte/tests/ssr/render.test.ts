@@ -2,6 +2,7 @@ import { createRawSnippet } from 'svelte';
 import { render } from 'svelte/server';
 import { describe, expect, it } from 'vitest';
 import * as lib from '../../src/lib/index.js';
+import { createDataTable } from '../../src/lib/data-table.svelte.js';
 import { createTheme } from '../../src/lib/theme.svelte.js';
 
 /**
@@ -33,6 +34,14 @@ const stripItem = createRawSnippet<[{ id: string }, boolean]>((entry) => ({
   render: () => `<span>${entry().id}</span>`,
 }));
 
+const sheets = createDataTable({
+  data: Array.from({ length: 12 }, (_, index) => ({ id: `s${index}`, name: `Sheet ${index}` })),
+  columns: [{ id: 'name', header: 'Name', sortable: true, editable: true }],
+  getRowId: (row) => row.id,
+  pageSize: 5,
+  selection: 'multiple',
+});
+
 const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Accordion', { items: options, children: panel }],
   ['ActiveFilterChips', { items: options, onRemove: () => {}, onClearAll: () => {} }],
@@ -55,6 +64,13 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
     'Dialog',
     { title: 'Confirm', open: true, trigger: text('Open'), children: text('Are you sure?') },
   ],
+  ['DataTable', { table: sheets, caption: 'Sheets', onCellEdit: () => {} }],
+  ['DataTable (virtual)' as 'DataTable', { table: sheets, virtual: { rowHeight: 40 } }],
+  ['DataTable (loading)' as 'DataTable', { table: sheets, loading: true }],
+  ['DataTableColumnVisibility', { table: sheets }],
+  ['DataTableFacetedFilter', { table: sheets, column: 'name' }],
+  ['DataTablePagination', { table: sheets }],
+  ['DataTableSearch', { table: sheets }],
   ['Drawer', { title: 'Navigation', open: true, children: text('Links') }],
   ['DropdownMenu', { trigger: text('Actions'), items: options, open: true }],
   ['EmptyState', { title: 'No projects yet' }],
