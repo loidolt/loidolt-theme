@@ -58,6 +58,11 @@ export const handle = ({ event, resolve }) =>
 
   const layers = `@layer loidolt.tokens, loidolt.reset, loidolt.base,
        loidolt.components, loidolt.utilities, loidolt.a11y;`;
+
+  const prose = `<article class="ldt-prose" style="--ldt-prose-size: 0.9375rem">
+  {@html renderedMarkdown}
+  <div class="ldt-not-prose">…ordinary UI…</div>
+</article>`;
 </script>
 
 <svelte:head><title>Foundations — Loidolt Theme</title></svelte:head>
@@ -191,6 +196,38 @@ export const handle = ({ event, resolve }) =>
         <code>createMediaQuery()</code> makes them reactive.
       </p>
     </div>
+  </div>
+</Section>
+
+<Section title="Long-form content" headingLevel={2}>
+  <p class="docs-note">
+    Wrap rendered Markdown or other HTML you do not author element by element in
+    <code>.ldt-prose</code>. Its rules carry zero specificity, so components placed inside still
+    look like components; mark an island of bare UI markup with <code>.ldt-not-prose</code>.
+    <code>--ldt-prose-size</code> scales the text.
+  </p>
+  <CodeBlock code={prose} />
+  <div class="ldt-prose docs-prose-sample">
+    <h3>Printing the labels</h3>
+    <p>
+      Labels are bought only when someone runs <strong>Generate labels</strong>. Each one is a 4×6
+      PDF; see <a href="#prose-table">the size table</a> for printer settings.
+    </p>
+    <blockquote>
+      <p>Check the return address before the first batch of the season.</p>
+    </blockquote>
+    <ul>
+      <li><input type="checkbox" checked disabled /> Load 4×6 stock</li>
+      <li><input type="checkbox" disabled /> Print a test label</li>
+    </ul>
+    <table id="prose-table">
+      <thead><tr><th>Printer</th><th>Scale</th><th align="right">Margin</th></tr></thead>
+      <tbody>
+        <tr><td>Thermal</td><td>100%</td><td align="right">0</td></tr>
+        <tr><td>Laser, 2-up</td><td>Fit</td><td align="right">0.25in</td></tr>
+      </tbody>
+    </table>
+    <pre><code>npm run backfill -- --year 2026</code></pre>
   </div>
 </Section>
 
