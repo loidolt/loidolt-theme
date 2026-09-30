@@ -99,6 +99,15 @@ export type {
   FocusTrapOptions,
   RovingFocusOptions,
 } from './attachments.js';
+export { createDataTable } from './data-table.svelte.js';
+export type {
+  DataTableColumn,
+  DataTableFilterValue,
+  DataTableOptions,
+  DataTableRow,
+  DataTableSort,
+  DataTableState,
+} from './data-table.svelte.js';
 export { createAnnouncer } from './announcer.svelte.js';
 export type { Announcer, AnnouncerOptions, Politeness } from './announcer.svelte.js';
 export { createToaster } from './toaster.svelte.js';
