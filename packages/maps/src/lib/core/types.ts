@@ -96,3 +96,11 @@ export interface MapFeatureItem {
   /** A second line, e.g. an address or a status. */
   description?: string;
 }
+
+/** A layer's row in `LayerManager`: what it shows and sets. */
+export interface LayerState {
+  id: string;
+  label: string;
+  visible: boolean;
+  opacity: number;
+}

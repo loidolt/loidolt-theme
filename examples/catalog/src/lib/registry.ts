@@ -1143,6 +1143,29 @@ export const entries: Entry[] = [
       'Choosing an item flies the map there (or jumps, for reduced motion). Place it beside the map and pass the bound `map`.',
     ],
   },
+  {
+    slug: 'layer-manager',
+    name: 'LayerManager',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'A map control listing its layers, to show, fade and reorder them.',
+    notes: [
+      'Lists every layer placed with a layer component, topmost first, named by each layer’s `label`. Pass `layers` to offer only some.',
+      'Reorder with the arrow buttons, or Alt + ↑ and ↓ anywhere in a row. Each move is announced ("Stops moved to position 1 of 4") and focus stays with the moved layer.',
+      'Opacity sets every opacity property the layer type has — both text and icon for a symbol layer.',
+    ],
+  },
+  {
+    slug: 'deck-overlay',
+    name: 'DeckOverlay',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'deck.gl layers drawn on the map, for data too large or too 3D for MapLibre alone.',
+    notes: [
+      "deck.gl is an optional peer. Register it once with `setDeckLoader(() => import('@deck.gl/mapbox'))`; until then the overlay draws nothing and calls `onUnavailable`.",
+      'Drawn on its own canvas over the map by default. `interleaved` puts deck.gl layers among the map’s own, but needs a deck.gl release that supports your MapLibre major — deck.gl 9.4 does not yet support MapLibre 6.',
+    ],
+  },
 ];
 
 export const bySlug = new Map(entries.map((entry) => [entry.slug, entry]));

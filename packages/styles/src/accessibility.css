@@ -24,7 +24,8 @@
     .ldt-listbox,
     .ldt-media-grid,
     .ldt-map,
-    .ldt-map-features__list
+    .ldt-map-features__list,
+    .ldt-layer-manager
   )
   :where(:focus-visible) {
   outline-offset: -2px;
@@ -117,7 +118,8 @@
     .ldt-lightbox__control,
     .ldt-media-carousel__control,
     .ldt-map-features__item,
-    .ldt-map .maplibregl-ctrl-group button
+    .ldt-map .maplibregl-ctrl-group button,
+    .ldt-layer-manager__toggle
   ) {
     min-height: 44px;
   }

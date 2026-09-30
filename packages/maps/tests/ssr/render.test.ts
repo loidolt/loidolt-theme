@@ -27,6 +27,8 @@ const inMap: Array<[keyof typeof lib, Record<string, unknown>, string]> = [
   ['CoordinateDisplay', {}, 'ldt-map-coordinates'],
   ['BasemapSwitcher', {}, 'Plain'],
   ['MapSource', { id: 'stops' }, ''],
+  ['LayerManager', {}, 'Layers'],
+  ['DeckOverlay', { layers: [] }, ''],
   ['FillLayer', { id: 'fill', source: 'stops' }, ''],
   ['LineLayer', { id: 'line', source: 'stops' }, ''],
   ['CircleLayer', { id: 'circle', source: 'stops' }, ''],

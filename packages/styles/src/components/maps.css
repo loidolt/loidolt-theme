@@ -98,7 +98,10 @@
   font-size: var(--loidolt-font-size-xs);
 }
 .ldt-map .maplibregl-ctrl-attrib a {
+  display: inline-block;
+  padding-block: 0.35rem;
   color: var(--loidolt-text);
+  line-height: 1.5;
 }
 .ldt-map .maplibregl-ctrl-attrib-button {
   border-radius: 0;
@@ -185,6 +188,59 @@
   margin: 0;
   font: var(--loidolt-font-size-xs) var(--loidolt-font-mono);
   font-variant-numeric: tabular-nums;
+}
+
+/* The layer manager: a titled list of switches, sliders and move buttons. */
+.ldt-layer-manager {
+  min-width: 13rem;
+  max-width: min(18rem, calc(100vw - 4rem));
+  /* Never taller than the map, so it cannot run into the controls in the corner below it. */
+  max-height: calc(var(--ldt-map-height, 25rem) - 4.5rem);
+  overflow-y: auto;
+}
+.ldt-layer-manager__title {
+  margin: 0;
+}
+.ldt-layer-manager__toggle {
+  width: 100%;
+  padding: 0.15rem 0;
+  border: 0;
+  color: var(--loidolt-text-muted);
+  background: none;
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: var(--loidolt-font-tracking-utility);
+  text-align: start;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.ldt-layer-manager__list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ldt-layer-manager__list[hidden] {
+  display: none;
+}
+.ldt-layer-manager__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem 0.5rem;
+  align-items: center;
+  padding-top: 0.5rem;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+}
+.ldt-layer-manager__row:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.ldt-layer-manager__move {
+  display: flex;
+  gap: 0.15rem;
+}
+.ldt-layer-manager__opacity {
+  grid-column: 1 / -1;
 }
 
 /* Markers: the loidolt pin or dot, in a button that takes focus. */

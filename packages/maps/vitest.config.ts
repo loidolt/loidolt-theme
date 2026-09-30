@@ -15,7 +15,13 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json-summary', 'html'],
       include: ['src/lib/**/*.{ts,svelte}'],
-      exclude: ['src/lib/index.ts', 'src/lib/core/index.ts', 'src/lib/core/types.ts'],
+      // The worker entry is a two-line relay to `handler.ts`, which is tested directly.
+      exclude: [
+        'src/lib/index.ts',
+        'src/lib/core/index.ts',
+        'src/lib/core/types.ts',
+        'src/lib/core/workers/spatial.worker.ts',
+      ],
       thresholds: {
         statements: 90,
         branches: 80,

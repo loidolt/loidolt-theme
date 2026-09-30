@@ -225,6 +225,14 @@ export class FakeMap extends Emitter {
     return this;
   }
 
+  getPaintProperty(id: string, name: string) {
+    return this.getLayer(id)?.paint?.[name];
+  }
+
+  getLayoutProperty(id: string, name: string) {
+    return this.getLayer(id)?.layout?.[name];
+  }
+
   setLayoutProperty(id: string, name: string, value: unknown) {
     const layer = this.getLayer(id)!;
     layer.layout = { ...layer.layout, [name]: value };

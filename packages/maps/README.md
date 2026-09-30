@@ -83,6 +83,8 @@ README), so the loidolt control, popup and attribution styles win without `!impo
 | `CoordinateDisplay`  | Coordinate under the pointer (or at the centre) and zoom                  |
 | `BasemapSwitcher`    | Switch between the loidolt basemap, the plain one, and your own styles    |
 | `MapFeatureList`     | Every place as a list that flies the map there — the non-visual route     |
+| `LayerManager`       | Show, fade and reorder layers; keyboard reordering, announced             |
+| `DeckOverlay`        | deck.gl layers on the map (optional peer)                                 |
 
 Layers take `id`, `source` (or the enclosing `MapSource`), `sourceLayer`, `beforeId`, `filter`,
 `minZoom`/`maxZoom`, `visible`, `layout`, `label`, `onClick`, `onHover` and `paint`. `paint` is
@@ -120,6 +122,47 @@ template, with its attribution:
   `formatArea`.
 - `clusterColor`, `clusterRadius`, `expandCluster`.
 - `formatMoveAnnouncement`, `describeZoom`, `MAP_KEYS`.
+
+## Routes and directions
+
+Straight-line routing with no service and no key: `haversine` and `pathLength` (metres),
+`distanceMatrix`, and `optimizeRoute(origin, stops)` — nearest neighbour, then 2-opt — which
+returns the visiting order, each leg and the total. Hand the order to a phone's maps app with
+`googleDirectionsUrl` or `appleDirectionsUrl`; `googleDirectionsLegUrls` splits a long route into
+links that each fit Google's waypoint limit, every leg starting where the last one ended.
+
+## Large datasets
+
+- `createSpatialIndex()` — an R-tree over features: `search(bounds)` for what is in view,
+  `nearest(point, count)`.
+- `simplifyLine`, `simplifyFeatures`, `convexHull`, and `createLevelOfDetail(collection)`, which
+  simplifies to what a pixel can show at each zoom and caches per level; `outlineOf(features)`
+  collapses a group into one shape for far zooms.
+- `createSpatialWorker()` runs the index and simplification in a web worker, falling back to the
+  main thread (same answers) where no worker can start. It finds its worker next to itself; if a
+  bundler's dependency pre-bundling loses it, import it through the bundler and pass it in:
+
+  ```ts
+  import SpatialWorker from '@loidolt/theme-maps/spatial.worker?worker';
+  const spatial = createSpatialWorker({ workerFactory: () => new SpatialWorker() });
+  ```
+
+## deck.gl
+
+`DeckOverlay` draws deck.gl layers on the map, on a canvas of their own that follows the camera.
+`interleaved` draws them in among MapLibre's layers instead, sharing its depth — but it reaches
+into MapLibre's renderer, so it needs a deck.gl release that supports your MapLibre major
+(deck.gl 9.4 does not yet support MapLibre 6's). deck.gl is an optional peer; register it once
+and build your layers as usual:
+
+```ts
+import { setDeckLoader } from '@loidolt/theme-maps';
+setDeckLoader(() => import('@deck.gl/mapbox'));
+```
+
+```svelte
+<DeckOverlay layers={[new ScatterplotLayer({ id: 'jobs', data, getPosition, getRadius })]} />
+```
 
 ## Loading MapLibre yourself
 

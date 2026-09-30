@@ -1,9 +1,11 @@
 export { default as BasemapSwitcher } from './components/BasemapSwitcher.svelte';
 export { default as CircleLayer } from './components/CircleLayer.svelte';
 export { default as CoordinateDisplay } from './components/CoordinateDisplay.svelte';
+export { default as DeckOverlay } from './components/DeckOverlay.svelte';
 export { default as FillExtrusionLayer } from './components/FillExtrusionLayer.svelte';
 export { default as FillLayer } from './components/FillLayer.svelte';
 export { default as HeatmapLayer } from './components/HeatmapLayer.svelte';
+export { default as LayerManager } from './components/LayerManager.svelte';
 export { default as LineLayer } from './components/LineLayer.svelte';
 export { default as MapControl } from './components/MapControl.svelte';
 export { default as MapFeatureList } from './components/MapFeatureList.svelte';
@@ -18,6 +20,8 @@ export { default as SymbolLayer } from './components/SymbolLayer.svelte';
 
 export { loadMapLibre, setMapLibreLoader, setMapLibreWorkerUrl } from './maplibre.js';
 export type { MapLibreLoader, MapLibreModule } from './maplibre.js';
+export { loadDeck, setDeckLoader } from './deck.js';
+export type { DeckLoader, DeckModule, DeckOverlayInstance } from './deck.js';
 export { getMapContext } from './internal/context.js';
 export type { LayerEntry, MapContext } from './internal/context.js';
 export type { LayerPaint, LayerProps } from './internal/use-layer.svelte.js';
