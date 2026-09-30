@@ -18,6 +18,8 @@ const port =
 
 export default defineConfig({
   plugins: [sveltekit()],
+  // MapLibre's worker uses code splitting, which only the ES worker format supports.
+  worker: { format: 'es' },
   server: {
     port,
     strictPort: true,

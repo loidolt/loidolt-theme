@@ -22,7 +22,9 @@
     .ldt-tabs__list,
     .ldt-toggle-group,
     .ldt-listbox,
-    .ldt-media-grid
+    .ldt-media-grid,
+    .ldt-map,
+    .ldt-map-features__list
   )
   :where(:focus-visible) {
   outline-offset: -2px;
@@ -113,7 +115,9 @@
     .ldt-media-controls__speed,
     .ldt-media-controls__range,
     .ldt-lightbox__control,
-    .ldt-media-carousel__control
+    .ldt-media-carousel__control,
+    .ldt-map-features__item,
+    .ldt-map .maplibregl-ctrl-group button
   ) {
     min-height: 44px;
   }
@@ -125,9 +129,19 @@
     .ldt-chip__remove,
     .ldt-media-controls__button,
     .ldt-lightbox__control,
-    .ldt-media-carousel__control
+    .ldt-media-carousel__control,
+    .ldt-map .maplibregl-ctrl-group button
   ) {
     min-width: 44px;
+  }
+  /* A map marker keeps its drawn size — it points at a spot — and takes a 44px touch. */
+  .ldt-map-marker::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
   }
   /* The thumb keeps its drawn size; an invisible 44px square around it takes the touch. */
   .ldt-slider__thumb {

@@ -992,6 +992,157 @@ export const entries: Entry[] = [
     summary: 'Flows between named nodes, sized by volume.',
     notes: ['Links to unknown nodes, loops and zero-sized flows throw before ECharts sees them.'],
   },
+  {
+    slug: 'map-view',
+    name: 'MapView',
+    package: 'maps',
+    group: 'Maps',
+    summary:
+      'A MapLibre map on the loidolt basemap, recoloured with the theme and moved by keyboard as well as pointer.',
+    notes: [
+      'The default basemap is drawn in the loidolt palette from OpenFreeMap’s free, keyless OpenMapTiles tiles; `basemap="blank"` draws land colour only and makes no network requests. Pass `tiles` to use another OpenMapTiles-schema provider, or `mapStyle` for a style of your own.',
+      'The canvas is named by `label` and described by `description` plus a sentence on the keyboard controls. Arrow keys pan and + and − zoom when it has focus; after a keyboard move, where the map landed is announced.',
+      'A theme change repaints the basemap in place — no reload — and data layers with a paint function follow it too.',
+      '`center` and `zoom` are bindable both ways. MapLibre loads in the browser only; the server renders the frame and description, and a browser without WebGL gets a message instead of a broken canvas.',
+    ],
+  },
+  {
+    slug: 'map-source',
+    name: 'MapSource',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'GeoJSON (or any MapLibre source) for the layers inside it, with optional clustering.',
+    notes: [
+      'Replace the `data` object to update the map in place; the layers drawing it are untouched.',
+      'Layers inside a `MapSource` pick up its id. Clusters come with `clusterColor()`, `clusterRadius()` and `expandCluster()` from `/core`.',
+    ],
+  },
+  {
+    slug: 'fill-layer',
+    name: 'FillLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Polygons filled from a source, in the first series colour unless told otherwise.',
+    notes: [
+      '`paint` merges over themed defaults; pass a function of the colours to follow light and dark. Only changed properties are sent to MapLibre.',
+      'Features with an id get a `hover` feature state, for `feature-state` expressions.',
+    ],
+  },
+  {
+    slug: 'line-layer',
+    name: 'LineLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Lines — routes, boundaries, outlines — in the accent colour by default.',
+  },
+  {
+    slug: 'circle-layer',
+    name: 'CircleLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Points as circles, with a ring in the surface colour so they stand off the basemap.',
+  },
+  {
+    slug: 'symbol-layer',
+    name: 'SymbolLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Text and icons placed on features, labelled in the map label colour with a halo.',
+    notes: [
+      'Label fonts come from the glyph server (Noto Sans on OpenFreeMap), not the page’s fonts.',
+    ],
+  },
+  {
+    slug: 'fill-extrusion-layer',
+    name: 'FillExtrusionLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Polygons raised into 3D by a height property.',
+  },
+  {
+    slug: 'heatmap-layer',
+    name: 'HeatmapLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Point density as a heatmap, coloured on the sequential ramp.',
+  },
+  {
+    slug: 'raster-layer',
+    name: 'RasterLayer',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Raster tiles or a georeferenced image, such as a scanned plan.',
+  },
+  {
+    slug: 'map-marker',
+    name: 'MapMarker',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'The loidolt pin on a map: a real button with a name, and an optional popup.',
+    notes: [
+      'The pin points from its bottom-left corner, so it is anchored there. A marker with nothing to do is a named image rather than a dead tab stop.',
+      'With a `popup`, pressing the marker opens it and moves focus in; Escape or the close button closes it and focus returns to the marker.',
+    ],
+  },
+  {
+    slug: 'map-popup',
+    name: 'MapPopup',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'A non-modal panel pointing at a spot on the map.',
+    notes: [
+      'Named by `label`; focus moves in when it opens and back when it closes. Square, on the surface, without MapLibre’s tip.',
+    ],
+  },
+  {
+    slug: 'map-control',
+    name: 'MapControl',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Any content as a map control, stacked in a corner with MapLibre’s own.',
+  },
+  {
+    slug: 'map-legend',
+    name: 'MapLegend',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'A key for the colours on a map — categories or a continuous ramp.',
+    notes: [
+      'Inside a `MapView` it becomes a map control; outside one it sits in the page flow beside the map.',
+    ],
+  },
+  {
+    slug: 'map-legend-group',
+    name: 'MapLegendGroup',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Several legends in one control, each collapsible.',
+  },
+  {
+    slug: 'coordinate-display',
+    name: 'CoordinateDisplay',
+    package: 'maps',
+    group: 'Maps',
+    summary:
+      'The coordinate under the pointer, or at the centre for keyboard users, with the zoom.',
+  },
+  {
+    slug: 'basemap-switcher',
+    name: 'BasemapSwitcher',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'A toggle between the loidolt basemap, the plain one, and styles of your own.',
+  },
+  {
+    slug: 'map-feature-list',
+    name: 'MapFeatureList',
+    package: 'maps',
+    group: 'Maps',
+    summary: 'Every place on a map as a list — the non-visual way to find one and go to it.',
+    notes: [
+      'Choosing an item flies the map there (or jumps, for reduced motion). Place it beside the map and pass the bound `map`.',
+    ],
+  },
 ];
 
 export const bySlug = new Map(entries.map((entry) => [entry.slug, entry]));

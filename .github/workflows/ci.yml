@@ -40,11 +40,13 @@ jobs:
           npm pack --dry-run -w @loidolt/theme-styles
           npm pack --dry-run -w @loidolt/theme-svelte
           npm pack --dry-run -w @loidolt/theme-charts
+          npm pack --dry-run -w @loidolt/theme-maps
           # Pinned so a tool release cannot flip CI red on an untouched repo.
           npx --yes publint@0.3.24 run packages/tokens
           npx --yes publint@0.3.24 run packages/styles
           npx --yes publint@0.3.24 run packages/svelte
           npx --yes publint@0.3.24 run packages/charts
+          npx --yes publint@0.3.24 run packages/maps
       - name: Validate published types
         run: |
           # CSS entrypoints have no types by design, so they are excluded rather than reported.
@@ -60,4 +62,7 @@ jobs:
           # for node10 resolution at all, and these packages are ESM for bundlers; `node16` is
           # the profile that matters.
           npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/charts --profile node16 \
+            --ignore-rules cjs-resolves-to-esm internal-resolution-error
+          npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/maps --profile node16 \
+            --exclude-entrypoints styles.css \
             --ignore-rules cjs-resolves-to-esm internal-resolution-error
