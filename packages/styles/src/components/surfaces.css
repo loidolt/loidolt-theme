@@ -171,3 +171,33 @@ a.ldt-stat:hover {
   min-height: 1em;
   align-self: stretch;
 }
+/* A person or account, as a photo or initials. Square, like every other surface. */
+.ldt-avatar {
+  position: relative;
+  width: var(--loidolt-size-control);
+  height: var(--loidolt-size-control);
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text-muted);
+  background: var(--loidolt-surface-sunken);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.06em;
+}
+.ldt-avatar--sm {
+  width: var(--loidolt-size-control-sm);
+  height: var(--loidolt-size-control-sm);
+  font-size: var(--loidolt-font-size-xs);
+}
+.ldt-avatar--lg {
+  width: var(--loidolt-size-control-lg);
+  height: var(--loidolt-size-control-lg);
+  font-size: var(--loidolt-font-size-base);
+}
+.ldt-avatar__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

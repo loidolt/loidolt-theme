@@ -2,6 +2,7 @@ export { default as Accordion } from './components/Accordion.svelte';
 export { default as Alert } from './components/Alert.svelte';
 export { default as AlertDialog } from './components/AlertDialog.svelte';
 export { default as AppShell } from './components/AppShell.svelte';
+export { default as Avatar } from './components/Avatar.svelte';
 export { default as Badge } from './components/Badge.svelte';
 export { default as Brand } from './components/Brand.svelte';
 export { default as Breadcrumbs } from './components/Breadcrumbs.svelte';
@@ -9,6 +10,7 @@ export { default as Button } from './components/Button.svelte';
 export { default as Card } from './components/Card.svelte';
 export { default as Checkbox } from './components/Checkbox.svelte';
 export { default as CodeBlock } from './components/CodeBlock.svelte';
+export { default as Combobox } from './components/Combobox.svelte';
 export { default as CommentList } from './components/CommentList.svelte';
 export { default as ContextBar } from './components/ContextBar.svelte';
 export { default as Dialog } from './components/Dialog.svelte';
@@ -26,11 +28,14 @@ export { default as Label } from './components/Label.svelte';
 export { default as ListRow } from './components/ListRow.svelte';
 export { default as LiveRegion } from './components/LiveRegion.svelte';
 export { default as Marker } from './components/Marker.svelte';
+export { default as MultiSelect } from './components/MultiSelect.svelte';
 export { default as NavMenu } from './components/NavMenu.svelte';
 export { default as NumberField } from './components/NumberField.svelte';
+export { default as OTPInput } from './components/OTPInput.svelte';
 export { default as PageHeader } from './components/PageHeader.svelte';
 export { default as Pagination } from './components/Pagination.svelte';
 export { default as Panel } from './components/Panel.svelte';
+export { default as PasswordInput } from './components/PasswordInput.svelte';
 export { default as Popover } from './components/Popover.svelte';
 export { default as Progress } from './components/Progress.svelte';
 export { default as RadioGroup } from './components/RadioGroup.svelte';
@@ -42,6 +47,7 @@ export { default as Separator } from './components/Separator.svelte';
 export { default as Sidebar } from './components/Sidebar.svelte';
 export { default as Skeleton } from './components/Skeleton.svelte';
 export { default as SkipLink } from './components/SkipLink.svelte';
+export { default as Slider } from './components/Slider.svelte';
 export { default as Spinner } from './components/Spinner.svelte';
 export { default as Stat } from './components/Stat.svelte';
 export { default as StatusDot } from './components/StatusDot.svelte';
@@ -68,10 +74,14 @@ export { default as Workspace } from './components/Workspace.svelte';
 export {
   Accordion as AccordionPrimitive,
   AlertDialog as AlertDialogPrimitive,
+  Avatar as AvatarPrimitive,
+  Combobox as ComboboxPrimitive,
   Dialog as DialogPrimitive,
   DropdownMenu as DropdownMenuPrimitive,
   Pagination as PaginationPrimitive,
+  PinInput as PinInputPrimitive,
   Popover as PopoverPrimitive,
+  Slider as SliderPrimitive,
   Tabs as TabsPrimitive,
   ToggleGroup as ToggleGroupPrimitive,
   Tooltip as TooltipPrimitive,
@@ -105,6 +115,7 @@ export type {
   Alignment,
   BadgeSize,
   BadgeVariant,
+  ChoiceOption,
   ColumnAlign,
   Crumb,
   Disclosure,
@@ -114,6 +125,7 @@ export type {
   MenuItem,
   NavItem,
   Option,
+  OptionGroup,
   Orientation,
   Placement,
   SortDirection,

@@ -38,6 +38,19 @@ export interface Option<T extends string = string> {
   disabled?: boolean;
 }
 
+/** A labelled run of options: an `<optgroup>` in `Select`, a group heading in list popups. */
+export interface OptionGroup<T extends string = string> {
+  label: string;
+  options: Option<T>[];
+  /** Disables every option in the group. */
+  disabled?: boolean;
+}
+
+/** An option with a secondary line, for choices that need a sentence of explanation. */
+export interface ChoiceOption<T extends string = string> extends Option<T> {
+  description?: string;
+}
+
 /** `Option` is the single vocabulary for choice lists; `NavItem` is kept as a readable alias. */
 export type NavItem<T extends string = string> = Option<T>;
 

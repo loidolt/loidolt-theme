@@ -7,6 +7,12 @@ import Accordion from '../src/lib/components/Accordion.svelte';
 import Alert from '../src/lib/components/Alert.svelte';
 import AlertDialog from '../src/lib/components/AlertDialog.svelte';
 import AppShell from '../src/lib/components/AppShell.svelte';
+import Avatar from '../src/lib/components/Avatar.svelte';
+import Combobox from '../src/lib/components/Combobox.svelte';
+import MultiSelect from '../src/lib/components/MultiSelect.svelte';
+import OTPInput from '../src/lib/components/OTPInput.svelte';
+import PasswordInput from '../src/lib/components/PasswordInput.svelte';
+import Slider from '../src/lib/components/Slider.svelte';
 import Badge from '../src/lib/components/Badge.svelte';
 import Brand from '../src/lib/components/Brand.svelte';
 import Breadcrumbs from '../src/lib/components/Breadcrumbs.svelte';
@@ -159,6 +165,22 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ['Separator (vertical)', Separator, { orientation: 'vertical' }],
   ['Skeleton', Skeleton, { width: 120, height: 16 }],
   ['SkipLink', SkipLink, { targetId: 'main' }],
+  ['Avatar', Avatar, { name: 'Ada Lovelace' }],
+  ['Avatar (decorative)', Avatar, { initials: 'AL' }],
+  [
+    'Combobox',
+    Combobox,
+    { label: 'Stock', value: 'birch', options: [{ value: 'birch', label: 'Birch ply' }] },
+  ],
+  [
+    'MultiSelect',
+    MultiSelect,
+    { label: 'Stock', value: ['birch'], options: [{ value: 'birch', label: 'Birch ply' }] },
+  ],
+  ['OTPInput', OTPInput, { label: 'Verification code' }],
+  ['PasswordInput', PasswordInput, { 'aria-label': 'Password' }],
+  ['Slider', Slider, { label: 'Kerf', value: 2 }],
+  ['Slider (range)', Slider, { label: 'Thickness', value: [2, 8], ticks: true, step: 2 }],
   ['Spinner', Spinner, { label: 'Generating preview' }],
   ['LiveRegion', LiveRegion, { message: 'Three results' }],
   ['Switch', Switch, { children: text('Live preview') }],

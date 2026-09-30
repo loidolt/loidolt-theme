@@ -39,3 +39,12 @@ if (!('ResizeObserver' in globalThis)) {
     disconnect = vi.fn();
   } as unknown as typeof ResizeObserver;
 }
+
+// jsdom ships `CSS.escape` but not `CSS.supports`, which Bits' PinInput probes on creation.
+if (typeof window.CSS?.supports !== 'function') {
+  Object.assign(window.CSS ?? (window.CSS = {} as typeof CSS), { supports: () => false });
+}
+// …nor `elementFromPoint`, which its password-manager badge detection calls on a timer.
+if (typeof document.elementFromPoint !== 'function') {
+  document.elementFromPoint = () => null;
+}

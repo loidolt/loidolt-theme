@@ -128,6 +128,64 @@ export const entries: Entry[] = [
     notes: ['The placeholder stays selectable unless the field is `required`.'],
   },
   {
+    slug: 'combobox',
+    name: 'Combobox',
+    group: 'Forms',
+    summary: 'A searchable single choice: type to narrow a long list, then pick with the keyboard.',
+    notes: [
+      "Options may be grouped under headings, as `{ label, options }` entries. A group's `disabled` disables every option in it.",
+      'Typing filters on the label, ignoring case and accents. For a server search, set `filter={false}` and fetch in `onQueryChange`, with `queryDebounce` to spare the server; show `loading` meanwhile.',
+      'The result count is announced as the list narrows, through a live region that stays mounted.',
+      'Closing the list restores the selected label, so half-typed text never passes for the value.',
+      'Rest props land on the text input, so it wires into `Field` like any control.',
+    ],
+  },
+  {
+    slug: 'multi-select',
+    name: 'MultiSelect',
+    group: 'Forms',
+    summary: 'A searchable multiple choice whose picks show as removable chips.',
+    notes: [
+      'The search clears after each pick so the next one can be typed straight away.',
+      'Backspace in the empty search removes the last chip. Removing a chip with its button moves focus to the next chip, or back to the input.',
+      'Once `max` is reached the remaining options disable, and screen readers are told why.',
+      'Chips are square because they are pressable; the pill shape is reserved for badges.',
+    ],
+  },
+  {
+    slug: 'slider',
+    name: 'Slider',
+    group: 'Forms',
+    summary: 'A value, or a range between two thumbs, chosen along a track.',
+    notes: [
+      'Pass an array to `value` for a range; each entry gets a thumb, named from `label` by `thumbLabel`.',
+      '`formatValue` feeds both the visible readout and `aria-valuetext`, so put the units there.',
+      'Use `onValueCommit` to save: it fires once when a drag ends, while `onValueChange` fires throughout.',
+      'On touch screens each thumb has an invisible 44px target, so its drawn size stays compact.',
+    ],
+  },
+  {
+    slug: 'password-input',
+    name: 'PasswordInput',
+    group: 'Forms',
+    summary: 'A password field with a button that reveals what was typed.',
+    notes: [
+      'The reveal button keeps one name and reports its state with `aria-pressed`. Changing the name as well would announce the state twice.',
+      'Defaults to `autocomplete="current-password"`; set `new-password` on sign-up and reset forms so password managers offer to generate one.',
+    ],
+  },
+  {
+    slug: 'otp-input',
+    name: 'OTPInput',
+    group: 'Forms',
+    summary: 'A one-time code entered into a row of square cells.',
+    notes: [
+      'One real input sits under the cells, so paste, autofill from SMS (`autocomplete="one-time-code"`) and screen readers all see a single field.',
+      'Spaces and dashes are removed from a pasted code. `type="numeric"` accepts digits and opens the number pad.',
+      '`onComplete` fires with the code once every cell is filled — the moment to submit.',
+    ],
+  },
+  {
     slug: 'checkbox',
     name: 'Checkbox',
     group: 'Forms',
@@ -217,6 +275,17 @@ export const entries: Entry[] = [
     name: 'Stat',
     group: 'Surfaces',
     summary: 'A dashboard tile: one hero number over a utility label, optionally a link.',
+  },
+  {
+    slug: 'avatar',
+    name: 'Avatar',
+    group: 'Surfaces',
+    summary: 'A person or account, as a photo with initials to fall back on.',
+    notes: [
+      'The avatar has one accessible name, from `alt` or `name`, whether the photo or the initials are showing. Leave both unset when adjacent text already names the person.',
+      'Sizes follow the control heights, so an avatar sits level with buttons of the same size.',
+      '`delayMs` holds the initials back briefly, so a photo that loads quickly never flashes them first.',
+    ],
   },
   {
     slug: 'badge',

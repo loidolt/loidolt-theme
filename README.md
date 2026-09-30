@@ -338,8 +338,8 @@ count them.
 ## Components
 
 - Actions: `Button` (`variant="text"` covers the former `TextButton`), `IconButton`, `ToggleGroup`, `ListRow`
-- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Checkbox`, `RadioGroup`, `Switch`, `FileInput`, `SwatchGroup`
-- Surfaces: `Card`, `Panel`, `Section`, `PageHeader`, `Separator`, `Thumbnail`, `Stat`, `Badge`
+- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Combobox`, `MultiSelect`, `Slider`, `PasswordInput`, `OTPInput`, `Checkbox`, `RadioGroup`, `Switch`, `FileInput`, `SwatchGroup`
+- Surfaces: `Card`, `Panel`, `Section`, `PageHeader`, `Separator`, `Thumbnail`, `Stat`, `Avatar`, `Badge`
 - Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`, `CodeBlock`, `CommentList`, `RecordStepper`, `Filmstrip`
 - Feedback: `Alert`, `Toast`, `ToastViewport`, `Progress`, `Spinner`, `Skeleton`, `StatusDot`, `LiveRegion`, `Marker`
 - Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`

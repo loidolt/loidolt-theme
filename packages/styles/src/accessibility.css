@@ -20,7 +20,8 @@
     .ldt-dialog__body,
     .ldt-drawer__body,
     .ldt-tabs__list,
-    .ldt-toggle-group
+    .ldt-toggle-group,
+    .ldt-listbox
   )
   :where(:focus-visible) {
   outline-offset: -2px;
@@ -101,12 +102,34 @@
     .ldt-choice,
     .ldt-switch,
     .ldt-number-field__button,
-    .ldt-menu__item
+    .ldt-menu__item,
+    .ldt-listbox__item,
+    .ldt-combobox,
+    .ldt-password-input,
+    .ldt-chip
   ) {
     min-height: 44px;
   }
-  :where(.ldt-icon-button, .ldt-number-field__button) {
+  :where(
+    .ldt-icon-button,
+    .ldt-number-field__button,
+    .ldt-combobox__trigger,
+    .ldt-password-input__toggle,
+    .ldt-chip__remove
+  ) {
     min-width: 44px;
+  }
+  /* The thumb keeps its drawn size; an invisible 44px square around it takes the touch. */
+  .ldt-slider__thumb {
+    position: relative;
+  }
+  .ldt-slider__thumb::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
   }
   :where(.ldt-icon-button) {
     width: 44px;

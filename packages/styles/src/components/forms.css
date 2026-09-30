@@ -199,3 +199,242 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+/*
+ * Combobox and MultiSelect. The wrapper draws the field — underline, or box when `--boxed` —
+ * so chips, the text input and the open button all sit inside one boundary.
+ */
+.ldt-combobox {
+  width: 100%;
+  min-height: var(--loidolt-size-control);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  padding: 0.2rem 0 0.2rem 0.15rem;
+  color: var(--loidolt-text);
+}
+.ldt-combobox--boxed {
+  border: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  padding-inline: 0.5rem 0;
+  background: var(--loidolt-surface-input);
+}
+.ldt-combobox:focus-within {
+  border-color: var(--loidolt-accent);
+}
+.ldt-combobox:has([aria-invalid='true']) {
+  border-color: var(--loidolt-danger);
+}
+.ldt-combobox[data-disabled],
+.ldt-combobox:has(:disabled) {
+  opacity: 0.55;
+}
+.ldt-combobox__input {
+  flex: 1 1 6rem;
+  min-width: 0;
+  min-height: 1.5rem;
+  border: 0;
+  padding: 0.2rem 0;
+  color: inherit;
+  background: transparent;
+}
+.ldt-combobox__trigger {
+  display: inline-grid;
+  place-items: center;
+  align-self: stretch;
+  width: 1.75rem;
+  min-height: 1.5rem;
+  border: 0;
+  padding: 0;
+  color: var(--loidolt-text-muted);
+  background: transparent;
+}
+.ldt-combobox__trigger svg {
+  transition: transform var(--loidolt-motion-fast) var(--loidolt-motion-easing);
+}
+.ldt-combobox__trigger[data-state='open'] svg {
+  transform: rotate(180deg);
+}
+.ldt-multi-select__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * Slider. The wrapper's inline padding is half a thumb, so a thumb centred on either end value
+ * stays inside the box without the browser measuring it after hydration.
+ */
+.ldt-slider {
+  --ldt-slider-thumb: 1rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--loidolt-space-3);
+  padding-inline: calc(var(--ldt-slider-thumb) / 2);
+}
+.ldt-slider__control {
+  position: relative;
+  flex: 1;
+  min-height: 1.5rem;
+  display: flex;
+  align-items: center;
+  touch-action: none;
+  user-select: none;
+}
+.ldt-slider__track {
+  position: relative;
+  width: 100%;
+  height: var(--ldt-slider-thickness, 0.25rem);
+  overflow: hidden;
+  background: var(--loidolt-border);
+}
+.ldt-slider__range {
+  position: absolute;
+  height: 100%;
+  background: var(--loidolt-accent);
+}
+.ldt-slider__thumb {
+  display: block;
+  width: var(--ldt-slider-thumb);
+  height: var(--ldt-slider-thumb);
+  border: 2px solid var(--loidolt-accent);
+  background: var(--loidolt-surface-input);
+  cursor: grab;
+  transition: background var(--loidolt-motion-fast) var(--loidolt-motion-easing);
+}
+.ldt-slider__thumb[data-active] {
+  background: var(--loidolt-accent);
+  cursor: grabbing;
+}
+.ldt-slider__tick {
+  width: var(--loidolt-border-width);
+  height: 0.5rem;
+  background: var(--loidolt-border-strong);
+  transform: translateY(0.55rem);
+}
+.ldt-slider__value {
+  min-width: 3ch;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+.ldt-slider[data-disabled] {
+  opacity: 0.45;
+}
+.ldt-slider[data-disabled] .ldt-slider__thumb {
+  cursor: not-allowed;
+}
+.ldt-slider--vertical {
+  width: auto;
+  height: var(--ldt-slider-length, 10rem);
+  flex-direction: column;
+  padding-inline: 0;
+  padding-block: calc(var(--ldt-slider-thumb) / 2);
+}
+.ldt-slider--vertical .ldt-slider__control {
+  min-height: 0;
+  width: 1.5rem;
+  flex-direction: column;
+  justify-content: center;
+}
+.ldt-slider--vertical .ldt-slider__track {
+  width: var(--ldt-slider-thickness, 0.25rem);
+  height: 100%;
+}
+.ldt-slider--vertical .ldt-slider__range {
+  width: 100%;
+  height: auto;
+}
+
+/* Password field: the input and its reveal button share the field's boundary. */
+.ldt-password-input {
+  width: 100%;
+  min-height: var(--loidolt-size-control);
+  display: flex;
+  align-items: stretch;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-control);
+}
+.ldt-password-input--boxed {
+  border: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  background: var(--loidolt-surface-input);
+}
+.ldt-password-input:focus-within {
+  border-color: var(--loidolt-accent);
+}
+.ldt-password-input:has([aria-invalid='true']) {
+  border-color: var(--loidolt-danger);
+}
+.ldt-password-input__input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  padding: 0.45rem 0.15rem;
+  color: var(--loidolt-text);
+  background: transparent;
+}
+.ldt-password-input--boxed .ldt-password-input__input {
+  padding-inline: 0.65rem;
+}
+.ldt-password-input__toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  min-height: 1.5rem;
+  border: 0;
+  padding: 0;
+  color: var(--loidolt-text-muted);
+  background: transparent;
+}
+.ldt-password-input__toggle:hover:not(:disabled),
+.ldt-password-input__toggle[aria-pressed='true'] {
+  color: var(--loidolt-text-accent);
+}
+
+/* One-time code: one square cell per character over a single hidden input. */
+.ldt-otp-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.ldt-otp-input__cell {
+  position: relative;
+  width: var(--loidolt-size-control-lg);
+  height: var(--loidolt-size-control-lg);
+  display: grid;
+  place-items: center;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-input);
+  font: var(--loidolt-font-size-lg) var(--loidolt-font-utility);
+  font-variant-numeric: tabular-nums;
+}
+/* The input is visually hidden, so the active cell carries the focus indicator for it. */
+.ldt-otp-input:focus-within .ldt-otp-input__cell[data-active] {
+  border-color: var(--loidolt-accent);
+  outline: 2px solid var(--loidolt-focus-ring);
+  outline-offset: 1px;
+}
+.ldt-otp-input:has([aria-invalid='true']) .ldt-otp-input__cell {
+  border-color: var(--loidolt-danger);
+}
+.ldt-otp-input__gap {
+  width: 0.5rem;
+  height: var(--loidolt-border-width);
+  background: var(--loidolt-border-strong);
+}
+.ldt-otp-input__caret {
+  width: 1px;
+  height: 1.1em;
+  background: currentColor;
+  animation: ldt-caret 1s steps(1) infinite;
+}
+@keyframes ldt-caret {
+  50% {
+    opacity: 0;
+  }
+}
