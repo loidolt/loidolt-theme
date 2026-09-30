@@ -83,10 +83,17 @@ describe('theme tokens', () => {
 
 describe('stylesheet variable references', () => {
   const stylesDir = new URL('../../styles/src/', import.meta.url);
+  /** Every stylesheet in the package, as paths relative to `src/` (component files included). */
+  const stylesheets = async () =>
+    (await readdir(stylesDir, { recursive: true }))
+      .filter((file) => file.endsWith('.css'))
+      .map((file) => file.split('\\').join('/'))
+      .sort();
 
   it('resolves every var(--loidolt-*) used by @loidolt/theme-styles', async () => {
-    const files = (await readdir(stylesDir)).filter((file) => file.endsWith('.css'));
-    expect(files.length).toBeGreaterThan(0);
+    const files = await stylesheets();
+    // The component styles live one level down; a flat readdir silently skipped all of them.
+    expect(files.some((file) => file.startsWith('components'))).toBe(true);
 
     const missing = new Map<string, string[]>();
     for (const file of files) {
@@ -99,9 +106,16 @@ describe('stylesheet variable references', () => {
   });
 
   it('never lets a stylesheet reach past the semantic layer for colour', async () => {
-    const source = await readFile(new URL('components.css', stylesDir), 'utf8');
-    const primitives = [...source.matchAll(/var\((--loidolt-color-[a-z0-9-]+)/g)].map((m) => m[1]);
-    expect([...new Set(primitives)]).toEqual([]);
+    // `tokens.css` is the one file that is meant to name primitives.
+    const files = (await stylesheets()).filter((file) => file !== 'tokens.css');
+    const primitives = new Map<string, string[]>();
+    for (const file of files) {
+      const source = await readFile(new URL(file, stylesDir), 'utf8');
+      for (const [, name] of source.matchAll(/var\((--loidolt-color-[a-z0-9-]+)/g)) {
+        primitives.set(file, [...new Set([...(primitives.get(file) ?? []), name])]);
+      }
+    }
+    expect(Object.fromEntries(primitives)).toEqual({});
   });
 });
 
