@@ -58,3 +58,13 @@ for (const [label, values] of [
 console.log(
   `catalog integrity: ${componentNames.size} components agree across sources, exports, demos, registry, and prop docs`
 );
+
+// The README's component list is the first thing a reader scans, and it silently fell behind
+// when a whole release of components landed without it.
+const readme = await readFile(new URL('../../README.md', root), 'utf8');
+const componentsSection = readme.split(/^## Components$/m)[1]?.split(/^#{2,3} /m)[0] ?? '';
+const readmeNames = new Set([...componentsSection.matchAll(/`([A-Z]\w+)`/g)].map((m) => m[1]));
+const unlisted = difference(componentNames, readmeNames);
+if (unlisted.length) {
+  throw new Error(`README "## Components" does not list: ${unlisted.join(', ')}`);
+}

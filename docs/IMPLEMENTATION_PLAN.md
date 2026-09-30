@@ -9,6 +9,12 @@ the component library evolves.
 - `packages/tokens` owns typed primitives, semantic roles, and generated light/dark CSS.
 - `packages/styles` owns layered foundations and domain-split component styles.
 - `packages/svelte` owns Svelte 5 components plus theme, media-query, and toaster helpers.
+- `packages/svelte/src/lib/internal` holds parts shared between components (media controls,
+  list rows, editable cells). They are never exported, so the catalog integrity check — which
+  pairs every file in `components/` with an export, a demo and a registry entry — ignores them.
+- Pure logic (data-table filtering and sorting, media URL parsing, signature geometry, contrast
+  arithmetic) lives in plain modules beside the rune factories, so most behaviour is tested
+  without rendering.
 - `examples/catalog` is the documentation and integration application.
 - Changesets keep the three public packages on a coordinated version.
 

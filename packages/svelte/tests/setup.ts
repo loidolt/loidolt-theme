@@ -39,3 +39,32 @@ if (!('ResizeObserver' in globalThis)) {
     disconnect = vi.fn();
   } as unknown as typeof ResizeObserver;
 }
+
+// jsdom ships `CSS.escape` but not `CSS.supports`, which Bits' PinInput probes on creation.
+if (typeof window.CSS?.supports !== 'function') {
+  Object.assign(window.CSS ?? (window.CSS = {} as typeof CSS), { supports: () => false });
+}
+// …nor `elementFromPoint`, which its password-manager badge detection calls on a timer.
+if (typeof document.elementFromPoint !== 'function') {
+  document.elementFromPoint = () => null;
+}
+
+// jsdom's media elements cannot play: `play()` logs "not implemented" and `paused` never
+// changes. Just enough of a player for the controls to be tested against.
+type PlayableMedia = HTMLMediaElement & { __paused?: boolean };
+Object.defineProperty(HTMLMediaElement.prototype, 'paused', {
+  configurable: true,
+  get(this: PlayableMedia) {
+    return this.__paused ?? true;
+  },
+});
+HTMLMediaElement.prototype.play = function (this: PlayableMedia) {
+  this.__paused = false;
+  this.dispatchEvent(new Event('play'));
+  return Promise.resolve();
+};
+HTMLMediaElement.prototype.pause = function (this: PlayableMedia) {
+  this.__paused = true;
+  this.dispatchEvent(new Event('pause'));
+};
+HTMLMediaElement.prototype.load = function () {};

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
-  import { cx } from '../utils.js';
+  import { cx, describedBy as describedByIds } from '../utils.js';
 
   // `children` is omitted from the base: this snippet takes the field's wiring as an argument.
   interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
@@ -37,8 +37,7 @@
   }: Props = $props();
 
   const describedBy = $derived(
-    [description && `${id}-description`, error && `${id}-error`].filter(Boolean).join(' ') ||
-      undefined
+    describedByIds(description && `${id}-description`, error && `${id}-error`)
   );
 </script>
 

@@ -72,6 +72,15 @@
  * size class the badge keeps its compact inline metrics, which is what table cells and running
  * copy want.
  */
+/* Same colour as the text, so the variant's ink carries it without a second colour rule. */
+.ldt-badge__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: none;
+  margin-inline-end: 0.35rem;
+  border-radius: var(--loidolt-border-radius-pill);
+  background: currentColor;
+}
 .ldt-badge--sm {
   min-height: var(--loidolt-size-control-sm);
   padding: 0.38rem 0.7rem;
@@ -114,6 +123,7 @@
 }
 /* A framed media box: fixed ratio, sunken or paper surface, contained content. */
 .ldt-thumbnail {
+  position: relative;
   display: grid;
   place-items: center;
   margin: 0;
@@ -132,6 +142,29 @@
 }
 .ldt-thumbnail--cover .ldt-thumbnail__image {
   object-fit: cover;
+}
+/* While loading, the recessed surface shimmers so the frame reads as pending, not empty. */
+.ldt-thumbnail[data-status='loading'] {
+  background: linear-gradient(
+      90deg,
+      var(--loidolt-surface-sunken),
+      var(--loidolt-surface-alt),
+      var(--loidolt-surface-sunken)
+    )
+    0 0 / 200% 100%;
+  animation: ldt-shimmer 1.5s linear infinite;
+}
+.ldt-thumbnail__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: var(--loidolt-space-2);
+  pointer-events: none;
+}
+.ldt-thumbnail__overlay > * {
+  pointer-events: auto;
 }
 /* A dashboard tile: one hero number over a utility label; the link form invites a click. */
 .ldt-stat {
@@ -170,4 +203,34 @@ a.ldt-stat:hover {
   height: auto;
   min-height: 1em;
   align-self: stretch;
+}
+/* A person or account, as a photo or initials. Square, like every other surface. */
+.ldt-avatar {
+  position: relative;
+  width: var(--loidolt-size-control);
+  height: var(--loidolt-size-control);
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text-muted);
+  background: var(--loidolt-surface-sunken);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: 0.06em;
+}
+.ldt-avatar--sm {
+  width: var(--loidolt-size-control-sm);
+  height: var(--loidolt-size-control-sm);
+  font-size: var(--loidolt-font-size-xs);
+}
+.ldt-avatar--lg {
+  width: var(--loidolt-size-control-lg);
+  height: var(--loidolt-size-control-lg);
+  font-size: var(--loidolt-font-size-base);
+}
+.ldt-avatar__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

@@ -21,6 +21,8 @@
     side?: Placement;
     align?: Alignment;
     sideOffset?: number;
+    /** Point the tooltip at its trigger — worth it when the trigger is small or crowded. */
+    arrow?: boolean;
     /** Ignored when an ancestor `TooltipProvider` is present. */
     delayDuration?: number;
     /** `class` lands on the portaled Content element. */
@@ -39,6 +41,7 @@
     side = 'top',
     align = 'center',
     sideOffset = 6,
+    arrow = false,
     delayDuration = 350,
     class: className,
     onOpenChange,
@@ -65,7 +68,12 @@
         {align}
         {sideOffset}
         class={cx('ldt-tooltip', className)}
-        {...rest}>{content}</TooltipPrimitive.Content
+        {...rest}
+        >{content}{#if arrow}<TooltipPrimitive.Arrow
+            class="ldt-tooltip__arrow"
+            width={10}
+            height={5}
+          />{/if}</TooltipPrimitive.Content
       ></TooltipPrimitive.Portal
     >
   </TooltipPrimitive.Root>

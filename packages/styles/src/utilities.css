@@ -48,6 +48,14 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* Truncates after `--ldt-lines` lines (default 2) with an ellipsis. */
+.ldt-line-clamp {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--ldt-lines, 2);
+  line-clamp: var(--ldt-lines, 2);
+}
 .ldt-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: var(--loidolt-border) transparent;
@@ -66,8 +74,16 @@
   text-transform: uppercase;
 }
 
+/* Print-only content — a URL written out after a link, a signature line. The counterpart to
+   `.ldt-print-hidden`. */
+.ldt-print-visible {
+  display: none !important;
+}
 @media print {
   .ldt-print-hidden {
     display: none !important;
+  }
+  .ldt-print-visible {
+    display: revert !important;
   }
 }

@@ -23,6 +23,7 @@ export const GROUPS = [
   'Overlays',
   'Navigation',
   'Layout',
+  'Media',
   'Theme',
 ] as const;
 
@@ -118,6 +119,8 @@ export const entries: Entry[] = [
     notes: [
       'Clearing the field cannot wedge it: an empty value clamps back to `min`, or to zero when unbounded.',
       'At a bound the spin button goes `aria-disabled` rather than `disabled`, so it keeps focus instead of dropping it.',
+      '`nullable` lets the field be empty: clearing it yields `null` instead of the low bound. Type the bound variable as `number | null`.',
+      '`readonly` locks the steppers too; `hideSteppers` drops them for dense tables. The arrow keys still step.',
     ],
   },
   {
@@ -125,7 +128,82 @@ export const entries: Entry[] = [
     name: 'Select',
     group: 'Forms',
     summary: 'A native select over an `Option[]`.',
-    notes: ['The placeholder stays selectable unless the field is `required`.'],
+    notes: [
+      'The placeholder stays selectable unless the field is `required`.',
+      'Pass `{ label, options }` entries to group options under native `<optgroup>` headings.',
+    ],
+  },
+  {
+    slug: 'combobox',
+    name: 'Combobox',
+    group: 'Forms',
+    summary: 'A searchable single choice: type to narrow a long list, then pick with the keyboard.',
+    notes: [
+      "Options may be grouped under headings, as `{ label, options }` entries. A group's `disabled` disables every option in it.",
+      'Typing filters on the label, ignoring case and accents. For a server search, set `filter={false}` and fetch in `onQueryChange`, with `queryDebounce` to spare the server; show `loading` meanwhile.',
+      'The result count is announced as the list narrows, through a live region that stays mounted.',
+      'Closing the list restores the selected label, so half-typed text never passes for the value.',
+      'Rest props land on the text input, so it wires into `Field` like any control.',
+    ],
+  },
+  {
+    slug: 'multi-select',
+    name: 'MultiSelect',
+    group: 'Forms',
+    summary: 'A searchable multiple choice whose picks show as removable chips.',
+    notes: [
+      'The search clears after each pick so the next one can be typed straight away.',
+      'Backspace in the empty search removes the last chip. Removing a chip with its button moves focus to the next chip, or back to the input.',
+      'Once `max` is reached the remaining options disable, and screen readers are told why.',
+      'Chips are square because they are pressable; the pill shape is reserved for badges.',
+    ],
+  },
+  {
+    slug: 'slider',
+    name: 'Slider',
+    group: 'Forms',
+    summary: 'A value, or a range between two thumbs, chosen along a track.',
+    notes: [
+      'Pass an array to `value` for a range; each entry gets a thumb, named from `label` by `thumbLabel`.',
+      '`formatValue` feeds both the visible readout and `aria-valuetext`, so put the units there.',
+      'Use `onValueCommit` to save: it fires once when a drag ends, while `onValueChange` fires throughout.',
+      'On touch screens each thumb has an invisible 44px target, so its drawn size stays compact.',
+    ],
+  },
+  {
+    slug: 'password-input',
+    name: 'PasswordInput',
+    group: 'Forms',
+    summary: 'A password field with a button that reveals what was typed.',
+    notes: [
+      'The reveal button keeps one name and reports its state with `aria-pressed`. Changing the name as well would announce the state twice.',
+      'Defaults to `autocomplete="current-password"`; set `new-password` on sign-up and reset forms so password managers offer to generate one.',
+    ],
+  },
+  {
+    slug: 'otp-input',
+    name: 'OTPInput',
+    group: 'Forms',
+    summary: 'A one-time code entered into a row of square cells.',
+    notes: [
+      'One real input sits under the cells, so paste, autofill from SMS (`autocomplete="one-time-code"`) and screen readers all see a single field.',
+      'Spaces and dashes are removed from a pasted code. `type="numeric"` accepts digits and opens the number pad.',
+      '`onComplete` fires with the code once every cell is filled — the moment to submit.',
+    ],
+  },
+  {
+    slug: 'signature-pad',
+    name: 'SignaturePad',
+    group: 'Forms',
+    summary:
+      'Capture a signature by drawing it, or by typing a name as the accessible alternative.',
+    notes: [
+      'Typing is the route for keyboard, switch and voice users (WCAG 2.1.1 and 2.5.1). Keep `modes` to both unless you offer another way to the same outcome.',
+      'A signature counts only once it is long enough (`minStrokeLength`, `minTypedLength`); until then `value` is `null`, which makes `required` meaningful.',
+      'Both modes produce a PNG `dataUrl`; drawn signatures also carry the strokes and an SVG. With `name`, the PNG is submitted with the form.',
+      "The ink follows the theme's text colour. Load any fonts you list in `fonts` yourself — nothing is fetched from a font service.",
+      'Legal consent wording belongs to your app: pair the pad with a `Checkbox` rather than expecting the pad to carry it.',
+    ],
   },
   {
     slug: 'checkbox',
@@ -139,6 +217,9 @@ export const entries: Entry[] = [
     name: 'RadioGroup',
     group: 'Forms',
     summary: 'One choice from a small set, as native radios in a fieldset.',
+    notes: [
+      "An option's `description` renders under its label and is read after it through `aria-describedby`, not as part of its name.",
+    ],
   },
   {
     slug: 'switch',
@@ -210,6 +291,8 @@ export const entries: Entry[] = [
     notes: [
       '`surface="paper"` stays white in every theme so artwork previews read true.',
       'Pass `children` instead of `src` for inline SVG or canvas content.',
+      '`ratio` also takes the named frames (`photo`, `video`, `square`, `portrait`, `wide`). While the image loads the frame shimmers; if it fails, `fallback` (or an empty frame that still carries the alt text) takes its place.',
+      '`srcset` and `sizes` serve responsive images; `overlay` layers a badge or duration over the corner.',
     ],
   },
   {
@@ -219,6 +302,17 @@ export const entries: Entry[] = [
     summary: 'A dashboard tile: one hero number over a utility label, optionally a link.',
   },
   {
+    slug: 'avatar',
+    name: 'Avatar',
+    group: 'Surfaces',
+    summary: 'A person or account, as a photo with initials to fall back on.',
+    notes: [
+      'The avatar has one accessible name, from `alt` or `name`, whether the photo or the initials are showing. Leave both unset when adjacent text already names the person.',
+      'Sizes follow the control heights, so an avatar sits level with buttons of the same size.',
+      '`delayMs` holds the initials back briefly, so a photo that loads quickly never flashes them first.',
+    ],
+  },
+  {
     slug: 'badge',
     name: 'Badge',
     group: 'Surfaces',
@@ -226,6 +320,8 @@ export const entries: Entry[] = [
     notes: [
       'Defaults to `size="inline"`, scaled to the text it annotates. Standing in a row of controls, give it their size instead.',
       'The pill silhouette is the system’s only rounded corner, which is exactly what keeps it from reading as a button.',
+      '`count` shows a number, capped at `max` as `99+`. Add `label` for the visually hidden context ("4" is heard as "4 unread comments"), and `live` when the count changes while the user watches.',
+      "`dot` leads with a marker in the badge's colour.",
     ],
   },
 
@@ -269,6 +365,70 @@ export const entries: Entry[] = [
     ],
   },
 
+  {
+    slug: 'data-table',
+    name: 'DataTable',
+    group: 'Data',
+    summary:
+      'A table driven by `createDataTable()`: sorting, search, filters, paging, selection and in-place editing.',
+    notes: [
+      'State lives in `createDataTable()`, not the component, so the search, filter, column and pagination parts all drive the same table — and you can read or change it from code.',
+      'Pass `data` through a getter (`get data() { return rows; }`) to keep the table in step with changing rows.',
+      'Paged or virtual, the table reports `aria-rowcount` and each row its `aria-rowindex`, so screen readers announce "row 27 of 43" rather than "row 2 of 8".',
+      "`selection: 'multiple'` adds a checkbox column with a select-all that is indeterminate when some rows on the page are selected. `'single'` uses radios.",
+      '`editable` columns become buttons that turn into a field: Enter or leaving saves through `onCellEdit`, Escape restores the old value.',
+      '`hideBelow` drops a column on narrow screens while keeping it searchable and sortable. `virtual` renders only the rows in view; rows must have a fixed height and the wrapper needs `sticky` with `--ldt-table-height`.',
+      'For server data set `manual` and `rowCount`, and fetch in the `on…Change` callbacks.',
+    ],
+  },
+  {
+    slug: 'data-table-search',
+    name: 'DataTableSearch',
+    group: 'Data',
+    summary:
+      'A search field bound to a data table — across every searchable column, or one `column`.',
+    notes: [
+      'Debounced by 200ms; raise `debounce` for a server search. The field re-syncs when the table is reset or cleared elsewhere.',
+    ],
+  },
+  {
+    slug: 'data-table-faceted-filter',
+    name: 'DataTableFacetedFilter',
+    group: 'Data',
+    summary: 'A menu of checkboxes that filters a column to the chosen values, with counts.',
+    notes: [
+      'Counts come from rows passing every other filter, so each choice shows what picking it would add.',
+      "Choices default to the column's `filterOptions`, else the distinct values in the data.",
+    ],
+  },
+  {
+    slug: 'data-table-column-visibility',
+    name: 'DataTableColumnVisibility',
+    group: 'Data',
+    summary: "A menu that shows and hides a data table's columns.",
+    notes: ['Columns with `hideable: false` are left out of the menu.'],
+  },
+  {
+    slug: 'data-table-pagination',
+    name: 'DataTablePagination',
+    group: 'Data',
+    summary: "A data table's footer: the visible range, rows per page, and the page trail.",
+    notes: [
+      'The range line is a polite status region, so paging or filtering is announced.',
+      'Pass `pageSizes={[]}` to hide the rows-per-page picker.',
+    ],
+  },
+  {
+    slug: 'active-filter-chips',
+    name: 'ActiveFilterChips',
+    group: 'Data',
+    summary: 'The filters narrowing a list, each removable on its own, with Clear all.',
+    notes: [
+      'Renders nothing when there are no filters and no `children`, so it can stay in the layout unconditionally.',
+      'Removing a chip moves focus to the chip that took its place, else the one before, else the group, so keyboard users never land back on `<body>`.',
+      'Label chips the way a user would say the filter aloud: "Status: Ready", not "ready".',
+    ],
+  },
   {
     slug: 'code-block',
     name: 'CodeBlock',
@@ -324,6 +484,8 @@ export const entries: Entry[] = [
     notes: [
       '`createToaster()` owns the queue, the timers, and pause-on-hover.',
       '`ToastViewport` is the single live region — `Toast` carries no `role="status"`, so nothing is announced twice.',
+      '`action` adds one follow-up button, such as Undo. It runs `onAction` and then dismisses the toast unless `dismiss: false`. Give an actionable toast time to be reached — at least ten seconds, or `duration: 0`.',
+      '`toaster.update(id, patch)` changes a toast in place ("Uploading…" becoming "Uploaded"). `toaster.success/info/warning/error` are shortcuts; `error` stays until dismissed unless given a `duration`.',
     ],
   },
   {
@@ -331,25 +493,36 @@ export const entries: Entry[] = [
     name: 'ToastViewport',
     group: 'Feedback',
     summary: 'The fixed live region toasts are announced from.',
+    notes: ['`position` places the stack at any corner or at the top or bottom centre.'],
   },
   {
     slug: 'progress',
     name: 'Progress',
     group: 'Feedback',
     summary: 'A determinate or indeterminate progress bar.',
-    notes: ['`value={undefined}` is the indeterminate mode: no `aria-valuenow`, animated bar.'],
+    notes: [
+      '`value={undefined}` is the indeterminate mode: no `aria-valuenow`, animated bar.',
+      '`formatValue` feeds both the visible `showValue` text and `aria-valuetext`, so "9 of 12 sheets" is heard instead of 75%.',
+      '`variant` colours the bar by outcome; `size` sets its thickness.',
+    ],
   },
   {
     slug: 'spinner',
     name: 'Spinner',
     group: 'Feedback',
     summary: 'A small activity indicator.',
+    notes: [
+      'Without `size` it follows the surrounding font size, which suits a spinner inside a button.',
+    ],
   },
   {
     slug: 'skeleton',
     name: 'Skeleton',
     group: 'Feedback',
     summary: 'A placeholder block for content still loading.',
+    notes: [
+      '`variant` takes the shape of what it replaces: `text` (with `lines`), `title`, `avatar`, `button`, `card`.',
+    ],
   },
 
   {
@@ -358,6 +531,17 @@ export const entries: Entry[] = [
     group: 'Feedback',
     summary: 'A colored dot that reports state where a Badge is too loud, named by `label`.',
     notes: ['`label` is required: color alone must never carry the state.'],
+  },
+  {
+    slug: 'live-region',
+    name: 'LiveRegion',
+    group: 'Feedback',
+    summary: 'A status region that speaks changes to screen readers without moving focus.',
+    notes: [
+      'Mount it once and change `message`. A region inserted together with its text is silent in most screen readers.',
+      'Pair it with `createAnnouncer()`, which clears the region between messages so a repeated message is still announced, and empties it again after `clearAfter` so no stale text lingers.',
+      '`politeness="assertive"` interrupts the user — keep it for errors that need immediate attention.',
+    ],
   },
   {
     slug: 'marker',
@@ -374,6 +558,7 @@ export const entries: Entry[] = [
     notes: [
       '`class` targets the portaled content, not the trigger. `triggerVariant`/`triggerSize` pick the button clothes; an explicit `triggerClass` wins wholesale, and `triggerChild` replaces the trigger outright.',
       'Focus, portalling, dismissal, and the escape key come from Bits UI.',
+      '`header` replaces the visible title block; `title` is still required and stays the accessible name, visually hidden. `headerActions` sit beside the close button. `size="full"` takes the viewport less a gutter.',
     ],
   },
   {
@@ -416,6 +601,9 @@ export const entries: Entry[] = [
     notes: [
       'Shortcut hints are exposed to assistive tech, not `aria-hidden` — a shortcut nobody can hear may as well not exist.',
       'For checkbox items, radio items, or submenus, drop to the re-exported `DropdownMenuPrimitive`.',
+      "`items` also takes `type: 'group'` (a heading over rows), `'checkbox'` (a toggle, reported through `onCheckedChange`), `'radio'` (one of many, through `onValueChange`) and `'sub'` (a nested menu) entries. Toggles and choices keep the menu open.",
+      '`shortcut` sets `aria-keyshortcuts` and shows as the hint. The menu does not bind the key; your app does.',
+      '`destructive` styles an item as danger. Pair it with a confirmation for anything irreversible.',
     ],
   },
   {
@@ -426,6 +614,7 @@ export const entries: Entry[] = [
     notes: [
       'Wrap the app once in `TooltipProvider` so skip-delay grouping works across every tooltip.',
       'The tooltip describes its trigger; it does not name it. Never put the only copy of a control’s name in one.',
+      '`arrow` points the tooltip at its trigger.',
     ],
   },
   {
@@ -456,6 +645,17 @@ export const entries: Entry[] = [
     group: 'Navigation',
     summary: 'A topbar section that opens a menu of destinations.',
     notes: ['`active` marks the trigger with `aria-current="page"`, not just a class.'],
+  },
+  {
+    slug: 'skip-link',
+    name: 'SkipLink',
+    group: 'Navigation',
+    summary:
+      'The first focusable element on a page: jumps keyboard users past repeated navigation.',
+    notes: [
+      'Hidden until focused. Place it first in `<body>`, before the top bar.',
+      'Activation also moves focus to the target (adding `tabindex="-1"` when it is not focusable), so the next Tab continues from the content rather than the top of the page.',
+    ],
   },
   {
     slug: 'breadcrumbs',
@@ -551,6 +751,104 @@ export const entries: Entry[] = [
     notes: [
       'The icon and accessible name show the active preference; each press advances to the next one.',
       'Keep system in the cycle unless you have a reason not to: it lets the theme continue following the device preference.',
+    ],
+  },
+  {
+    slug: 'aspect-ratio',
+    name: 'AspectRatio',
+    group: 'Layout',
+    summary:
+      'A box that keeps its shape — `video`, `photo`, `square`, `portrait`, `wide` or any ratio.',
+    notes: [
+      'Uses native `aspect-ratio`, so the space is reserved before the image or video inside has loaded, and the page does not jump.',
+      'Images, videos and iframes placed directly inside fill the box.',
+    ],
+  },
+  {
+    slug: 'toolbar',
+    name: 'Toolbar',
+    group: 'Layout',
+    summary:
+      'A labelled row of list controls — search, filters, view options — with an end cluster.',
+    notes: [
+      'By default it is a labelled `group`: Tab moves between controls. That is right when it holds a text field or a control that owns its arrow keys, such as a `ToggleGroup`.',
+      '`roving` makes it an ARIA `toolbar` with one tab stop; arrow keys move between the controls marked `data-roving-item`.',
+    ],
+  },
+  {
+    slug: 'filter-panel',
+    name: 'FilterPanel',
+    group: 'Layout',
+    summary: 'A filter area that expands under its toggle, on an auto-fit grid.',
+    notes: [
+      'The toggle is yours: a `Button` with `aria-expanded` and `aria-controls` pointing at the panel `id`.',
+      'Closed, the controls are `inert` — out of the tab order and the accessibility tree — while the height still animates.',
+      'Set `--ldt-min` to change the column width. "Clear all" appears when `activeCount` is above zero and `onClear` is given.',
+    ],
+  },
+  {
+    slug: 'video-player',
+    name: 'VideoPlayer',
+    group: 'Media',
+    summary:
+      "A video with this system's controls: seek, volume, speed, captions, picture-in-picture and full screen.",
+    notes: [
+      'Every control is a native element — buttons, range inputs, a select — so keyboard and screen-reader support come from the platform. The seek bar speaks positions as words ("1 minute 5 seconds of 4 minutes").',
+      'Shortcuts work while focus is in the player: Space or K plays, the arrows seek and change volume, M mutes, F goes full screen, C toggles captions.',
+      'Provide `tracks` with captions for any video with speech (WCAG 1.2.2).',
+      'An `.m3u8` source plays as HLS — natively in Safari, elsewhere through hls.js once you register it with `setHlsLoader()`. hls.js is an optional peer, so apps that never stream do not ship it.',
+      '`controls="native"` hands over to the browser\'s controls; `autoplay` implies `muted`, as browsers require.',
+    ],
+  },
+  {
+    slug: 'audio-player',
+    name: 'AudioPlayer',
+    group: 'Media',
+    summary: 'Audio with a title, artist, artwork and the shared control bar.',
+    notes: ['The title names the player for assistive tech; artwork is decorative.'],
+  },
+  {
+    slug: 'media-embed',
+    name: 'MediaEmbed',
+    group: 'Media',
+    summary: 'A YouTube or Vimeo video behind a click-to-load facade.',
+    notes: [
+      'Nothing is requested from the provider until the user presses play, and then only from its no-tracking host (`youtube-nocookie.com`, Vimeo with `dnt=1`).',
+      'No thumbnail is fetched from the provider by default, since that request alone would reveal the visit; pass a `poster` of your own, or `embedThumbnail()` if the request is acceptable.',
+      'Once loaded, focus moves into the player so keyboard users carry on where the button was. `title` names both the button and the iframe.',
+    ],
+  },
+  {
+    slug: 'media-grid',
+    name: 'MediaGrid',
+    group: 'Media',
+    summary: 'A gallery of images, videos, audio and embeds that opens each in a `Lightbox`.',
+    notes: [
+      'One tab stop for the whole gallery: arrow keys, Home and End move between tiles.',
+      'Tiles for video and audio say so, visibly and in their accessible names.',
+      '`variant="masonry"` keeps each image\'s own shape in columns; `minColumnWidth` sets how narrow a column may get.',
+    ],
+  },
+  {
+    slug: 'lightbox',
+    name: 'Lightbox',
+    group: 'Media',
+    summary: 'A full-screen viewer for a list of media, with zoom, swipe and thumbnails.',
+    notes: [
+      'Arrow keys, Home and End move between items; + and − zoom an image, 0 resets it. Pinch, Ctrl + wheel and double-click zoom too, and dragging pans a zoomed image.',
+      'Swipe to move on when the image is not zoomed. The next and previous images are loaded ahead of time.',
+      'Each move is announced once ("Canyon relief, cork, 2 of 6") through a live region; the visible counter is hidden from assistive tech so it is not read twice.',
+      'Videos, audio and embeds play in place with their own controls.',
+    ],
+  },
+  {
+    slug: 'media-carousel',
+    name: 'MediaCarousel',
+    group: 'Media',
+    summary: 'A slideshow showing one item at a time, following the WAI-ARIA carousel pattern.',
+    notes: [
+      'Slides are named groups ("2 of 5: Canyon relief"). The slide area is a polite live region while the user drives it, and silent while it rotates on its own.',
+      '`autoplay` pauses while the pointer or focus is inside, always offers a pause button (WCAG 2.2.2), and starts paused when the user prefers reduced motion.',
     ],
   },
 ];

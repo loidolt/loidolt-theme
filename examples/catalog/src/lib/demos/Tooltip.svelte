@@ -7,7 +7,7 @@
     <Tooltip content="Precise settings">
       {#snippet trigger()}#{/snippet}
     </Tooltip>
-    <Tooltip content="Adds a layer above the selection">
+    <Tooltip content="Adds a layer above the selection" arrow>
       {#snippet triggerChild({ props })}
         <IconButton {...props} label="Add layer">+</IconButton>
       {/snippet}

@@ -130,6 +130,18 @@ export const zIndex = {
 export const breakpoints = { compact: '760px', expanded: '1024px', wide: '1400px' } as const;
 
 /**
+ * Named frames for media, as CSS `aspect-ratio` values. `Thumbnail`, `AspectRatio` and the media
+ * components accept these names so a gallery and its lightbox agree on shape.
+ */
+export const aspectRatio = {
+  square: '1 / 1',
+  video: '16 / 9',
+  photo: '4 / 3',
+  portrait: '3 / 4',
+  wide: '21 / 9',
+} as const;
+
+/**
  * The role layer. Every value links to a primitive, so overriding a primitive propagates and
  * overriding a role restyles every component that plays it.
  */
@@ -190,6 +202,7 @@ const PRIMITIVE_GROUPS: ReadonlyArray<readonly [string, TokenTree]> = [
   ['shadow', shadows],
   ['motion', motion],
   ['z', zIndex],
+  ['aspect', aspectRatio],
 ];
 
 const flattenInto = (
@@ -324,9 +337,12 @@ export const tokens = {
   motion,
   zIndex,
   breakpoints,
+  aspectRatio,
   semantic,
   darkSemantic,
 } as const;
 export type ThemeTokens = typeof tokens;
 
 export default tokens;
+
+export * from './contrast.js';

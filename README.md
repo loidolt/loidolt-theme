@@ -335,6 +335,52 @@ scrolls and nothing sticks. Exactly one column should report a sort; leave the r
 Pass `empty` only when there are no rows, since the component cannot see inside `children` to
 count them.
 
+### Data-driven tables
+
+`createDataTable()` holds the state — sorting, search, column filters, paging, selection and
+column visibility — and `DataTable` with its companions renders it:
+
+```svelte
+<script lang="ts">
+  import {
+    createDataTable,
+    DataTable,
+    DataTableFacetedFilter,
+    DataTablePagination,
+    DataTableSearch,
+    Toolbar,
+  } from '@loidolt/theme-svelte';
+
+  let { sheets } = $props();
+
+  const table = createDataTable({
+    get data() {
+      return sheets;
+    },
+    columns: [
+      { id: 'name', header: 'Name', sortable: true },
+      { id: 'stock', header: 'Stock' },
+      { id: 'layers', header: 'Layers', sortable: true, align: 'end' },
+    ],
+    getRowId: (sheet) => sheet.id,
+    pageSize: 25,
+    selection: 'multiple',
+  });
+</script>
+
+<Toolbar label="Sheet tools">
+  <DataTableSearch {table} />
+  <DataTableFacetedFilter {table} column="stock" />
+</Toolbar>
+<DataTable {table} caption="Cut sheets" />
+<DataTablePagination {table} />
+```
+
+The engine is independent of the component: `table.sortOf(id)` feeds `TableHeader`, `table.page`
+feeds `Pagination`, and `table.rows` is the page to render if you build the markup yourself. For
+server data, set `manual: { sorting, filtering, pagination }` and `rowCount`, and fetch in
+`onSortChange`, `onSearchChange`, `onFiltersChange` and `onPageChange`.
+
 ## Long-form content
 
 Rendered Markdown, documentation and help text get their typography from one class:
@@ -356,14 +402,15 @@ measure.
 
 ## Components
 
-- Actions: `Button` (`variant="text"` covers the former `TextButton`), `IconButton`, `ToggleGroup`
-- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Checkbox`, `RadioGroup`, `Switch`
-- Surfaces: `Card`, `Panel`, `Badge`, `Separator`, `PageHeader`, `Section`
-- Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`
+- Actions: `Button` (`variant="text"` covers the former `TextButton`), `IconButton`, `ToggleGroup`, `ListRow`
+- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Combobox`, `MultiSelect`, `Slider`, `PasswordInput`, `OTPInput`, `SignaturePad`, `Checkbox`, `RadioGroup`, `Switch`, `FileInput`, `SwatchGroup`
+- Surfaces: `Card`, `Panel`, `Section`, `PageHeader`, `Separator`, `Thumbnail`, `Stat`, `Avatar`, `Badge`
+- Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`, `DataTable`, `DataTableSearch`, `DataTableFacetedFilter`, `DataTableColumnVisibility`, `DataTablePagination`, `ActiveFilterChips`, `CodeBlock`, `CommentList`, `RecordStepper`, `Filmstrip`
+- Feedback: `Alert`, `Toast`, `ToastViewport`, `Progress`, `Spinner`, `Skeleton`, `StatusDot`, `LiveRegion`, `Marker`
 - Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`
-- Navigation: `Topbar`, `Brand`, `NavMenu`, `Breadcrumbs`, `Tabs`, `Accordion`, `ContextBar`
-- Feedback: `Alert`, `Toast`, `ToastViewport`, `Spinner`, `Skeleton`, `Progress`
-- Layout: `AppShell`, `Workspace`, `Sidebar`
+- Navigation: `Topbar`, `Brand`, `NavMenu`, `SkipLink`, `Breadcrumbs`, `SegmentedNav`, `Tabs`, `Accordion`, `ContextBar`
+- Layout: `AppShell`, `Workspace`, `Sidebar`, `FloatingBar`, `AspectRatio`, `Toolbar`, `FilterPanel`
+- Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`, `MediaGrid`, `Lightbox`, `MediaCarousel`
 - Theme: `ThemeToggle`
 
 Complex focus, portal, dismissal, and keyboard behavior is powered by Bits UI. Icons remain
@@ -386,7 +433,7 @@ consumer-supplied through snippets, so the theme does not impose an icon library
   (`DialogPrimitive`, `DropdownMenuPrimitive`, `PopoverPrimitive`, `TabsPrimitive`,
   `TooltipPrimitive`) for anything the declarative API does not model.
 - **Vocabulary**: actions use `default | primary | quiet | danger | ghost | text`; status uses
-  `info | success | warning | error`; sizes are `sm | md | lg` (Dialog adds `xl`).
+  `info | success | warning | error`; sizes are `sm | md | lg` (Dialog adds `xl` and `full`).
 - **`Badge` sizing**: `Badge` defaults to `size="inline"`, a compact chip scaled to the text it
   annotates — right for table cells and running copy. Standing a badge in a row of controls, give
   it the same size as its neighbours (`size="md"` next to default buttons) so it shares their
@@ -417,6 +464,11 @@ consumer-supplied through snippets, so the theme does not impose an icon library
 </ToastViewport>
 ```
 
+`toaster.success`, `info`, `warning` and `error` are shortcuts for `push` with a variant; `error`
+stays until dismissed unless you pass a `duration`, so a failure is never missed. A toast can carry
+one `action` — `{ label: 'Undo', onAction }` — and `toaster.update(id, patch)` changes a toast in
+place, for "Uploading…" becoming "Uploaded". `ToastViewport` takes a `position`.
+
 `ToastViewport` is the single live region — `Toast` deliberately carries no `role="status"`, so
 nothing is announced twice.
 
@@ -429,48 +481,219 @@ Wrap the application once in `TooltipProvider` so the skip-delay grouping works 
 tooltip. A `Tooltip` without a provider ancestor creates its own, which is correct but loses
 grouping.
 
+## Media
+
+`VideoPlayer` and `AudioPlayer` put this system's controls on native media elements;
+`MediaEmbed` shows YouTube and Vimeo behind a click-to-load facade, so nothing is requested from
+the provider until the user presses play.
+
+```svelte
+<VideoPlayer
+  label="Cutting a bracket"
+  src="/media/cut.webm"
+  tracks={[{ src: '/media/cut.en.vtt', srclang: 'en', label: 'English' }]}
+/>
+<MediaEmbed url="https://youtu.be/aqz-KE-bpKQ" title="Assembly guide" />
+```
+
+HLS playlists (`.m3u8`) play natively in Safari. Elsewhere they need hls.js, an optional peer
+dependency the package never imports itself; register it once and only apps that stream pay for
+it:
+
+```ts
+import { setHlsLoader } from '@loidolt/theme-svelte';
+
+setHlsLoader(() => import('hls.js').then((module) => module.default));
+```
+
+The players are built on `createMediaPlayer()` — reactive state and commands over any `<video>`
+or `<audio>` (`{@attach player.attach}`) — for when you want your own controls.
+`createMediaZoom()` provides pinch, trackpad and drag-to-pan zoom for an image in a frame, and
+`formatDuration`, `formatDurationSpoken`, `parseEmbedUrl`, `buildEmbedSrc` and `inferMediaKind`
+are exported for your own media UI.
+
+## Behaviour helpers
+
+Every overlay, menu and group in the library already handles its own keyboard and focus. When
+you build a custom surface, these attachments give it the same contract. They run only in the
+browser, so they are SSR-safe, and they re-run when their arguments change:
+
+```svelte
+<script lang="ts">
+  import { clickOutside, escapeKey, focusTrap, rovingFocus } from '@loidolt/theme-svelte';
+  let open = $state(false);
+  let trigger = $state<HTMLButtonElement | null>(null);
+</script>
+
+<div
+  {@attach escapeKey(() => (open = false), { enabled: open })}
+  {@attach clickOutside(() => (open = false), { enabled: open, ignore: [trigger] })}
+  {@attach focusTrap({ enabled: open })}
+>
+  …
+</div>
+
+<div role="toolbar" aria-label="Formatting" {@attach rovingFocus()}>
+  <button data-roving-item>Bold</button>
+  <button data-roving-item>Italic</button>
+</div>
+```
+
+| Helper                           | Contract                                                                                                           |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `escapeKey(handler, options)`    | Escape anywhere (or only inside, with `scope: 'node'`); ignored during IME composition.                            |
+| `clickOutside(handler, options)` | A press outside the element and outside `ignore`; one `pointerdown` listener covers mouse, pen and touch.          |
+| `autofocus(options)`             | Focus on mount, on the next frame or after `delay`; `select` also selects an input's text.                         |
+| `rovingFocus(options)`           | Arrow, Home and End keys between `[data-roving-item]` descendants, skipping disabled ones, with a single tab stop. |
+| `focusTrap(options)`             | Tab and Shift+Tab stay inside while enabled; focus returns to where it was when released.                          |
+
+`createAnnouncer()` drives a `LiveRegion`. It empties the region between messages, so a
+repeated message is still announced, and clears it after `clearAfter` milliseconds:
+
+```svelte
+<script lang="ts">
+  import { createAnnouncer, LiveRegion } from '@loidolt/theme-svelte';
+  const announcer = createAnnouncer();
+</script>
+
+<LiveRegion message={announcer.message} politeness={announcer.politeness} />
+<button onclick={() => announcer.announce('Draft saved')}>Save</button>
+```
+
+`describedBy(...ids)` joins the ids that describe a control into one `aria-describedby` value,
+or `undefined` when none are present.
+
+The tokens package exports the WCAG contrast arithmetic the token tests use —
+`getContrastRatio`, `meetsContrast`, `validateContrast`, `getContrastTextColor` — for colours
+chosen at runtime, and named `aspectRatio` frames (`square`, `video`, `photo`, `portrait`,
+`wide`) that are also emitted as `--loidolt-aspect-*`.
+
+The styles package adds `.ldt-sr-only-focusable`, `.ldt-touch-target-expand` (a 44px hit area
+that does not change layout), `.ldt-line-clamp` (with `--ldt-lines`), and `.ldt-print-visible`.
+
 ## Utilities and types
 
 ```ts
 import {
+  autofocus,
   breakpointQuery,
+  buildEmbedSrc,
+  canPlayHlsNatively,
+  clickOutside,
+  createAnnouncer,
+  createDataTable,
+  createHlsSource,
+  createMediaPlayer,
   createMediaQuery,
+  createMediaZoom,
   createTheme,
   createToaster,
   cx,
+  describedBy,
+  embedThumbnail,
+  escapeKey,
+  focusTrap,
+  formatDuration,
+  formatDurationSpoken,
+  inferMediaKind,
+  isHlsSource,
+  loadHls,
+  mediaLabel,
+  mediaThumbnail,
+  parseEmbedUrl,
+  resolveAspectRatio,
+  rovingFocus,
+  setHlsLoader,
+  strokeLength,
+  strokePath,
+  strokesToSvg,
   themeScript,
+  toMediaSources,
+  validateSignature,
 } from '@loidolt/theme-svelte';
 import type {
   ActionVariant,
   Alignment,
+  Announcer,
+  AnnouncerOptions,
+  AspectRatioName,
+  AudioMediaItem,
+  AutofocusOptions,
   BadgeSize,
   BadgeVariant,
   BreakpointName,
+  ChoiceOption,
+  ClickOutsideOptions,
   ColorScheme,
   ColumnAlign,
   ControlSize,
   Crumb,
+  DataTableColumn,
+  DataTableFilterValue,
+  DataTableOptions,
+  DataTableRow,
+  DataTableSort,
+  DataTableState,
   DialogSize,
   Disclosure,
+  EmbedMediaItem,
+  EmbedProvider,
+  EmbedSrcOptions,
+  EscapeKeyOptions,
+  FocusTrapOptions,
   HeadingLevel,
+  HlsConstructor,
+  HlsErrorData,
+  HlsInstance,
+  HlsLoader,
+  HlsSource,
+  HlsSourceOptions,
+  HlsStatus,
+  ImageMediaItem,
+  MediaItem,
+  MediaKind,
+  MediaPlayer,
+  MediaPlayerLabels,
+  MediaPlayerOptions,
   MediaQuery,
   MediaQueryOptions,
+  MediaSourceEntry,
+  MediaTextTrack,
+  MediaTrackInfo,
+  MediaZoom,
+  MediaZoomOptions,
+  MenuCheckboxItem,
+  MenuEntry,
+  MenuGroup,
   MenuItem,
+  MenuRadioGroup,
+  MenuSub,
   NavItem,
   Option,
+  OptionGroup,
   Orientation,
+  ParsedEmbed,
   Placement,
+  Politeness,
+  RovingFocusOptions,
+  SignatureError,
+  SignaturePoint,
+  SignatureStroke,
+  SignatureValue,
   SortDirection,
   StatusVariant,
   Theme,
   ThemeOptions,
   ThemePreference,
   ThemeScriptOptions,
+  ToastAction,
   Toaster,
   ToasterOptions,
   ToastOptions,
   ToastRecord,
+  ToastShortcutOptions,
   TriggerChildProps,
+  VideoMediaItem,
 } from '@loidolt/theme-svelte';
 ```
 

@@ -4,9 +4,31 @@ import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
 import { axe } from 'vitest-axe';
 import Accordion from '../src/lib/components/Accordion.svelte';
+import SignaturePad from '../src/lib/components/SignaturePad.svelte';
+import MediaCarousel from '../src/lib/components/MediaCarousel.svelte';
+import MediaGrid from '../src/lib/components/MediaGrid.svelte';
+import AspectRatio from '../src/lib/components/AspectRatio.svelte';
+import AudioPlayer from '../src/lib/components/AudioPlayer.svelte';
+import MediaEmbed from '../src/lib/components/MediaEmbed.svelte';
+import VideoPlayer from '../src/lib/components/VideoPlayer.svelte';
+import DataTableColumnVisibility from '../src/lib/components/DataTableColumnVisibility.svelte';
+import DataTableFacetedFilter from '../src/lib/components/DataTableFacetedFilter.svelte';
+import DataTablePagination from '../src/lib/components/DataTablePagination.svelte';
+import DataTableSearch from '../src/lib/components/DataTableSearch.svelte';
+import { createDataTable } from '../src/lib/data-table.svelte.js';
+import DataTableHarness from './fixtures/DataTableHarness.svelte';
+import ActiveFilterChips from '../src/lib/components/ActiveFilterChips.svelte';
+import FilterPanel from '../src/lib/components/FilterPanel.svelte';
+import Toolbar from '../src/lib/components/Toolbar.svelte';
 import Alert from '../src/lib/components/Alert.svelte';
 import AlertDialog from '../src/lib/components/AlertDialog.svelte';
 import AppShell from '../src/lib/components/AppShell.svelte';
+import Avatar from '../src/lib/components/Avatar.svelte';
+import Combobox from '../src/lib/components/Combobox.svelte';
+import MultiSelect from '../src/lib/components/MultiSelect.svelte';
+import OTPInput from '../src/lib/components/OTPInput.svelte';
+import PasswordInput from '../src/lib/components/PasswordInput.svelte';
+import Slider from '../src/lib/components/Slider.svelte';
 import Badge from '../src/lib/components/Badge.svelte';
 import Brand from '../src/lib/components/Brand.svelte';
 import Breadcrumbs from '../src/lib/components/Breadcrumbs.svelte';
@@ -35,7 +57,9 @@ import RadioGroup from '../src/lib/components/RadioGroup.svelte';
 import Select from '../src/lib/components/Select.svelte';
 import Separator from '../src/lib/components/Separator.svelte';
 import Skeleton from '../src/lib/components/Skeleton.svelte';
+import SkipLink from '../src/lib/components/SkipLink.svelte';
 import Spinner from '../src/lib/components/Spinner.svelte';
+import LiveRegion from '../src/lib/components/LiveRegion.svelte';
 import Switch from '../src/lib/components/Switch.svelte';
 import Table from '../src/lib/components/Table.svelte';
 import Textarea from '../src/lib/components/Textarea.svelte';
@@ -46,6 +70,21 @@ import FieldHarness from './fixtures/FieldHarness.svelte';
 import FieldsetHarness from './fixtures/FieldsetHarness.svelte';
 import TableHarness from './fixtures/TableHarness.svelte';
 import WorkspaceHarness from './fixtures/WorkspaceHarness.svelte';
+
+const sheetTable = () =>
+  createDataTable({
+    data: Array.from({ length: 12 }, (_, index) => ({ name: `Sheet ${index}`, stock: 'birch' })),
+    columns: [
+      { id: 'name', header: 'Name', sortable: true },
+      { id: 'stock', header: 'Stock' },
+    ],
+    pageSize: 5,
+  });
+
+const gallery = [
+  { kind: 'image' as const, src: 'a.jpg', alt: 'Bracket', caption: 'First cut' },
+  { kind: 'video' as const, src: 'c.mp4', title: 'Cutting run' },
+];
 
 const text = (value: string) => createRawSnippet(() => ({ render: () => value }));
 
@@ -156,7 +195,96 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ],
   ['Separator (vertical)', Separator, { orientation: 'vertical' }],
   ['Skeleton', Skeleton, { width: 120, height: 16 }],
+  ['SkipLink', SkipLink, { targetId: 'main' }],
+  ['Avatar', Avatar, { name: 'Ada Lovelace' }],
+  ['Avatar (decorative)', Avatar, { initials: 'AL' }],
+  [
+    'Combobox',
+    Combobox,
+    { label: 'Stock', value: 'birch', options: [{ value: 'birch', label: 'Birch ply' }] },
+  ],
+  [
+    'MultiSelect',
+    MultiSelect,
+    { label: 'Stock', value: ['birch'], options: [{ value: 'birch', label: 'Birch ply' }] },
+  ],
+  ['OTPInput', OTPInput, { label: 'Verification code' }],
+  ['PasswordInput', PasswordInput, { 'aria-label': 'Password' }],
+  ['Slider', Slider, { label: 'Kerf', value: 2 }],
+  ['Slider (range)', Slider, { label: 'Thickness', value: [2, 8], ticks: true, step: 2 }],
+  ['Badge (count)', Badge, { count: 140, label: 'queued jobs', live: true, dot: true }],
+  [
+    'RadioGroup (described)',
+    RadioGroup,
+    {
+      label: 'Finish',
+      options: [{ value: 'raw', label: 'Raw', description: 'Straight off the laser.' }],
+    },
+  ],
+  [
+    'Progress (formatted)',
+    Progress,
+    { label: 'Cutting', value: 3, max: 12, showValue: true, variant: 'success' },
+  ],
+  ['Skeleton (lines)', Skeleton, { variant: 'text', lines: 3 }],
+  [
+    'ActiveFilterChips',
+    ActiveFilterChips,
+    {
+      items: [{ value: 'status', label: 'Status: Ready' }],
+      onRemove: () => {},
+      onClearAll: () => {},
+    },
+  ],
+  [
+    'FilterPanel',
+    FilterPanel,
+    { open: true, activeCount: 1, onClear: () => {}, children: text('Filters') },
+  ],
+  [
+    'Toolbar',
+    Toolbar,
+    {
+      label: 'Sheet tools',
+      roving: true,
+      children: text('<button data-roving-item>Filter</button>'),
+    },
+  ],
+  ['DataTable', DataTableHarness, { options: { selection: 'multiple' } }],
+  [
+    'DataTable (single, editable)',
+    DataTableHarness,
+    { options: { selection: 'single' }, editable: true, onEdit: () => {} },
+  ],
+  ['DataTable (empty)', DataTableHarness, { count: 0 }],
+  ['DataTableSearch', DataTableSearch, { table: sheetTable() }],
+  ['DataTableFacetedFilter', DataTableFacetedFilter, { table: sheetTable(), column: 'stock' }],
+  ['DataTableColumnVisibility', DataTableColumnVisibility, { table: sheetTable() }],
+  ['DataTablePagination', DataTablePagination, { table: sheetTable() }],
+  ['AspectRatio', AspectRatio, { ratio: 'photo', children: text('Frame') }],
+  [
+    'VideoPlayer',
+    VideoPlayer,
+    {
+      src: 'cut.mp4',
+      label: 'Cutting demo',
+      tracks: [{ src: 'en.vtt', srclang: 'en', label: 'English' }],
+    },
+  ],
+  ['AudioPlayer', AudioPlayer, { src: 'talk.mp3', title: 'Shop talk', artist: 'Loidolt' }],
+  ['MediaEmbed', MediaEmbed, { url: 'https://youtu.be/dQw4w9WgXcQ', title: 'Assembly guide' }],
+  // The loaded state is an iframe, which axe-core cannot enter under jsdom; its title is
+  // asserted in media.test.ts instead.
+  ['MediaGrid', MediaGrid, { items: gallery, label: 'Cut gallery' }],
+  [
+    'MediaCarousel',
+    MediaCarousel,
+    { items: gallery, label: 'Featured', autoplay: true, showThumbnails: true },
+  ],
+  ['SignaturePad', SignaturePad, { label: 'Customer signature', name: 'signature' }],
+  ['SignaturePad (typed)', SignaturePad, { label: 'Signature', mode: 'type' }],
   ['Spinner', Spinner, { label: 'Generating preview' }],
+  ['LiveRegion', LiveRegion, { message: 'Three results' }],
   ['Switch', Switch, { children: text('Live preview') }],
   [
     'Table',
