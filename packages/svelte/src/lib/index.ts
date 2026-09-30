@@ -58,6 +58,7 @@ export { default as SegmentedNav } from './components/SegmentedNav.svelte';
 export { default as Select } from './components/Select.svelte';
 export { default as Separator } from './components/Separator.svelte';
 export { default as Sidebar } from './components/Sidebar.svelte';
+export { default as SignaturePad } from './components/SignaturePad.svelte';
 export { default as Skeleton } from './components/Skeleton.svelte';
 export { default as SkipLink } from './components/SkipLink.svelte';
 export { default as Slider } from './components/Slider.svelte';
@@ -147,6 +148,13 @@ export type { HlsConstructor, HlsErrorData, HlsInstance, HlsLoader } from './hls
 export { createHlsSource } from './hls.svelte.js';
 export type { HlsSource, HlsSourceOptions, HlsStatus } from './hls.svelte.js';
 export type { MediaPlayerLabels } from './internal/media/labels.js';
+export { strokeLength, strokePath, strokesToSvg, validateSignature } from './signature.js';
+export type {
+  SignatureError,
+  SignaturePoint,
+  SignatureStroke,
+  SignatureValue,
+} from './signature.js';
 export { createDataTable } from './data-table.svelte.js';
 export type {
   DataTableColumn,

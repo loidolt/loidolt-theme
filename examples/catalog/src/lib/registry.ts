@@ -192,6 +192,20 @@ export const entries: Entry[] = [
     ],
   },
   {
+    slug: 'signature-pad',
+    name: 'SignaturePad',
+    group: 'Forms',
+    summary:
+      'Capture a signature by drawing it, or by typing a name as the accessible alternative.',
+    notes: [
+      'Typing is the route for keyboard, switch and voice users (WCAG 2.1.1 and 2.5.1). Keep `modes` to both unless you offer another way to the same outcome.',
+      'A signature counts only once it is long enough (`minStrokeLength`, `minTypedLength`); until then `value` is `null`, which makes `required` meaningful.',
+      'Both modes produce a PNG `dataUrl`; drawn signatures also carry the strokes and an SVG. With `name`, the PNG is submitted with the form.',
+      "The ink follows the theme's text colour. Load any fonts you list in `fonts` yourself — nothing is fetched from a font service.",
+      'Legal consent wording belongs to your app: pair the pad with a `Checkbox` rather than expecting the pad to carry it.',
+    ],
+  },
+  {
     slug: 'checkbox',
     name: 'Checkbox',
     group: 'Forms',

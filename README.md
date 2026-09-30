@@ -384,7 +384,7 @@ server data, set `manual: { sorting, filtering, pagination }` and `rowCount`, an
 ## Components
 
 - Actions: `Button` (`variant="text"` covers the former `TextButton`), `IconButton`, `ToggleGroup`, `ListRow`
-- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Combobox`, `MultiSelect`, `Slider`, `PasswordInput`, `OTPInput`, `Checkbox`, `RadioGroup`, `Switch`, `FileInput`, `SwatchGroup`
+- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Combobox`, `MultiSelect`, `Slider`, `PasswordInput`, `OTPInput`, `SignaturePad`, `Checkbox`, `RadioGroup`, `Switch`, `FileInput`, `SwatchGroup`
 - Surfaces: `Card`, `Panel`, `Section`, `PageHeader`, `Separator`, `Thumbnail`, `Stat`, `Avatar`, `Badge`
 - Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`, `DataTable`, `DataTableSearch`, `DataTableFacetedFilter`, `DataTableColumnVisibility`, `DataTablePagination`, `ActiveFilterChips`, `CodeBlock`, `CommentList`, `RecordStepper`, `Filmstrip`
 - Feedback: `Alert`, `Toast`, `ToastViewport`, `Progress`, `Spinner`, `Skeleton`, `StatusDot`, `LiveRegion`, `Marker`

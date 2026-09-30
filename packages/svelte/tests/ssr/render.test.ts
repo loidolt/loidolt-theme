@@ -118,6 +118,18 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Separator', {}],
   ['Sidebar', { children: text('Nav') }],
   ['Skeleton', {}],
+  ['SignaturePad', { label: 'Signature', name: 'signature' }],
+  [
+    'SignaturePad (typed)' as 'SignaturePad',
+    {
+      label: 'Signature',
+      mode: 'type',
+      fonts: [
+        { family: 'serif', label: 'Formal' },
+        { family: 'cursive', label: 'Script' },
+      ],
+    },
+  ],
   ['SkipLink', { targetId: 'main' }],
   ['Slider', { label: 'Kerf', value: [2, 8], showValue: true, name: 'kerf' }],
   ['Spinner', { label: 'Loading' }],
