@@ -12,11 +12,18 @@ accessibility contract, and a generated prop table for every component.
 
 ## Packages
 
-| Package                 | Purpose                                                                                                            |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `@loidolt/theme-tokens` | Typed colour, typography, spacing, sizing, border, shadow, z-index, and motion values plus generated CSS variables |
-| `@loidolt/theme-styles` | Bundled fonts, base styles, accessibility helpers, component classes, and layout utilities                         |
-| `@loidolt/theme-svelte` | Accessible Svelte 5 controls, overlays, feedback, surfaces, and application layouts                                |
+| Package                 | Purpose                                                                                                               |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `@loidolt/theme-tokens` | Typed colour, typography, spacing, sizing, border, shadow, z-index, and motion values plus generated CSS variables    |
+| `@loidolt/theme-styles` | Bundled fonts, base styles, accessibility helpers, component classes, and layout utilities                            |
+| `@loidolt/theme-svelte` | Accessible Svelte 5 controls, overlays, feedback, surfaces, and application layouts                                   |
+| `@loidolt/theme-charts` | Accessible ECharts charts painted from the tokens, each with a data-table alternative ([README](packages/charts))     |
+| `@loidolt/theme-maps`   | Accessible MapLibre maps on a token-coloured basemap, with keyboard markers and layer tools ([README](packages/maps)) |
+| `@loidolt/theme-docs`   | Safe, server-rendered Markdown documentation: pages, contents, highlighted code, diagrams ([README](packages/docs))   |
+
+The last three are optional. Each has its own heavy peer (`echarts`, `maplibre-gl`, and optionally
+`shiki`/`mermaid`), so an app that draws no charts never installs ECharts. All six are released
+together on one version.
 
 ## Requirements
 
@@ -425,6 +432,44 @@ Every rule weighs zero specificity: a component class inside prose (`.ldt-button
 that should read as UI rather than content. Code blocks keep a background written inline by a
 highlighter such as Shiki. `--ldt-prose-size` scales the text and `--ldt-prose-width` caps the
 measure.
+
+## Charts, maps and documentation
+
+These live in their own packages, and each README covers it in full. In short:
+
+```svelte
+<script lang="ts">
+  import { LineChart } from '@loidolt/theme-charts';
+  import { MapView, MapMarker } from '@loidolt/theme-maps';
+  import { Markdown } from '@loidolt/theme-docs';
+</script>
+
+<LineChart title="Sheets per month" {data} dataTable="toggle" />
+
+<MapView label="Workshop" center={[-122.66, 45.51]} zoom={13}>
+  <MapMarker lngLat={[-122.66, 45.51]} label="Workshop" />
+</MapView>
+
+<Markdown source={guide} />
+```
+
+- **[`@loidolt/theme-charts`](packages/charts)** — `LineChart`, `BarChart`, `PieChart`,
+  `ScatterChart`, `RadarChart`, `FunnelChart`, `GaugeChart`, `HeatmapChart`, `TreemapChart`,
+  `CandlestickChart`, `SankeyChart`, and `Chart` for any ECharts option. Every chart is a named
+  figure with a generated description and its data as a real table. The chart colours
+  (`--loidolt-chart-*`) are read live, so a theme change recolours the chart in place.
+- **[`@loidolt/theme-maps`](packages/maps)** — `MapView`, `MapSource`, seven layer types,
+  `MapMarker` (a named button), `MapPopup`, legends, `BasemapSwitcher`, `MapFeatureList`,
+  `LayerManager` and `DeckOverlay`. The default basemap draws
+  [OpenFreeMap](https://openfreemap.org) vector tiles in the `--loidolt-map-*` colours;
+  `basemap="blank"` needs no network. `@loidolt/theme-maps/core` adds routing, distance,
+  spatial-index and level-of-detail helpers that run anywhere, including a worker. Import
+  `@loidolt/theme-maps/styles.css` next to the theme stylesheet.
+- **[`@loidolt/theme-docs`](packages/docs)** — `Markdown`, `MarkdownPage`, `CodeSnippet`,
+  `MermaidDiagram`, `TableOfContents`, `TocPanel`, `DocsHub` and `DocsCard`, over
+  `renderMarkdown` (also in `@loidolt/theme-docs/core` for a `load`). Raw HTML is escaped and
+  URLs are allow-listed unless you opt in. Shiki highlighting follows the
+  `--loidolt-syntax-*` tokens.
 
 ## Components
 
