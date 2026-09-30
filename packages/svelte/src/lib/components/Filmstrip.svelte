@@ -34,10 +34,17 @@
 
   let buttons = $state<Record<string, HTMLButtonElement | null>>({});
 
+  // Keep the selected item in view by scrolling the strip itself. `scrollIntoView` would also
+  // scroll every ancestor — the page included — so a strip that changes selection on its own
+  // (a rotating carousel) would drag the whole document along with it.
   $effect(() => {
-    if (selectedId) {
-      buttons[selectedId]?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-    }
+    const button = selectedId ? buttons[selectedId] : null;
+    if (!button || !ref) return;
+    const [item, strip] = [button.getBoundingClientRect(), ref.getBoundingClientRect()];
+    if (item.left < strip.left) ref.scrollLeft -= strip.left - item.left;
+    else if (item.right > strip.right) ref.scrollLeft += item.right - strip.right;
+    if (item.top < strip.top) ref.scrollTop -= strip.top - item.top;
+    else if (item.bottom > strip.bottom) ref.scrollTop += item.bottom - strip.bottom;
   });
 
   function select(id: string) {

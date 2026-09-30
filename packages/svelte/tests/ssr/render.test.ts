@@ -42,6 +42,13 @@ const sheets = createDataTable({
   selection: 'multiple',
 });
 
+const gallery = [
+  { kind: 'image' as const, src: 'a.jpg', alt: 'Bracket', caption: 'First cut' },
+  { kind: 'video' as const, src: 'c.mp4', title: 'Cutting run' },
+  { kind: 'audio' as const, src: 'd.mp3', title: 'Talk' },
+  { kind: 'embed' as const, url: 'https://youtu.be/dQw4w9WgXcQ', title: 'Guide' },
+];
+
 const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Accordion', { items: options, children: panel }],
   ['ActiveFilterChips', { items: options, onRemove: () => {}, onClearAll: () => {} }],
@@ -85,12 +92,15 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['IconButton', { label: 'Close', children: text('×') }],
   ['Input', { 'aria-label': 'Name' }],
   ['Label', { for: 'x', children: text('Name') }],
+  ['Lightbox', { items: gallery, open: true, showThumbnails: true }],
   ['ListRow', { children: text('Row') }],
   ['ListRow (link)' as 'ListRow', { children: text('Row'), href: '/x', selected: true }],
   ['LiveRegion', { message: 'Saved' }],
+  ['MediaCarousel', { items: gallery, label: 'Featured', showThumbnails: true, autoplay: true }],
   ['MediaEmbed', { url: 'https://youtu.be/dQw4w9WgXcQ', title: 'Guide', poster: 'still.jpg' }],
   ['Marker', { number: 3, label: 'Comment 3' }],
   ['MultiSelect', { label: 'Stock', value: ['design'], options }],
+  ['MediaGrid', { items: gallery, label: 'Gallery', variant: 'masonry' }],
   ['NavMenu', { label: 'Projects', items: options }],
   ['NumberField', { label: 'Count' }],
   ['OTPInput', { label: 'Code', groupSize: 3 }],

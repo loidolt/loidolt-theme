@@ -4,6 +4,8 @@ import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
 import { axe } from 'vitest-axe';
 import Accordion from '../src/lib/components/Accordion.svelte';
+import MediaCarousel from '../src/lib/components/MediaCarousel.svelte';
+import MediaGrid from '../src/lib/components/MediaGrid.svelte';
 import AspectRatio from '../src/lib/components/AspectRatio.svelte';
 import AudioPlayer from '../src/lib/components/AudioPlayer.svelte';
 import MediaEmbed from '../src/lib/components/MediaEmbed.svelte';
@@ -77,6 +79,11 @@ const sheetTable = () =>
     ],
     pageSize: 5,
   });
+
+const gallery = [
+  { kind: 'image' as const, src: 'a.jpg', alt: 'Bracket', caption: 'First cut' },
+  { kind: 'video' as const, src: 'c.mp4', title: 'Cutting run' },
+];
 
 const text = (value: string) => createRawSnippet(() => ({ render: () => value }));
 
@@ -267,6 +274,12 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ['MediaEmbed', MediaEmbed, { url: 'https://youtu.be/dQw4w9WgXcQ', title: 'Assembly guide' }],
   // The loaded state is an iframe, which axe-core cannot enter under jsdom; its title is
   // asserted in media.test.ts instead.
+  ['MediaGrid', MediaGrid, { items: gallery, label: 'Cut gallery' }],
+  [
+    'MediaCarousel',
+    MediaCarousel,
+    { items: gallery, label: 'Featured', autoplay: true, showThumbnails: true },
+  ],
   ['Spinner', Spinner, { label: 'Generating preview' }],
   ['LiveRegion', LiveRegion, { message: 'Three results' }],
   ['Switch', Switch, { children: text('Live preview') }],

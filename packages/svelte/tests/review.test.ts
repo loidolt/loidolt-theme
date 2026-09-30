@@ -260,6 +260,35 @@ describe('Filmstrip', () => {
     expect(onSelect).toHaveBeenCalledWith('b');
     expect((await scan(container)).violations).toEqual([]);
   });
+
+  it('scrolls only itself to the selected item, never the page', async () => {
+    const pageScroll = vi.mocked(Element.prototype.scrollIntoView);
+    pageScroll.mockClear();
+    const rect = (left: number, top: number, width: number, height: number) =>
+      ({ left, top, right: left + width, bottom: top + height, width, height }) as DOMRect;
+    const { rerender } = render(Filmstrip, {
+      props: {
+        items: [{ id: 'a' }, { id: 'b' }],
+        selectedId: 'a',
+        orientation: 'horizontal',
+        label: 'Outputs',
+        item: stripItem,
+      } as never,
+    });
+    const strip = screen.getByRole('listbox');
+    const [first, second] = screen.getAllByRole('option');
+    strip.getBoundingClientRect = () => rect(0, 0, 100, 60);
+    first.getBoundingClientRect = () => rect(-40, 0, 72, 60);
+    second.getBoundingClientRect = () => rect(160, 70, 72, 60);
+    strip.scrollLeft = 100;
+
+    await rerender({ selectedId: 'b' } as never);
+    expect(strip.scrollLeft).toBe(232);
+    expect(strip.scrollTop).toBe(70);
+    await rerender({ selectedId: 'a' } as never);
+    expect(strip.scrollLeft).toBe(192);
+    expect(pageScroll).not.toHaveBeenCalled();
+  });
 });
 
 describe('CommentList', () => {

@@ -391,7 +391,7 @@ server data, set `manual: { sorting, filtering, pagination }` and `rowCount`, an
 - Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`
 - Navigation: `Topbar`, `Brand`, `NavMenu`, `SkipLink`, `Breadcrumbs`, `SegmentedNav`, `Tabs`, `Accordion`, `ContextBar`
 - Layout: `AppShell`, `Workspace`, `Sidebar`, `FloatingBar`, `AspectRatio`, `Toolbar`, `FilterPanel`
-- Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`
+- Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`, `MediaGrid`, `Lightbox`, `MediaCarousel`
 - Theme: `ThemeToggle`
 
 Complex focus, portal, dismissal, and keyboard behavior is powered by Bits UI. Icons remain

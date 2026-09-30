@@ -21,7 +21,8 @@
     .ldt-drawer__body,
     .ldt-tabs__list,
     .ldt-toggle-group,
-    .ldt-listbox
+    .ldt-listbox,
+    .ldt-media-grid
   )
   :where(:focus-visible) {
   outline-offset: -2px;
@@ -110,7 +111,9 @@
     .ldt-data-table__edit,
     .ldt-media-controls__button,
     .ldt-media-controls__speed,
-    .ldt-media-controls__range
+    .ldt-media-controls__range,
+    .ldt-lightbox__control,
+    .ldt-media-carousel__control
   ) {
     min-height: 44px;
   }
@@ -120,7 +123,9 @@
     .ldt-combobox__trigger,
     .ldt-password-input__toggle,
     .ldt-chip__remove,
-    .ldt-media-controls__button
+    .ldt-media-controls__button,
+    .ldt-lightbox__control,
+    .ldt-media-carousel__control
   ) {
     min-width: 44px;
   }

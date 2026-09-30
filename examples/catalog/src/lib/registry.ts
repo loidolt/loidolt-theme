@@ -804,6 +804,39 @@ export const entries: Entry[] = [
       'Once loaded, focus moves into the player so keyboard users carry on where the button was. `title` names both the button and the iframe.',
     ],
   },
+  {
+    slug: 'media-grid',
+    name: 'MediaGrid',
+    group: 'Media',
+    summary: 'A gallery of images, videos, audio and embeds that opens each in a `Lightbox`.',
+    notes: [
+      'One tab stop for the whole gallery: arrow keys, Home and End move between tiles.',
+      'Tiles for video and audio say so, visibly and in their accessible names.',
+      '`variant="masonry"` keeps each image\'s own shape in columns; `minColumnWidth` sets how narrow a column may get.',
+    ],
+  },
+  {
+    slug: 'lightbox',
+    name: 'Lightbox',
+    group: 'Media',
+    summary: 'A full-screen viewer for a list of media, with zoom, swipe and thumbnails.',
+    notes: [
+      'Arrow keys, Home and End move between items; + and − zoom an image, 0 resets it. Pinch, Ctrl + wheel and double-click zoom too, and dragging pans a zoomed image.',
+      'Swipe to move on when the image is not zoomed. The next and previous images are loaded ahead of time.',
+      'Each move is announced once ("Canyon relief, cork, 2 of 6") through a live region; the visible counter is hidden from assistive tech so it is not read twice.',
+      'Videos, audio and embeds play in place with their own controls.',
+    ],
+  },
+  {
+    slug: 'media-carousel',
+    name: 'MediaCarousel',
+    group: 'Media',
+    summary: 'A slideshow showing one item at a time, following the WAI-ARIA carousel pattern.',
+    notes: [
+      'Slides are named groups ("2 of 5: Canyon relief"). The slide area is a polite live region while the user drives it, and silent while it rotates on its own.',
+      '`autoplay` pauses while the pointer or focus is inside, always offers a pause button (WCAG 2.2.2), and starts paused when the user prefers reduced motion.',
+    ],
+  },
 ];
 
 export const bySlug = new Map(entries.map((entry) => [entry.slug, entry]));
