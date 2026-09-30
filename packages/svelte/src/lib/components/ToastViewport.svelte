@@ -7,6 +7,9 @@
     label?: string;
     /** `polite` for routine updates; `assertive` interrupts and should be rare. */
     politeness?: 'polite' | 'assertive';
+    /** Which corner or edge the stack sits against. Top positions stack newest-last as well. */
+    position?:
+      'bottom-end' | 'bottom-start' | 'bottom-center' | 'top-end' | 'top-start' | 'top-center';
     class?: string;
     children: Snippet;
     ref?: HTMLDivElement | null;
@@ -15,6 +18,7 @@
   let {
     label = 'Notifications',
     politeness = 'polite',
+    position = 'bottom-end',
     class: className,
     children,
     ref = $bindable(null),
@@ -28,7 +32,11 @@
 -->
 <div
   bind:this={ref}
-  class={cx('ldt-toast-viewport', className)}
+  class={cx(
+    'ldt-toast-viewport',
+    position !== 'bottom-end' && `ldt-toast-viewport--${position}`,
+    className
+  )}
   aria-label={label}
   aria-live={politeness}
   aria-relevant="additions text"

@@ -118,6 +118,8 @@ export const entries: Entry[] = [
     notes: [
       'Clearing the field cannot wedge it: an empty value clamps back to `min`, or to zero when unbounded.',
       'At a bound the spin button goes `aria-disabled` rather than `disabled`, so it keeps focus instead of dropping it.',
+      '`nullable` lets the field be empty: clearing it yields `null` instead of the low bound. Type the bound variable as `number | null`.',
+      '`readonly` locks the steppers too; `hideSteppers` drops them for dense tables. The arrow keys still step.',
     ],
   },
   {
@@ -125,7 +127,10 @@ export const entries: Entry[] = [
     name: 'Select',
     group: 'Forms',
     summary: 'A native select over an `Option[]`.',
-    notes: ['The placeholder stays selectable unless the field is `required`.'],
+    notes: [
+      'The placeholder stays selectable unless the field is `required`.',
+      'Pass `{ label, options }` entries to group options under native `<optgroup>` headings.',
+    ],
   },
   {
     slug: 'combobox',
@@ -197,6 +202,9 @@ export const entries: Entry[] = [
     name: 'RadioGroup',
     group: 'Forms',
     summary: 'One choice from a small set, as native radios in a fieldset.',
+    notes: [
+      "An option's `description` renders under its label and is read after it through `aria-describedby`, not as part of its name.",
+    ],
   },
   {
     slug: 'switch',
@@ -295,6 +303,8 @@ export const entries: Entry[] = [
     notes: [
       'Defaults to `size="inline"`, scaled to the text it annotates. Standing in a row of controls, give it their size instead.',
       'The pill silhouette is the system’s only rounded corner, which is exactly what keeps it from reading as a button.',
+      '`count` shows a number, capped at `max` as `99+`. Add `label` for the visually hidden context ("4" is heard as "4 unread comments"), and `live` when the count changes while the user watches.',
+      "`dot` leads with a marker in the badge's colour.",
     ],
   },
 
@@ -393,6 +403,8 @@ export const entries: Entry[] = [
     notes: [
       '`createToaster()` owns the queue, the timers, and pause-on-hover.',
       '`ToastViewport` is the single live region — `Toast` carries no `role="status"`, so nothing is announced twice.',
+      '`action` adds one follow-up button, such as Undo. It runs `onAction` and then dismisses the toast unless `dismiss: false`. Give an actionable toast time to be reached — at least ten seconds, or `duration: 0`.',
+      '`toaster.update(id, patch)` changes a toast in place ("Uploading…" becoming "Uploaded"). `toaster.success/info/warning/error` are shortcuts; `error` stays until dismissed unless given a `duration`.',
     ],
   },
   {
@@ -400,25 +412,36 @@ export const entries: Entry[] = [
     name: 'ToastViewport',
     group: 'Feedback',
     summary: 'The fixed live region toasts are announced from.',
+    notes: ['`position` places the stack at any corner or at the top or bottom centre.'],
   },
   {
     slug: 'progress',
     name: 'Progress',
     group: 'Feedback',
     summary: 'A determinate or indeterminate progress bar.',
-    notes: ['`value={undefined}` is the indeterminate mode: no `aria-valuenow`, animated bar.'],
+    notes: [
+      '`value={undefined}` is the indeterminate mode: no `aria-valuenow`, animated bar.',
+      '`formatValue` feeds both the visible `showValue` text and `aria-valuetext`, so "9 of 12 sheets" is heard instead of 75%.',
+      '`variant` colours the bar by outcome; `size` sets its thickness.',
+    ],
   },
   {
     slug: 'spinner',
     name: 'Spinner',
     group: 'Feedback',
     summary: 'A small activity indicator.',
+    notes: [
+      'Without `size` it follows the surrounding font size, which suits a spinner inside a button.',
+    ],
   },
   {
     slug: 'skeleton',
     name: 'Skeleton',
     group: 'Feedback',
     summary: 'A placeholder block for content still loading.',
+    notes: [
+      '`variant` takes the shape of what it replaces: `text` (with `lines`), `title`, `avatar`, `button`, `card`.',
+    ],
   },
 
   {
@@ -454,6 +477,7 @@ export const entries: Entry[] = [
     notes: [
       '`class` targets the portaled content, not the trigger. `triggerVariant`/`triggerSize` pick the button clothes; an explicit `triggerClass` wins wholesale, and `triggerChild` replaces the trigger outright.',
       'Focus, portalling, dismissal, and the escape key come from Bits UI.',
+      '`header` replaces the visible title block; `title` is still required and stays the accessible name, visually hidden. `headerActions` sit beside the close button. `size="full"` takes the viewport less a gutter.',
     ],
   },
   {
@@ -496,6 +520,9 @@ export const entries: Entry[] = [
     notes: [
       'Shortcut hints are exposed to assistive tech, not `aria-hidden` — a shortcut nobody can hear may as well not exist.',
       'For checkbox items, radio items, or submenus, drop to the re-exported `DropdownMenuPrimitive`.',
+      "`items` also takes `type: 'group'` (a heading over rows), `'checkbox'` (a toggle, reported through `onCheckedChange`), `'radio'` (one of many, through `onValueChange`) and `'sub'` (a nested menu) entries. Toggles and choices keep the menu open.",
+      '`shortcut` sets `aria-keyshortcuts` and shows as the hint. The menu does not bind the key; your app does.',
+      '`destructive` styles an item as danger. Pair it with a confirmation for anything irreversible.',
     ],
   },
   {
@@ -506,6 +533,7 @@ export const entries: Entry[] = [
     notes: [
       'Wrap the app once in `TooltipProvider` so skip-delay grouping works across every tooltip.',
       'The tooltip describes its trigger; it does not name it. Never put the only copy of a control’s name in one.',
+      '`arrow` points the tooltip at its trigger.',
     ],
   },
   {

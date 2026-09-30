@@ -72,6 +72,15 @@
  * size class the badge keeps its compact inline metrics, which is what table cells and running
  * copy want.
  */
+/* Same colour as the text, so the variant's ink carries it without a second colour rule. */
+.ldt-badge__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: none;
+  margin-inline-end: 0.35rem;
+  border-radius: var(--loidolt-border-radius-pill);
+  background: currentColor;
+}
 .ldt-badge--sm {
   min-height: var(--loidolt-size-control-sm);
   padding: 0.38rem 0.7rem;

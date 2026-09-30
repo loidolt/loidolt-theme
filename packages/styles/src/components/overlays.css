@@ -31,6 +31,18 @@
 .ldt-dialog--xl {
   --ldt-dialog-width: 60rem;
 }
+.ldt-dialog--full {
+  --ldt-dialog-width: 100vw;
+  height: calc(100dvh - 2rem);
+  max-height: none;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+.ldt-dialog__actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.25rem;
+}
 .ldt-dialog__header,
 .ldt-dialog__body,
 .ldt-dialog__footer {
@@ -227,6 +239,62 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+/* Destructive rows read as danger at rest, and invert to the danger fill when highlighted. */
+.ldt-menu__item--danger {
+  color: var(--loidolt-text-danger);
+}
+.ldt-menu__item--danger:hover:not(:disabled, [data-disabled]),
+.ldt-menu__item--danger[data-highlighted] {
+  color: var(--loidolt-on-danger);
+  background: var(--loidolt-danger);
+}
+.ldt-menu__group {
+  display: grid;
+  gap: 0.1rem;
+}
+/* Checkbox and radio rows lead with a drawn indicator, so state never rests on colour alone. */
+.ldt-menu__item--check,
+.ldt-menu__item--radio {
+  justify-content: flex-start;
+  gap: 0.6rem;
+}
+.ldt-menu__item--check .ldt-menu__hint,
+.ldt-menu__item--radio .ldt-menu__hint {
+  margin-inline-start: auto;
+}
+.ldt-menu__indicator {
+  position: relative;
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: none;
+  border: var(--loidolt-border-width) solid currentColor;
+}
+.ldt-menu__item--check[data-state='checked'] .ldt-menu__indicator::after {
+  content: '';
+  position: absolute;
+  inset: 0.05rem 0.22rem 0.18rem;
+  border: solid currentColor;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.ldt-menu__item--radio[data-state='checked'] .ldt-menu__indicator::after {
+  content: '';
+  position: absolute;
+  inset: 0.17rem;
+  background: currentColor;
+}
+.ldt-menu__chevron {
+  width: 0.4rem;
+  height: 0.4rem;
+  flex: none;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(-45deg);
+}
+.ldt-menu__item--sub[data-state='open'] {
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+}
 .ldt-menu__separator {
   height: var(--loidolt-border-width);
   margin: 0.25rem 0;
@@ -241,6 +309,10 @@
   background: var(--loidolt-surface-inverse);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
   box-shadow: var(--loidolt-shadow-popover);
+}
+/* The arrow's SVG fills with currentColor, so it takes the tooltip's surface colour. */
+.ldt-tooltip__arrow {
+  color: var(--loidolt-surface-inverse);
 }
 /*
  * Bits UI stamps `data-orientation` on the root, list, triggers and panels, so the vertical

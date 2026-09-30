@@ -25,6 +25,13 @@
     triggerClass?: string;
     children: Snippet;
     footer?: Snippet;
+    /**
+     * Replaces the visible title block — for a header with media, a status badge or a custom
+     * layout. `title` is still required: it stays the dialog's accessible name, visually hidden.
+     */
+    header?: Snippet;
+    /** Controls beside the close button, e.g. an overflow menu or a "pop out" link. */
+    headerActions?: Snippet;
     /** Sets `--ldt-dialog-width` via a modifier class. Omit to inherit the CSS default. */
     size?: DialogSize;
     headingLevel?: HeadingLevel;
@@ -48,6 +55,8 @@
     triggerClass,
     children,
     footer,
+    header,
+    headerActions,
     size,
     headingLevel = 2,
     showClose = true,
@@ -87,17 +96,29 @@
       {...rest}
     >
       <div class="ldt-dialog__header">
-        <div>
-          <DialogPrimitive.Title level={headingLevel} class="ldt-dialog__title"
-            >{title}</DialogPrimitive.Title
-          >{#if description}<DialogPrimitive.Description class="ldt-dialog__description"
-              >{description}</DialogPrimitive.Description
-            >{/if}
-        </div>
-        {#if showClose}<DialogPrimitive.Close
-            class="ldt-button ldt-icon-button ldt-button--ghost"
-            aria-label={closeLabel}>×</DialogPrimitive.Close
-          >{/if}
+        {#if header}
+          <div>
+            <DialogPrimitive.Title level={headingLevel} class="ldt-sr-only"
+              >{title}</DialogPrimitive.Title
+            >{@render header()}{#if description}<DialogPrimitive.Description class="ldt-sr-only"
+                >{description}</DialogPrimitive.Description
+              >{/if}
+          </div>
+        {:else}
+          <div>
+            <DialogPrimitive.Title level={headingLevel} class="ldt-dialog__title"
+              >{title}</DialogPrimitive.Title
+            >{#if description}<DialogPrimitive.Description class="ldt-dialog__description"
+                >{description}</DialogPrimitive.Description
+              >{/if}
+          </div>
+        {/if}
+        {#if headerActions || showClose}<div class="ldt-dialog__actions">
+            {#if headerActions}{@render headerActions()}{/if}{#if showClose}<DialogPrimitive.Close
+                class="ldt-button ldt-icon-button ldt-button--ghost"
+                aria-label={closeLabel}>×</DialogPrimitive.Close
+              >{/if}
+          </div>{/if}
       </div>
       <div class="ldt-dialog__body">{@render children()}</div>
       {#if footer}<div class="ldt-dialog__footer">{@render footer()}</div>{/if}

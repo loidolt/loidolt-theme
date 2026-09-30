@@ -134,7 +134,7 @@
   :where(.ldt-icon-button) {
     width: 44px;
   }
-  .ldt-number-field {
+  .ldt-number-field:not(.ldt-number-field--bare) {
     grid-template-columns: 44px minmax(0, 1fr) 44px;
   }
 }

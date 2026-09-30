@@ -11,9 +11,20 @@
     boxed
     bind:value={format}
     options={[
-      { value: 'svg', label: 'SVG vector' },
-      { value: 'pdf', label: 'PDF document' },
-      { value: 'png', label: 'PNG image' },
+      {
+        label: 'Vector',
+        options: [
+          { value: 'svg', label: 'SVG vector' },
+          { value: 'pdf', label: 'PDF document' },
+        ],
+      },
+      {
+        label: 'Raster',
+        options: [
+          { value: 'png', label: 'PNG image' },
+          { value: 'tiff', label: 'TIFF image' },
+        ],
+      },
     ]}
   />
   <p class="ldt-utility-text">Value: {format || 'unset'}</p>

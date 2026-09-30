@@ -76,6 +76,24 @@
   height: 1rem;
   accent-color: var(--loidolt-accent);
 }
+/* A choice with a sentence under it: the control aligns with the label's first line. */
+.ldt-choice--described {
+  align-items: flex-start;
+}
+.ldt-choice--described input {
+  margin-top: 0.1rem;
+}
+.ldt-choice__text {
+  display: grid;
+  gap: 0.15rem;
+}
+.ldt-choice__description {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-sm) / var(--loidolt-font-line-height-normal)
+    var(--loidolt-font-display);
+  letter-spacing: normal;
+  text-transform: none;
+}
 .ldt-fieldset {
   min-width: 0;
   margin: 0;
@@ -138,6 +156,9 @@
   display: grid;
   grid-template-columns: 2rem minmax(0, 1fr) 2rem;
   border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-control);
+}
+.ldt-number-field--bare {
+  grid-template-columns: minmax(0, 1fr);
 }
 .ldt-number-field .ldt-number-field__input {
   border: 0;

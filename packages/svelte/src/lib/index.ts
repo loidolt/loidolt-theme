@@ -99,7 +99,14 @@ export type {
 export { createAnnouncer } from './announcer.svelte.js';
 export type { Announcer, AnnouncerOptions, Politeness } from './announcer.svelte.js';
 export { createToaster } from './toaster.svelte.js';
-export type { Toaster, ToasterOptions, ToastOptions, ToastRecord } from './toaster.svelte.js';
+export type {
+  Toaster,
+  ToasterOptions,
+  ToastAction,
+  ToastOptions,
+  ToastRecord,
+  ToastShortcutOptions,
+} from './toaster.svelte.js';
 export { createTheme, themeScript } from './theme.svelte.js';
 export type {
   ColorScheme,
@@ -122,7 +129,12 @@ export type {
   ControlSize,
   DialogSize,
   HeadingLevel,
+  MenuCheckboxItem,
+  MenuEntry,
+  MenuGroup,
   MenuItem,
+  MenuRadioGroup,
+  MenuSub,
   NavItem,
   Option,
   OptionGroup,

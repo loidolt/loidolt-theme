@@ -181,6 +181,21 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ['PasswordInput', PasswordInput, { 'aria-label': 'Password' }],
   ['Slider', Slider, { label: 'Kerf', value: 2 }],
   ['Slider (range)', Slider, { label: 'Thickness', value: [2, 8], ticks: true, step: 2 }],
+  ['Badge (count)', Badge, { count: 140, label: 'queued jobs', live: true, dot: true }],
+  [
+    'RadioGroup (described)',
+    RadioGroup,
+    {
+      label: 'Finish',
+      options: [{ value: 'raw', label: 'Raw', description: 'Straight off the laser.' }],
+    },
+  ],
+  [
+    'Progress (formatted)',
+    Progress,
+    { label: 'Cutting', value: 3, max: 12, showValue: true, variant: 'success' },
+  ],
+  ['Skeleton (lines)', Skeleton, { variant: 'text', lines: 3 }],
   ['Spinner', Spinner, { label: 'Generating preview' }],
   ['LiveRegion', LiveRegion, { message: 'Three results' }],
   ['Switch', Switch, { children: text('Live preview') }],
