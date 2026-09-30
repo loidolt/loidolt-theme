@@ -13,9 +13,11 @@
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@loidolt/theme-svelte": "^0.6.0",
+    "@loidolt/theme-charts": "^0.6.0",
     "@loidolt/theme-styles": "^0.6.0",
-    "@loidolt/theme-tokens": "^0.6.0"
+    "@loidolt/theme-svelte": "^0.6.0",
+    "@loidolt/theme-tokens": "^0.6.0",
+    "echarts": "^6.0.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.10",

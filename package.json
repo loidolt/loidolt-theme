@@ -12,8 +12,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "npm run build -w @loidolt/theme-tokens && npm run build -w @loidolt/theme-styles && npm run build -w @loidolt/theme-svelte && npm run build -w @loidolt/theme-catalog",
-    "build:packages": "npm run build -w @loidolt/theme-tokens && npm run build -w @loidolt/theme-styles && npm run build -w @loidolt/theme-svelte",
+    "build": "npm run build -w @loidolt/theme-tokens && npm run build -w @loidolt/theme-styles && npm run build -w @loidolt/theme-svelte && npm run build -w @loidolt/theme-charts && npm run build -w @loidolt/theme-catalog",
+    "build:packages": "npm run build -w @loidolt/theme-tokens && npm run build -w @loidolt/theme-styles && npm run build -w @loidolt/theme-svelte && npm run build -w @loidolt/theme-charts",
     "dev": "npm run build:packages && npm run dev -w @loidolt/theme-catalog --",
     "check": "npm run build:packages && npm run typecheck && npm run test && npm run lint && npm run format:check && npm run build -w @loidolt/theme-catalog",
     "deploy:docs": "npm run build:packages && npm run deploy -w @loidolt/theme-catalog",
