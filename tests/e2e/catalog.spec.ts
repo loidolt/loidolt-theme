@@ -1,27 +1,28 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { componentRoutes, routes } from './routes';
 
-const staticRoutes = ['/', '/404', '/components', '/foundations', '/patterns'];
 const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
 test.describe('catalog in a real browser', () => {
-  test('every catalog route passes axe in light and dark themes', async ({ page }, testInfo) => {
-    test.skip(
-      testInfo.project.name !== 'desktop-chromium',
-      'One full browser sweep is sufficient.'
-    );
-    test.setTimeout(120_000);
-
+  test('the sweep covers every page the component index links to', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop-chromium', 'One browser check is sufficient.');
     await page.goto('/components');
-    const componentRoutes = await page
+    const linked = await page
       .locator('a[href^="/components/"]')
       .evaluateAll(
         (links) =>
           [...new Set(links.map((link) => link.getAttribute('href')).filter(Boolean))] as string[]
       );
-    const routes = [...staticRoutes, ...componentRoutes].sort();
+    expect(linked.sort()).toEqual([...componentRoutes].sort());
+  });
 
-    for (const route of routes) {
+  for (const route of routes) {
+    test(`${route} passes axe in light and dark themes`, async ({ page }, testInfo) => {
+      test.skip(
+        testInfo.project.name !== 'desktop-chromium',
+        'One full browser sweep is sufficient.'
+      );
       await page.goto(route);
       for (const theme of ['light', 'dark'] as const) {
         await page.evaluate((value) => {
@@ -30,8 +31,8 @@ test.describe('catalog in a real browser', () => {
         const results = await new AxeBuilder({ page }).withTags(wcagTags).analyze();
         expect.soft(results.violations, `${route} in ${theme} theme`).toEqual([]);
       }
-    }
-  });
+    });
+  }
 
   test('theme and dialog keyboard interactions preserve their contracts', async ({ page }) => {
     await page.goto('/components/theme-toggle');

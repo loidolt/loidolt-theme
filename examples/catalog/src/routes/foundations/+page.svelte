@@ -217,8 +217,8 @@ export const handle = ({ event, resolve }) =>
       <p>Check the return address before the first batch of the season.</p>
     </blockquote>
     <ul>
-      <li><input type="checkbox" checked disabled /> Load 4×6 stock</li>
-      <li><input type="checkbox" disabled /> Print a test label</li>
+      <li><input type="checkbox" checked disabled aria-label="Load 4×6 stock" /> Load 4×6 stock</li>
+      <li><input type="checkbox" disabled aria-label="Print a test label" /> Print a test label</li>
     </ul>
     <table id="prose-table">
       <thead><tr><th>Printer</th><th>Scale</th><th align="right">Margin</th></tr></thead>
