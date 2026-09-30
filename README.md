@@ -414,7 +414,7 @@ consumer-supplied through snippets, so the theme does not impose an icon library
   (`DialogPrimitive`, `DropdownMenuPrimitive`, `PopoverPrimitive`, `TabsPrimitive`,
   `TooltipPrimitive`) for anything the declarative API does not model.
 - **Vocabulary**: actions use `default | primary | quiet | danger | ghost | text`; status uses
-  `info | success | warning | error`; sizes are `sm | md | lg` (Dialog adds `xl`).
+  `info | success | warning | error`; sizes are `sm | md | lg` (Dialog adds `xl` and `full`).
 - **`Badge` sizing**: `Badge` defaults to `size="inline"`, a compact chip scaled to the text it
   annotates — right for table cells and running copy. Standing a badge in a row of controls, give
   it the same size as its neighbours (`size="md"` next to default buttons) so it shares their
@@ -444,6 +444,11 @@ consumer-supplied through snippets, so the theme does not impose an icon library
   {/each}
 </ToastViewport>
 ```
+
+`toaster.success`, `info`, `warning` and `error` are shortcuts for `push` with a variant; `error`
+stays until dismissed unless you pass a `duration`, so a failure is never missed. A toast can carry
+one `action` — `{ label: 'Undo', onAction }` — and `toaster.update(id, patch)` changes a toast in
+place, for "Uploading…" becoming "Uploaded". `ToastViewport` takes a `position`.
 
 `ToastViewport` is the single live region — `Toast` deliberately carries no `role="status"`, so
 nothing is announced twice.
@@ -551,46 +556,125 @@ that does not change layout), `.ldt-line-clamp` (with `--ldt-lines`), and `.ldt-
 
 ```ts
 import {
+  autofocus,
   breakpointQuery,
-  createMediaQuery,
-  createTheme,
+  buildEmbedSrc,
+  canPlayHlsNatively,
+  clickOutside,
   createAnnouncer,
+  createDataTable,
+  createHlsSource,
+  createMediaPlayer,
+  createMediaQuery,
+  createMediaZoom,
+  createTheme,
   createToaster,
   cx,
   describedBy,
+  embedThumbnail,
+  escapeKey,
+  focusTrap,
+  formatDuration,
+  formatDurationSpoken,
+  inferMediaKind,
+  isHlsSource,
+  loadHls,
+  mediaLabel,
+  mediaThumbnail,
+  parseEmbedUrl,
+  resolveAspectRatio,
+  rovingFocus,
+  setHlsLoader,
+  strokeLength,
+  strokePath,
+  strokesToSvg,
   themeScript,
+  toMediaSources,
+  validateSignature,
 } from '@loidolt/theme-svelte';
 import type {
   ActionVariant,
   Alignment,
+  Announcer,
+  AnnouncerOptions,
+  AspectRatioName,
+  AudioMediaItem,
+  AutofocusOptions,
   BadgeSize,
   BadgeVariant,
   BreakpointName,
+  ChoiceOption,
+  ClickOutsideOptions,
   ColorScheme,
   ColumnAlign,
   ControlSize,
   Crumb,
+  DataTableColumn,
+  DataTableFilterValue,
+  DataTableOptions,
+  DataTableRow,
+  DataTableSort,
+  DataTableState,
   DialogSize,
   Disclosure,
+  EmbedMediaItem,
+  EmbedProvider,
+  EmbedSrcOptions,
+  EscapeKeyOptions,
+  FocusTrapOptions,
   HeadingLevel,
+  HlsConstructor,
+  HlsErrorData,
+  HlsInstance,
+  HlsLoader,
+  HlsSource,
+  HlsSourceOptions,
+  HlsStatus,
+  ImageMediaItem,
+  MediaItem,
+  MediaKind,
+  MediaPlayer,
+  MediaPlayerLabels,
+  MediaPlayerOptions,
   MediaQuery,
   MediaQueryOptions,
+  MediaSourceEntry,
+  MediaTextTrack,
+  MediaTrackInfo,
+  MediaZoom,
+  MediaZoomOptions,
+  MenuCheckboxItem,
+  MenuEntry,
+  MenuGroup,
   MenuItem,
+  MenuRadioGroup,
+  MenuSub,
   NavItem,
   Option,
+  OptionGroup,
   Orientation,
+  ParsedEmbed,
   Placement,
+  Politeness,
+  RovingFocusOptions,
+  SignatureError,
+  SignaturePoint,
+  SignatureStroke,
+  SignatureValue,
   SortDirection,
   StatusVariant,
   Theme,
   ThemeOptions,
   ThemePreference,
   ThemeScriptOptions,
+  ToastAction,
   Toaster,
   ToasterOptions,
   ToastOptions,
   ToastRecord,
+  ToastShortcutOptions,
   TriggerChildProps,
+  VideoMediaItem,
 } from '@loidolt/theme-svelte';
 ```
 
