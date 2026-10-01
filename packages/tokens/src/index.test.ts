@@ -84,13 +84,25 @@ describe('theme tokens', () => {
 describe('stylesheet variable references', () => {
   const stylesDir = new URL('../../styles/src/', import.meta.url);
 
-  it('resolves every var(--loidolt-*) used by @loidolt/theme-styles', async () => {
-    const files = (await readdir(stylesDir)).filter((file) => file.endsWith('.css'));
-    expect(files.length).toBeGreaterThan(0);
+  // Recursive: the component rules live in `components/*.css`, which a flat listing never saw.
+  const stylesheets = async () => {
+    const files = (await readdir(stylesDir, { recursive: true })).filter((file) =>
+      file.endsWith('.css')
+    );
+    return Promise.all(
+      files.map(async (file) => [file, await readFile(new URL(file, stylesDir), 'utf8')] as const)
+    );
+  };
 
+  it('scans the component stylesheets, not just the entry points', async () => {
+    const files = (await stylesheets()).map(([file]) => file);
+    expect(files).toContain('components/actions.css');
+    expect(files).toContain('base.css');
+  });
+
+  it('resolves every var(--loidolt-*) used by @loidolt/theme-styles', async () => {
     const missing = new Map<string, string[]>();
-    for (const file of files) {
-      const source = await readFile(new URL(file, stylesDir), 'utf8');
+    for (const [file, source] of await stylesheets()) {
       for (const [, name] of source.matchAll(/var\((--loidolt-[a-z0-9-]+)/g)) {
         if (!declared.has(name)) missing.set(name, [...(missing.get(name) ?? []), file]);
       }
@@ -99,9 +111,26 @@ describe('stylesheet variable references', () => {
   });
 
   it('never lets a stylesheet reach past the semantic layer for colour', async () => {
-    const source = await readFile(new URL('components.css', stylesDir), 'utf8');
-    const primitives = [...source.matchAll(/var\((--loidolt-color-[a-z0-9-]+)/g)].map((m) => m[1]);
-    expect([...new Set(primitives)]).toEqual([]);
+    const offenders = (await stylesheets()).flatMap(([file, source]) =>
+      [...source.matchAll(/var\((--loidolt-color-[a-z0-9-]+)/g)].map((m) => `${file}: ${m[1]}`)
+    );
+    expect(offenders).toEqual([]);
+  });
+});
+
+describe('generated stylesheets', () => {
+  // Pins the emitted CSS byte for byte, so a refactor of the generator cannot shift the default
+  // look unnoticed. An intended change updates the snapshot with `vitest -u` and gets reviewed.
+  it('keeps tokens.css stable', async () => {
+    await expect(generateCss()).toMatchFileSnapshot('./__snapshots__/tokens.css');
+  });
+
+  it('keeps dark.css stable', async () => {
+    await expect(generateDarkCss('attribute')).toMatchFileSnapshot('./__snapshots__/dark.css');
+  });
+
+  it('keeps dark-auto.css stable', async () => {
+    await expect(generateDarkCss('auto')).toMatchFileSnapshot('./__snapshots__/dark-auto.css');
   });
 });
 

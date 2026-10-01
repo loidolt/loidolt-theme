@@ -3,3 +3,5 @@ dist
 .svelte-kit
 coverage
 package-lock.json
+__snapshots__
+*-snapshots
