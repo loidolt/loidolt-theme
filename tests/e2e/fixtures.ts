@@ -1,4 +1,4 @@
-import { test as base } from '@playwright/test';
+import { test as base, type Page } from '@playwright/test';
 
 export { expect } from '@playwright/test';
 
@@ -39,3 +39,19 @@ export const test = base.extend<{ noNetwork: void }>({
     { auto: true },
   ],
 });
+
+/**
+ * Serves every preset preview frame on /presets as a bare stub page. Each real frame is a whole
+ * catalog app, and with six of them loading at once Playwright's `networkidle` (which waits on
+ * every child frame) occasionally never fires while tracing, so the page timed out on CI. The
+ * frames' own content is covered where it is the subject: preset-gallery.spec.ts runs axe on each
+ * sampler as served and exercises the real frames. Tests of the /presets page itself only need
+ * its own chrome.
+ */
+export const stubPresetPreviews = (page: Page) =>
+  page.route(/\/preview\/[\w-]+\/(light|dark)$/, (route) =>
+    route.fulfill({
+      contentType: 'text/html',
+      body: '<!doctype html><html lang="en"><title>Preset preview</title><main></main></html>',
+    })
+  );

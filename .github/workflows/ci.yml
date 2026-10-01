@@ -149,3 +149,12 @@ jobs:
         run: |
           npx playwright test --project="$PROJECT" --shard="$SHARD" \
             ${GREP:+--grep "$GREP"} ${GREP_INVERT:+--grep-invert "$GREP_INVERT"}
+      # Traces are kept only for failing tests (playwright.config.ts), so this is small on a
+      # green run and the first thing to open on a red one: `npx playwright show-trace`.
+      - name: Upload traces of failed tests
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: playwright-${{ matrix.project }}-${{ matrix.bucket }}-${{ strategy.job-index }}
+          path: test-results/
+          retention-days: 7

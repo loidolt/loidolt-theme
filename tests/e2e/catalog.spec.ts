@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from './fixtures';
+import { expect, stubPresetPreviews, test } from './fixtures';
 import { componentRoutes, routes } from './routes';
 
 const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -24,6 +24,7 @@ test.describe('catalog in a real browser', () => {
         testInfo.project.name !== 'desktop-chromium',
         'One full browser sweep is sufficient.'
       );
+      if (route === '/presets') await stubPresetPreviews(page);
       await page.goto(route);
       for (const preset of presets) {
         for (const theme of ['light', 'dark'] as const) {
