@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-const staticRoutes = ['/', '/404', '/components', '/foundations', '/patterns'];
+import { catalogRoutes } from './catalog-routes.js';
+
 const widths = [320, 360, 390, 768, 844];
 
 const dimensions = (element: HTMLElement) => ({
@@ -9,31 +10,21 @@ const dimensions = (element: HTMLElement) => ({
 });
 
 test.describe('responsive catalog', () => {
-  test('every route reflows without document-level horizontal scrolling', async ({
-    page,
-  }, testInfo) => {
-    test.skip(testInfo.project.name !== 'desktop-chromium', 'One browser sweep covers all widths.');
-
-    await page.goto('/components');
-    const componentRoutes = await page
-      .locator('a[href^="/components/"]')
-      .evaluateAll(
-        (links) =>
-          [...new Set(links.map((link) => link.getAttribute('href')).filter(Boolean))] as string[]
-      );
-    const routes = [...staticRoutes, ...componentRoutes].sort();
-
-    for (const width of widths) {
+  for (const width of widths) {
+    test(`every route reflows at ${width}px without document-level horizontal scrolling`, async ({
+      page,
+    }, testInfo) => {
+      test.skip(testInfo.project.name !== 'desktop-chromium', 'One desktop browser is sufficient.');
       await page.setViewportSize({ width, height: width === 844 ? 390 : 844 });
-      for (const route of routes) {
+      for (const route of catalogRoutes) {
         await page.goto(route);
         const root = await page.locator('html').evaluate(dimensions);
         expect
           .soft(root.scrollWidth, `${route} at ${width}px`)
           .toBeLessThanOrEqual(root.clientWidth);
       }
-    }
-  });
+    });
+  }
 
   test('long localized tabs and toggle options stay in their own scrollers', async ({
     page,
