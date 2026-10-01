@@ -16,6 +16,8 @@ export default defineConfig({
     include: ['tests/**/*.test.ts'],
     exclude: ['tests/ssr/**'],
     coverage: {
+      // CI sets COVERAGE so the one `npm test` pass also enforces the thresholds below.
+      enabled: process.env.COVERAGE === 'true',
       provider: 'v8',
       reporter: ['text', 'json-summary', 'html'],
       include: ['src/lib/**/*.{ts,svelte}'],

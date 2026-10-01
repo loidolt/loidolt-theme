@@ -28,45 +28,101 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run audit
+      # COVERAGE turns on the coverage thresholds in the packages' main Vitest suites, so the
+      # unit tests run once here instead of again under `test:coverage`.
       - run: npm run check
-      - run: npm run test:coverage --workspaces --if-present
-      - name: Install browser used by end-to-end tests
-        run: npx playwright install --with-deps chromium
-      - name: Verify accessibility and keyboard behavior in Chromium
-        run: npm run test:e2e
-      - name: Validate publish contents
+        env:
+          COVERAGE: 'true'
+      # `check` already built every package, so pack without `prepack` (which would rebuild
+      # each one) and lint the tarballs that would actually be published.
+      - name: Pack publishable packages
         run: |
-          npm pack --dry-run -w @loidolt/theme-tokens
-          npm pack --dry-run -w @loidolt/theme-styles
-          npm pack --dry-run -w @loidolt/theme-svelte
-          npm pack --dry-run -w @loidolt/theme-charts
-          npm pack --dry-run -w @loidolt/theme-maps
-          npm pack --dry-run -w @loidolt/theme-docs
+          npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/pack" \
+            -w @loidolt/theme-tokens \
+            -w @loidolt/theme-styles \
+            -w @loidolt/theme-svelte \
+            -w @loidolt/theme-charts \
+            -w @loidolt/theme-maps \
+            -w @loidolt/theme-docs
+      - name: Validate publish contents
+        working-directory: ${{ runner.temp }}/pack
+        run: |
           # Pinned so a tool release cannot flip CI red on an untouched repo.
-          npx --yes publint@0.3.24 run packages/tokens
-          npx --yes publint@0.3.24 run packages/styles
-          npx --yes publint@0.3.24 run packages/svelte
-          npx --yes publint@0.3.24 run packages/charts
-          npx --yes publint@0.3.24 run packages/maps
-          npx --yes publint@0.3.24 run packages/docs
+          for tarball in *.tgz; do npx --yes publint@0.3.24 run "$tarball"; done
       - name: Validate published types
+        working-directory: ${{ runner.temp }}/pack
         run: |
           # CSS entrypoints have no types by design, so they are excluded rather than reported.
-          npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/tokens \
+          npx --yes @arethetypeswrong/cli@0.18.5 loidolt-theme-tokens-*.tgz \
             --exclude-entrypoints css css/dark css/dark-auto --ignore-rules cjs-resolves-to-esm
           # `internal-resolution-error` is expected: the declarations import `.svelte` files,
           # which only a Svelte-aware resolver can follow. The `bundler` column is the one that
           # matters for consumers, and it stays green.
-          npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/svelte \
+          npx --yes @arethetypeswrong/cli@0.18.5 loidolt-theme-svelte-*.tgz \
             --exclude-entrypoints styles.css \
             --ignore-rules cjs-resolves-to-esm internal-resolution-error
           # The chart, map and docs packages add a `/core` subpath. Subpath exports do not exist
           # for node10 resolution at all, and these packages are ESM for bundlers; `node16` is
           # the profile that matters.
-          npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/charts --profile node16 \
+          npx --yes @arethetypeswrong/cli@0.18.5 loidolt-theme-charts-*.tgz --profile node16 \
             --ignore-rules cjs-resolves-to-esm internal-resolution-error
-          npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/maps --profile node16 \
+          npx --yes @arethetypeswrong/cli@0.18.5 loidolt-theme-maps-*.tgz --profile node16 \
             --exclude-entrypoints styles.css \
             --ignore-rules cjs-resolves-to-esm internal-resolution-error
-          npx --yes @arethetypeswrong/cli@0.18.5 --pack packages/docs --profile node16 \
+          npx --yes @arethetypeswrong/cli@0.18.5 loidolt-theme-docs-*.tgz --profile node16 \
             --ignore-rules cjs-resolves-to-esm internal-resolution-error
+
+  # The browser suite is most of CI's wall-clock time, so it runs beside `validate` rather than
+  # after it, split across shards. It exercises the built catalog in Chromium, which does not
+  # vary with the Node version, so one Node version is enough.
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      # Playwright shards by test order, in equal-count slices, so a slow file lands in one
+      # shard. The desktop suite is therefore split into title buckets first: the axe sweeps
+      # (half the desktop time), the reflow sweeps, and everything else, which inverts both
+      # patterns so a new test can never fall outside every bucket. A bucket whose pattern
+      # stops matching fails with "No tests found" rather than silently shrinking coverage.
+      # Most mobile-touch tests skip themselves, so that project gets one shard.
+      matrix:
+        include:
+          - { bucket: axe, project: desktop-chromium, grep: passes axe, shard: 1/3 }
+          - { bucket: axe, project: desktop-chromium, grep: passes axe, shard: 2/3 }
+          - { bucket: axe, project: desktop-chromium, grep: passes axe, shard: 3/3 }
+          - { bucket: reflow, project: desktop-chromium, grep: reflows without, shard: 1/2 }
+          - { bucket: reflow, project: desktop-chromium, grep: reflows without, shard: 2/2 }
+          - {
+              bucket: rest,
+              project: desktop-chromium,
+              grep-invert: passes axe|reflows without,
+              shard: 1/2,
+            }
+          - {
+              bucket: rest,
+              project: desktop-chromium,
+              grep-invert: passes axe|reflows without,
+              shard: 2/2,
+            }
+          - { bucket: all, project: mobile-touch, shard: 1/1 }
+    name: e2e (${{ matrix.project }} ${{ matrix.bucket }} ${{ matrix.shard }})
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Install browser used by end-to-end tests
+        run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Verify accessibility and keyboard behavior in Chromium
+        env:
+          PROJECT: ${{ matrix.project }}
+          SHARD: ${{ matrix.shard }}
+          GREP: ${{ matrix.grep }}
+          GREP_INVERT: ${{ matrix.grep-invert }}
+        run: |
+          npx playwright test --project="$PROJECT" --shard="$SHARD" \
+            ${GREP:+--grep "$GREP"} ${GREP_INVERT:+--grep-invert "$GREP_INVERT"}
