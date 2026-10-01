@@ -31,6 +31,7 @@ export { default as PageHeader } from './components/PageHeader.svelte';
 export { default as Pagination } from './components/Pagination.svelte';
 export { default as Panel } from './components/Panel.svelte';
 export { default as Popover } from './components/Popover.svelte';
+export { default as PresetPicker } from './components/PresetPicker.svelte';
 export { default as Progress } from './components/Progress.svelte';
 export { default as RadioGroup } from './components/RadioGroup.svelte';
 export { default as RecordStepper } from './components/RecordStepper.svelte';

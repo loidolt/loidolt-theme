@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { createRawSnippet } from 'svelte';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import Accordion from '../src/lib/components/Accordion.svelte';
+import PresetPicker from '../src/lib/components/PresetPicker.svelte';
 import ThemeToggle from '../src/lib/components/ThemeToggle.svelte';
 import ToggleGroup from '../src/lib/components/ToggleGroup.svelte';
 import { createTheme } from '../src/lib/theme.svelte.js';
@@ -130,6 +131,64 @@ describe('ToggleGroup', () => {
   it('leaves the default size unmodified', () => {
     const { container } = render(ToggleGroup, { options: modes, label: 'Tool' });
     expect(container.querySelector('.ldt-toggle-group')?.className).toBe('ldt-toggle-group');
+  });
+});
+
+describe('PresetPicker', () => {
+  afterEach(() => {
+    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.removeAttribute('data-preset');
+    localStorage.clear();
+  });
+
+  const presets = ['loidolt', 'soft', 'compact', 'studio'] as const;
+
+  it('labels built-in presets by their own names and switches the theme', async () => {
+    const user = userEvent.setup();
+    const theme = createTheme({ presets, storageKey: null, presetStorageKey: null });
+    render(PresetPicker, { theme });
+
+    const group = screen.getByRole('radiogroup', { name: 'Style' });
+    expect(group).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Loidolt' })).toHaveAttribute('aria-checked', 'true');
+    // Not a built-in: falls back to the capitalised name.
+    expect(screen.getByRole('radio', { name: 'Studio' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('radio', { name: 'Soft' }));
+    expect(theme.preset).toBe('soft');
+    expect(document.documentElement).toHaveAttribute('data-preset', 'soft');
+
+    theme.destroy();
+  });
+
+  it('cannot be pressed into having no preset', async () => {
+    const user = userEvent.setup();
+    const theme = createTheme({ presets, storageKey: null, presetStorageKey: null });
+    render(PresetPicker, { theme });
+
+    await user.click(screen.getByRole('radio', { name: 'Loidolt' }));
+    expect(theme.preset).toBe('loidolt');
+    expect(screen.getByRole('radio', { name: 'Loidolt' })).toHaveAttribute('aria-checked', 'true');
+
+    theme.destroy();
+  });
+
+  it('folds into a select with custom labels', async () => {
+    const user = userEvent.setup();
+    const theme = createTheme({ presets, storageKey: null, presetStorageKey: null });
+    render(PresetPicker, {
+      theme,
+      variant: 'select',
+      label: 'Stil',
+      options: presets.map((value) => ({ value, label: value.toUpperCase() })),
+    });
+
+    const select = screen.getByRole('combobox', { name: 'Stil' });
+    expect(select).toHaveValue('loidolt');
+    await user.selectOptions(select, 'COMPACT');
+    expect(theme.preset).toBe('compact');
+
+    theme.destroy();
   });
 });
 

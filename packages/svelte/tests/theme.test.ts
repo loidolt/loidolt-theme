@@ -51,6 +51,7 @@ const original = window.matchMedia;
 afterEach(() => {
   window.matchMedia = original;
   document.documentElement.removeAttribute('data-theme');
+  document.documentElement.removeAttribute('data-preset');
   localStorage.clear();
 });
 
@@ -200,6 +201,96 @@ describe('createTheme', () => {
   });
 });
 
+describe('createTheme preset axis', () => {
+  beforeEach(() => fakeMatchMedia({ [DARK]: false }).install());
+
+  const presets = ['loidolt', 'soft', 'compact'] as const;
+
+  it('leaves the preset attribute alone unless presets are given', () => {
+    document.documentElement.setAttribute('data-preset', 'soft');
+    const theme = createTheme();
+
+    expect(theme.preset).toBeUndefined();
+    expect(theme.presets).toEqual([]);
+    theme.preset = 'compact';
+    expect(theme.preset).toBeUndefined();
+    expect(document.documentElement).toHaveAttribute('data-preset', 'soft');
+    expect(localStorage.getItem('loidolt-preset')).toBeNull();
+
+    theme.destroy();
+  });
+
+  it('writes the first preset by default, beside the scheme', () => {
+    const theme = createTheme({ presets });
+
+    expect(theme.preset).toBe('loidolt');
+    expect(document.documentElement).toHaveAttribute('data-preset', 'loidolt');
+    expect(document.documentElement).toHaveAttribute('data-theme', 'light');
+
+    theme.destroy();
+  });
+
+  it('persists the preset under its own key and restores it', () => {
+    const first = createTheme({ presets, defaultPreset: 'compact' });
+    expect(first.preset).toBe('compact');
+    first.preset = 'soft';
+    first.preference = 'dark';
+    expect(localStorage.getItem('loidolt-preset')).toBe('soft');
+    expect(localStorage.getItem('loidolt-theme')).toBe('dark');
+    first.destroy();
+
+    const second = createTheme({ presets });
+    expect(second.preset).toBe('soft');
+    expect(second.resolved).toBe('dark');
+    second.destroy();
+  });
+
+  it('ignores names outside the preset list, assigned or stored', () => {
+    localStorage.setItem('loidolt-preset', 'brutalist');
+    const theme = createTheme({ presets });
+    expect(theme.preset).toBe('loidolt');
+
+    // @ts-expect-error not one of the presets
+    theme.preset = 'brutalist';
+    expect(theme.preset).toBe('loidolt');
+    expect(document.documentElement).toHaveAttribute('data-preset', 'loidolt');
+
+    theme.destroy();
+  });
+
+  it('rejects a default that is not one of the presets', () => {
+    // @ts-expect-error not one of the presets
+    expect(() => createTheme({ presets, defaultPreset: 'brutalist' })).toThrow(/defaultPreset/);
+  });
+
+  it('mirrors a preset chosen in another tab', () => {
+    const theme = createTheme({ presets });
+
+    window.dispatchEvent(new StorageEvent('storage', { key: 'loidolt-preset', newValue: 'soft' }));
+    expect(theme.preset).toBe('soft');
+    expect(document.documentElement).toHaveAttribute('data-preset', 'soft');
+
+    window.dispatchEvent(new StorageEvent('storage', { key: 'loidolt-preset', newValue: null }));
+    expect(theme.preset).toBe('loidolt');
+
+    theme.destroy();
+  });
+
+  it('honours a custom attribute and storage key', () => {
+    const theme = createTheme({
+      presets,
+      presetAttribute: 'data-style',
+      presetStorageKey: null,
+    });
+    theme.preset = 'compact';
+    expect(document.documentElement).toHaveAttribute('data-style', 'compact');
+    expect(localStorage.getItem('loidolt-preset')).toBeNull();
+
+    theme.destroy();
+    document.documentElement.removeAttribute('data-style');
+  });
+});
+
 describe('themeScript', () => {
   /** Runs the generated source against a stub document, the way a head script would. */
   function run(source: string, stored: string | null | Error, prefersDark: boolean) {
@@ -256,6 +347,42 @@ describe('themeScript', () => {
     expect(themeScript()).not.toContain('<');
     expect(themeScript({ tag: true })).toMatch(/^<script>.*<\/script>$/s);
   });
+  it('emits the scheme-only script unchanged when presets are off', () => {
+    expect(themeScript({ presets: [] })).toBe(themeScript());
+    expect(themeScript()).not.toContain('data-preset');
+  });
+
+  /** Runs the source against keyed storage, recording every attribute written. */
+  function runWith(source: string, storage: Record<string, string>) {
+    const set = vi.fn();
+    new Function('localStorage', 'matchMedia', 'document', `${source};`)(
+      { getItem: (key: string) => storage[key] ?? null },
+      () => ({ matches: false }),
+      { documentElement: { setAttribute: set } }
+    );
+    return set;
+  }
+
+  it('writes the stored preset beside the scheme', () => {
+    const source = themeScript({ presets: ['loidolt', 'soft'] });
+    const set = runWith(source, { 'loidolt-theme': 'dark', 'loidolt-preset': 'soft' });
+    expect(set).toHaveBeenCalledWith('data-theme', 'dark');
+    expect(set).toHaveBeenCalledWith('data-preset', 'soft');
+  });
+
+  it('agrees with createTheme on an unknown stored preset', () => {
+    const source = themeScript({ presets: ['loidolt', 'soft'], defaultPreset: 'soft' });
+    expect(runWith(source, { 'loidolt-preset': 'brutalist' })).toHaveBeenCalledWith(
+      'data-preset',
+      'soft'
+    );
+  });
+
+  it('escapes preset names like every other caller string', () => {
+    const source = themeScript({ presets: ['</script>'] });
+    expect(source).not.toContain('<');
+  });
+
   it('escapes caller strings that could end an inline script', () => {
     const source = themeScript({ storageKey: '</script><script>globalThis.pwned=1</script>' });
     expect(source).not.toContain('<');
