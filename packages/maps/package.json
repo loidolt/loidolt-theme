@@ -1,6 +1,6 @@
 {
   "name": "@loidolt/theme-maps",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Accessible, themed MapLibre maps for Loidolt applications",
   "license": "MIT",
   "type": "module",
@@ -38,8 +38,8 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@loidolt/theme-svelte": "^0.7.0",
-    "@loidolt/theme-tokens": "^0.7.0",
+    "@loidolt/theme-svelte": "^0.8.0",
+    "@loidolt/theme-tokens": "^0.8.0",
     "rbush": "^4.0.1"
   },
   "peerDependencies": {
