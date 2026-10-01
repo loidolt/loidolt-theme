@@ -40,7 +40,10 @@ test.describe('responsive catalog', () => {
     test.skip(testInfo.project.name !== 'desktop-chromium', 'One narrow viewport is sufficient.');
     await page.setViewportSize({ width: 320, height: 568 });
 
+    // Relabel only once the page has hydrated: until then the demo can still re-render its own
+    // labels over ours.
     await page.goto('/components/tabs');
+    await page.waitForLoadState('networkidle');
     await page.locator('.ldt-tabs__trigger').evaluateAll((elements) =>
       elements.forEach((element, index) => {
         element.textContent = `Long localized tab label ${index + 1}`;
@@ -52,6 +55,7 @@ test.describe('responsive catalog', () => {
     expect(tabList.scrollWidth).toBeGreaterThan(tabList.clientWidth);
 
     await page.goto('/components/toggle-group');
+    await page.waitForLoadState('networkidle');
     await page.locator('.ldt-toggle-group__item').evaluateAll((elements) =>
       elements.forEach((element, index) => {
         element.textContent = `Long localized option ${index + 1}`;

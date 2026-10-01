@@ -35,6 +35,12 @@
 .ldt-topbar__actions .ldt-badge {
   white-space: nowrap;
 }
+/* The compact Browse button, first in the row: the way into the component nav is never squeezed
+   or broken over lines. */
+.ldt-topbar__actions > .ldt-button:first-child {
+  flex: none;
+  white-space: nowrap;
+}
 .docs-nav-link {
   min-height: var(--loidolt-size-control);
   display: inline-flex;
@@ -68,15 +74,149 @@
   letter-spacing: calc(var(--loidolt-label-tracking) * 0.8);
   text-transform: var(--loidolt-label-transform);
 }
-/* The workspace is the scroll container for the page, so the nav column can stick beside it. */
+/* --- Component nav --------------------------------------------------------------------- */
+
+/*
+ * Beside the page the nav column sticks under the top bar, and only the group list scrolls: the
+ * filter stays put above it, and the current entry stays in reach however long the page is.
+ * Below the compact breakpoint the nav lives in a Drawer instead.
+ */
+@media (min-width: 760.02px) {
+  .ldt-workspace > .ldt-sidebar:has(> .docs-sidenav) {
+    position: sticky;
+    top: var(--docs-header-height, 0px);
+    height: calc(100dvh - var(--docs-header-height, 0px));
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  /* Run the list out to the column's edges, so its scrollbar sits on the border. */
+  .ldt-sidebar > .docs-sidenav .docs-sidenav__groups {
+    margin: 0 calc(-1 * var(--loidolt-pad-pane)) calc(-1 * var(--loidolt-pad-pane));
+    padding: 0 var(--loidolt-pad-pane) var(--loidolt-pad-pane);
+  }
+}
+.ldt-drawer__body:has(> .docs-sidenav) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.docs-sidenav {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.docs-sidenav__groups {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid var(--loidolt-border-soft);
+  /* As `.ldt-scrollbar`, spelled out to keep the docs chrome out of the style fingerprints. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--loidolt-border) transparent;
+}
+.docs-sidenav__filter {
+  width: 100%;
+  min-height: var(--loidolt-size-control);
+  padding: 0 2rem 0 var(--loidolt-pad-control-x-sm);
+  border: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  border-radius: var(--loidolt-radius-control);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-input);
+  font: inherit;
+  font-size: var(--loidolt-font-size-sm);
+}
+.docs-sidenav__filter::placeholder {
+  color: var(--loidolt-text-muted);
+}
+.docs-sidenav__filter:focus-visible {
+  border-color: var(--loidolt-accent);
+}
+.docs-sidenav__field {
+  position: relative;
+}
+.docs-sidenav__hint {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  translate: 0 -50%;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--loidolt-border);
+  border-radius: var(--loidolt-radius-control);
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  pointer-events: none;
+}
+.docs-sidenav__status {
+  margin: var(--loidolt-space-2) 0 var(--loidolt-space-3);
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  letter-spacing: calc(var(--loidolt-label-tracking) * 0.6);
+}
+.docs-sidenav__group + .docs-sidenav__group {
+  border-top: 1px solid var(--loidolt-border-soft);
+}
+.docs-sidenav__group summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+  padding: 0 0.25rem;
+  color: var(--loidolt-text-muted);
+  cursor: pointer;
+  list-style: none;
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking-wide);
+  text-transform: var(--loidolt-label-transform);
+  user-select: none;
+}
+.docs-sidenav__group summary::-webkit-details-marker {
+  display: none;
+}
+/* A chevron drawn from two borders: right when closed, down when open. */
+.docs-sidenav__group summary::before {
+  content: '';
+  width: 0.4rem;
+  height: 0.4rem;
+  flex: none;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 120ms ease;
+}
+.docs-sidenav__group[open] summary::before {
+  transform: translate(0, -0.1rem) rotate(45deg);
+}
+.docs-sidenav__group summary:hover,
+.docs-sidenav__group[open] summary {
+  color: var(--loidolt-text);
+}
+.docs-sidenav__group summary[aria-current='true'] {
+  color: var(--loidolt-text-accent);
+}
+.docs-sidenav__count {
+  margin-left: auto;
+  color: var(--loidolt-text-muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
 .docs-sidenav ul {
-  margin: 0 0 1.25rem;
+  margin: 0 0 0.75rem 0.45rem;
   padding: 0;
+  border-left: 1px solid var(--loidolt-border);
   list-style: none;
 }
 .docs-sidenav li a {
   display: block;
-  padding: 0.3rem 0.5rem;
+  margin-left: -1px;
+  padding: 0.3rem 0.75rem;
   border-left: 2px solid transparent;
   color: var(--loidolt-text-muted);
   font-size: var(--loidolt-font-size-sm);
@@ -84,6 +224,7 @@
 }
 .docs-sidenav li a:hover {
   color: var(--loidolt-text);
+  border-left-color: var(--loidolt-border-strong);
   background: var(--loidolt-surface-alt);
   text-decoration: none;
 }
@@ -91,6 +232,7 @@
   color: var(--loidolt-text);
   border-left-color: var(--loidolt-accent);
   background: var(--loidolt-surface-alt);
+  font-weight: var(--loidolt-label-weight);
 }
 
 /* --- Overview ------------------------------------------------------------------------- */
@@ -398,9 +540,13 @@ pre {
 
 @media (pointer: coarse) {
   .docs-nav-link,
-  .docs-sidenav li a {
+  .docs-sidenav li a,
+  .docs-sidenav__group summary {
     min-height: 44px;
     display: flex;
     align-items: center;
+  }
+  .docs-sidenav__hint {
+    display: none;
   }
 }
