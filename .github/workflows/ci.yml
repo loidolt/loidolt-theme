@@ -37,6 +37,8 @@ jobs:
       # each one) and lint the tarballs that would actually be published.
       - name: Pack publishable packages
         run: |
+          # npm pack does not create its destination.
+          mkdir -p "$RUNNER_TEMP/pack"
           npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/pack" \
             -w @loidolt/theme-tokens \
             -w @loidolt/theme-styles \
