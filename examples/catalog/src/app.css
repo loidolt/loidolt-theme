@@ -217,6 +217,47 @@
   vertical-align: -0.15em;
 }
 
+/* --- Presets ------------------------------------------------------------------------- */
+
+.docs-preset-frames {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: var(--loidolt-space-4);
+}
+.docs-preset-frame {
+  min-width: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--loidolt-space-2);
+}
+.docs-preset-frame iframe {
+  width: 100%;
+  height: 36rem;
+  border: 1px solid var(--loidolt-border);
+  border-radius: var(--loidolt-radius-surface);
+  background: var(--loidolt-surface);
+}
+.docs-preset-frame figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--loidolt-space-2);
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
+}
+/* The bare sampler page a preview frame loads. */
+.docs-preview {
+  width: min(100% - 2rem, 52rem);
+  margin-inline: auto;
+  padding-block: var(--loidolt-space-6) var(--loidolt-space-12);
+}
+.docs-preview__header h1 {
+  margin: 0 0 var(--loidolt-space-2);
+  font-size: var(--loidolt-font-size-xl);
+}
+
 /* --- Foundations ---------------------------------------------------------------------- */
 
 .docs-swatches {

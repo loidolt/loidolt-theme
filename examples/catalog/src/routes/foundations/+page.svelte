@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { base } from '$app/paths';
   import {
     Alert,
     Badge,
@@ -233,8 +234,9 @@ expect(auditContrast(studio.resolved.dark).filter((check) => !check.pass)).toEqu
   <p class="docs-note">
     A preset is a complete style set: colours for both schemes, plus the corners, strokes, density
     and typographic voice of every component. Presets and colour schemes are independent axes —
-    <code>data-preset</code> and <code>data-theme</code> — so each preset has a tested light and dark
-    side. Use the style picker in the top bar to switch this whole site.
+    <code>data-preset</code> and <code>data-theme</code> — so each preset has a tested light and
+    dark side. Use the style picker in the top bar to switch this whole site, or compare every
+    preset in both schemes on the <a href={`${base}/presets`}>Presets</a> page.
   </p>
   <Demo label="The same components under each built-in preset">
     <div class="docs-theme-pair">

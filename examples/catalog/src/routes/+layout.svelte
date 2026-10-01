@@ -32,60 +32,72 @@
   const sections = [
     { href: `${base}/`, label: 'Overview' },
     { href: `${base}/foundations`, label: 'Foundations' },
+    { href: `${base}/presets`, label: 'Presets' },
     { href: `${base}/patterns`, label: 'Patterns' },
     { href: `${base}/components`, label: 'Components' },
   ];
 
   const current = $derived(page.url.pathname.replace(/\/$/, ''));
   const isCurrent = (href: string) => current === href.replace(/\/$/, '');
+
+  // Preset preview frames on /presets are bare pages: no chrome, nothing but the sampler.
+  const previewing = $derived(page.route.id === '/preview/[preset]/[scheme]');
 </script>
 
 <svelte:head><title>Loidolt Theme</title></svelte:head>
 
-<a class="ldt-skip-link" href="#docs-content">Skip to content</a>
+{#if previewing}
+  {@render children()}
+{:else}
+  <a class="ldt-skip-link" href="#docs-content">Skip to content</a>
 
-<TooltipProvider>
-  <AppShell mainId="docs-content">
-    {#snippet header()}
-      <Topbar navLabel="Documentation">
-        {#snippet brand()}
-          <Brand name="Loidolt" meta={`Theme ${version}`} href={`${base}/`} />
-        {/snippet}
-        {#snippet navigation()}
-          {#each sections as section (section.href)}
-            <a
-              class="docs-nav-link"
-              href={section.href}
-              aria-current={isCurrent(section.href) ? 'page' : undefined}>{section.label}</a
-            >
-          {/each}
-        {/snippet}
-        {#snippet actions()}
-          <Badge variant="accent">Svelte 5</Badge>
-          <PresetPicker {theme} variant="select" />
-          <ThemeToggle {theme} />
-          {#if compact.matches}
-            <Drawer title="Components" bind:open={navOpen} triggerClass="ldt-button ldt-button--sm">
-              {#snippet trigger()}Browse{/snippet}
-              {@render componentNav()}
-            </Drawer>
-          {/if}
-        {/snippet}
-      </Topbar>
-    {/snippet}
-
-    <Workspace sidebarOpen={!compact.matches}>
-      {#snippet sidebar()}
-        <Sidebar label="Components">{@render componentNav()}</Sidebar>
+  <TooltipProvider>
+    <AppShell mainId="docs-content">
+      {#snippet header()}
+        <Topbar navLabel="Documentation">
+          {#snippet brand()}
+            <Brand name="Loidolt" meta={`Theme ${version}`} href={`${base}/`} />
+          {/snippet}
+          {#snippet navigation()}
+            {#each sections as section (section.href)}
+              <a
+                class="docs-nav-link"
+                href={section.href}
+                aria-current={isCurrent(section.href) ? 'page' : undefined}>{section.label}</a
+              >
+            {/each}
+          {/snippet}
+          {#snippet actions()}
+            <Badge variant="accent">Svelte 5</Badge>
+            <PresetPicker {theme} variant="select" />
+            <ThemeToggle {theme} />
+            {#if compact.matches}
+              <Drawer
+                title="Components"
+                bind:open={navOpen}
+                triggerClass="ldt-button ldt-button--sm"
+              >
+                {#snippet trigger()}Browse{/snippet}
+                {@render componentNav()}
+              </Drawer>
+            {/if}
+          {/snippet}
+        </Topbar>
       {/snippet}
-      <div class="docs-page">{@render children()}</div>
-    </Workspace>
 
-    {#snippet footer()}
-      <div class="docs-footer">Loidolt Theme · Svelte 5 · Jost + Archivo · MIT</div>
-    {/snippet}
-  </AppShell>
-</TooltipProvider>
+      <Workspace sidebarOpen={!compact.matches}>
+        {#snippet sidebar()}
+          <Sidebar label="Components">{@render componentNav()}</Sidebar>
+        {/snippet}
+        <div class="docs-page">{@render children()}</div>
+      </Workspace>
+
+      {#snippet footer()}
+        <div class="docs-footer">Loidolt Theme · Svelte 5 · Jost + Archivo · MIT</div>
+      {/snippet}
+    </AppShell>
+  </TooltipProvider>
+{/if}
 
 {#snippet componentNav()}
   <nav class="docs-sidenav" aria-label="Components">

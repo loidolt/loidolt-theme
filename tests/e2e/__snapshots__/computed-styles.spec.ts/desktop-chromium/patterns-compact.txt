@@ -16,7 +16,7 @@ div.ldt-contextbar__location { gap:10.4px; color:rgb(32, 35, 29); font-family:Jo
 div.ldt-field { gap:4.2px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-number-field { border:bottom 1px solid rgb(132, 125, 106); color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-stack { gap:16px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
-div.ldt-topbar__actions { margin:0px 0px 0px 428.75px; gap:6.4px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
+div.ldt-topbar__actions { margin:0px 0px 0px 346.141px; gap:6.4px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-topbar__actions { margin:0px 0px 0px 506.328px; gap:6.4px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-workspace.ldt-workspace--sidebar { color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-workspace.ldt-workspace--sidebar { min-height:256px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
@@ -67,7 +67,7 @@ div.ldt-contextbar__location { gap:10.4px; color:rgb(235, 231, 220); font-family
 div.ldt-field { gap:4.2px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-number-field { border:bottom 1px solid rgb(120, 124, 107); color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-stack { gap:16px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
-div.ldt-topbar__actions { margin:0px 0px 0px 428.75px; gap:6.4px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
+div.ldt-topbar__actions { margin:0px 0px 0px 346.141px; gap:6.4px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-topbar__actions { margin:0px 0px 0px 506.328px; gap:6.4px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-workspace.ldt-workspace--sidebar { color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-workspace.ldt-workspace--sidebar { min-height:256px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
