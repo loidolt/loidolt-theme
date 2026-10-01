@@ -1,6 +1,22 @@
 <script lang="ts">
-  import { Badge, Button, PageHeader, Section, Table, TableHeader } from '@loidolt/theme-svelte';
-  import { breakpoints, colors, semantic, spacing, typography } from '@loidolt/theme-tokens';
+  import {
+    Alert,
+    Badge,
+    Button,
+    Input,
+    PageHeader,
+    Section,
+    Table,
+    TableHeader,
+  } from '@loidolt/theme-svelte';
+  import {
+    breakpoints,
+    builtInPresets,
+    colors,
+    semantic,
+    spacing,
+    typography,
+  } from '@loidolt/theme-tokens';
   import CodeBlock from '$lib/components/CodeBlock.svelte';
   import Demo from '$lib/components/Demo.svelte';
 
@@ -30,8 +46,9 @@
     ['on-accent', semantic.onAccent],
   ] as const;
 
-  const theming = `/* Restyle the system by redefining the semantic tier only. */
-[data-theme='midnight'] {
+  const theming = `/* Restyle a scope by redefining the semantic tier only. For a full
+   style set with both schemes, define a preset instead (below). */
+[data-brand='midnight'] {
   color-scheme: dark;
   --loidolt-surface: #10212c;
   --loidolt-text: #dceaf2;
@@ -55,6 +72,62 @@ export const handle = ({ event, resolve }) =>
   resolve(event, {
     transformPageChunk: ({ html }) => html.replace('%theme%', themeScript()),
   });`;
+
+  // The shape and voice roles a preset moves, with each built-in preset's value side by side.
+  const presetRoles = [
+    'radiusControl',
+    'radiusSurface',
+    'strokeIndicator',
+    'padControlX',
+    'padCell',
+    'padSurface',
+    'labelTransform',
+    'labelTracking',
+    'controlWeight',
+    'headingWeight',
+  ] as const;
+  const cssName = (role: string) => role.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+
+  const presetImports = `@import '@loidolt/theme-styles';
+@import '@loidolt/theme-styles/dark';
+
+/* Each preset you offer, with the dark flavour matching the one above. */
+@import '@loidolt/theme-styles/presets/soft';
+@import '@loidolt/theme-styles/presets/soft-dark';
+@import '@loidolt/theme-styles/presets/compact';
+@import '@loidolt/theme-styles/presets/compact-dark';`;
+
+  const presetRuntime = `// src/lib/theme.ts
+export const presets = ['loidolt', 'soft', 'compact'] as const;
+export const theme = createTheme({ presets });
+
+// src/hooks.server.ts — restores the preset before first paint, too
+html.replace('%theme%', themeScript({ presets }));
+
+// anywhere
+theme.preset = 'soft';            // or <PresetPicker {theme} />`;
+
+  const presetDefinition = `// build/presets.ts — run at build time
+import { definePreset, presetStylesheets, soft } from '@loidolt/theme-tokens';
+
+export const studio = definePreset({
+  name: 'studio',
+  extends: soft,                   // optional: start from another preset
+  density: 0.9,                    // scales every pad-* and gap-* role
+  roles: { radiusControl: '4px', labelTransform: 'uppercase' },
+  colors: {
+    light: { accent: '#0b6bcb', accentHover: '#0956a3', focusRing: '#0b6bcb' },
+    dark: { accent: '#5aa7f0', accentHover: '#7ab8f3', focusRing: '#7ab8f3' },
+  },
+});
+
+// studio.css, studio-dark.css, studio-dark-auto.css, and the same with .root
+for (const [file, css] of Object.entries(presetStylesheets(studio))) {
+  await writeFile(\`static/presets/\${file}\`, css);
+}
+
+// in a test: every pair the stylesheets draw, at WCAG AA
+expect(auditContrast(studio.resolved.dark).filter((check) => !check.pass)).toEqual([]);`;
 
   const layers = `@layer loidolt.tokens, loidolt.reset, loidolt.base,
        loidolt.components, loidolt.utilities, loidolt.a11y;`;
@@ -154,6 +227,69 @@ export const handle = ({ event, resolve }) =>
     the top bar is <code>ThemeToggle</code>.
   </p>
   <CodeBlock code={runtime} />
+</Section>
+
+<Section title="Presets" headingLevel={2}>
+  <p class="docs-note">
+    A preset is a complete style set: colours for both schemes, plus the corners, strokes, density
+    and typographic voice of every component. Presets and colour schemes are independent axes —
+    <code>data-preset</code> and <code>data-theme</code> — so each preset has a tested light and dark
+    side. Use the style picker in the top bar to switch this whole site.
+  </p>
+  <Demo label="The same components under each built-in preset">
+    <div class="docs-theme-pair">
+      {#each builtInPresets as preset (preset.name)}
+        <div class="docs-theme-panel ldt-theme" data-preset={preset.name}>
+          <span class="docs-demo__label">{preset.label}</span>
+          <div class="ldt-stack" style="--ldt-gap: var(--loidolt-space-3)">
+            <div class="ldt-cluster">
+              <Button variant="primary">Export</Button>
+              <Button variant="quiet">Cancel</Button>
+              <Badge variant="accent" size="md">Live</Badge>
+            </div>
+            <Input boxed aria-label="Project name" value="Harbour study" />
+            <Alert title="Saved" variant="success">Changes sync in the background.</Alert>
+          </div>
+        </div>
+      {/each}
+    </div>
+  </Demo>
+
+  <Table caption="Shape and voice roles by preset">
+    <thead>
+      <tr>
+        <TableHeader>Custom property</TableHeader>
+        {#each builtInPresets as preset (preset.name)}
+          <TableHeader>{preset.label}</TableHeader>
+        {/each}
+      </tr>
+    </thead>
+    <tbody>
+      {#each presetRoles as role (role)}
+        <tr>
+          <td><code>--loidolt-{cssName(role)}</code></td>
+          {#each builtInPresets as preset (preset.name)}
+            <td><code>{preset.resolved.roles[role]}</code></td>
+          {/each}
+        </tr>
+      {/each}
+    </tbody>
+  </Table>
+
+  <p class="docs-note">
+    Import the presets you offer, then hand their names to <code>createTheme()</code> and
+    <code>themeScript()</code>. An app that only ever uses one preset can import its
+    <code>.root</code> stylesheet from <code>@loidolt/theme-tokens/css/presets/</code> instead and skip
+    the attribute.
+  </p>
+  <CodeBlock code={presetImports} />
+  <CodeBlock code={presetRuntime} />
+  <p class="docs-note">
+    Your own presets use the same API the built-in ones do. Whatever a preset does not set comes
+    from the base system, or from the preset it <code>extends</code>, and every preset can be
+    audited against the same contrast pairs the package tests itself with.
+  </p>
+  <CodeBlock code={presetDefinition} />
 </Section>
 
 <Section title="Type and space" headingLevel={2}>

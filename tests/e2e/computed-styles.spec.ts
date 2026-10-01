@@ -189,35 +189,52 @@ const focusFingerprint = async (page: Page, stops = 4) => {
   return lines.join('\n');
 };
 
-const snapshotName = (route: string) =>
-  `${route === '/' ? 'index' : route.slice(1).replaceAll('/', '-')}.txt`;
+const snapshotName = (route: string, preset?: string) =>
+  `${route === '/' ? 'index' : route.slice(1).replaceAll('/', '-')}${preset ? `.${preset}` : ''}.txt`;
+
+/** Both schemes, plus the focus ring, for one route under one preset. */
+async function capture(page: Page, route: string, preset?: string) {
+  await page.goto(route);
+  await page.waitForLoadState('networkidle');
+  // Nothing may be caught mid-transition when the scheme flips below.
+  await page.addStyleTag({
+    content: '*, *::before, *::after { transition: none !important; animation: none !important; }',
+  });
+  if (preset) {
+    await page.evaluate((value) => {
+      document.documentElement.dataset.preset = value;
+    }, preset);
+  }
+
+  const sections: string[] = [];
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.evaluate((value) => {
+      document.documentElement.dataset.theme = value;
+    }, scheme);
+    sections.push(`## ${scheme}\n${await fingerprint(page)}`);
+  }
+  await page.evaluate(() => {
+    document.documentElement.dataset.theme = 'light';
+  });
+  sections.push(`## focus\n${await focusFingerprint(page)}`);
+  return `${sections.join('\n\n')}\n`;
+}
 
 test.describe('computed-style fingerprint', () => {
   test.use({ reducedMotion: 'reduce' });
 
   for (const route of catalogRoutes) {
     test(`${route} keeps its computed styles`, async ({ page }) => {
-      await page.goto(route);
-      await page.waitForLoadState('networkidle');
-      // Nothing may be caught mid-transition when the scheme flips below.
-      await page.addStyleTag({
-        content:
-          '*, *::before, *::after { transition: none !important; animation: none !important; }',
-      });
-
-      const sections: string[] = [];
-      for (const scheme of ['light', 'dark'] as const) {
-        await page.evaluate((value) => {
-          document.documentElement.dataset.theme = value;
-        }, scheme);
-        sections.push(`## ${scheme}\n${await fingerprint(page)}`);
-      }
-      await page.evaluate(() => {
-        document.documentElement.dataset.theme = 'light';
-      });
-      sections.push(`## focus\n${await focusFingerprint(page)}`);
-
-      expect(`${sections.join('\n\n')}\n`).toMatchSnapshot(snapshotName(route));
+      expect(await capture(page, route)).toMatchSnapshot(snapshotName(route));
     });
+
+    // The other built-in presets get their own baselines, so a change to the role tier or a
+    // preset definition shows up as a reviewable diff too. One viewport is enough for these.
+    for (const preset of ['soft', 'compact']) {
+      test(`${route} keeps its computed styles under ${preset}`, async ({ page, isMobile }) => {
+        test.skip(isMobile, 'Preset baselines are recorded on desktop only.');
+        expect(await capture(page, route, preset)).toMatchSnapshot(snapshotName(route, preset));
+      });
+    }
   }
 });

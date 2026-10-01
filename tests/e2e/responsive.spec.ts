@@ -18,10 +18,16 @@ test.describe('responsive catalog', () => {
       await page.setViewportSize({ width, height: width === 844 ? 390 : 844 });
       for (const route of catalogRoutes) {
         await page.goto(route);
-        const root = await page.locator('html').evaluate(dimensions);
-        expect
-          .soft(root.scrollWidth, `${route} at ${width}px`)
-          .toBeLessThanOrEqual(root.clientWidth);
+        // Soft pads controls out and compact shrinks them; neither may push a page sideways.
+        for (const preset of ['loidolt', 'soft', 'compact']) {
+          await page.evaluate((value) => {
+            document.documentElement.dataset.preset = value;
+          }, preset);
+          const root = await page.locator('html').evaluate(dimensions);
+          expect
+            .soft(root.scrollWidth, `${route} at ${width}px under ${preset}`)
+            .toBeLessThanOrEqual(root.clientWidth);
+        }
       }
     });
   }

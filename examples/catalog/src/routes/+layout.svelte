@@ -10,6 +10,7 @@
     createMediaQuery,
     Drawer,
     Sidebar,
+    PresetPicker,
     ThemeToggle,
     TooltipProvider,
     Topbar,
@@ -61,6 +62,7 @@
         {/snippet}
         {#snippet actions()}
           <Badge variant="accent">Svelte 5</Badge>
+          <PresetPicker {theme} variant="select" />
           <ThemeToggle {theme} />
           {#if compact.matches}
             <Drawer title="Components" bind:open={navOpen} triggerClass="ldt-button ldt-button--sm">
