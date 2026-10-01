@@ -49,7 +49,10 @@ const gallery = [
   { kind: 'embed' as const, url: 'https://youtu.be/dQw4w9WgXcQ', title: 'Guide' },
 ];
 
-const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
+// A `Name (variant)` label renders the same export again with different props.
+type CaseName = keyof typeof lib | `${keyof typeof lib} (${string})`;
+
+const cases: Array<[CaseName, Record<string, unknown>]> = [
   ['Accordion', { items: options, children: panel }],
   ['ActiveFilterChips', { items: options, onRemove: () => {}, onClearAll: () => {} }],
   ['Alert', { title: 'Export ready', children: text('Done.') }],
@@ -109,6 +112,27 @@ const cases: Array<[keyof typeof lib, Record<string, unknown>]> = [
   ['Pagination', { count: 120 }],
   ['Panel', { title: 'Layers', children: text('Body') }],
   ['Popover', { trigger: text('Filters'), children: text('Options'), open: true }],
+  [
+    'PresetPicker',
+    {
+      theme: createTheme({
+        storageKey: null,
+        presets: ['loidolt', 'soft'],
+        presetStorageKey: null,
+      }),
+    },
+  ],
+  [
+    'PresetPicker (select)',
+    {
+      theme: createTheme({
+        storageKey: null,
+        presets: ['loidolt', 'soft'],
+        presetStorageKey: null,
+      }),
+      variant: 'select',
+    },
+  ],
   ['Progress', { value: 40, label: 'Upload' }],
   ['RadioGroup', { label: 'Mode', options }],
   ['RecordStepper', { index: 0, total: 5 }],

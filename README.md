@@ -107,13 +107,13 @@ server matches the client and hydration never re-labels a control. Nothing touch
 
 | Prefix        | Meaning                                                                                                                                                                                                                    |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--loidolt-*` | The public token contract. Primitives (`--loidolt-color-*`) and semantic roles (`--loidolt-surface`). Override these to theme the system.                                                                                  |
+| `--loidolt-*` | The public token contract. Primitives (`--loidolt-color-*`), colour roles (`--loidolt-surface`) and shape/voice roles (`--loidolt-radius-control`). Override these to theme the system.                                    |
 | `--ldt-*`     | Per-component knobs read at a single call site — `--ldt-dialog-width`, `--ldt-sidebar-width`, `--ldt-inspector-width`, `--ldt-gap`, `--ldt-min`, `--ldt-prose-size`. Set them inline or on a wrapper to tune one instance. |
 
-### Tokens have two tiers
+### Tokens have three tiers
 
-Primitives hold the raw palette and scales. The **semantic** tier names the role a value plays,
-and it is the only tier the stylesheets read:
+Primitives hold the raw palette and scales. Two **role** tiers name the job a value does, and they
+are what the stylesheets read. The colour roles:
 
 `--loidolt-background`, `--loidolt-surface`, `--loidolt-surface-alt`, `--loidolt-surface-sunken`,
 `--loidolt-surface-inverse`, `--loidolt-surface-input`, `--loidolt-text`, `--loidolt-text-muted`,
@@ -136,6 +136,19 @@ themes:
 A fill tuned for white ink is too light to read as text, and a hairline tuned to be quiet is too
 faint to outline a field. The token tests assert every one of these pairs, in both themes.
 
+The **shape and voice** roles do the same for everything that is not colour:
+
+| Group   | Roles                                                                                                                                                                                                   |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Radius  | `radius-control`, `radius-inner`, `radius-surface`, `radius-overlay` — all `0` by default, linked to `--loidolt-border-radius`                                                                          |
+| Stroke  | `stroke-focus` (2px, never less), `stroke-indicator` (selected tabs, active nav), `stroke-accent` (the status bar on alerts and toasts)                                                                 |
+| Density | `pad-control-x`/`-y` (+ `-sm`, `-lg`), `pad-field`, `pad-item`, `pad-cell`, `pad-callout`, `pad-surface`, `pad-overlay`, `pad-popover`, `pad-bar-x`, `pad-pane`, `pad-page`, `gap-field`, `gap-actions` |
+| Voice   | `label-transform`, `label-tracking`, `label-tracking-wide`, `label-weight`, `control-transform`, `control-tracking`, `control-weight`, `heading-weight`, `strong-weight`                                |
+
+A test holds the stylesheets to this: every padding, gap, radius, stroke, tracking, weight and
+case in `@loidolt/theme-styles` reads a token, or carries an `@literal` comment saying why it is
+geometry rather than style.
+
 ### Dark mode
 
 A tested dark theme ships with the package — every pair in it is asserted at WCAG AA, so you do
@@ -153,10 +166,11 @@ class or prop changes.
 
 `createTheme()` is the runtime that sets that attribute — see [Colour scheme](#colour-scheme).
 
-To write your own instead, redefine the same roles:
+To adjust it, redefine the same roles in your own stylesheet. To ship a different look
+altogether — with its own light _and_ dark side — define a [preset](#presets) instead.
 
 ```css
-[data-theme='midnight'] {
+[data-theme='dark'] {
   color-scheme: dark;
   --loidolt-background: #161814;
   --loidolt-surface: #1e211c;
@@ -191,6 +205,9 @@ Overriding a primitive works too, and propagates: semantic tokens link to primit
 }
 ```
 
+`.ldt-theme` also re-declares `font-family`, which `<html>` otherwise sets once, so a subtree
+preset that changes the display face reaches running text.
+
 The catalog ships a live example of both (a dark-mode switch and a side-by-side override panel).
 
 ### Cascade layers
@@ -201,6 +218,98 @@ them, so plain selectors in your app always win — no `!important` needed. `loi
 deliberately empty and reserved for an app's own reset. `loidolt.vendor` holds third-party CSS a
 loidolt package ships with (MapLibre's, for `@loidolt/theme-maps`), so our component styles can
 restyle it.
+
+## Presets
+
+A preset is a complete, named style set: colours for both schemes, plus the corners, strokes,
+density and typographic voice of every component. Presets and colour schemes are independent
+axes — `data-preset` and `data-theme` — so every preset has a tested light and dark side.
+
+| Preset    | Look                                                                                                |
+| --------- | --------------------------------------------------------------------------------------------------- |
+| `loidolt` | The base system: square corners, tracked uppercase labels, warm paper and orange.                   |
+| `soft`    | Rounded corners, sentence-case labels, system type, cool neutrals and a blue accent; a bit roomier. |
+| `compact` | The Loidolt look with three-quarter padding and smaller controls, for data-dense tools.             |
+
+Every built-in preset is asserted at WCAG AA in both schemes, by the same pairs as the base theme.
+
+### Using presets
+
+Import each preset you offer, with the same dark flavour you use for the base theme:
+
+```css
+@import '@loidolt/theme-styles';
+@import '@loidolt/theme-styles/dark';
+@import '@loidolt/theme-styles/presets/soft';
+@import '@loidolt/theme-styles/presets/soft-dark'; /* or soft-dark-auto, to match dark-auto */
+@import '@loidolt/theme-styles/presets/compact';
+@import '@loidolt/theme-styles/presets/compact-dark';
+```
+
+Then put `data-preset="soft"` on `<html>` — or on any element, to restyle just that subtree. To
+switch at runtime, give the names to `createTheme()` and `themeScript()`; the preset is stored
+under its own key and restored before first paint like the scheme:
+
+```ts
+// src/lib/theme.ts
+export const presets = ['loidolt', 'soft', 'compact'] as const;
+export const theme = createTheme({ presets });
+
+// src/hooks.server.ts
+html.replace('%theme%', themeScript({ presets }));
+```
+
+```svelte
+<PresetPicker {theme} variant="select" />
+<ThemeToggle {theme} />
+```
+
+`theme.preset` is assignable and ignores names outside `presets`. Without `presets`,
+`createTheme()` never touches `data-preset`, so a static attribute in your markup keeps working.
+
+An app that only ever uses one preset can skip the attribute and import the `:root` build instead:
+`@loidolt/theme-tokens/css/presets/soft.root` (plus `soft.root-dark` or `soft.root-dark-auto`).
+
+**How they cascade.** Preset stylesheets are unlayered and ordered by specificity, not import
+order, against the base tokens and dark theme. A nested preset replaces the outer one completely
+rather than blending with it. A preset whose dark stylesheet you did not import falls back to the
+base dark colours while keeping its own shape. To tweak a built-in preset, `extends` it (below)
+rather than overriding its custom properties by hand.
+
+### Defining your own
+
+The built-in presets are written with the same public API:
+
+```ts
+import { auditContrast, definePreset, presetStylesheets, soft } from '@loidolt/theme-tokens';
+
+export const studio = definePreset({
+  name: 'studio',
+  extends: soft, // optional: start from another preset instead of the base system
+  density: 0.9, // scales every pad-* and gap-* role this definition does not set
+  primitives: { typography: { display: '"Inter", system-ui, sans-serif' } },
+  roles: { radiusControl: '4px', labelTransform: 'uppercase' },
+  colors: {
+    light: { accent: '#0b6bcb', accentHover: '#0956a3', focusRing: '#0b6bcb' },
+    dark: { accent: '#5aa7f0', accentHover: '#7ab8f3', focusRing: '#7ab8f3' },
+  },
+  fontImport: 'https://fonts.example/inter.css', // optional, @imported ahead of the preset
+});
+
+// At build time: studio.css, studio-dark.css, studio-dark-auto.css, and the same with .root
+for (const [file, css] of Object.entries(presetStylesheets(studio))) {
+  await writeFile(`static/presets/${file}`, css);
+}
+
+// In a test: every pair the stylesheets draw, at WCAG AA
+expect(auditContrast(studio.resolved.dark).filter((check) => !check.pass)).toEqual([]);
+```
+
+Whatever a preset leaves out comes from the base system or the preset it extends. `dark` must
+restate every colour role `light` changes — TypeScript enforces it, and so does `definePreset` at
+runtime — and colours are set only through roles, never colour primitives, which is what keeps
+subtree presets correct. `generatePresetCss(preset, { scope, scheme })` emits a single block if
+you would rather assemble the files yourself.
 
 ## Colour scheme
 
@@ -482,7 +591,7 @@ These live in their own packages, and each README covers it in full. In short:
 - Navigation: `Topbar`, `Brand`, `NavMenu`, `SkipLink`, `Breadcrumbs`, `SegmentedNav`, `Tabs`, `Accordion`, `ContextBar`
 - Layout: `AppShell`, `Workspace`, `Sidebar`, `FloatingBar`, `AspectRatio`, `Toolbar`, `FilterPanel`
 - Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`, `MediaGrid`, `Lightbox`, `MediaCarousel`
-- Theme: `ThemeToggle`
+- Theme: `PresetPicker`, `ThemeToggle`
 
 Complex focus, portal, dismissal, and keyboard behavior is powered by Bits UI. Icons remain
 consumer-supplied through snippets, so the theme does not impose an icon library.

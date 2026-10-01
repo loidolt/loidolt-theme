@@ -51,6 +51,14 @@
     value = next as T | T[];
     onValueChange?.(next as T | T[]);
   };
+
+  /*
+   * Bound rather than passed, so Bits holds no copy of its own: whatever `value` reads after a
+   * press is what shows as pressed. A parent that refuses a change — PresetPicker refusing the
+   * empty value a second press on the pressed item produces — then keeps its item pressed.
+   */
+  const single = () => (value ?? '') as string;
+  const many = () => (value ?? []) as string[];
 </script>
 
 <!--
@@ -73,8 +81,7 @@
   <ToggleGroupPrimitive.Root
     bind:ref
     type="multiple"
-    value={(value ?? []) as string[]}
-    onValueChange={change}
+    bind:value={many, change}
     {orientation}
     {disabled}
     class={classes}
@@ -92,8 +99,7 @@
   <ToggleGroupPrimitive.Root
     bind:ref
     type="single"
-    value={(value ?? '') as string}
-    onValueChange={change}
+    bind:value={single, change}
     {orientation}
     {disabled}
     class={classes}

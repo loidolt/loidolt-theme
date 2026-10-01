@@ -10,6 +10,7 @@
     "./tokens": "./src/tokens.css",
     "./dark": "./src/dark.css",
     "./dark-auto": "./src/dark-auto.css",
+    "./presets/*": "./src/presets/*.css",
     "./base": "./src/base.css",
     "./accessibility": "./src/accessibility.css",
     "./utilities": "./src/utilities.css",

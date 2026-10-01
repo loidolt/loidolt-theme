@@ -13,15 +13,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--loidolt-space-4);
   border: 0;
-  padding: 0.75rem 0;
+  padding: var(--loidolt-space-3) 0;
   color: var(--loidolt-text);
   background: transparent;
   font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
-  letter-spacing: 0.08em;
+  font-weight: var(--loidolt-control-weight);
+  letter-spacing: var(--loidolt-control-tracking);
   text-align: left;
-  text-transform: uppercase;
+  text-transform: var(--loidolt-control-transform);
 }
 .ldt-accordion__trigger:hover:not([data-disabled]) {
   color: var(--loidolt-text-accent);
@@ -34,15 +35,15 @@
   width: 0;
   height: 0;
   flex: 0 0 auto;
-  border-inline: 0.3rem solid transparent;
-  border-top: 0.34rem solid currentColor;
+  border-inline: 0.3rem solid transparent; /* @literal CSS triangle geometry */
+  border-top: 0.34rem solid currentColor; /* @literal CSS triangle geometry */
   transition: transform var(--loidolt-motion-normal) var(--loidolt-motion-easing);
 }
 .ldt-accordion__trigger[data-state='open'] .ldt-accordion__indicator {
   transform: rotate(180deg);
 }
 .ldt-accordion__body {
-  padding-bottom: 1rem;
+  padding-bottom: var(--loidolt-space-4);
   color: var(--loidolt-text-muted);
 }
 .ldt-toggle-group {
@@ -50,6 +51,7 @@
   display: inline-flex;
   overflow-x: auto;
   border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  border-radius: var(--loidolt-radius-control);
   overscroll-behavior-inline: contain;
   scrollbar-width: thin;
 }
@@ -62,15 +64,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
+  gap: 0.4rem; /* @literal glyph-to-label spacing, not density */
   border: 0;
-  padding: 0 0.85rem;
+  padding: 0 var(--loidolt-pad-control-x);
   color: var(--loidolt-text-muted);
   background: transparent;
   font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
-  letter-spacing: 0.08em;
+  font-weight: var(--loidolt-control-weight);
+  letter-spacing: var(--loidolt-control-tracking);
   line-height: 1;
-  text-transform: uppercase;
+  text-transform: var(--loidolt-control-transform);
   white-space: nowrap;
 }
 /* One shared rule between neighbours, so the group reads as a single object rather than a row
@@ -101,18 +104,18 @@
 }
 .ldt-toggle-group--sm .ldt-toggle-group__item {
   min-height: var(--loidolt-size-control-sm);
-  padding: 0 0.65rem;
+  padding: 0 var(--loidolt-pad-control-x-sm);
   font-size: var(--loidolt-font-size-xs);
 }
 .ldt-toggle-group--lg .ldt-toggle-group__item {
   min-height: var(--loidolt-size-control-lg);
-  padding: 0 1.2rem;
+  padding: 0 var(--loidolt-pad-control-x-lg);
 }
 .ldt-breadcrumbs__list {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.35rem 0.5rem;
+  gap: 0.35rem 0.5rem; /* @literal separator rhythm, not density */
   margin: 0;
   padding: 0;
   list-style: none;
@@ -121,7 +124,7 @@
   min-width: 0;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--loidolt-space-2);
 }
 /* Generated content, so the separator is never selected, copied, or read aloud. */
 .ldt-breadcrumbs__item + .ldt-breadcrumbs__item::before {
@@ -132,9 +135,10 @@
 .ldt-breadcrumbs__current {
   overflow: hidden;
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: var(--loidolt-font-tracking-utility);
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
   text-overflow: ellipsis;
-  text-transform: uppercase;
+  text-transform: var(--loidolt-label-transform);
   white-space: nowrap;
 }
 .ldt-breadcrumbs__link {
@@ -155,10 +159,10 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.3rem; /* @literal page buttons sit nearly flush */
 }
 .ldt-pagination__ellipsis {
-  padding-inline: 0.35rem;
+  padding-inline: 0.35rem; /* @literal matches the page-button gap */
   color: var(--loidolt-text-muted);
 }
 .ldt-pagination__page {
@@ -179,6 +183,7 @@
   display: inline-flex;
   overflow-x: auto;
   border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  border-radius: var(--loidolt-radius-control);
   overscroll-behavior-inline: contain;
   scrollbar-width: thin;
 }
@@ -207,6 +212,7 @@
   gap: var(--loidolt-space-1);
   padding: var(--loidolt-space-1);
   border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-radius: var(--loidolt-radius-inner);
   color: inherit;
   background: none;
   font: inherit;
@@ -244,15 +250,16 @@
 .ldt-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.2rem; /* @literal chip glyph spacing */
   min-height: 1.5rem;
   max-width: 100%;
   border: var(--loidolt-border-width) solid var(--loidolt-border-control);
-  padding-inline-start: 0.45rem;
+  border-radius: var(--loidolt-radius-control);
+  padding-inline-start: 0.45rem; /* @literal chip label inset */
   color: var(--loidolt-text);
   background: var(--loidolt-surface-alt);
   font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
-  letter-spacing: 0.04em;
+  letter-spacing: calc(var(--loidolt-label-tracking) * 0.4);
 }
 .ldt-chip > span {
   overflow: hidden;

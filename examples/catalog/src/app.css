@@ -1,6 +1,13 @@
 @import '@loidolt/theme-svelte/styles.css';
 @import '@loidolt/theme-maps/styles.css';
 @import '@loidolt/theme-styles/dark';
+/* Every built-in preset, so the picker in the top bar can switch between them at runtime. */
+@import '@loidolt/theme-styles/presets/loidolt';
+@import '@loidolt/theme-styles/presets/loidolt-dark';
+@import '@loidolt/theme-styles/presets/soft';
+@import '@loidolt/theme-styles/presets/soft-dark';
+@import '@loidolt/theme-styles/presets/compact';
+@import '@loidolt/theme-styles/presets/compact-dark';
 
 /*
  * The documentation site's own chrome. Everything here is unlayered application CSS, which is
@@ -23,17 +30,23 @@
 .ldt-topbar {
   border-bottom: 1px solid var(--loidolt-border);
 }
+/* With the style picker beside it, a squeezed action row would break the badge over two lines;
+   let the row wrap instead. */
+.ldt-topbar__actions .ldt-badge {
+  white-space: nowrap;
+}
 .docs-nav-link {
   min-height: var(--loidolt-size-control);
   display: inline-flex;
   align-items: center;
   padding: 0 0.75rem;
-  border-bottom: 2px solid transparent;
+  border-bottom: var(--loidolt-stroke-indicator) solid transparent;
   color: var(--loidolt-text-muted);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.09em;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: calc(var(--loidolt-label-tracking) * 0.9);
   text-decoration: none;
-  text-transform: uppercase;
+  text-transform: var(--loidolt-label-transform);
 }
 .docs-nav-link:hover,
 .docs-nav-link[aria-current='page'] {
@@ -51,8 +64,9 @@
   color: var(--loidolt-text-muted);
   background: var(--loidolt-surface);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: calc(var(--loidolt-label-tracking) * 0.8);
+  text-transform: var(--loidolt-label-transform);
 }
 /* The workspace is the scroll container for the page, so the nav column can stick beside it. */
 .docs-sidenav ul {
@@ -132,13 +146,14 @@
 }
 .docs-stat strong {
   font-size: 1.8rem;
-  font-weight: 500;
+  font-weight: var(--loidolt-heading-weight);
 }
 .docs-stat span {
   color: var(--loidolt-text-muted);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
 }
 
 /* --- Component pages ------------------------------------------------------------------ */
@@ -156,8 +171,9 @@
   margin-bottom: 0.75rem;
   color: var(--loidolt-text-muted);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
 }
 .docs-note {
   max-width: 60ch;
@@ -209,6 +225,47 @@
   vertical-align: -0.15em;
 }
 
+/* --- Presets ------------------------------------------------------------------------- */
+
+.docs-preset-frames {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: var(--loidolt-space-4);
+}
+.docs-preset-frame {
+  min-width: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--loidolt-space-2);
+}
+.docs-preset-frame iframe {
+  width: 100%;
+  height: 36rem;
+  border: 1px solid var(--loidolt-border);
+  border-radius: var(--loidolt-radius-surface);
+  background: var(--loidolt-surface);
+}
+.docs-preset-frame figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--loidolt-space-2);
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
+}
+/* The bare sampler page a preview frame loads. */
+.docs-preview {
+  width: min(100% - 2rem, 52rem);
+  margin-inline: auto;
+  padding-block: var(--loidolt-space-6) var(--loidolt-space-12);
+}
+.docs-preview__header h1 {
+  margin: 0 0 var(--loidolt-space-2);
+  font-size: var(--loidolt-font-size-xl);
+}
+
 /* --- Foundations ---------------------------------------------------------------------- */
 
 .docs-swatches {
@@ -225,8 +282,9 @@
 }
 .docs-swatch span {
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: calc(var(--loidolt-label-tracking) * 0.6);
+  text-transform: var(--loidolt-label-transform);
 }
 .docs-theme-pair {
   display: grid;

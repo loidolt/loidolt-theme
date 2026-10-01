@@ -12,6 +12,6 @@ export const componentRoutes = [...registry.matchAll(/^\s+slug: '([\w-]+)',$/gm)
   ([, slug]) => `/components/${slug}`
 );
 
-export const staticRoutes = ['/', '/404', '/components', '/foundations', '/patterns'];
+export const staticRoutes = ['/', '/404', '/components', '/foundations', '/patterns', '/presets'];
 
 export const routes = [...staticRoutes, ...componentRoutes].sort();

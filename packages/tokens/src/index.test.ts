@@ -2,9 +2,11 @@ import { readFile, readdir } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import {
   aspectRatio,
+  borders,
   colors,
   chartColors,
   chartRoles,
+  contrastPairs,
   contrastRequirements,
   cssVarName,
   darkSemantic,
@@ -20,8 +22,11 @@ import {
   roleValue,
   roleVar,
   meetsContrast,
+  roles,
   semantic,
+  spacing,
   tokens,
+  typography,
   validateContrast,
 } from './index.js';
 
@@ -90,6 +95,21 @@ describe('theme tokens', () => {
     expect(tokens.semantic.text).toBe(colors.deep);
   });
 
+  it('emits the shape and voice roles, linked to their primitives', () => {
+    expect(css).toContain('--loidolt-radius-control: var(--loidolt-border-radius)');
+    expect(css).toContain('--loidolt-pad-surface: var(--loidolt-space-4)');
+    expect(css).toContain('--loidolt-label-transform: uppercase');
+    expect(roles.radiusSurface).toBe(borders.radius);
+    expect(roles.padPage).toBe(spacing[6]);
+    expect(roles.labelTracking).toBe(typography.tracking.utility);
+  });
+
+  it('keeps every tracking and stroke role in a length unit, since stylesheets calc() on them', () => {
+    for (const [name, value] of Object.entries(roles)) {
+      if (/^(stroke|.*Tracking)/.test(name)) expect(value, name).toMatch(/^-?[\d.]+(px|em|rem)$/);
+    }
+  });
+
   it('has full parity between the token object and the generated variables', () => {
     const walk = (prefix: string[], value: unknown): string[] =>
       typeof value === 'string'
@@ -141,58 +161,84 @@ describe('stylesheet variable references', () => {
     }
     expect(Object.fromEntries(primitives)).toEqual({});
   });
+
+  /*
+   * A preset can only move what the stylesheets read from a token. Every property a preset is
+   * meant to restyle must therefore be `0`, a keyword, or a `var()` — or carry an
+   * `@literal <reason>` comment on the same line saying why that value is geometry rather than
+   * style (a spinner's circle, a CSS triangle, a WCAG floor).
+   */
+  it('reads every preset-driven property from a token', async () => {
+    const guarded =
+      /^(padding(-[a-z-]+)?|gap|row-gap|column-gap|border(-[a-z-]+)?|outline(-[a-z]+)?|letter-spacing|font-weight|text-transform|box-shadow)$/;
+    // Keywords that would smuggle a style decision past the tokens.
+    const styleKeywords = new Set(['uppercase', 'lowercase', 'capitalize', 'bold', 'bolder']);
+    const topLevelParts = (value: string) => {
+      const parts: string[] = [];
+      let depth = 0;
+      let current = '';
+      for (const char of value) {
+        if (char === '(') depth += 1;
+        if (char === ')') depth -= 1;
+        if (depth === 0 && /[\s,]/.test(char)) {
+          if (current) parts.push(current);
+          current = '';
+        } else current += char;
+      }
+      if (current) parts.push(current);
+      return parts;
+    };
+    const tokenized = (part: string) =>
+      part === '0' ||
+      part.includes('var(--loidolt-') ||
+      part.includes('var(--ldt-') ||
+      (/^[a-zA-Z-]+$/.test(part) && !styleKeywords.has(part));
+
+    const offenders: string[] = [];
+    for (const file of await stylesheets()) {
+      // `@font-face` descriptors describe a font file, not a style choice.
+      if (file === 'fonts.css') continue;
+      const source = await readFile(new URL(file, stylesDir), 'utf8');
+      source.split('\n').forEach((line, index) => {
+        const declaration = /^\s*([a-z-]+)\s*:\s*([^;]+);/.exec(line);
+        if (!declaration || !guarded.test(declaration[1]) || line.includes('@literal')) return;
+        const value = declaration[2].replace('!important', '');
+        // The tracking primitives are inputs to the voice roles; reading them directly would
+        // keep a label tracked out under a preset that sets the label voice to none.
+        if (declaration[1] === 'letter-spacing' && value.includes('--loidolt-font-tracking')) {
+          offenders.push(`${file}:${index + 1} ${line.trim()}`);
+          return;
+        }
+        if (!topLevelParts(value).every(tokenized))
+          offenders.push(`${file}:${index + 1} ${line.trim()}`);
+      });
+    }
+    expect(offenders).toEqual([]);
+  });
 });
 
-const contrast = getContrastRatio;
+describe('generated stylesheets', () => {
+  // Pins the emitted CSS byte for byte, so a refactor of the generator cannot shift the default
+  // look unnoticed. An intended change updates the snapshot with `vitest -u` and gets reviewed.
+  it('keeps tokens.css stable', async () => {
+    await expect(generateCss()).toMatchFileSnapshot('./__snapshots__/tokens.css');
+  });
+
+  it('keeps dark.css stable', async () => {
+    await expect(generateDarkCss('attribute')).toMatchFileSnapshot('./__snapshots__/dark.css');
+  });
+
+  it('keeps dark-auto.css stable', async () => {
+    await expect(generateDarkCss('auto')).toMatchFileSnapshot('./__snapshots__/dark-auto.css');
+  });
+});
 
 describe.each([
   ['light', semantic],
   ['dark', darkSemantic],
 ])('colour contrast (%s)', (_theme, t) => {
-  // Small utility text (`--loidolt-font-size-xs`) is well under 18.66px, so every one of these
-  // pairs needs the full 4.5:1 rather than the large-text allowance.
-  const textPairs: Array<[string, string, string]> = [
-    ['accent text on background', t.textAccent, t.background],
-    ['accent text on surface', t.textAccent, t.surface],
-    ['accent text on surface-alt', t.textAccent, t.surfaceAlt],
-    ['muted text on background', t.textMuted, t.background],
-    ['muted text on surface', t.textMuted, t.surface],
-    // The recessed fill a default badge sits on.
-    ['muted text on the sunken surface', t.textMuted, t.surfaceSunken],
-    ['body text on background', t.text, t.background],
-    ['body text on surface', t.text, t.surface],
-    ['inverse text on the inverse surface', t.textInverse, t.surfaceInverse],
-    ['on-accent over accent', t.onAccent, t.accent],
-    ['on-accent over accent hover', t.onAccent, t.accentHover],
-    ['on-danger over danger', t.onDanger, t.danger],
-    ['on-danger over danger hover', t.onDanger, t.dangerHover],
-    ['on-success over success', t.onSuccess, t.success],
-    ['on-warning over warning', t.onWarning, t.warning],
-    ['on-info over info', t.onInfo, t.info],
-    ['danger text on surface', t.textDanger, t.surface],
-    ['danger text on surface-alt', t.textDanger, t.surfaceAlt],
-    ['success text on surface', t.textSuccess, t.surface],
-    ['warning text on surface', t.textWarning, t.surface],
-    ['info text on surface', t.textInfo, t.surface],
-  ];
-
-  it.each(textPairs)('meets WCAG AA for small text: %s', (_name, foreground, background) => {
-    expect(contrast(foreground, background)).toBeGreaterThanOrEqual(4.5);
-  });
-
-  // WCAG 1.4.11: a form control's boundary is the only thing identifying it, so it needs 3:1.
-  // Decorative hairlines (`border`, `border-soft`) are deliberately lighter and exempt.
-  const boundaryPairs: Array<[string, string, string]> = [
-    ['control border on the input surface', t.borderControl, t.surfaceInput],
-    ['control border on background', t.borderControl, t.background],
-    ['control border on surface', t.borderControl, t.surface],
-    ['control border on surface-alt', t.borderControl, t.surfaceAlt],
-    ['focus ring on background', t.focusRing, t.background],
-    ['focus ring on surface', t.focusRing, t.surface],
-  ];
-
-  it.each(boundaryPairs)('meets WCAG AA for non-text contrast: %s', (_name, fg, bg) => {
-    expect(contrast(fg, bg)).toBeGreaterThanOrEqual(3);
+  it.each(contrastPairs(t))('meets WCAG AA: %s', (_name, foreground, background, required) => {
+    expect(getContrastRatio(foreground, background)).toBeGreaterThanOrEqual(required);
   });
 });
 
@@ -291,6 +337,8 @@ function deltaE(a: string, b: string): number {
   const [x, y] = [lab(a), lab(b)];
   return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]);
 }
+
+const contrast = getContrastRatio;
 
 describe.each(['light', 'dark'] as const)('data visualisation colours (%s)', (scheme) => {
   const chart = chartColors(scheme);

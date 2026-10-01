@@ -38,7 +38,7 @@
   margin-block: 1.8em 0.6em;
   color: var(--loidolt-text);
   font-family: var(--loidolt-font-display);
-  font-weight: 500;
+  font-weight: var(--loidolt-heading-weight);
   line-height: var(--loidolt-font-line-height-tight);
   /* Clears a sticky top bar when a heading is the target of an in-page link. */
   scroll-margin-top: calc(var(--loidolt-size-topbar) + var(--loidolt-space-4));
@@ -48,7 +48,7 @@
   font-size: 2em;
 }
 :where(.ldt-prose h2):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
-  padding-block-end: 0.3em;
+  padding-block-end: 0.3em; /* @literal em-based prose rhythm */
   border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
   font-size: 1.5em;
 }
@@ -63,8 +63,8 @@
   color: var(--loidolt-text-muted);
   font-family: var(--loidolt-font-utility);
   font-size: 0.8em;
-  letter-spacing: var(--loidolt-font-tracking-utility);
-  text-transform: uppercase;
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
 }
 /* A heading directly after another heading sits closer to it. */
 :where(.ldt-prose :is(h1, h2, h3, h4, h5, h6) + :is(h1, h2, h3, h4, h5, h6)):not(
@@ -86,19 +86,21 @@
 /* Only one weight per family ships, so bold is synthesized; colour keeps it legible. */
 :where(.ldt-prose :is(strong, b)):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
   color: var(--loidolt-text);
-  font-weight: 700;
+  font-weight: 700; /* @literal bold means bold in running text */
 }
 :where(.ldt-prose :not(pre) > code):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
-  padding: 0.12em 0.35em;
+  padding: 0.12em 0.35em; /* @literal em-based inline code */
   border: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+  border-radius: var(--loidolt-radius-inner);
   color: var(--loidolt-text);
   background: var(--loidolt-surface-sunken);
   font-size: 0.875em;
 }
 :where(.ldt-prose kbd):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
-  padding: 0.05em 0.4em;
+  padding: 0.05em 0.4em; /* @literal em-based key cap */
   border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
-  border-bottom-width: 2px;
+  border-radius: var(--loidolt-radius-inner);
+  border-bottom-width: 2px; /* @literal key-cap depth */
   background: var(--loidolt-surface);
   font-size: 0.85em;
 }
@@ -110,7 +112,7 @@
 /* --- Lists --------------------------------------------------------------------------------- */
 
 :where(.ldt-prose :is(ul, ol)):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
-  padding-inline-start: 1.5em;
+  padding-inline-start: 1.5em; /* @literal em-based list indent */
 }
 :where(.ldt-prose li):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
   margin-block: 0.3em;
@@ -131,7 +133,7 @@
   accent-color: var(--loidolt-accent);
 }
 :where(.ldt-prose dt):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
-  font-weight: 700;
+  font-weight: 700; /* @literal bold means bold in running text */
 }
 :where(.ldt-prose dd):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
   margin: 0 0 0.6em 1.5em;
@@ -141,8 +143,8 @@
 
 :where(.ldt-prose blockquote):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
   margin-inline: 0;
-  padding: 0.7em 1em;
-  border-inline-start: 3px solid var(--loidolt-accent);
+  padding: 0.7em 1em; /* @literal em-based prose rhythm */
+  border-inline-start: var(--loidolt-stroke-accent) solid var(--loidolt-accent);
   color: var(--loidolt-text);
   background: var(--loidolt-surface-alt);
 }
@@ -168,9 +170,10 @@
  * surface so it reads as code in both colour schemes.
  */
 :where(.ldt-prose pre):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
-  padding: 0.9em 1.1em;
+  padding: 0.9em 1.1em; /* @literal em-based code rhythm */
   overflow-x: auto;
   border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-radius: var(--loidolt-radius-surface);
   color: var(--loidolt-text-inverse);
   background: var(--loidolt-surface-inverse);
   font-size: 0.85em;
@@ -199,14 +202,14 @@
   font-size: 0.9em;
 }
 :where(.ldt-prose :is(th, td)):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
-  padding: 0.5em 0.8em;
+  padding: 0.5em 0.8em; /* @literal em-based table rhythm */
   border: var(--loidolt-border-width) solid var(--loidolt-border);
   text-align: start;
   vertical-align: top;
 }
 :where(.ldt-prose th):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
   background: var(--loidolt-surface-alt);
-  font-weight: 700;
+  font-weight: 700; /* @literal bold means bold in running text */
 }
 :where(.ldt-prose td):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
   background: var(--loidolt-surface);
@@ -221,12 +224,13 @@
 /* --- Disclosure ---------------------------------------------------------------------------- */
 
 :where(.ldt-prose details):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
-  padding: 0.5em 0.9em;
+  padding: 0.5em 0.9em; /* @literal em-based prose rhythm */
   border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-radius: var(--loidolt-radius-surface);
   background: var(--loidolt-surface);
 }
 :where(.ldt-prose summary):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
-  font-weight: 700;
+  font-weight: 700; /* @literal bold means bold in running text */
 }
 :where(.ldt-prose details[open] > summary):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
   margin-block-end: 0.5em;

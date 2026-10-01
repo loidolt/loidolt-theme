@@ -3,6 +3,7 @@ import { expect, test } from './fixtures';
 import { componentRoutes, routes } from './routes';
 
 const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
+const presets = ['loidolt', 'soft', 'compact'] as const;
 
 test.describe('catalog in a real browser', () => {
   test('the sweep covers every page the component index links to', async ({ page }, testInfo) => {
@@ -18,18 +19,21 @@ test.describe('catalog in a real browser', () => {
   });
 
   for (const route of routes) {
-    test(`${route} passes axe in light and dark themes`, async ({ page }, testInfo) => {
+    test(`${route} passes axe under every preset, light and dark`, async ({ page }, testInfo) => {
       test.skip(
         testInfo.project.name !== 'desktop-chromium',
         'One full browser sweep is sufficient.'
       );
       await page.goto(route);
-      for (const theme of ['light', 'dark'] as const) {
-        await page.evaluate((value) => {
-          document.documentElement.dataset.theme = value;
-        }, theme);
-        const results = await new AxeBuilder({ page }).withTags(wcagTags).analyze();
-        expect.soft(results.violations, `${route} in ${theme} theme`).toEqual([]);
+      for (const preset of presets) {
+        for (const theme of ['light', 'dark'] as const) {
+          await page.evaluate(
+            ([preset, theme]) => Object.assign(document.documentElement.dataset, { preset, theme }),
+            [preset, theme] as const
+          );
+          const results = await new AxeBuilder({ page }).withTags(wcagTags).analyze();
+          expect.soft(results.violations, `${route}, ${preset} preset, ${theme}`).toEqual([]);
+        }
       }
     });
   }

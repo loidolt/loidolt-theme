@@ -761,6 +761,18 @@ export const entries: Entry[] = [
   },
 
   {
+    slug: 'preset-picker',
+    name: 'PresetPicker',
+    group: 'Theme',
+    summary:
+      'Switches between style presets — colours, corners, density and voice — wired to `createTheme({ presets })`.',
+    notes: [
+      'Import each preset stylesheet you list in `presets`; the picker only switches the `data-preset` attribute.',
+      'Pair it with `ThemeToggle`: presets and colour schemes are independent, so every preset has a light and a dark side.',
+      'Use `variant="select"` where space is tight, such as a top bar; the segmented form keeps every preset in view.',
+    ],
+  },
+  {
     slug: 'theme-toggle',
     name: 'ThemeToggle',
     group: 'Theme',

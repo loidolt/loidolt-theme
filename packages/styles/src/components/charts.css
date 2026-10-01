@@ -2,7 +2,7 @@
    runtime through `createTokenColors`); this file styles everything around the canvas. */
 .ldt-chart {
   display: grid;
-  gap: 0.5rem;
+  gap: var(--loidolt-space-2);
   min-width: 0;
   margin: 0;
 }
@@ -10,8 +10,9 @@
 .ldt-chart__title {
   color: var(--loidolt-text-muted);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: var(--loidolt-font-tracking-utility);
-  text-transform: uppercase;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
 }
 .ldt-chart__canvas,
 .ldt-chart__state {

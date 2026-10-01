@@ -13,6 +13,7 @@ import { colors, semantic, spacing, tokens } from '@loidolt/theme-tokens';
 ```css
 @import '@loidolt/theme-tokens/css';
 @import '@loidolt/theme-tokens/css/dark';
+@import '@loidolt/theme-tokens/css/presets/soft'; /* built-in presets: loidolt, soft, compact */
 ```
 
 WCAG contrast arithmetic, for colours chosen at runtime:
@@ -26,3 +27,7 @@ getContrastTextColor(userColour); // the theme ink that reads best on it
 
 Named media frames live in `aspectRatio` (`square`, `video`, `photo`, `portrait`, `wide`) and as
 `--loidolt-aspect-*`.
+
+Define your own style presets with `definePreset()`, write their stylesheets with
+`presetStylesheets()`, and check them with `auditContrast()`. See the
+[Presets](https://github.com/loidolt/loidolt-theme#presets) section of the main README.

@@ -93,3 +93,75 @@ export function getContrastTextColor(
 ): string {
   return getContrastRatio(dark, background) >= getContrastRatio(light, background) ? dark : light;
 }
+
+/** A full set of colour roles as concrete values — a preset's `resolved.light` or `.dark`. */
+export type ColorRoles = { readonly [K in import('./tokens.js').SemanticRole]: string };
+
+export interface ContrastCheck {
+  /** What the pair is, e.g. `muted text on surface`. */
+  name: string;
+  foreground: string;
+  background: string;
+  ratio: number;
+  /** 4.5 for text (WCAG 1.4.3), 3 for control boundaries and focus rings (WCAG 1.4.11). */
+  required: number;
+  pass: boolean;
+}
+
+/**
+ * Every pairing the stylesheets actually draw, with the ratio WCAG AA asks of it.
+ *
+ * Small utility text (`--loidolt-font-size-xs`) is well under 18.66px, so every text pair needs
+ * the full 4.5:1 rather than the large-text allowance. Decorative hairlines (`border`,
+ * `border-soft`) are deliberately lighter and exempt; `border-control` is not, because it is the
+ * only thing identifying an input.
+ */
+export function contrastPairs(
+  t: ColorRoles
+): Array<[name: string, fg: string, bg: string, required: number]> {
+  return [
+    ['accent text on background', t.textAccent, t.background, 4.5],
+    ['accent text on surface', t.textAccent, t.surface, 4.5],
+    ['accent text on surface-alt', t.textAccent, t.surfaceAlt, 4.5],
+    ['muted text on background', t.textMuted, t.background, 4.5],
+    ['muted text on surface', t.textMuted, t.surface, 4.5],
+    // The recessed fill a default badge sits on.
+    ['muted text on the sunken surface', t.textMuted, t.surfaceSunken, 4.5],
+    ['body text on background', t.text, t.background, 4.5],
+    ['body text on surface', t.text, t.surface, 4.5],
+    ['inverse text on the inverse surface', t.textInverse, t.surfaceInverse, 4.5],
+    ['on-accent over accent', t.onAccent, t.accent, 4.5],
+    ['on-accent over accent hover', t.onAccent, t.accentHover, 4.5],
+    ['on-danger over danger', t.onDanger, t.danger, 4.5],
+    ['on-danger over danger hover', t.onDanger, t.dangerHover, 4.5],
+    ['on-success over success', t.onSuccess, t.success, 4.5],
+    ['on-warning over warning', t.onWarning, t.warning, 4.5],
+    ['on-info over info', t.onInfo, t.info, 4.5],
+    ['danger text on surface', t.textDanger, t.surface, 4.5],
+    ['danger text on surface-alt', t.textDanger, t.surfaceAlt, 4.5],
+    ['success text on surface', t.textSuccess, t.surface, 4.5],
+    ['warning text on surface', t.textWarning, t.surface, 4.5],
+    ['info text on surface', t.textInfo, t.surface, 4.5],
+    ['control border on the input surface', t.borderControl, t.surfaceInput, 3],
+    ['control border on background', t.borderControl, t.background, 3],
+    ['control border on surface', t.borderControl, t.surface, 3],
+    ['control border on surface-alt', t.borderControl, t.surfaceAlt, 3],
+    ['focus ring on background', t.focusRing, t.background, 3],
+    ['focus ring on surface', t.focusRing, t.surface, 3],
+  ];
+}
+
+/**
+ * Checks a colour role set against WCAG AA. Run it in a test over your own preset's
+ * `resolved.light` and `resolved.dark`:
+ *
+ * ```ts
+ * expect(auditContrast(myPreset.resolved.dark).filter((check) => !check.pass)).toEqual([]);
+ * ```
+ */
+export function auditContrast(colors: ColorRoles): ContrastCheck[] {
+  return contrastPairs(colors).map(([name, foreground, background, required]) => {
+    const ratio = getContrastRatio(foreground, background);
+    return { name, foreground, background, ratio, required, pass: ratio >= required };
+  });
+}
