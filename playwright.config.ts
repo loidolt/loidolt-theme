@@ -4,6 +4,9 @@ export default defineConfig({
   testDir: './tests/e2e',
   timeout: 30_000,
   fullyParallel: true,
+  // One retry on CI absorbs a crashed browser target without hiding a real failure: a test that
+  // only passes on retry is reported as flaky, not passed.
+  retries: process.env.CI ? 1 : 0,
   // Text snapshots of computed styles do not vary by OS, so one baseline serves macOS and CI.
   snapshotPathTemplate: '{testDir}/__snapshots__/{testFileName}/{projectName}/{arg}{ext}',
   use: {

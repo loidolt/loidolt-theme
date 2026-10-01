@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { expect, test } from './fixtures';
+import { expect, stubPresetPreviews, test } from './fixtures';
 
 import { routes as catalogRoutes } from './routes';
 
@@ -238,6 +238,8 @@ const snapshotName = (route: string, preset?: string) =>
 
 /** Both schemes, plus the focus ring, for one route under one preset. */
 async function capture(page: Page, route: string, preset?: string) {
+  // Only the top document is fingerprinted; the preview frames' content is not.
+  if (route === '/presets') await stubPresetPreviews(page);
   await page.goto(route);
   await page.waitForLoadState('networkidle');
   // Font-relative lengths (`ch`, text-sized boxes) are only stable once the web fonts are in.

@@ -27,7 +27,19 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci
+      # Runtime dependencies only: a new advisory in build tooling should not turn every PR red.
+      # The full tree, dev tooling included, is audited weekly by audit.yml.
       - run: npm run audit
+      # The e2e container image must match the installed Playwright, or its browser build will
+      # not be the one the tests drive.
+      - name: Check the e2e image matches Playwright
+        run: |
+          image=$(grep -oE 'mcr\.microsoft\.com/playwright:v[0-9.]+' .github/workflows/ci.yml | sed 's/.*:v//')
+          installed=$(node -p "require('@playwright/test/package.json').version")
+          if [ "$image" != "$installed" ]; then
+            echo "::error file=.github/workflows/ci.yml::e2e image is Playwright $image, but $installed is installed"
+            exit 1
+          fi
       # COVERAGE turns on the coverage thresholds in the packages' main Vitest suites, so the
       # unit tests run once here instead of again under `test:coverage`.
       - run: npm run check
@@ -99,16 +111,27 @@ jobs:
               bucket: rest,
               project: desktop-chromium,
               grep-invert: passes axe|reflows without,
-              shard: 1/2,
+              shard: 1/3,
             }
           - {
               bucket: rest,
               project: desktop-chromium,
               grep-invert: passes axe|reflows without,
-              shard: 2/2,
+              shard: 2/3,
+            }
+          - {
+              bucket: rest,
+              project: desktop-chromium,
+              grep-invert: passes axe|reflows without,
+              shard: 3/3,
             }
           - { bucket: all, project: mobile-touch, shard: 1/1 }
     name: e2e (${{ matrix.project }} ${{ matrix.bucket }} ${{ matrix.shard }})
+    # Playwright's own image ships the browser and its system libraries, so nothing is installed
+    # per job (`install --with-deps` took anywhere from 20s to 6½ minutes of apt), and every
+    # shard renders with the same fonts. The tag must match @playwright/test; validate checks it.
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -116,8 +139,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Install browser used by end-to-end tests
-        run: npx playwright install --with-deps chromium
       - run: npm run build
       - name: Verify accessibility and keyboard behavior in Chromium
         env:
@@ -128,3 +149,12 @@ jobs:
         run: |
           npx playwright test --project="$PROJECT" --shard="$SHARD" \
             ${GREP:+--grep "$GREP"} ${GREP_INVERT:+--grep-invert "$GREP_INVERT"}
+      # Traces are kept only for failing tests (playwright.config.ts), so this is small on a
+      # green run and the first thing to open on a red one: `npx playwright show-trace`.
+      - name: Upload traces of failed tests
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: playwright-${{ matrix.project }}-${{ matrix.bucket }}-${{ strategy.job-index }}
+          path: test-results/
+          retention-days: 7
