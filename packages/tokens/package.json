@@ -15,6 +15,7 @@
     "./css": "./dist/tokens.css",
     "./css/dark": "./dist/dark.css",
     "./css/dark-auto": "./dist/dark-auto.css",
+    "./css/presets/*": "./dist/presets/*.css",
     "./package.json": "./package.json"
   },
   "files": [

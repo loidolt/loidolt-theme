@@ -33,4 +33,20 @@ export {
 } from './tokens.js';
 export type { ThemeTokens, TokenRef } from './tokens.js';
 
+export { auditContrast, contrastPairs, contrastRatio, luminance } from './contrast.js';
+export type { ColorRoles, ContrastCheck } from './contrast.js';
+
+export { definePreset, generatePresetCss, presetStylesheets } from './presets/define.js';
+export type {
+  ColorOverrides,
+  ColorRole,
+  Preset,
+  PresetCssOptions,
+  PresetDefinition,
+  PresetPrimitives,
+  Role,
+} from './presets/define.js';
+export { builtInPresets, compact, loidolt, soft } from './presets/index.js';
+export type { BuiltInPresetName } from './presets/index.js';
+
 export default tokens;

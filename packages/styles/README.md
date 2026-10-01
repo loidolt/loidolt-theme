@@ -15,4 +15,7 @@ Deep entry points include `/tokens`, `/base`, `/components`, `/utilities`, `/acc
 `/fonts`, `/dark`, and `/dark-auto`. Every slice except `/tokens` expects the token custom
 properties to be loaded first.
 
+Built-in style presets live under `/presets/*`: `loidolt`, `soft` and `compact`, each with
+`-dark` and `-dark-auto` companions. They apply under `data-preset="<name>"`.
+
 See the [design-system documentation](https://theme.loidolt.space) for customization guidance.

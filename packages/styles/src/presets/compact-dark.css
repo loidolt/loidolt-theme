@@ -1,0 +1,2 @@
+/* The compact preset (dark colours). See '@loidolt/theme-tokens' definePreset() to build your own. */
+@import '@loidolt/theme-tokens/css/presets/compact-dark';

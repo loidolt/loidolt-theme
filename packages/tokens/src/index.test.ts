@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import {
   borders,
   colors,
+  contrastPairs,
+  contrastRatio,
   darkSemantic,
   flattenTokens,
   generateCss,
@@ -200,67 +202,12 @@ describe('generated stylesheets', () => {
   });
 });
 
-/** Relative luminance and contrast ratio per WCAG 2.1 §1.4.3. */
-const luminance = (hex: string) => {
-  const [r, g, b] = [1, 3, 5]
-    .map((index) => parseInt(hex.slice(index, index + 2), 16) / 255)
-    .map((channel) => (channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4));
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-};
-
-const contrast = (a: string, b: string) => {
-  const [high, low] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-  return (high + 0.05) / (low + 0.05);
-};
-
 describe.each([
   ['light', semantic],
   ['dark', darkSemantic],
 ])('colour contrast (%s)', (_theme, t) => {
-  // Small utility text (`--loidolt-font-size-xs`) is well under 18.66px, so every one of these
-  // pairs needs the full 4.5:1 rather than the large-text allowance.
-  const textPairs: Array<[string, string, string]> = [
-    ['accent text on background', t.textAccent, t.background],
-    ['accent text on surface', t.textAccent, t.surface],
-    ['accent text on surface-alt', t.textAccent, t.surfaceAlt],
-    ['muted text on background', t.textMuted, t.background],
-    ['muted text on surface', t.textMuted, t.surface],
-    // The recessed fill a default badge sits on.
-    ['muted text on the sunken surface', t.textMuted, t.surfaceSunken],
-    ['body text on background', t.text, t.background],
-    ['body text on surface', t.text, t.surface],
-    ['inverse text on the inverse surface', t.textInverse, t.surfaceInverse],
-    ['on-accent over accent', t.onAccent, t.accent],
-    ['on-accent over accent hover', t.onAccent, t.accentHover],
-    ['on-danger over danger', t.onDanger, t.danger],
-    ['on-danger over danger hover', t.onDanger, t.dangerHover],
-    ['on-success over success', t.onSuccess, t.success],
-    ['on-warning over warning', t.onWarning, t.warning],
-    ['on-info over info', t.onInfo, t.info],
-    ['danger text on surface', t.textDanger, t.surface],
-    ['danger text on surface-alt', t.textDanger, t.surfaceAlt],
-    ['success text on surface', t.textSuccess, t.surface],
-    ['warning text on surface', t.textWarning, t.surface],
-    ['info text on surface', t.textInfo, t.surface],
-  ];
-
-  it.each(textPairs)('meets WCAG AA for small text: %s', (_name, foreground, background) => {
-    expect(contrast(foreground, background)).toBeGreaterThanOrEqual(4.5);
-  });
-
-  // WCAG 1.4.11: a form control's boundary is the only thing identifying it, so it needs 3:1.
-  // Decorative hairlines (`border`, `border-soft`) are deliberately lighter and exempt.
-  const boundaryPairs: Array<[string, string, string]> = [
-    ['control border on the input surface', t.borderControl, t.surfaceInput],
-    ['control border on background', t.borderControl, t.background],
-    ['control border on surface', t.borderControl, t.surface],
-    ['control border on surface-alt', t.borderControl, t.surfaceAlt],
-    ['focus ring on background', t.focusRing, t.background],
-    ['focus ring on surface', t.focusRing, t.surface],
-  ];
-
-  it.each(boundaryPairs)('meets WCAG AA for non-text contrast: %s', (_name, fg, bg) => {
-    expect(contrast(fg, bg)).toBeGreaterThanOrEqual(3);
+  it.each(contrastPairs(t))('meets WCAG AA: %s', (_name, foreground, background, required) => {
+    expect(contrastRatio(foreground, background)).toBeGreaterThanOrEqual(required);
   });
 });
 

@@ -260,7 +260,7 @@ export const PRIMITIVE_GROUPS: ReadonlyArray<readonly [string, TokenTree]> = [
   ['z', zIndex],
 ];
 
-const flattenInto = (
+export const flattenInto = (
   prefix: readonly string[],
   tree: TokenTree,
   out: Array<[string, string | TokenRef]>
