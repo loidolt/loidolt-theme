@@ -32,10 +32,14 @@
  * scope has to re-declare it. Put this on the wrapper you redefine tokens on:
  *
  *   <div class="ldt-theme" style="--loidolt-surface: #10212c; --loidolt-text: #dceaf2">
+ *
+ * The same goes for `font-family`, which `<html>` sets once: a subtree preset that changes the
+ * display face needs it re-declared here to reach running text.
  */
 .ldt-theme {
   color: var(--loidolt-text);
   background: var(--loidolt-background);
+  font-family: var(--loidolt-font-display);
 }
 /* Muted body voice for meta lines (author · timestamp). Unlike .ldt-utility-text it keeps
    sentence case and the body face, so names and dates stay readable. */
@@ -55,15 +59,17 @@
 .ldt-utility-text {
   color: var(--loidolt-text-muted);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: var(--loidolt-font-tracking-utility);
-  text-transform: uppercase;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
 }
 .ldt-eyebrow {
   margin: 0 0 0.4rem;
   color: var(--loidolt-text-accent);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: var(--loidolt-font-tracking-wide);
-  text-transform: uppercase;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking-wide);
+  text-transform: var(--loidolt-label-transform);
 }
 
 @media print {

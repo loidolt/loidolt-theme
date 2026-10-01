@@ -279,13 +279,13 @@ describe('Badge', () => {
 
     expect(base).toContain('border-radius: var(--loidolt-border-radius-pill)');
     expect(rulesFor(css, '.ldt-button').join('\n')).toContain(
-      'border-radius: var(--loidolt-border-radius)'
+      'border-radius: var(--loidolt-radius-control)'
     );
     // Recessed rather than raised, and never the strong stroke that marks a control.
     expect(base).toContain('background: var(--loidolt-surface-sunken)');
     expect(base).not.toContain('--loidolt-border-strong');
     // The label typographic voice, not the control one.
-    expect(base).toContain('letter-spacing: var(--loidolt-font-tracking-wide)');
+    expect(base).toContain('letter-spacing: var(--loidolt-label-tracking-wide)');
     // Badge type stays a step under button type: no size step may promote it.
     for (const step of ['.ldt-badge--sm', '.ldt-badge--md', '.ldt-badge--lg']) {
       expect(rulesFor(css, step).join('\n'), step).not.toContain('font-size');
@@ -362,6 +362,8 @@ describe('focus indication', () => {
   });
 
   it('insets the ring where a scroll container would clip it', () => {
-    expect(a11y()).toMatch(/\.ldt-topbar__nav[^{]*\{\s*outline-offset:\s*-2px/s);
+    expect(a11y()).toMatch(
+      /\.ldt-topbar__nav[^{]*\{\s*outline-offset:\s*calc\(-1 \* var\(--loidolt-stroke-focus\)\)/s
+    );
   });
 });

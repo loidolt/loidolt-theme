@@ -1,15 +1,15 @@
 /* Deep slice: assumes the token custom properties are already loaded.
    Import '@loidolt/theme-styles/tokens' (or the whole '@loidolt/theme-styles') first. */
 :where(:focus-visible) {
-  outline: 2px solid var(--loidolt-focus-ring);
-  outline-offset: 2px;
+  outline: var(--loidolt-stroke-focus) solid var(--loidolt-focus-ring);
+  outline-offset: 2px; /* @literal clearance between control and ring */
 }
 :where(:focus:not(:focus-visible)) {
   outline: none;
 }
 /*
  * A scroll container clips an outset ring against its own edge, and children that fill the
- * container have nowhere to put one. Draw it inside those instead — same 2px indicator,
+ * container have nowhere to put one. Draw it inside those instead — same indicator,
  * just on the other side of the border box. Zero specificity, declared after the rule above,
  * so it overrides by document order without escalating specificity.
  */
@@ -23,7 +23,7 @@
     .ldt-toggle-group
   )
   :where(:focus-visible) {
-  outline-offset: -2px;
+  outline-offset: calc(-1 * var(--loidolt-stroke-focus));
   /* Follow the control's accessible foreground pairing so inset focus stays visible on fills. */
   outline-color: currentColor;
 }
@@ -46,7 +46,7 @@
   z-index: var(--loidolt-z-skip-link);
   top: 0;
   left: 0;
-  padding: 0.75rem 1rem;
+  padding: var(--loidolt-space-3) var(--loidolt-space-4);
   color: var(--loidolt-on-accent);
   background: var(--loidolt-accent);
   transform: translateY(-110%);
@@ -112,7 +112,7 @@
 
 @media (forced-colors: active) {
   :where(button, input, select, textarea, [role='button']) {
-    border: 1px solid ButtonText;
+    border: 1px solid ButtonText; /* @literal forced-colors boundary */
   }
   :where(:focus-visible) {
     outline-color: Highlight;

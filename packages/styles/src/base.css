@@ -45,7 +45,7 @@
   margin-block-start: 0;
 }
 :where(h1, h2, h3, h4) {
-  font-weight: 500;
+  font-weight: var(--loidolt-heading-weight);
   line-height: var(--loidolt-font-line-height-tight);
 }
 :where(code, pre, kbd, samp) {

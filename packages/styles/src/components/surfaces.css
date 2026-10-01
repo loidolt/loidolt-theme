@@ -1,6 +1,7 @@
 .ldt-card,
 .ldt-panel {
   border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-radius: var(--loidolt-radius-surface);
   color: var(--loidolt-text);
   background: var(--loidolt-surface);
 }
@@ -25,7 +26,7 @@
 .ldt-panel__header,
 .ldt-panel__content,
 .ldt-panel__footer {
-  padding: var(--loidolt-space-4);
+  padding: var(--loidolt-pad-surface);
 }
 .ldt-card__header,
 .ldt-panel__header {
@@ -56,15 +57,16 @@
   display: inline-flex;
   align-items: center;
   min-height: 1.4rem;
-  padding: 0.15rem 0.5rem;
+  padding: 0.15rem 0.5rem; /* @literal inline badge metrics, sized to sit in running text */
   border: var(--loidolt-border-width) solid var(--loidolt-border);
   border-radius: var(--loidolt-border-radius-pill);
   color: var(--loidolt-text-muted);
   background: var(--loidolt-surface-sunken);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
   /* The label voice (`.ldt-eyebrow`, `.ldt-field__label`), not the tighter control voice. */
-  letter-spacing: var(--loidolt-font-tracking-wide);
-  text-transform: uppercase;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking-wide);
+  text-transform: var(--loidolt-label-transform);
 }
 /*
  * Size steps take the button scale's *box* so a badge in a row of controls lines up with them,
@@ -74,17 +76,17 @@
  */
 .ldt-badge--sm {
   min-height: var(--loidolt-size-control-sm);
-  padding: 0.38rem 0.7rem;
+  padding: var(--loidolt-pad-control-y-sm) 0.7rem; /* @literal inline pad sits between control steps */
   line-height: 1;
 }
 .ldt-badge--md {
   min-height: var(--loidolt-size-control);
-  padding: 0.5rem 0.9rem;
+  padding: var(--loidolt-pad-control-y) 0.9rem; /* @literal inline pad sits between control steps */
   line-height: 1;
 }
 .ldt-badge--lg {
   min-height: var(--loidolt-size-control-lg);
-  padding: 0.5rem 1.25rem;
+  padding: var(--loidolt-pad-control-y) 1.25rem; /* @literal inline pad sits between control steps */
   line-height: 1;
 }
 .ldt-badge--accent {
@@ -120,6 +122,7 @@
   aspect-ratio: var(--ldt-thumbnail-ratio, 4 / 3);
   overflow: hidden;
   border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-radius: var(--loidolt-radius-surface);
   background: var(--loidolt-surface-sunken);
 }
 .ldt-thumbnail--paper {
@@ -136,8 +139,9 @@
 /* A dashboard tile: one hero number over a utility label; the link form invites a click. */
 .ldt-stat {
   display: block;
-  padding: var(--loidolt-space-4);
+  padding: var(--loidolt-pad-surface);
   border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-radius: var(--loidolt-radius-surface);
   color: var(--loidolt-text);
   background: var(--loidolt-surface);
   text-decoration: none;
@@ -150,14 +154,15 @@ a.ldt-stat:hover {
   margin: 0;
   font-family: var(--loidolt-font-display);
   font-size: var(--loidolt-font-size-xl);
-  font-weight: 600;
+  font-weight: var(--loidolt-strong-weight);
 }
 .ldt-stat__label {
   margin: 0.25rem 0 0;
   color: var(--loidolt-text-muted);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: var(--loidolt-font-tracking-utility);
-  text-transform: uppercase;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
 }
 .ldt-separator {
   width: 100%;

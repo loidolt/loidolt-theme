@@ -28,8 +28,8 @@
   /* Reflow at whatever width runs out of room, rather than only at the compact breakpoint. */
   flex-wrap: wrap;
   align-items: center;
-  gap: 1.25rem;
-  padding: 0 1.35rem;
+  gap: var(--loidolt-space-5);
+  padding: 0 var(--loidolt-pad-bar-x);
   color: var(--loidolt-text);
   background: var(--loidolt-surface);
 }
@@ -37,7 +37,7 @@
   display: inline-flex;
   flex: 0 0 auto;
   align-items: baseline;
-  gap: 0.55rem;
+  gap: 0.55rem; /* @literal brand lockup */
   color: var(--loidolt-text);
   text-decoration: none;
 }
@@ -46,14 +46,15 @@
 }
 .ldt-brand__name {
   font-size: var(--loidolt-font-size-lg);
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  font-weight: var(--loidolt-heading-weight);
+  letter-spacing: -0.02em; /* @literal brand lockup */
 }
 .ldt-brand__meta {
   color: var(--loidolt-text-accent);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: calc(var(--loidolt-label-tracking) * 1.2);
+  text-transform: var(--loidolt-label-transform);
 }
 .ldt-topbar__nav {
   /*
@@ -72,21 +73,22 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.4rem; /* @literal icon-button cluster */
 }
 .ldt-nav-menu {
   min-height: var(--loidolt-size-control);
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.35rem; /* @literal glyph-to-label spacing, not density */
   border: 0;
-  border-bottom: 2px solid transparent;
-  padding: 0 0.75rem;
+  border-bottom: var(--loidolt-stroke-indicator) solid transparent;
+  padding: 0 var(--loidolt-space-3);
   color: var(--loidolt-text-muted);
   background: transparent;
   font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: var(--loidolt-control-weight);
+  letter-spacing: var(--loidolt-control-tracking);
+  text-transform: var(--loidolt-control-transform);
 }
 .ldt-nav-menu:hover:not(:disabled, [aria-disabled='true']) {
   color: var(--loidolt-text);
@@ -105,8 +107,8 @@
   display: inline-flex;
   align-items: center;
   align-self: stretch;
-  border-bottom: 2px solid transparent;
-  padding: 0 0.85rem;
+  border-bottom: var(--loidolt-stroke-indicator) solid transparent;
+  padding: 0 var(--loidolt-pad-control-x);
   color: var(--loidolt-text-muted);
   font-size: var(--loidolt-font-size-sm);
   text-decoration: none;
@@ -125,8 +127,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.4rem 1.35rem;
+  gap: var(--loidolt-space-4);
+  padding: 0.4rem var(--loidolt-pad-bar-x); /* @literal vertical inset is fixed by size-contextbar */
   border-block: var(--loidolt-border-width) solid var(--loidolt-border);
   color: var(--loidolt-text);
   background: var(--loidolt-surface-alt);
@@ -135,14 +137,15 @@
   min-width: 0;
   display: flex;
   align-items: baseline;
-  gap: 0.65rem;
+  gap: 0.65rem; /* @literal title-to-detail spacing */
 }
 .ldt-contextbar__section {
   flex: 0 0 auto;
   color: var(--loidolt-text-accent);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
 }
 .ldt-contextbar__actions {
   flex: 0 0 auto;
@@ -189,7 +192,7 @@
 .ldt-sidebar {
   min-width: 0;
   overflow-y: auto;
-  padding: 1.25rem;
+  padding: var(--loidolt-pad-pane);
   border-right: var(--loidolt-border-width) solid var(--loidolt-border);
   color: var(--loidolt-text);
   background: var(--loidolt-surface);
@@ -200,7 +203,7 @@
 }
 .ldt-workspace__main {
   min-width: 0;
-  padding: var(--loidolt-space-6);
+  padding: var(--loidolt-pad-page);
 }
 /* A toolbar floated over a positioned container (canvas, map, viewer). The parent must be
    position: relative; the bar is a pointer-events island above the stage content. */
@@ -211,7 +214,7 @@
   gap: var(--loidolt-space-1);
   padding: var(--loidolt-space-1);
   border: var(--loidolt-border-width) solid var(--loidolt-border);
-  border-radius: var(--loidolt-border-radius);
+  border-radius: var(--loidolt-radius-surface);
   background: var(--loidolt-surface);
   z-index: var(--loidolt-z-raised);
   pointer-events: auto;
@@ -239,7 +242,7 @@
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--loidolt-space-4);
   margin-bottom: var(--loidolt-space-6);
   padding-bottom: var(--loidolt-space-4);
   border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
@@ -261,7 +264,7 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--loidolt-space-4);
   margin-bottom: var(--loidolt-space-4);
 }
 .ldt-section__title {
@@ -273,8 +276,8 @@
 @media (max-width: 760px) {
   .ldt-topbar {
     min-height: auto;
-    padding-block: 0.75rem;
-    gap: 0.75rem;
+    padding-block: var(--loidolt-space-3);
+    gap: var(--loidolt-space-3);
   }
   .ldt-topbar__actions {
     width: 100%;
@@ -286,7 +289,7 @@
   }
   .ldt-contextbar__location {
     display: grid;
-    gap: 0.15rem;
+    gap: 0.15rem; /* @literal stacked title and detail */
   }
   .ldt-contextbar__detail {
     overflow: visible;

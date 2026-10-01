@@ -135,6 +135,53 @@ describe('stylesheet variable references', () => {
     );
     expect(offenders).toEqual([]);
   });
+
+  /*
+   * A preset can only move what the stylesheets read from a token. Every property a preset is
+   * meant to restyle must therefore be `0`, a keyword, or a `var()` — or carry an
+   * `@literal <reason>` comment on the same line saying why that value is geometry rather than
+   * style (a spinner's circle, a CSS triangle, a WCAG floor).
+   */
+  it('reads every preset-driven property from a token', async () => {
+    const guarded =
+      /^(padding(-[a-z-]+)?|gap|row-gap|column-gap|border(-[a-z-]+)?|outline(-[a-z]+)?|letter-spacing|font-weight|text-transform|box-shadow)$/;
+    // Keywords that would smuggle a style decision past the tokens.
+    const styleKeywords = new Set(['uppercase', 'lowercase', 'capitalize', 'bold', 'bolder']);
+    const topLevelParts = (value: string) => {
+      const parts: string[] = [];
+      let depth = 0;
+      let current = '';
+      for (const char of value) {
+        if (char === '(') depth += 1;
+        if (char === ')') depth -= 1;
+        if (depth === 0 && /[\s,]/.test(char)) {
+          if (current) parts.push(current);
+          current = '';
+        } else current += char;
+      }
+      if (current) parts.push(current);
+      return parts;
+    };
+    const tokenized = (part: string) =>
+      part === '0' ||
+      part.includes('var(--loidolt-') ||
+      part.includes('var(--ldt-') ||
+      (/^[a-zA-Z-]+$/.test(part) && !styleKeywords.has(part));
+
+    const offenders: string[] = [];
+    for (const [file, source] of await stylesheets()) {
+      // `@font-face` descriptors describe a font file, not a style choice.
+      if (file === 'fonts.css') continue;
+      source.split('\n').forEach((line, index) => {
+        const declaration = /^\s*([a-z-]+)\s*:\s*([^;]+);/.exec(line);
+        if (!declaration || !guarded.test(declaration[1]) || line.includes('@literal')) return;
+        const value = declaration[2].replace('!important', '');
+        if (!topLevelParts(value).every(tokenized))
+          offenders.push(`${file}:${index + 1} ${line.trim()}`);
+      });
+    }
+    expect(offenders).toEqual([]);
+  });
 });
 
 describe('generated stylesheets', () => {
