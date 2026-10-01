@@ -97,8 +97,51 @@ const fingerprint = (page: Page) =>
       const sides = ['top', 'right', 'bottom', 'left'];
       const corners = ['top-left', 'top-right', 'bottom-right', 'bottom-left'];
 
-      const describe = (style: CSSStyleDeclaration) => {
-        const get = (name: string) => style.getPropertyValue(name);
+      /*
+       * Glyph metrics are not the same on every OS — Linux Chromium hints them, and `system-ui`
+       * is a different face everywhere — so a length that follows the font (`3ch`) resolves to
+       * different pixels per platform. For the box minimums, where the system writes `ch`, the
+       * authored value is recorded instead. Rules are matched in document order and the last
+       * one wins, which is the cascade as far as these few declarations need.
+       */
+      const fontRelative: { selector: string; name: string; value: string }[] = [];
+      const collect = (rules: CSSRuleList) => {
+        for (const rule of rules) {
+          if (rule instanceof CSSMediaRule && !matchMedia(rule.conditionText).matches) continue;
+          if (rule instanceof CSSStyleRule) {
+            for (const name of ['min-width', 'min-height']) {
+              const value = rule.style.getPropertyValue(name);
+              if (/\d(ch|ex|ic|cap)\b/.test(value)) {
+                fontRelative.push({ selector: rule.selectorText, name, value });
+              }
+            }
+          }
+          if ('cssRules' in rule) collect((rule as CSSGroupingRule).cssRules);
+        }
+      };
+      for (const sheet of document.styleSheets) {
+        try {
+          collect(sheet.cssRules);
+        } catch {
+          // A cross-origin sheet cannot be read, and the system ships none.
+        }
+      }
+      const authored = (element: Element, name: string) =>
+        fontRelative.filter((rule) => rule.name === name && element.matches(rule.selector)).at(-1)
+          ?.value;
+
+      /*
+       * `getComputedStyle` reports an `auto` margin as the length it resolved to, which is
+       * whatever space the text beside it left over — so it follows the OS's fonts too. The
+       * typed OM keeps the computed keyword, so a pushed-aside group reads `auto` on every
+       * platform. Pseudo-elements have no typed OM; their values are taken as resolved.
+       */
+      const describe = (style: CSSStyleDeclaration, element?: Element) => {
+        const typed = element?.computedStyleMap();
+        const get = (name: string) => {
+          if (name.startsWith('margin-') && typed?.get(name)?.toString() === 'auto') return 'auto';
+          return (element && authored(element, name)) ?? style.getPropertyValue(name);
+        };
         const out: string[] = [];
         const emit = (name: string, value: string) => {
           if (!initial[name]?.includes(value)) out.push(`${name}:${value}`);
@@ -148,7 +191,7 @@ const fingerprint = (page: Page) =>
       const lines = new Set<string>();
       for (const element of document.querySelectorAll(selector)) {
         const key = keyOf(element);
-        lines.add(`${key} { ${describe(getComputedStyle(element))} }`);
+        lines.add(`${key} { ${describe(getComputedStyle(element), element)} }`);
         for (const pseudo of ['::before', '::after']) {
           const style = getComputedStyle(element, pseudo);
           if (style.content !== 'none' && style.content !== 'normal') {
@@ -197,13 +240,19 @@ const snapshotName = (route: string, preset?: string) =>
 async function capture(page: Page, route: string, preset?: string) {
   await page.goto(route);
   await page.waitForLoadState('networkidle');
+  // Font-relative lengths (`ch`, text-sized boxes) are only stable once the web fonts are in.
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+  });
   // Nothing may be caught mid-transition when the scheme flips below.
   await page.addStyleTag({
     content: '*, *::before, *::after { transition: none !important; animation: none !important; }',
   });
   if (preset) {
-    await page.evaluate((value) => {
+    await page.evaluate(async (value) => {
       document.documentElement.dataset.preset = value;
+      // A preset can switch typefaces; wait for whatever it pulls in.
+      await document.fonts.ready;
     }, preset);
   }
 
