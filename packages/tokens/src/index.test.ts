@@ -1,13 +1,17 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import {
+  borders,
   colors,
   darkSemantic,
   flattenTokens,
   generateCss,
   generateDarkCss,
+  roles,
   semantic,
+  spacing,
   tokens,
+  typography,
 } from './index.js';
 
 const css = generateCss();
@@ -64,6 +68,21 @@ describe('theme tokens', () => {
     expect(semantic.surface).toBe(colors.panel);
     expect(semantic.accent).toBe(colors.orange);
     expect(tokens.semantic.text).toBe(colors.deep);
+  });
+
+  it('emits the shape and voice roles, linked to their primitives', () => {
+    expect(css).toContain('--loidolt-radius-control: var(--loidolt-border-radius)');
+    expect(css).toContain('--loidolt-pad-surface: var(--loidolt-space-4)');
+    expect(css).toContain('--loidolt-label-transform: uppercase');
+    expect(roles.radiusSurface).toBe(borders.radius);
+    expect(roles.padPage).toBe(spacing[6]);
+    expect(roles.labelTracking).toBe(typography.tracking.utility);
+  });
+
+  it('keeps every tracking and stroke role in a length unit, since stylesheets calc() on them', () => {
+    for (const [name, value] of Object.entries(roles)) {
+      if (/^(stroke|.*Tracking)/.test(name)) expect(value, name).toMatch(/^-?[\d.]+(px|em|rem)$/);
+    }
   });
 
   it('has full parity between the token object and the generated variables', () => {
