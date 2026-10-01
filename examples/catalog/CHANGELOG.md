@@ -1,5 +1,17 @@
 # @loidolt/theme-catalog
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [[`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b), [`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b), [`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b), [`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b), [`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b)]:
+  - @loidolt/theme-tokens@0.7.0
+  - @loidolt/theme-styles@0.7.0
+  - @loidolt/theme-svelte@0.7.0
+  - @loidolt/theme-charts@0.7.0
+  - @loidolt/theme-docs@0.7.0
+  - @loidolt/theme-maps@0.7.0
+
 ## 0.0.4
 
 ### Patch Changes
