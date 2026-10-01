@@ -1,19 +1,29 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
-
-import { catalogRoutes } from './catalog-routes.js';
+import { expect, test } from './fixtures';
+import { componentRoutes, routes } from './routes';
 
 const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 const presets = ['loidolt', 'soft', 'compact'] as const;
 
 test.describe('catalog in a real browser', () => {
-  for (const route of catalogRoutes) {
+  test('the sweep covers every page the component index links to', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop-chromium', 'One browser check is sufficient.');
+    await page.goto('/components');
+    const linked = await page
+      .locator('a[href^="/components/"]')
+      .evaluateAll(
+        (links) =>
+          [...new Set(links.map((link) => link.getAttribute('href')).filter(Boolean))] as string[]
+      );
+    expect(linked.sort()).toEqual([...componentRoutes].sort());
+  });
+
+  for (const route of routes) {
     test(`${route} passes axe under every preset, light and dark`, async ({ page }, testInfo) => {
       test.skip(
         testInfo.project.name !== 'desktop-chromium',
-        'One desktop browser check is sufficient.'
+        'One full browser sweep is sufficient.'
       );
-
       await page.goto(route);
       for (const preset of presets) {
         for (const theme of ['light', 'dark'] as const) {

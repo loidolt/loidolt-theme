@@ -1,19 +1,33 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 import {
+  aspectRatio,
   borders,
   colors,
+  chartColors,
+  chartRoles,
   contrastPairs,
-  contrastRatio,
+  contrastRequirements,
+  cssVarName,
   darkSemantic,
   flattenTokens,
   generateCss,
   generateDarkCss,
+  getContrastRatio,
+  getContrastTextColor,
+  getLuminance,
+  mapColors,
+  resolveRoles,
+  syntaxColors,
+  roleValue,
+  roleVar,
+  meetsContrast,
   roles,
   semantic,
   spacing,
   tokens,
   typography,
+  validateContrast,
 } from './index.js';
 
 const css = generateCss();
@@ -44,6 +58,15 @@ describe('theme tokens', () => {
     expect(css).toContain('--loidolt-size-control-sm:');
     expect(css).toContain('--loidolt-border-radius-pill: 999px');
     expect([...declared].filter((name) => /[A-Z]/.test(name))).toEqual([]);
+  });
+
+  it('gives a trailing number its own segment without renaming anything else', () => {
+    expect(cssVarName(['chart1'])).toBe('--loidolt-chart-1');
+    expect(cssVarName(['chartSequential5'])).toBe('--loidolt-chart-sequential-5');
+    expect(css).toContain('--loidolt-color-series-1: #c65224');
+    expect(css).toContain('--loidolt-space-10: 2.5rem');
+    // A letter glued to a digit would be unreachable from hand-written CSS.
+    expect([...declared].filter((name) => /[a-z]\d/.test(name))).toEqual([]);
   });
 
   it('emits token-to-token links as var() references, not resolved values', () => {
@@ -104,26 +127,21 @@ describe('theme tokens', () => {
 
 describe('stylesheet variable references', () => {
   const stylesDir = new URL('../../styles/src/', import.meta.url);
-
-  // Recursive: the component rules live in `components/*.css`, which a flat listing never saw.
-  const stylesheets = async () => {
-    const files = (await readdir(stylesDir, { recursive: true })).filter((file) =>
-      file.endsWith('.css')
-    );
-    return Promise.all(
-      files.map(async (file) => [file, await readFile(new URL(file, stylesDir), 'utf8')] as const)
-    );
-  };
-
-  it('scans the component stylesheets, not just the entry points', async () => {
-    const files = (await stylesheets()).map(([file]) => file);
-    expect(files).toContain('components/actions.css');
-    expect(files).toContain('base.css');
-  });
+  /** Every stylesheet in the package, as paths relative to `src/` (component files included). */
+  const stylesheets = async () =>
+    (await readdir(stylesDir, { recursive: true }))
+      .filter((file) => file.endsWith('.css'))
+      .map((file) => file.split('\\').join('/'))
+      .sort();
 
   it('resolves every var(--loidolt-*) used by @loidolt/theme-styles', async () => {
+    const files = await stylesheets();
+    // The component styles live one level down; a flat readdir silently skipped all of them.
+    expect(files.some((file) => file.startsWith('components'))).toBe(true);
+
     const missing = new Map<string, string[]>();
-    for (const [file, source] of await stylesheets()) {
+    for (const file of files) {
+      const source = await readFile(new URL(file, stylesDir), 'utf8');
       for (const [, name] of source.matchAll(/var\((--loidolt-[a-z0-9-]+)/g)) {
         if (!declared.has(name)) missing.set(name, [...(missing.get(name) ?? []), file]);
       }
@@ -132,10 +150,16 @@ describe('stylesheet variable references', () => {
   });
 
   it('never lets a stylesheet reach past the semantic layer for colour', async () => {
-    const offenders = (await stylesheets()).flatMap(([file, source]) =>
-      [...source.matchAll(/var\((--loidolt-color-[a-z0-9-]+)/g)].map((m) => `${file}: ${m[1]}`)
-    );
-    expect(offenders).toEqual([]);
+    // `tokens.css` is the one file that is meant to name primitives.
+    const files = (await stylesheets()).filter((file) => file !== 'tokens.css');
+    const primitives = new Map<string, string[]>();
+    for (const file of files) {
+      const source = await readFile(new URL(file, stylesDir), 'utf8');
+      for (const [, name] of source.matchAll(/var\((--loidolt-color-[a-z0-9-]+)/g)) {
+        primitives.set(file, [...new Set([...(primitives.get(file) ?? []), name])]);
+      }
+    }
+    expect(Object.fromEntries(primitives)).toEqual({});
   });
 
   /*
@@ -171,13 +195,20 @@ describe('stylesheet variable references', () => {
       (/^[a-zA-Z-]+$/.test(part) && !styleKeywords.has(part));
 
     const offenders: string[] = [];
-    for (const [file, source] of await stylesheets()) {
+    for (const file of await stylesheets()) {
       // `@font-face` descriptors describe a font file, not a style choice.
       if (file === 'fonts.css') continue;
+      const source = await readFile(new URL(file, stylesDir), 'utf8');
       source.split('\n').forEach((line, index) => {
         const declaration = /^\s*([a-z-]+)\s*:\s*([^;]+);/.exec(line);
         if (!declaration || !guarded.test(declaration[1]) || line.includes('@literal')) return;
         const value = declaration[2].replace('!important', '');
+        // The tracking primitives are inputs to the voice roles; reading them directly would
+        // keep a label tracked out under a preset that sets the label voice to none.
+        if (declaration[1] === 'letter-spacing' && value.includes('--loidolt-font-tracking')) {
+          offenders.push(`${file}:${index + 1} ${line.trim()}`);
+          return;
+        }
         if (!topLevelParts(value).every(tokenized))
           offenders.push(`${file}:${index + 1} ${line.trim()}`);
       });
@@ -207,7 +238,7 @@ describe.each([
   ['dark', darkSemantic],
 ])('colour contrast (%s)', (_theme, t) => {
   it.each(contrastPairs(t))('meets WCAG AA: %s', (_name, foreground, background, required) => {
-    expect(contrastRatio(foreground, background)).toBeGreaterThanOrEqual(required);
+    expect(getContrastRatio(foreground, background)).toBeGreaterThanOrEqual(required);
   });
 });
 
@@ -233,9 +264,167 @@ describe('dark theme', () => {
   it('only overrides variables the light theme defines', () => {
     const declared = new Set(flattenTokens().map(([name]) => name));
     for (const name of Object.keys(darkSemantic)) {
-      expect(
-        declared.has(`--loidolt-${name.replace(/[A-Z]/g, (l) => `-${l.toLowerCase()}`)}`)
-      ).toBe(true);
+      expect(declared.has(cssVarName([name]))).toBe(true);
     }
+  });
+});
+
+describe('contrast utilities', () => {
+  it('measures the extremes and is order-independent', () => {
+    expect(getLuminance('#000')).toBe(0);
+    expect(getLuminance('#ffffff')).toBe(1);
+    expect(getContrastRatio('#000000', '#fff')).toBeCloseTo(21, 5);
+    expect(getContrastRatio('#fff', '#000')).toBe(getContrastRatio('#000', '#fff'));
+    expect(getContrastRatio('#c65224', '#c65224')).toBe(1);
+  });
+
+  it('agrees with a published reference pair', () => {
+    // #767676 on white is the classic "just passes AA" grey.
+    expect(getContrastRatio('#767676', '#ffffff')).toBeCloseTo(4.54, 2);
+    expect(meetsContrast('#767676', '#ffffff')).toBe(true);
+    expect(meetsContrast('#777777', '#ffffff')).toBe(false);
+    expect(meetsContrast('#777777', '#ffffff', { size: 'large' })).toBe(true);
+    expect(meetsContrast('#767676', '#ffffff', { level: 'AAA' })).toBe(false);
+  });
+
+  it('reports every threshold at once', () => {
+    expect(validateContrast('#767676', '#ffffff')).toEqual({
+      ratio: expect.closeTo(4.54, 2),
+      ratioString: '4.54:1',
+      passesAANormal: true,
+      passesAALarge: true,
+      passesAAANormal: false,
+      passesAAALarge: true,
+    });
+    expect(contrastRequirements.AAA.normal).toBe(7);
+  });
+
+  it('picks whichever ink measures better, defaulting to the theme inks', () => {
+    expect(getContrastTextColor(colors.orange)).toBe('#f5f2e9');
+    expect(getContrastTextColor(colors.paper)).toBe(colors.deep);
+    expect(getContrastTextColor('#ffff00', { dark: '#000', light: '#fff' })).toBe('#000');
+  });
+
+  it('rejects anything that is not a hex colour', () => {
+    expect(() => getLuminance('red')).toThrow(RangeError);
+    expect(() => getContrastRatio('#12345', '#fff')).toThrow(/getContrastRatio: invalid hex/);
+  });
+});
+
+describe('aspect ratios', () => {
+  it('emits each named frame as a CSS aspect-ratio value', () => {
+    expect(aspectRatio.video).toBe('16 / 9');
+    expect(css).toContain('--loidolt-aspect-square: 1 / 1;');
+    expect(css).toContain('--loidolt-aspect-portrait: 3 / 4;');
+  });
+});
+
+/** CIE76 distance in Lab — enough to tell whether two series colours read as different. */
+function deltaE(a: string, b: string): number {
+  const lab = (hex: string) => {
+    const channel = (offset: number) => {
+      const value = parseInt(hex.slice(offset, offset + 2), 16) / 255;
+      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    };
+    const [r, g, b] = [channel(1), channel(3), channel(5)];
+    const xyz = [
+      (0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047,
+      0.2126 * r + 0.7152 * g + 0.0722 * b,
+      (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883,
+    ].map((v) => (v > 0.008856 ? Math.cbrt(v) : 7.787 * v + 16 / 116));
+    return [116 * xyz[1] - 16, 500 * (xyz[0] - xyz[1]), 200 * (xyz[1] - xyz[2])];
+  };
+  const [x, y] = [lab(a), lab(b)];
+  return Math.hypot(x[0] - y[0], x[1] - y[1], x[2] - y[2]);
+}
+
+const contrast = getContrastRatio;
+
+describe.each(['light', 'dark'] as const)('data visualisation colours (%s)', (scheme) => {
+  const chart = chartColors(scheme);
+  const map = mapColors(scheme);
+  const surfaces = [chart.background, chart.surface, roleValue('surfaceAlt', scheme)];
+
+  it('holds every series, gain and loss at 3:1 against every surface', () => {
+    for (const colour of [...chart.categorical, chart.positive, chart.negative]) {
+      for (const surface of surfaces) {
+        expect(contrast(colour, surface), `${colour} on ${surface}`).toBeGreaterThanOrEqual(3);
+      }
+    }
+  });
+
+  it('keeps the series visibly apart from one another', () => {
+    const { categorical } = chart;
+    for (let i = 0; i < categorical.length; i++) {
+      for (let j = i + 1; j < categorical.length; j++) {
+        expect(deltaE(categorical[i], categorical[j]), `${i + 1} vs ${j + 1}`).toBeGreaterThan(15);
+      }
+    }
+  });
+
+  it('runs the sequential ramp steadily from least to most', () => {
+    // "Most" is the step furthest from the surface, so the ramp's contrast only ever grows.
+    const steps = chart.sequential.map((colour) => contrast(colour, chart.surface));
+    for (let i = 1; i < steps.length; i++) expect(steps[i]).toBeGreaterThan(steps[i - 1]);
+    expect(steps.at(-1)).toBeGreaterThanOrEqual(3);
+  });
+
+  it('centres the diverging ramp on the step nearest the surface', () => {
+    const steps = chart.diverging.map((colour) => contrast(colour, chart.surface));
+    const quietest = steps.indexOf(Math.min(...steps));
+    expect(quietest).toBe(3);
+    expect(steps[0]).toBeGreaterThanOrEqual(3);
+    expect(steps[6]).toBeGreaterThanOrEqual(3);
+    for (let i = 1; i <= 3; i++) expect(steps[i]).toBeLessThan(steps[i - 1]);
+    for (let i = 4; i < 7; i++) expect(steps[i]).toBeGreaterThan(steps[i - 1]);
+  });
+
+  it('keeps map labels readable on land and water', () => {
+    expect(contrast(map.label, map.land)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(map.label, map.labelHalo)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(map.label, map.water)).toBeGreaterThanOrEqual(3);
+    expect(contrast(map.label, map.park)).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe.each(['light', 'dark'] as const)('syntax colours (%s)', (scheme) => {
+  const syntax = syntaxColors(scheme);
+
+  it('holds every token colour at 4.5:1 on the code surface', () => {
+    for (const [role, colour] of Object.entries(syntax)) {
+      if (role === 'background') continue;
+      expect(contrast(colour, syntax.background), role).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('keeps keywords, strings, functions and constants apart', () => {
+    const inks = [
+      syntax.keyword,
+      syntax.string,
+      syntax.function,
+      syntax.constant,
+      syntax.parameter,
+    ];
+    for (let i = 0; i < inks.length; i++) {
+      for (let j = i + 1; j < inks.length; j++)
+        expect(deltaE(inks[i], inks[j])).toBeGreaterThan(15);
+    }
+  });
+});
+
+describe('role resolution', () => {
+  it('resolves singles and lists, from the reference theme or a live reader', () => {
+    expect(roleVar('chart1')).toBe('--loidolt-chart-1');
+    expect(roleValue('chart1')).toBe(colors.series[1]);
+    expect(roleValue('chart1', 'dark')).toBe(darkSemantic.chart1);
+    expect(chartColors().categorical).toHaveLength(8);
+    expect(resolveRoles({ ink: 'text', pair: ['accent', 'surface'] }, 'dark')).toEqual({
+      ink: darkSemantic.text,
+      pair: [darkSemantic.accent, darkSemantic.surface],
+    });
+    const read = (role: string) => `read:${role}`;
+    expect(resolveRoles({ first: chartRoles.categorical }, 'light', read).first[0]).toBe(
+      'read:chart1'
+    );
   });
 });

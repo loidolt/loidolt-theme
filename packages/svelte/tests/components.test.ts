@@ -367,3 +367,38 @@ describe('focus indication', () => {
     );
   });
 });
+
+describe('component stylesheet contract', () => {
+  /** `[selector, body]` for every rule, comments stripped. */
+  const rules = () =>
+    [
+      ...componentStyles()
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .matchAll(/([^{}]+)\{([^}]*)\}/g),
+    ].map(([, selector, body]) => [selector.trim(), body] as const);
+
+  it('keeps corners square, reserving the pill for badges and true circles for glyphs', () => {
+    // A circle is only for things that are round by nature — a spinning ring, a map pin. Anything
+    // that sits in a row of controls stays square; the pill token is the one rounded exception.
+    const circular = new Set(['.ldt-spinner', '.ldt-marker--pin']);
+    // The radius roles all default to `--loidolt-border-radius` (0), so they stay square unless
+    // a preset rounds them; the switch thumb derives its corner from the track's.
+    const allowed =
+      /^(0|var\(--loidolt-(border-radius(-pill)?|radius-(control|inner|surface|overlay))\)|max\(0px, calc\(var\(--loidolt-radius-control\) - 3px\)\))$/;
+    const offenders = rules().flatMap(([selector, body]) =>
+      [...body.matchAll(/border-radius:\s*([^;]+);/g)]
+        .map(([, value]) => value.trim())
+        .filter((value) => !allowed.test(value) && !circular.has(selector))
+        .map((value) => `${selector}: ${value}`)
+    );
+    expect(offenders).toEqual([]);
+  });
+
+  it('draws every colour from a token rather than a literal', () => {
+    const literal = /#[0-9a-f]{3,8}\b|\b(rgba?|hsla?|oklch|oklab|lab|lch)\(/i;
+    const offenders = rules()
+      .filter(([, body]) => literal.test(body))
+      .map(([selector]) => selector);
+    expect(offenders).toEqual([]);
+  });
+});

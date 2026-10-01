@@ -1,11 +1,12 @@
 <script lang="ts" generics="T extends string = string">
   import type { HTMLFieldsetAttributes } from 'svelte/elements';
-  import type { Option, Orientation } from '../types.js';
+  import type { ChoiceOption, Orientation } from '../types.js';
   import { cx } from '../utils.js';
 
   interface Props extends HTMLFieldsetAttributes {
     value?: T;
-    options: Option<T>[];
+    /** Choices. A `description` renders under its label and is read after it. */
+    options: ChoiceOption<T>[];
     /** Shared `name` for the inputs. Defaults to an SSR-stable generated id. */
     name?: string;
     /** Visible group label, rendered as a `<legend>`. */
@@ -35,15 +36,28 @@
 <fieldset bind:this={ref} class={cx('ldt-fieldset', className)} {...rest}>
   {#if label}<legend class="ldt-legend">{label}</legend>{/if}
   <div class={cx('ldt-radio-group', orientation === 'vertical' && 'ldt-radio-group--vertical')}>
-    {#each options as option (option.value)}<label class="ldt-choice"
+    {#each options as option, index (option.value)}
+      {@const labelId = `${generatedName}-${index}-label`}
+      {@const descriptionId = option.description
+        ? `${generatedName}-${index}-description`
+        : undefined}
+      <label class={cx('ldt-choice', option.description && 'ldt-choice--described')}
         ><input
           type="radio"
           {name}
           value={option.value}
           bind:group={value}
           disabled={option.disabled}
+          aria-labelledby={option.description ? labelId : undefined}
+          aria-describedby={descriptionId}
           onchange={() => onValueChange?.(option.value)}
-        />{option.label}</label
-      >{/each}
+        /><span class="ldt-choice__text"
+          ><span id={labelId}>{option.label}</span>{#if option.description}<span
+              class="ldt-choice__description"
+              id={descriptionId}>{option.description}</span
+            >{/if}</span
+        ></label
+      >
+    {/each}
   </div>
 </fieldset>

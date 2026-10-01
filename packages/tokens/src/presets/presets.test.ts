@@ -8,6 +8,7 @@ import {
   definePreset,
   flattenTokens,
   generatePresetCss,
+  getContrastRatio,
   loidolt,
   presetStylesheets,
   roles,
@@ -31,6 +32,48 @@ describe.each(
       );
     }
   );
+});
+
+// The chart, map and syntax roles a preset inherits must still read on the surfaces it changes —
+// the same thresholds the base theme is held to.
+describe.each(
+  builtInPresets.flatMap((preset) => [
+    [preset.name, 'light', preset] as const,
+    [preset.name, 'dark', preset] as const,
+  ])
+)('%s preset, %s scheme: data and code colours', (_name, scheme, preset) => {
+  const r = preset.resolved[scheme];
+  const surfaces = [r.background, r.surface, r.surfaceAlt];
+
+  it('holds every series, gain and loss at 3:1 against every surface', () => {
+    const series = [r.chart1, r.chart2, r.chart3, r.chart4, r.chart5, r.chart6, r.chart7, r.chart8];
+    for (const colour of [...series, r.chartPositive, r.chartNegative]) {
+      for (const surface of surfaces) {
+        expect(getContrastRatio(colour, surface), `${colour} on ${surface}`).toBeGreaterThanOrEqual(
+          3
+        );
+      }
+    }
+  });
+
+  it('holds every syntax colour at 4.5:1 on the code surface', () => {
+    const syntax = [
+      r.syntaxKeyword,
+      r.syntaxString,
+      r.syntaxComment,
+      r.syntaxConstant,
+      r.syntaxFunction,
+      r.syntaxParameter,
+      r.syntaxPunctuation,
+    ];
+    for (const colour of syntax) {
+      expect(getContrastRatio(colour, r.surfaceInverse), colour).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('keeps map labels readable on land', () => {
+    expect(getContrastRatio(r.mapLabel, r.mapLand)).toBeGreaterThanOrEqual(4.5);
+  });
 });
 
 describe.each(builtInPresets.map((preset) => [preset.name, preset] as const))(

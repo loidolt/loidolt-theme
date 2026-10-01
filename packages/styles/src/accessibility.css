@@ -20,7 +20,15 @@
     .ldt-dialog__body,
     .ldt-drawer__body,
     .ldt-tabs__list,
-    .ldt-toggle-group
+    .ldt-toggle-group,
+    .ldt-listbox,
+    .ldt-media-grid,
+    .ldt-map,
+    .ldt-map-features__list,
+    .ldt-layer-manager,
+    .ldt-code__pre,
+    .ldt-toc-panel__wide,
+    .ldt-mermaid
   )
   :where(:focus-visible) {
   outline-offset: calc(-1 * var(--loidolt-stroke-focus));
@@ -30,6 +38,20 @@
 
 .ldt-visually-hidden,
 .ldt-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Hidden until it, or something inside it, takes focus — for a "skip" or "back to top" link
+   that should not occupy the layout for pointer users. */
+.ldt-sr-only-focusable:not(:focus, :focus-within) {
   position: absolute !important;
   width: 1px !important;
   height: 1px !important;
@@ -58,6 +80,20 @@
   min-width: 44px;
   min-height: 44px;
 }
+/* Enlarges the hit area without moving anything: a small glyph button in dense UI keeps its
+   visual size, and an invisible 44px square centred on it takes the press. */
+.ldt-touch-target-expand {
+  position: relative;
+}
+.ldt-touch-target-expand::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
 
 /* Preserve the compact visual density for mouse/keyboard layouts, but give touch-first devices
    the 44px target size recommended for comfortable coarse-pointer operation. */
@@ -73,17 +109,63 @@
     .ldt-choice,
     .ldt-switch,
     .ldt-number-field__button,
-    .ldt-menu__item
+    .ldt-menu__item,
+    .ldt-listbox__item,
+    .ldt-combobox,
+    .ldt-password-input,
+    .ldt-chip,
+    .ldt-data-table__edit,
+    .ldt-media-controls__button,
+    .ldt-media-controls__speed,
+    .ldt-media-controls__range,
+    .ldt-lightbox__control,
+    .ldt-media-carousel__control,
+    .ldt-map-features__item,
+    .ldt-map .maplibregl-ctrl-group button,
+    .ldt-layer-manager__toggle,
+    .ldt-code__copy,
+    .ldt-toc__link
   ) {
     min-height: 44px;
   }
-  :where(.ldt-icon-button, .ldt-number-field__button) {
+  :where(
+    .ldt-icon-button,
+    .ldt-number-field__button,
+    .ldt-combobox__trigger,
+    .ldt-password-input__toggle,
+    .ldt-chip__remove,
+    .ldt-media-controls__button,
+    .ldt-lightbox__control,
+    .ldt-media-carousel__control,
+    .ldt-map .maplibregl-ctrl-group button
+  ) {
     min-width: 44px;
+  }
+  /* A map marker keeps its drawn size — it points at a spot — and takes a 44px touch. */
+  .ldt-map-marker::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+  /* The thumb keeps its drawn size; an invisible 44px square around it takes the touch. */
+  .ldt-slider__thumb {
+    position: relative;
+  }
+  .ldt-slider__thumb::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
   }
   :where(.ldt-icon-button) {
     width: 44px;
   }
-  .ldt-number-field {
+  .ldt-number-field:not(.ldt-number-field--bare) {
     grid-template-columns: 44px minmax(0, 1fr) 44px;
   }
 }

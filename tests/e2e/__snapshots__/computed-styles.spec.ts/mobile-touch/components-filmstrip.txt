@@ -93,7 +93,7 @@ td { padding:11.2px 12.8px 11.2px 12.8px; color:rgb(235, 231, 220); font-family:
 th.ldt-table__header { padding:11.2px 12.8px 11.2px 12.8px; border:bottom 1px solid rgb(43, 46, 38); color:rgb(168, 163, 148); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:normal; letter-spacing:1.1px; text-transform:uppercase; color-scheme:dark }
 
 ## focus
-focus 1: button { outline-width:2px; outline-style:solid; outline-color:rgb(198, 82, 36); outline-offset:2px }
-focus 2: button { outline-width:2px; outline-style:solid; outline-color:rgb(198, 82, 36); outline-offset:2px }
-focus 3: div { outline-width:2px; outline-style:solid; outline-color:rgb(198, 82, 36); outline-offset:2px }
-focus 4: none
+focus 1: a { outline-width:2px; outline-style:solid; outline-color:rgb(198, 82, 36); outline-offset:2px }
+focus 2: a { outline-width:2px; outline-style:solid; outline-color:rgb(198, 82, 36); outline-offset:2px }
+focus 3: a { outline-width:2px; outline-style:solid; outline-color:rgb(95, 91, 80); outline-offset:-2px }
+focus 4: a { outline-width:2px; outline-style:solid; outline-color:rgb(95, 91, 80); outline-offset:-2px }

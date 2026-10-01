@@ -11,7 +11,7 @@ caption.ldt-sr-only { margin:-1px; color:rgb(28, 36, 48); font-family:system-ui,
 div.ldt-app-shell { min-height:720px; color:rgb(28, 36, 48); background-color:rgb(244, 246, 248); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-filmstrip { gap:8px; color:rgb(28, 36, 48); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-table-wrap { border-radius:8px; border:1px solid rgb(213, 219, 227); color:rgb(28, 36, 48); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
-div.ldt-topbar__actions { margin:0px 0px 0px 413.797px; gap:6.4px; color:rgb(28, 36, 48); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
+div.ldt-topbar__actions { margin:0px 0px 0px 415.812px; gap:6.4px; color:rgb(28, 36, 48); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-workspace.ldt-workspace--sidebar { color:rgb(28, 36, 48); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-workspace__main { padding:27.6px; color:rgb(28, 36, 48); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 figure.ldt-thumbnail.ldt-thumbnail--paper { border-radius:8px; border:1px solid rgb(213, 219, 227); color:rgb(28, 36, 48); background-color:rgb(255, 255, 255); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
@@ -58,7 +58,7 @@ caption.ldt-sr-only { margin:-1px; color:rgb(230, 234, 240); font-family:system-
 div.ldt-app-shell { min-height:720px; color:rgb(230, 234, 240); background-color:rgb(17, 21, 27); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-filmstrip { gap:8px; color:rgb(230, 234, 240); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-table-wrap { border-radius:8px; border:1px solid rgb(45, 53, 66); color:rgb(230, 234, 240); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
-div.ldt-topbar__actions { margin:0px 0px 0px 413.797px; gap:6.4px; color:rgb(230, 234, 240); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
+div.ldt-topbar__actions { margin:0px 0px 0px 415.812px; gap:6.4px; color:rgb(230, 234, 240); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-workspace.ldt-workspace--sidebar { color:rgb(230, 234, 240); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-workspace__main { padding:27.6px; color:rgb(230, 234, 240); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 figure.ldt-thumbnail.ldt-thumbnail--paper { border-radius:8px; border:1px solid rgb(45, 53, 66); color:rgb(230, 234, 240); background-color:rgb(255, 255, 255); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
@@ -93,7 +93,7 @@ td { padding:12.88px 14.72px 12.88px 14.72px; color:rgb(230, 234, 240); font-fam
 th.ldt-table__header { padding:12.88px 14.72px 12.88px 14.72px; border:bottom 1px solid rgb(35, 42, 53); color:rgb(154, 165, 180); font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size:12px; font-weight:500; line-height:normal; color-scheme:dark }
 
 ## focus
-focus 1: button { outline-width:2px; outline-style:solid; outline-color:rgb(37, 99, 235); outline-offset:2px }
-focus 2: button { outline-width:2px; outline-style:solid; outline-color:rgb(37, 99, 235); outline-offset:2px }
-focus 3: div { outline-width:2px; outline-style:solid; outline-color:rgb(37, 99, 235); outline-offset:2px }
-focus 4: none
+focus 1: a { outline-width:2px; outline-style:solid; outline-color:rgb(37, 99, 235); outline-offset:2px }
+focus 2: a { outline-width:2px; outline-style:solid; outline-color:rgb(37, 99, 235); outline-offset:2px }
+focus 3: a { outline-width:2px; outline-style:solid; outline-color:rgb(85, 96, 112); outline-offset:-2px }
+focus 4: a { outline-width:2px; outline-style:solid; outline-color:rgb(85, 96, 112); outline-offset:-2px }

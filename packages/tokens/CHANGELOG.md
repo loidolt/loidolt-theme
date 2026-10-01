@@ -1,5 +1,50 @@
 # @loidolt/theme-tokens
 
+## 0.7.0
+
+### Minor Changes
+
+- [#10](https://github.com/loidolt/loidolt-theme/pull/10) [`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b) Thanks [@loidolt](https://github.com/loidolt)! - Add data-visualisation and basemap colour tokens, and a way to use tokens on a canvas.
+
+  - Tokens: eight categorical chart colours (`--loidolt-chart-1`…`-8`), sequential and diverging ramps, gain/loss colours and `--loidolt-map-*` basemap roles, each with a dark value and checked for contrast in both themes. `roleVar`, `roleValue`, `resolveRoles`, `chartRoles`/`mapRoles` and `chartColors()`/`mapColors()` resolve them in JavaScript. A trailing number in a token name is now its own segment (`chart1` → `--loidolt-chart-1`); no existing name changes.
+  - Svelte: `createTokenColors()` reads semantic roles off the page as hex for canvas and WebGL renderers and follows theme changes; `readRoleColor`, `colorSchemeOf`, `observeColorScheme` and `normalizeColor` are the pieces it is built from.
+  - Styles: a `loidolt.vendor` cascade layer between `base` and `components` for third-party stylesheets a loidolt package ships with.
+
+- [#10](https://github.com/loidolt/loidolt-theme/pull/10) [`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b) Thanks [@loidolt](https://github.com/loidolt)! - New package: `@loidolt/theme-docs`, accessible Markdown documentation in the loidolt look.
+
+  - `Markdown`, `MarkdownPage`, `CodeSnippet`, `MermaidDiagram`, `TableOfContents`, `TocPanel`, `DocsHub` and `DocsCard`.
+  - `renderMarkdown` / `renderMarkdownSync` (in `@loidolt/theme-docs/core` too): GFM plus frontmatter, admonitions and GitHub alerts, footnotes, definition lists, filenames on code, and Mermaid fences; a table of contents with de-duplicated heading ids. Safe for untrusted markdown by default — raw HTML is shown as text and URLs are allow-listed — with `allowHtml` and a `sanitize` hook for trusted content.
+  - Server-rendered first; Shiki highlighting and Mermaid diagrams are optional peers, registered with `setHighlighterLoader` and `setMermaidLoader`, and follow the theme.
+  - Tokens: `--loidolt-syntax-*` colours for code on the inverse surface, each held to 4.5:1 in both themes, with `syntaxRoles` and `syntaxColors()`.
+  - Styles: code frames, admonitions, footnotes, diagrams, contents, page layout and docs index in `@loidolt/theme-styles`.
+
+## 0.6.0
+
+### Minor Changes
+
+- [#8](https://github.com/loidolt/loidolt-theme/pull/8) [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3) Thanks [@loidolt](https://github.com/loidolt)! - Add behaviour helpers for custom surfaces, a live region, and a skip link.
+
+  - **Attachments.** `escapeKey`, `clickOutside`, `autofocus`, `rovingFocus` and `focusTrap` give
+    markup you build yourself the keyboard and focus contract the library's own overlays and groups
+    already have. They are Svelte attachments, so they never run during SSR.
+  - **`createAnnouncer()` and `LiveRegion`.** Speak status changes without moving focus. The
+    announcer empties the region between messages, so a repeated message is still announced, and
+    clears stale text after `clearAfter`.
+  - **`SkipLink`** jumps keyboard users past repeated navigation. It also moves focus to the
+    target, so the next Tab continues from the content.
+  - **`describedBy(...ids)`** builds an `aria-describedby` value, or `undefined` when there are no
+    ids. `Field` and `Fieldset` now use it.
+  - **Tokens:** WCAG contrast helpers (`getContrastRatio`, `meetsContrast`, `validateContrast`,
+    `getContrastTextColor`) and named `aspectRatio` frames, emitted as `--loidolt-aspect-*`.
+  - **Styles:** `.ldt-sr-only-focusable`, `.ldt-touch-target-expand`, `.ldt-line-clamp` (with
+    `--ldt-lines`), and `.ldt-print-visible`.
+
+## 0.5.0
+
+### Minor Changes
+
+- [#6](https://github.com/loidolt/loidolt-theme/pull/6) [`1029b55`](https://github.com/loidolt/loidolt-theme/commit/1029b550c9fbca6834f6c028c2abf73ab9f4aa02) Thanks [@loidolt](https://github.com/loidolt)! - Add `.ldt-prose` long-form content styles (headings, lists and GFM task lists, blockquotes, inline and block code, tables, `details`) with a zero-specificity `.ldt-not-prose` opt-out and `--ldt-prose-size` / `--ldt-prose-width` knobs. Also ships the accessibility remediation for `Dialog`, `AlertDialog`, `Drawer`, `AppShell`, `ToastViewport` and the toaster that landed after 0.4.0.
+
 ## 0.4.0
 
 ### Minor Changes

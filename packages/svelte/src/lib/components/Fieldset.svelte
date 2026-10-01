@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { HTMLFieldsetAttributes } from 'svelte/elements';
-  import { cx } from '../utils.js';
+  import { cx, describedBy as describedByIds } from '../utils.js';
 
   interface Props extends HTMLFieldsetAttributes {
     /** Defaults to an SSR-stable generated id, used to wire the description and error. */
@@ -34,8 +34,7 @@
   }: Props = $props();
 
   const describedBy = $derived(
-    [description && `${id}-description`, error && `${id}-error`].filter(Boolean).join(' ') ||
-      undefined
+    describedByIds(description && `${id}-description`, error && `${id}-error`)
   );
 </script>
 

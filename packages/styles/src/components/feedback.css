@@ -47,6 +47,38 @@
   transform-origin: left center;
   transition: transform var(--loidolt-motion-normal) var(--loidolt-motion-easing);
 }
+.ldt-progress--sm {
+  height: 0.2rem;
+}
+.ldt-progress--lg {
+  height: 0.6rem;
+}
+.ldt-progress--success .ldt-progress__bar {
+  background: var(--loidolt-success);
+}
+.ldt-progress--warning .ldt-progress__bar {
+  background: var(--loidolt-warning);
+}
+.ldt-progress--error .ldt-progress__bar {
+  background: var(--loidolt-danger);
+}
+.ldt-progress--info .ldt-progress__bar {
+  background: var(--loidolt-info);
+}
+.ldt-progress-field {
+  display: flex;
+  align-items: center;
+  gap: var(--loidolt-space-3);
+}
+.ldt-progress-field__value {
+  flex: none;
+  min-width: 4ch;
+  white-space: nowrap;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
 .ldt-progress--indeterminate .ldt-progress__bar {
   width: 40%;
   transform: none;
@@ -70,6 +102,38 @@
   );
   background-size: 200% 100%;
   animation: ldt-shimmer 1.5s linear infinite;
+}
+/* Shapes take the metrics of what they stand in for, so the layout does not jump on load. */
+.ldt-skeleton--text,
+.ldt-skeleton--title,
+.ldt-skeleton--avatar,
+.ldt-skeleton--button,
+.ldt-skeleton--card {
+  display: block;
+}
+.ldt-skeleton--text {
+  height: 0.8em;
+  min-height: 0;
+  margin-block: 0.35em;
+}
+.ldt-skeleton--title {
+  width: 60%;
+  height: 1.4em;
+}
+.ldt-skeleton--avatar {
+  width: var(--loidolt-size-control);
+  height: var(--loidolt-size-control);
+}
+.ldt-skeleton--button {
+  width: 7rem;
+  height: var(--loidolt-size-control);
+}
+.ldt-skeleton--card {
+  width: 100%;
+  height: 10rem;
+}
+.ldt-skeleton-lines {
+  display: block;
 }
 @keyframes ldt-shimmer {
   to {
@@ -123,6 +187,35 @@
 .ldt-toast__dismiss {
   grid-area: 1 / 2 / span 2 / auto;
   align-self: start;
+}
+.ldt-toast__actions {
+  grid-column: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem; /* @literal button cluster */
+  margin-top: 0.2rem;
+}
+/* Logical insets, so `start`/`end` follow the writing direction. */
+.ldt-toast-viewport--bottom-start {
+  right: auto;
+  left: 1rem;
+  inset-inline: 1rem auto;
+}
+.ldt-toast-viewport--bottom-center,
+.ldt-toast-viewport--top-center {
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.ldt-toast-viewport--top-end,
+.ldt-toast-viewport--top-start,
+.ldt-toast-viewport--top-center {
+  top: 1rem;
+  bottom: auto;
+}
+.ldt-toast-viewport--top-start {
+  right: auto;
+  inset-inline: 1rem auto;
 }
 /* A colored dot that reports state where a Badge would be too loud. */
 .ldt-status-dot {

@@ -1,6 +1,7 @@
 import type { ColorRoles } from '../contrast.js';
 import {
   borders,
+  cssVarName,
   darkSemantic,
   flattenInto,
   flattenTokens,
@@ -138,8 +139,8 @@ const scaleLengths = (value: string, factor: number) =>
     (_, amount: string, unit: string) => `${round(parseFloat(amount) * factor)}${unit}`
   );
 
-const roleName = (name: string) =>
-  `--loidolt-${name.replace(/[A-Z]/g, (l) => `-${l.toLowerCase()}`)}`;
+// The same naming as the base stylesheet, so `chart1` lands on `--loidolt-chart-1`.
+const roleName = (name: string) => cssVarName([name]);
 const cssValue = (value: Value) => (isRef(value) ? `var(${value.$ref})` : value);
 
 const defaultValues = new Map(flattenTokens());

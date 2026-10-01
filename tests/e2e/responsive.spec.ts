@@ -1,6 +1,5 @@
-import { expect, test } from '@playwright/test';
-
-import { catalogRoutes } from './catalog-routes.js';
+import { expect, test } from './fixtures';
+import { routes } from './routes';
 
 const widths = [320, 360, 390, 768, 844];
 
@@ -10,13 +9,16 @@ const dimensions = (element: HTMLElement) => ({
 });
 
 test.describe('responsive catalog', () => {
-  for (const width of widths) {
-    test(`every route reflows at ${width}px without document-level horizontal scrolling`, async ({
+  for (const route of routes) {
+    test(`${route} reflows without document-level horizontal scrolling`, async ({
       page,
     }, testInfo) => {
-      test.skip(testInfo.project.name !== 'desktop-chromium', 'One desktop browser is sufficient.');
-      await page.setViewportSize({ width, height: width === 844 ? 390 : 844 });
-      for (const route of catalogRoutes) {
+      test.skip(
+        testInfo.project.name !== 'desktop-chromium',
+        'One browser sweep covers all widths.'
+      );
+      for (const width of widths) {
+        await page.setViewportSize({ width, height: width === 844 ? 390 : 844 });
         await page.goto(route);
         // Soft pads controls out and compact shrinks them; neither may push a page sideways.
         for (const preset of ['loidolt', 'soft', 'compact']) {

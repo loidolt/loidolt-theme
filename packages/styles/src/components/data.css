@@ -201,3 +201,115 @@
 .ldt-record-stepper__count {
   white-space: nowrap;
 }
+/* The filters narrowing a list, each removable on its own. Sits under the list's toolbar. */
+.ldt-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--loidolt-space-2);
+}
+.ldt-filter-chips__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--loidolt-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* DataTable: selection, editable cells, responsive columns, virtual spacers. */
+.ldt-table :where(th, td).ldt-data-table__select {
+  width: 2.75rem;
+  padding-inline-end: 0;
+}
+.ldt-data-table__radio {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--loidolt-accent);
+}
+.ldt-table tbody tr[data-selected] {
+  background: var(--loidolt-surface-alt);
+}
+.ldt-table tbody tr[data-selected] td:first-child {
+  box-shadow: inset var(--loidolt-stroke-accent) 0 0 var(--loidolt-accent);
+}
+.ldt-data-table__spacer td {
+  padding: 0;
+  border: 0;
+}
+/* The resting state of an editable cell: reads as the value, reveals itself on hover or focus. */
+.ldt-data-table__edit {
+  min-height: 1.5rem;
+  width: 100%;
+  border: 0;
+  border-bottom: var(--loidolt-border-width) dashed transparent;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  text-align: inherit;
+  cursor: text;
+}
+.ldt-data-table__edit:hover {
+  border-bottom-color: var(--loidolt-border-control);
+}
+.ldt-data-table__edit-input {
+  width: 100%;
+  min-height: 1.5rem;
+  border: 0;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-accent);
+  padding: 0;
+  color: inherit;
+  background: var(--loidolt-surface-input);
+  font: inherit;
+  text-align: inherit;
+}
+@media (max-width: 1024px) {
+  .ldt-table :where(th, td)[data-hide-below='expanded'] {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  .ldt-table :where(th, td)[data-hide-below='compact'] {
+    display: none;
+  }
+}
+
+/* A faceted-filter trigger carries the number of values chosen. */
+.ldt-facet__count {
+  display: inline-grid;
+  min-width: 1.25rem;
+  place-items: center;
+  margin-inline-start: 0.4rem;
+  padding-inline: 0.3rem; /* @literal count badge metrics */
+  color: var(--loidolt-on-accent);
+  background: var(--loidolt-accent);
+  font-size: var(--loidolt-font-size-xs);
+}
+
+/* The footer under a data table: status line, rows-per-page, page trail. */
+.ldt-data-table-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--loidolt-space-3);
+}
+.ldt-data-table-pagination__summary {
+  margin: 0;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  font-variant-numeric: tabular-nums;
+}
+.ldt-data-table-pagination__size {
+  display: flex;
+  align-items: center;
+  gap: var(--loidolt-space-2);
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
+}
+.ldt-data-table-pagination__size .ldt-select {
+  width: auto;
+}

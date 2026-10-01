@@ -12,11 +12,18 @@ accessibility contract, and a generated prop table for every component.
 
 ## Packages
 
-| Package                 | Purpose                                                                                                            |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `@loidolt/theme-tokens` | Typed colour, typography, spacing, sizing, border, shadow, z-index, and motion values plus generated CSS variables |
-| `@loidolt/theme-styles` | Bundled fonts, base styles, accessibility helpers, component classes, and layout utilities                         |
-| `@loidolt/theme-svelte` | Accessible Svelte 5 controls, overlays, feedback, surfaces, and application layouts                                |
+| Package                 | Purpose                                                                                                               |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `@loidolt/theme-tokens` | Typed colour, typography, spacing, sizing, border, shadow, z-index, and motion values plus generated CSS variables    |
+| `@loidolt/theme-styles` | Bundled fonts, base styles, accessibility helpers, component classes, and layout utilities                            |
+| `@loidolt/theme-svelte` | Accessible Svelte 5 controls, overlays, feedback, surfaces, and application layouts                                   |
+| `@loidolt/theme-charts` | Accessible ECharts charts painted from the tokens, each with a data-table alternative ([README](packages/charts))     |
+| `@loidolt/theme-maps`   | Accessible MapLibre maps on a token-coloured basemap, with keyboard markers and layer tools ([README](packages/maps)) |
+| `@loidolt/theme-docs`   | Safe, server-rendered Markdown documentation: pages, contents, highlighted code, diagrams ([README](packages/docs))   |
+
+The last three are optional. Each has its own heavy peer (`echarts`, `maplibre-gl`, and optionally
+`shiki`/`mermaid`), so an app that draws no charts never installs ECharts. All six are released
+together on one version.
 
 ## Requirements
 
@@ -98,10 +105,10 @@ server matches the client and hydration never re-labels a control. Nothing touch
 
 ### Two variable prefixes
 
-| Prefix        | Meaning                                                                                                                                                                                                |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `--loidolt-*` | The public token contract. Primitives (`--loidolt-color-*`), colour roles (`--loidolt-surface`) and shape/voice roles (`--loidolt-radius-control`). Override these to theme the system.                |
-| `--ldt-*`     | Per-component knobs read at a single call site — `--ldt-dialog-width`, `--ldt-sidebar-width`, `--ldt-inspector-width`, `--ldt-gap`, `--ldt-min`. Set them inline or on a wrapper to tune one instance. |
+| Prefix        | Meaning                                                                                                                                                                                                                    |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--loidolt-*` | The public token contract. Primitives (`--loidolt-color-*`), colour roles (`--loidolt-surface`) and shape/voice roles (`--loidolt-radius-control`). Override these to theme the system.                                    |
+| `--ldt-*`     | Per-component knobs read at a single call site — `--ldt-dialog-width`, `--ldt-sidebar-width`, `--ldt-inspector-width`, `--ldt-gap`, `--ldt-min`, `--ldt-prose-size`. Set them inline or on a wrapper to tune one instance. |
 
 ### Tokens have three tiers
 
@@ -205,10 +212,12 @@ The catalog ships a live example of both (a dark-mode switch and a side-by-side 
 
 ### Cascade layers
 
-Styles are published in `@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.components,
-loidolt.utilities, loidolt.a11y`. Unlayered application CSS outranks all of them, so plain
-selectors in your app always win — no `!important` needed. `loidolt.reset` is deliberately empty
-and reserved for an app's own reset.
+Styles are published in `@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.vendor,
+loidolt.components, loidolt.utilities, loidolt.a11y`. Unlayered application CSS outranks all of
+them, so plain selectors in your app always win — no `!important` needed. `loidolt.reset` is
+deliberately empty and reserved for an app's own reset. `loidolt.vendor` holds third-party CSS a
+loidolt package ships with (MapLibre's, for `@loidolt/theme-maps`), so our component styles can
+restyle it.
 
 ## Presets
 
@@ -363,6 +372,30 @@ export const handle = ({ event, resolve }) =>
 Both take the same options (`storageKey`, `attribute`, `defaultPreference`, `defaultScheme`), and
 they must agree: the script decides the first paint, the store decides everything after it.
 
+### Colours for canvas and WebGL
+
+Charts and maps paint on a canvas, which cannot read `var()`. `createTokenColors()` reads
+semantic roles off the page as concrete hex values — so an app's own theme reaches the canvas —
+and follows every theme change, bumping `version` when the colours actually change:
+
+```ts
+import { createTokenColors } from '@loidolt/theme-svelte';
+import { chartRoles } from '@loidolt/theme-tokens';
+
+const palette = createTokenColors(chartRoles, { element: () => node });
+// palette.colors.categorical → ['#c65224', '#2f6f8a', …] in light, the dark set in dark
+```
+
+Pass the element you paint into, so a scoped `data-theme` subtree is honoured. On the server,
+and anywhere the page cannot be read, it falls back to the reference light or dark values
+(`chartColors()`, `mapColors()` and `roleValue()` in `@loidolt/theme-tokens` give the same
+values without a DOM).
+
+The tokens include eight categorical series colours (`--loidolt-chart-1` … `-8`), a five-step
+sequential ramp, a seven-step diverging ramp centred on a neutral, gain/loss colours and the
+basemap roles (`--loidolt-map-*`). Each is checked in both themes: every series holds 3:1
+against every surface and stays visibly distinct from the others, and map labels hold 4.5:1.
+
 ## Responsive layout
 
 Breakpoints are tokens (`compact` 760px, `expanded` 1024px, `wide` 1400px) but not custom
@@ -444,17 +477,121 @@ scrolls and nothing sticks. Exactly one column should report a sort; leave the r
 Pass `empty` only when there are no rows, since the component cannot see inside `children` to
 count them.
 
+### Data-driven tables
+
+`createDataTable()` holds the state — sorting, search, column filters, paging, selection and
+column visibility — and `DataTable` with its companions renders it:
+
+```svelte
+<script lang="ts">
+  import {
+    createDataTable,
+    DataTable,
+    DataTableFacetedFilter,
+    DataTablePagination,
+    DataTableSearch,
+    Toolbar,
+  } from '@loidolt/theme-svelte';
+
+  let { sheets } = $props();
+
+  const table = createDataTable({
+    get data() {
+      return sheets;
+    },
+    columns: [
+      { id: 'name', header: 'Name', sortable: true },
+      { id: 'stock', header: 'Stock' },
+      { id: 'layers', header: 'Layers', sortable: true, align: 'end' },
+    ],
+    getRowId: (sheet) => sheet.id,
+    pageSize: 25,
+    selection: 'multiple',
+  });
+</script>
+
+<Toolbar label="Sheet tools">
+  <DataTableSearch {table} />
+  <DataTableFacetedFilter {table} column="stock" />
+</Toolbar>
+<DataTable {table} caption="Cut sheets" />
+<DataTablePagination {table} />
+```
+
+The engine is independent of the component: `table.sortOf(id)` feeds `TableHeader`, `table.page`
+feeds `Pagination`, and `table.rows` is the page to render if you build the markup yourself. For
+server data, set `manual: { sorting, filtering, pagination }` and `rowCount`, and fetch in
+`onSortChange`, `onSearchChange`, `onFiltersChange` and `onPageChange`.
+
+## Long-form content
+
+Rendered Markdown, documentation and help text get their typography from one class:
+
+```svelte
+<article class="ldt-prose" style="--ldt-prose-size: 0.9375rem">
+  {@html renderedMarkdown}
+  <div class="ldt-not-prose">…ordinary UI inside the article…</div>
+</article>
+```
+
+`.ldt-prose` styles headings, lists (including GFM task lists), blockquotes, inline and block
+code, tables, images, `details`, and rules, using only semantic tokens, so it follows dark mode.
+Every rule weighs zero specificity: a component class inside prose (`.ldt-button`,
+`.ldt-card`, `.ldt-table`) always wins, and `.ldt-not-prose` is only needed for bare elements
+that should read as UI rather than content. Code blocks keep a background written inline by a
+highlighter such as Shiki. `--ldt-prose-size` scales the text and `--ldt-prose-width` caps the
+measure.
+
+## Charts, maps and documentation
+
+These live in their own packages, and each README covers it in full. In short:
+
+```svelte
+<script lang="ts">
+  import { LineChart } from '@loidolt/theme-charts';
+  import { MapView, MapMarker } from '@loidolt/theme-maps';
+  import { Markdown } from '@loidolt/theme-docs';
+</script>
+
+<LineChart title="Sheets per month" {data} dataTable="toggle" />
+
+<MapView label="Workshop" center={[-122.66, 45.51]} zoom={13}>
+  <MapMarker lngLat={[-122.66, 45.51]} label="Workshop" />
+</MapView>
+
+<Markdown source={guide} />
+```
+
+- **[`@loidolt/theme-charts`](packages/charts)** — `LineChart`, `BarChart`, `PieChart`,
+  `ScatterChart`, `RadarChart`, `FunnelChart`, `GaugeChart`, `HeatmapChart`, `TreemapChart`,
+  `CandlestickChart`, `SankeyChart`, and `Chart` for any ECharts option. Every chart is a named
+  figure with a generated description and its data as a real table. The chart colours
+  (`--loidolt-chart-*`) are read live, so a theme change recolours the chart in place.
+- **[`@loidolt/theme-maps`](packages/maps)** — `MapView`, `MapSource`, seven layer types,
+  `MapMarker` (a named button), `MapPopup`, legends, `BasemapSwitcher`, `MapFeatureList`,
+  `LayerManager` and `DeckOverlay`. The default basemap draws
+  [OpenFreeMap](https://openfreemap.org) vector tiles in the `--loidolt-map-*` colours;
+  `basemap="blank"` needs no network. `@loidolt/theme-maps/core` adds routing, distance,
+  spatial-index and level-of-detail helpers that run anywhere, including a worker. Import
+  `@loidolt/theme-maps/styles.css` next to the theme stylesheet.
+- **[`@loidolt/theme-docs`](packages/docs)** — `Markdown`, `MarkdownPage`, `CodeSnippet`,
+  `MermaidDiagram`, `TableOfContents`, `TocPanel`, `DocsHub` and `DocsCard`, over
+  `renderMarkdown` (also in `@loidolt/theme-docs/core` for a `load`). Raw HTML is escaped and
+  URLs are allow-listed unless you opt in. Shiki highlighting follows the
+  `--loidolt-syntax-*` tokens.
+
 ## Components
 
-- Actions: `Button` (`variant="text"` covers the former `TextButton`), `IconButton`, `ToggleGroup`
-- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Checkbox`, `RadioGroup`, `Switch`
-- Surfaces: `Card`, `Panel`, `Badge`, `Separator`, `PageHeader`, `Section`
-- Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`
+- Actions: `Button` (`variant="text"` covers the former `TextButton`), `IconButton`, `ToggleGroup`, `ListRow`
+- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Combobox`, `MultiSelect`, `Slider`, `PasswordInput`, `OTPInput`, `SignaturePad`, `Checkbox`, `RadioGroup`, `Switch`, `FileInput`, `SwatchGroup`
+- Surfaces: `Card`, `Panel`, `Section`, `PageHeader`, `Separator`, `Thumbnail`, `Stat`, `Avatar`, `Badge`
+- Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`, `DataTable`, `DataTableSearch`, `DataTableFacetedFilter`, `DataTableColumnVisibility`, `DataTablePagination`, `ActiveFilterChips`, `CodeBlock`, `CommentList`, `RecordStepper`, `Filmstrip`
+- Feedback: `Alert`, `Toast`, `ToastViewport`, `Progress`, `Spinner`, `Skeleton`, `StatusDot`, `LiveRegion`, `Marker`
 - Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`
-- Navigation: `Topbar`, `Brand`, `NavMenu`, `Breadcrumbs`, `Tabs`, `Accordion`, `ContextBar`
-- Feedback: `Alert`, `Toast`, `ToastViewport`, `Spinner`, `Skeleton`, `Progress`
-- Layout: `AppShell`, `Workspace`, `Sidebar`
-- Theme: `ThemeToggle`
+- Navigation: `Topbar`, `Brand`, `NavMenu`, `SkipLink`, `Breadcrumbs`, `SegmentedNav`, `Tabs`, `Accordion`, `ContextBar`
+- Layout: `AppShell`, `Workspace`, `Sidebar`, `FloatingBar`, `AspectRatio`, `Toolbar`, `FilterPanel`
+- Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`, `MediaGrid`, `Lightbox`, `MediaCarousel`
+- Theme: `PresetPicker`, `ThemeToggle`
 
 Complex focus, portal, dismissal, and keyboard behavior is powered by Bits UI. Icons remain
 consumer-supplied through snippets, so the theme does not impose an icon library.
@@ -476,7 +613,7 @@ consumer-supplied through snippets, so the theme does not impose an icon library
   (`DialogPrimitive`, `DropdownMenuPrimitive`, `PopoverPrimitive`, `TabsPrimitive`,
   `TooltipPrimitive`) for anything the declarative API does not model.
 - **Vocabulary**: actions use `default | primary | quiet | danger | ghost | text`; status uses
-  `info | success | warning | error`; sizes are `sm | md | lg` (Dialog adds `xl`).
+  `info | success | warning | error`; sizes are `sm | md | lg` (Dialog adds `xl` and `full`).
 - **`Badge` sizing**: `Badge` defaults to `size="inline"`, a compact chip scaled to the text it
   annotates — right for table cells and running copy. Standing a badge in a row of controls, give
   it the same size as its neighbours (`size="md"` next to default buttons) so it shares their
@@ -507,6 +644,11 @@ consumer-supplied through snippets, so the theme does not impose an icon library
 </ToastViewport>
 ```
 
+`toaster.success`, `info`, `warning` and `error` are shortcuts for `push` with a variant; `error`
+stays until dismissed unless you pass a `duration`, so a failure is never missed. A toast can carry
+one `action` — `{ label: 'Undo', onAction }` — and `toaster.update(id, patch)` changes a toast in
+place, for "Uploading…" becoming "Uploaded". `ToastViewport` takes a `position`.
+
 `ToastViewport` is the single live region — `Toast` deliberately carries no `role="status"`, so
 nothing is announced twice.
 
@@ -519,48 +661,219 @@ Wrap the application once in `TooltipProvider` so the skip-delay grouping works 
 tooltip. A `Tooltip` without a provider ancestor creates its own, which is correct but loses
 grouping.
 
+## Media
+
+`VideoPlayer` and `AudioPlayer` put this system's controls on native media elements;
+`MediaEmbed` shows YouTube and Vimeo behind a click-to-load facade, so nothing is requested from
+the provider until the user presses play.
+
+```svelte
+<VideoPlayer
+  label="Cutting a bracket"
+  src="/media/cut.webm"
+  tracks={[{ src: '/media/cut.en.vtt', srclang: 'en', label: 'English' }]}
+/>
+<MediaEmbed url="https://youtu.be/aqz-KE-bpKQ" title="Assembly guide" />
+```
+
+HLS playlists (`.m3u8`) play natively in Safari. Elsewhere they need hls.js, an optional peer
+dependency the package never imports itself; register it once and only apps that stream pay for
+it:
+
+```ts
+import { setHlsLoader } from '@loidolt/theme-svelte';
+
+setHlsLoader(() => import('hls.js').then((module) => module.default));
+```
+
+The players are built on `createMediaPlayer()` — reactive state and commands over any `<video>`
+or `<audio>` (`{@attach player.attach}`) — for when you want your own controls.
+`createMediaZoom()` provides pinch, trackpad and drag-to-pan zoom for an image in a frame, and
+`formatDuration`, `formatDurationSpoken`, `parseEmbedUrl`, `buildEmbedSrc` and `inferMediaKind`
+are exported for your own media UI.
+
+## Behaviour helpers
+
+Every overlay, menu and group in the library already handles its own keyboard and focus. When
+you build a custom surface, these attachments give it the same contract. They run only in the
+browser, so they are SSR-safe, and they re-run when their arguments change:
+
+```svelte
+<script lang="ts">
+  import { clickOutside, escapeKey, focusTrap, rovingFocus } from '@loidolt/theme-svelte';
+  let open = $state(false);
+  let trigger = $state<HTMLButtonElement | null>(null);
+</script>
+
+<div
+  {@attach escapeKey(() => (open = false), { enabled: open })}
+  {@attach clickOutside(() => (open = false), { enabled: open, ignore: [trigger] })}
+  {@attach focusTrap({ enabled: open })}
+>
+  …
+</div>
+
+<div role="toolbar" aria-label="Formatting" {@attach rovingFocus()}>
+  <button data-roving-item>Bold</button>
+  <button data-roving-item>Italic</button>
+</div>
+```
+
+| Helper                           | Contract                                                                                                           |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `escapeKey(handler, options)`    | Escape anywhere (or only inside, with `scope: 'node'`); ignored during IME composition.                            |
+| `clickOutside(handler, options)` | A press outside the element and outside `ignore`; one `pointerdown` listener covers mouse, pen and touch.          |
+| `autofocus(options)`             | Focus on mount, on the next frame or after `delay`; `select` also selects an input's text.                         |
+| `rovingFocus(options)`           | Arrow, Home and End keys between `[data-roving-item]` descendants, skipping disabled ones, with a single tab stop. |
+| `focusTrap(options)`             | Tab and Shift+Tab stay inside while enabled; focus returns to where it was when released.                          |
+
+`createAnnouncer()` drives a `LiveRegion`. It empties the region between messages, so a
+repeated message is still announced, and clears it after `clearAfter` milliseconds:
+
+```svelte
+<script lang="ts">
+  import { createAnnouncer, LiveRegion } from '@loidolt/theme-svelte';
+  const announcer = createAnnouncer();
+</script>
+
+<LiveRegion message={announcer.message} politeness={announcer.politeness} />
+<button onclick={() => announcer.announce('Draft saved')}>Save</button>
+```
+
+`describedBy(...ids)` joins the ids that describe a control into one `aria-describedby` value,
+or `undefined` when none are present.
+
+The tokens package exports the WCAG contrast arithmetic the token tests use —
+`getContrastRatio`, `meetsContrast`, `validateContrast`, `getContrastTextColor` — for colours
+chosen at runtime, and named `aspectRatio` frames (`square`, `video`, `photo`, `portrait`,
+`wide`) that are also emitted as `--loidolt-aspect-*`.
+
+The styles package adds `.ldt-sr-only-focusable`, `.ldt-touch-target-expand` (a 44px hit area
+that does not change layout), `.ldt-line-clamp` (with `--ldt-lines`), and `.ldt-print-visible`.
+
 ## Utilities and types
 
 ```ts
 import {
+  autofocus,
   breakpointQuery,
+  buildEmbedSrc,
+  canPlayHlsNatively,
+  clickOutside,
+  createAnnouncer,
+  createDataTable,
+  createHlsSource,
+  createMediaPlayer,
   createMediaQuery,
+  createMediaZoom,
   createTheme,
   createToaster,
   cx,
+  describedBy,
+  embedThumbnail,
+  escapeKey,
+  focusTrap,
+  formatDuration,
+  formatDurationSpoken,
+  inferMediaKind,
+  isHlsSource,
+  loadHls,
+  mediaLabel,
+  mediaThumbnail,
+  parseEmbedUrl,
+  resolveAspectRatio,
+  rovingFocus,
+  setHlsLoader,
+  strokeLength,
+  strokePath,
+  strokesToSvg,
   themeScript,
+  toMediaSources,
+  validateSignature,
 } from '@loidolt/theme-svelte';
 import type {
   ActionVariant,
   Alignment,
+  Announcer,
+  AnnouncerOptions,
+  AspectRatioName,
+  AudioMediaItem,
+  AutofocusOptions,
   BadgeSize,
   BadgeVariant,
   BreakpointName,
+  ChoiceOption,
+  ClickOutsideOptions,
   ColorScheme,
   ColumnAlign,
   ControlSize,
   Crumb,
+  DataTableColumn,
+  DataTableFilterValue,
+  DataTableOptions,
+  DataTableRow,
+  DataTableSort,
+  DataTableState,
   DialogSize,
   Disclosure,
+  EmbedMediaItem,
+  EmbedProvider,
+  EmbedSrcOptions,
+  EscapeKeyOptions,
+  FocusTrapOptions,
   HeadingLevel,
+  HlsConstructor,
+  HlsErrorData,
+  HlsInstance,
+  HlsLoader,
+  HlsSource,
+  HlsSourceOptions,
+  HlsStatus,
+  ImageMediaItem,
+  MediaItem,
+  MediaKind,
+  MediaPlayer,
+  MediaPlayerLabels,
+  MediaPlayerOptions,
   MediaQuery,
   MediaQueryOptions,
+  MediaSourceEntry,
+  MediaTextTrack,
+  MediaTrackInfo,
+  MediaZoom,
+  MediaZoomOptions,
+  MenuCheckboxItem,
+  MenuEntry,
+  MenuGroup,
   MenuItem,
+  MenuRadioGroup,
+  MenuSub,
   NavItem,
   Option,
+  OptionGroup,
   Orientation,
+  ParsedEmbed,
   Placement,
+  Politeness,
+  RovingFocusOptions,
+  SignatureError,
+  SignaturePoint,
+  SignatureStroke,
+  SignatureValue,
   SortDirection,
   StatusVariant,
   Theme,
   ThemeOptions,
   ThemePreference,
   ThemeScriptOptions,
+  ToastAction,
   Toaster,
   ToasterOptions,
   ToastOptions,
   ToastRecord,
+  ToastShortcutOptions,
   TriggerChildProps,
+  VideoMediaItem,
 } from '@loidolt/theme-svelte';
 ```
 

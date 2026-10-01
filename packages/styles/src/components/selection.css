@@ -243,3 +243,41 @@
     width: 4.5rem;
   }
 }
+/*
+ * A removable value — a chosen option, an active filter. Square, because it is pressable; the
+ * pill silhouette is reserved for badges, which are not.
+ */
+.ldt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem; /* @literal chip glyph spacing */
+  min-height: 1.5rem;
+  max-width: 100%;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  border-radius: var(--loidolt-radius-control);
+  padding-inline-start: 0.45rem; /* @literal chip label inset */
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-alt);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: calc(var(--loidolt-label-tracking) * 0.4);
+}
+.ldt-chip > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ldt-chip__remove {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1.5rem;
+  min-height: 1.5rem;
+  border: 0;
+  padding: 0;
+  color: var(--loidolt-text-muted);
+  background: transparent;
+}
+.ldt-chip__remove:hover:not(:disabled) {
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+}

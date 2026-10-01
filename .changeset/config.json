@@ -2,7 +2,16 @@
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
   "changelog": ["@changesets/changelog-github", { "repo": "loidolt/loidolt-theme" }],
   "commit": false,
-  "fixed": [["@loidolt/theme-tokens", "@loidolt/theme-styles", "@loidolt/theme-svelte"]],
+  "fixed": [
+    [
+      "@loidolt/theme-tokens",
+      "@loidolt/theme-styles",
+      "@loidolt/theme-svelte",
+      "@loidolt/theme-charts",
+      "@loidolt/theme-maps",
+      "@loidolt/theme-docs"
+    ]
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",

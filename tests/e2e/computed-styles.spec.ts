@@ -1,6 +1,7 @@
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from './fixtures';
 
-import { catalogRoutes } from './catalog-routes.js';
+import { routes as catalogRoutes } from './routes';
 
 /*
  * A computed-style fingerprint of every catalog route: for each element the package styles, the

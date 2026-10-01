@@ -25,7 +25,9 @@ describe.skipIf(!built)('published package shape', () => {
     expect(Object.keys(dist).sort()).toEqual(names);
     expect(dist.cx).toBeTypeOf('function');
     expect(dist.createToaster).toBeTypeOf('function');
-  });
+    // Cold-imports two complete module graphs; under coverage instrumentation that alone sits
+    // near Vitest's 5s default, so the budget is explicit rather than left to machine speed.
+  }, 30_000);
 
   it('ships a stylesheet and type declarations alongside it', async () => {
     expect(existsSync(distPath('styles.css'))).toBe(true);

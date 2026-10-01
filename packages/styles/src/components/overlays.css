@@ -32,6 +32,18 @@
 .ldt-dialog--xl {
   --ldt-dialog-width: 60rem;
 }
+.ldt-dialog--full {
+  --ldt-dialog-width: 100vw;
+  height: calc(100dvh - 2rem);
+  max-height: none;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+.ldt-dialog__actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--loidolt-space-1);
+}
 .ldt-dialog__header,
 .ldt-dialog__body,
 .ldt-dialog__footer {
@@ -231,6 +243,62 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+/* Destructive rows read as danger at rest, and invert to the danger fill when highlighted. */
+.ldt-menu__item--danger {
+  color: var(--loidolt-text-danger);
+}
+.ldt-menu__item--danger:hover:not(:disabled, [data-disabled]),
+.ldt-menu__item--danger[data-highlighted] {
+  color: var(--loidolt-on-danger);
+  background: var(--loidolt-danger);
+}
+.ldt-menu__group {
+  display: grid;
+  gap: 0.1rem; /* @literal hairline between items */
+}
+/* Checkbox and radio rows lead with a drawn indicator, so state never rests on colour alone. */
+.ldt-menu__item--check,
+.ldt-menu__item--radio {
+  justify-content: flex-start;
+  gap: 0.6rem; /* @literal glyph-to-label spacing, not density */
+}
+.ldt-menu__item--check .ldt-menu__hint,
+.ldt-menu__item--radio .ldt-menu__hint {
+  margin-inline-start: auto;
+}
+.ldt-menu__indicator {
+  position: relative;
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: none;
+  border: var(--loidolt-border-width) solid currentColor;
+}
+.ldt-menu__item--check[data-state='checked'] .ldt-menu__indicator::after {
+  content: '';
+  position: absolute;
+  inset: 0.05rem 0.22rem 0.18rem;
+  border: solid currentColor;
+  border-width: 0 2px 2px 0; /* @literal checkmark glyph */
+  transform: rotate(45deg);
+}
+.ldt-menu__item--radio[data-state='checked'] .ldt-menu__indicator::after {
+  content: '';
+  position: absolute;
+  inset: 0.17rem;
+  background: currentColor;
+}
+.ldt-menu__chevron {
+  width: 0.4rem;
+  height: 0.4rem;
+  flex: none;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0; /* @literal chevron glyph */
+  transform: rotate(-45deg);
+}
+.ldt-menu__item--sub[data-state='open'] {
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+}
 .ldt-menu__separator {
   height: var(--loidolt-border-width);
   margin: 0.25rem 0;
@@ -246,6 +314,10 @@
   background: var(--loidolt-surface-inverse);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
   box-shadow: var(--loidolt-shadow-popover);
+}
+/* The arrow's SVG fills with currentColor, so it takes the tooltip's surface colour. */
+.ldt-tooltip__arrow {
+  color: var(--loidolt-surface-inverse);
 }
 /*
  * Bits UI stamps `data-orientation` on the root, list, triggers and panels, so the vertical
@@ -316,4 +388,72 @@
   .ldt-tabs__content[data-orientation='vertical'] {
     padding-block: var(--loidolt-space-4);
   }
+}
+/* The option list of Combobox and MultiSelect: the menu surface, sized to its field. */
+.ldt-listbox {
+  z-index: var(--loidolt-z-menu);
+  min-width: var(--bits-floating-anchor-width, 13rem);
+  max-width: min(28rem, calc(100vw - 2rem));
+  max-height: min(20rem, var(--bits-floating-available-height, 20rem));
+  display: grid;
+  gap: 0.1rem; /* @literal hairline between items */
+  overflow-y: auto;
+  padding: 0.35rem; /* @literal listbox inset */
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  border-radius: var(--loidolt-radius-overlay);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-popover);
+}
+.ldt-listbox__group {
+  display: grid;
+  gap: 0.1rem; /* @literal hairline between items */
+}
+.ldt-listbox__group + .ldt-listbox__group,
+.ldt-listbox__item + .ldt-listbox__group {
+  margin-top: 0.25rem;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+  padding-top: var(--loidolt-space-1);
+}
+.ldt-listbox__heading {
+  padding: 0.4rem 0.55rem 0.25rem; /* @literal optical alignment with item text */
+  color: var(--loidolt-text-accent);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: calc(var(--loidolt-label-tracking) * 0.9);
+  text-transform: var(--loidolt-label-transform);
+}
+.ldt-listbox__item {
+  min-height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--loidolt-space-4);
+  padding: 0.55rem; /* @literal listbox option metrics */
+  cursor: default;
+}
+.ldt-listbox__item[data-highlighted] {
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+}
+.ldt-listbox__item[data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+/* A check drawn with borders, so selection never depends on an icon font. */
+.ldt-listbox__check {
+  width: 0.35rem;
+  height: 0.65rem;
+  flex: none;
+  border: solid transparent;
+  border-width: 0 2px 2px 0; /* @literal checkmark glyph */
+  transform: rotate(45deg) translate(-0.1rem, -0.1rem);
+}
+.ldt-listbox__item[data-selected] .ldt-listbox__check {
+  border-color: currentColor;
+}
+.ldt-listbox__empty {
+  padding: 0.55rem; /* @literal matches the option metrics */
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
 }

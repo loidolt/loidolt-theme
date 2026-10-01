@@ -1,4 +1,5 @@
 @import '@loidolt/theme-svelte/styles.css';
+@import '@loidolt/theme-maps/styles.css';
 @import '@loidolt/theme-styles/dark';
 /* Every built-in preset, so the picker in the top bar can switch between them at runtime. */
 @import '@loidolt/theme-styles/presets/loidolt';
@@ -182,6 +183,13 @@
 .docs-note code,
 .docs-notes code {
   overflow-wrap: anywhere;
+}
+.docs-prose-sample {
+  --ldt-prose-width: 60ch;
+  margin-top: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--loidolt-border);
+  background: var(--loidolt-surface);
 }
 .docs-notes {
   max-width: 70ch;

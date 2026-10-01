@@ -9,6 +9,8 @@ export default defineConfig({
   use: {
     baseURL: 'http://127.0.0.1:4173',
     trace: 'retain-on-failure',
+    // Headless Chromium no longer falls back to software WebGL on its own; maps need it.
+    launchOptions: { args: ['--enable-unsafe-swiftshader', '--use-angle=swiftshader'] },
   },
   projects: [
     {

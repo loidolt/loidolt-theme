@@ -1,13 +1,29 @@
 import { onDestroy } from 'svelte';
 import type { StatusVariant } from './types.js';
 
+/** A single follow-up the toast offers — "Undo", "View", "Retry". */
+export interface ToastAction {
+  label: string;
+  onAction: () => void;
+  /** Dismiss the toast after the action runs. Defaults to `true`. */
+  dismiss?: boolean;
+}
+
 export interface ToastOptions {
   title: string;
   description?: string;
   variant?: StatusVariant;
   /** Milliseconds before auto-dismiss. `0` or `Infinity` keeps the toast until dismissed. */
   duration?: number;
+  /**
+   * A button in the toast. Give an actionable toast enough `duration` to reach it (or `0`):
+   * WCAG 2.2.1 requires that people who need more time get it.
+   */
+  action?: ToastAction;
 }
+
+/** Everything but the title, for the status shortcuts. */
+export type ToastShortcutOptions = Omit<ToastOptions, 'title' | 'variant'>;
 
 export interface ToastRecord extends ToastOptions {
   id: string;
@@ -25,6 +41,16 @@ export interface Toaster {
   readonly toasts: ToastRecord[];
   /** Adds a toast and returns its id. */
   push(toast: ToastOptions): string;
+  /**
+   * Changes a toast in place — "Uploading…" becoming "Uploaded". A new `duration` restarts its
+   * timer. Returns `false` when the toast is already gone.
+   */
+  update(id: string, patch: Partial<ToastOptions>): boolean;
+  success(title: string, options?: ToastShortcutOptions): string;
+  info(title: string, options?: ToastShortcutOptions): string;
+  warning(title: string, options?: ToastShortcutOptions): string;
+  /** Stays until dismissed unless you pass a `duration`: an error should not vanish unread. */
+  error(title: string, options?: ToastShortcutOptions): string;
   dismiss(id: string): void;
   clear(): void;
   /** Suspends every auto-dismiss timer — call on pointer enter / focus in. */
@@ -114,6 +140,26 @@ export function createToaster(options: ToasterOptions = {}): Toaster {
     return id;
   }
 
+  function update(id: string, patch: Partial<ToastOptions>): boolean {
+    const index = toasts.findIndex((toast) => toast.id === id);
+    if (index === -1) return false;
+    if (patch.duration !== undefined) {
+      if (!validDuration(patch.duration)) {
+        throw new RangeError('createToaster: toast `duration` must be non-negative or Infinity');
+      }
+      clearTimer(id);
+      if (!paused) arm(id, patch.duration);
+      else timers.set(id, { timeout: null, remaining: patch.duration, startedAt: 0 });
+    }
+    toasts[index] = { ...toasts[index], ...patch, id };
+    return true;
+  }
+
+  const shortcut =
+    (variant: StatusVariant, fallbackDuration?: number) =>
+    (title: string, options: ToastShortcutOptions = {}) =>
+      push({ duration: fallbackDuration, ...options, title, variant });
+
   const destroy = () => {
     for (const timer of timers.values()) {
       if (timer.timeout !== null) clearTimeout(timer.timeout);
@@ -134,6 +180,11 @@ export function createToaster(options: ToasterOptions = {}): Toaster {
       return toasts;
     },
     push,
+    update,
+    success: shortcut('success'),
+    info: shortcut('info'),
+    warning: shortcut('warning'),
+    error: shortcut('error', 0),
     dismiss,
     clear() {
       for (const toast of [...toasts]) dismiss(toast.id);

@@ -1,39 +1,33 @@
 import { readFile, readdir } from 'node:fs/promises';
+import { PACKAGES } from './packages.mjs';
 
 const root = new URL('../', import.meta.url);
-const components = new URL('../../packages/svelte/src/lib/components/', root);
 const demos = new URL('src/lib/demos/', root);
 
-const componentNames = new Set(
-  (await readdir(components))
-    .filter((file) => file.endsWith('.svelte'))
-    .map((file) => file.slice(0, -7))
-);
 const demoNames = new Set(
   (await readdir(demos)).filter((file) => file.endsWith('.svelte')).map((file) => file.slice(0, -7))
 );
 
-const index = await readFile(new URL('../../packages/svelte/src/lib/index.ts', root), 'utf8');
-const exportNames = new Set(
-  [...index.matchAll(/export \{ default as (\w+) \} from '\.\/components\//g)].map(
-    (match) => match[1]
-  )
-);
-
 const registry = await readFile(new URL('src/lib/registry.ts', root), 'utf8');
-const registryNames = [...registry.matchAll(/^\s+name: '(\w+)',/gm)].map((match) => match[1]);
-const registrySlugs = [...registry.matchAll(/^\s+slug: '([^']+)',/gm)].map((match) => match[1]);
-const props = new Set(
-  Object.keys(JSON.parse(await readFile(new URL('src/lib/generated/props.json', root), 'utf8')))
-);
+/** Every entry opens with `slug`, `name` and — outside theme-svelte — `package`, in that order. */
+const registryEntries = [
+  ...registry.matchAll(/^\s+slug: '([^']+)',\n\s+name: '(\w+)',(?:\n\s+package: '(\w+)',)?/gm),
+].map(([, slug, name, pkg]) => ({ slug, name, package: pkg ?? 'svelte' }));
+const registryNames = registryEntries.map((entry) => entry.name);
+const registrySlugs = registryEntries.map((entry) => entry.slug);
+if (registryEntries.length !== [...registry.matchAll(/^\s+slug: '/gm)].length) {
+  throw new Error('registry: every entry must start with `slug`, then `name`, then `package`');
+}
+
+const props = JSON.parse(await readFile(new URL('src/lib/generated/props.json', root), 'utf8'));
 
 function difference(left, right) {
   return [...left].filter((name) => !right.has(name)).sort();
 }
 
-function assertSame(label, actual) {
-  const missing = difference(componentNames, actual);
-  const extra = difference(actual, componentNames);
+function assertSame(label, expected, actual) {
+  const missing = difference(expected, actual);
+  const extra = difference(actual, expected);
   if (missing.length || extra.length) {
     throw new Error(
       `${label} differs from component sources; missing: ${missing.join(', ') || 'none'}; extra: ${extra.join(', ') || 'none'}`
@@ -41,10 +35,58 @@ function assertSame(label, actual) {
   }
 }
 
-assertSame('barrel exports', exportNames);
-assertSame('catalog demos', demoNames);
-assertSame('generated prop docs', props);
-assertSame('catalog registry', new Set(registryNames));
+const allComponents = new Set();
+const summary = [];
+
+for (const pkg of PACKAGES) {
+  const componentNames = new Set(
+    (await readdir(pkg.components))
+      .filter((file) => file.endsWith('.svelte'))
+      .map((file) => file.slice(0, -7))
+  );
+  for (const name of componentNames) {
+    if (allComponents.has(name)) throw new Error(`${name} is a component in two packages`);
+    allComponents.add(name);
+  }
+
+  const index = await readFile(pkg.barrel, 'utf8');
+  const exportNames = new Set(
+    [...index.matchAll(/export \{ default as (\w+) \} from '\.\/components\//g)].map(
+      (match) => match[1]
+    )
+  );
+  const inPackage = (entryPackage) => entryPackage === pkg.id;
+
+  assertSame(`${pkg.name} barrel exports`, componentNames, exportNames);
+  assertSame(
+    `${pkg.name} registry entries`,
+    componentNames,
+    new Set(registryEntries.filter((entry) => inPackage(entry.package)).map((entry) => entry.name))
+  );
+  assertSame(
+    `${pkg.name} prop docs`,
+    componentNames,
+    new Set(
+      Object.entries(props)
+        .filter(([, docs]) => inPackage(docs.package))
+        .map(([name]) => name)
+    )
+  );
+
+  // The README's component list is the first thing a reader scans, and it silently fell behind
+  // when a whole release of components landed without it.
+  const readme = await readFile(pkg.readme, 'utf8');
+  const componentsSection = readme.split(/^## Components$/m)[1]?.split(/^#{2,3} /m)[0] ?? '';
+  const readmeNames = new Set([...componentsSection.matchAll(/`([A-Z]\w+)`/g)].map((m) => m[1]));
+  const unlisted = difference(componentNames, readmeNames);
+  if (unlisted.length) {
+    throw new Error(`${pkg.name} README "## Components" does not list: ${unlisted.join(', ')}`);
+  }
+  summary.push(`${pkg.id} ${componentNames.size}`);
+}
+
+assertSame('catalog demos', allComponents, demoNames);
+assertSame('catalog registry', allComponents, new Set(registryNames));
 
 for (const [label, values] of [
   ['registry names', registryNames],
@@ -56,5 +98,5 @@ for (const [label, values] of [
 }
 
 console.log(
-  `catalog integrity: ${componentNames.size} components agree across sources, exports, demos, registry, and prop docs`
+  `catalog integrity: ${allComponents.size} components (${summary.join(', ')}) agree across sources, exports, demos, registry, prop docs and READMEs`
 );

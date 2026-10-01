@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 /*
  * The /presets gallery frames one bare sampler page per preset and scheme. Its promise is that

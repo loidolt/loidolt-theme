@@ -19,3 +19,14 @@ Then import components from the package barrel:
   import { Button, Field, Input } from '@loidolt/theme-svelte';
 </script>
 ```
+
+`hls.js` is an optional peer dependency, needed only to play HLS (`.m3u8`) streams outside
+Safari. Install it and register it once:
+
+```ts
+import { setHlsLoader } from '@loidolt/theme-svelte';
+
+setHlsLoader(() => import('hls.js').then((module) => module.default));
+```
+
+See the [design-system documentation](https://theme.loidolt.space) for every component.

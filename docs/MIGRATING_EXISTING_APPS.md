@@ -56,11 +56,31 @@ Change callbacks are camelCase (`onValueChange`, `onCheckedChange`, `onOpenChang
 through as well and both fire. Every component also exposes `bind:ref` when an application needs
 the DOM node (focus management, measurement, third-party integrations).
 
-## 4. Keep domain UI local
+## 4. Move charts, maps and docs onto the optional packages
 
-Map canvases, vector selection handles, layer editors, fabrication previews, export bridges,
-document models, and auth state do not belong in the theme. Style them with public tokens and
-promote a pattern only after at least two applications need the same interface and behavior.
+Apps that already draw with ECharts or MapLibre, or render markdown help pages, can adopt
+`@loidolt/theme-charts`, `@loidolt/theme-maps` and `@loidolt/theme-docs` one screen at a time.
+Each is a separate install, so apps that need none of them pay nothing.
+
+- **Charts.** Replace a hand-configured ECharts instance with the matching wrapper
+  (`LineChart`, `BarChart`, …), or with `Chart` and your existing option, unchanged. Delete
+  hard-coded series colours: the wrappers read `--loidolt-chart-*` and recolour on a theme
+  change. Give every chart a `title`; it becomes the figure's name. Keep the data table
+  (`dataTable="hidden"` is the default) so the numbers stay reachable without the picture.
+- **Maps.** Wrap the existing map in `MapView` and move sources and layers into `MapSource` and
+  the layer components. Your own style URL still works (`mapStyle`); the loidolt basemap is
+  opt-in by leaving it out. Replace DOM-element markers with `MapMarker`, which gives them names
+  and keyboard access. Add `MapFeatureList` wherever the map is the only way to reach a place.
+  On MapLibre 6, register the worker URL once (see the maps README).
+- **Docs.** Render markdown through `Markdown` or `renderMarkdown` instead of setting
+  `{@html}` on the output of `marked`. Raw HTML in existing content will now show as text; turn
+  on `allowHtml` only for content you trust, ideally with a sanitizer in `sanitize`.
+
+## 5. Keep domain UI local
+
+Vector selection handles, bespoke layer editors, fabrication previews, export bridges, document
+models, and auth state do not belong in the theme. Style them with public tokens and promote a
+pattern only after at least two applications need the same interface and behavior.
 
 ## Verification
 
@@ -70,4 +90,5 @@ promote a pattern only after at least two applications need the same interface a
 - Navigate every migrated control using only the keyboard.
 - Confirm focus returns correctly after closing menus and dialogs.
 - Check error, disabled, loading, and empty states before removing legacy CSS.
+- Switch charts and maps between light and dark and confirm they repaint without a reload.
 - Remove old selectors only after the application has no remaining references.

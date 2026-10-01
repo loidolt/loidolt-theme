@@ -12,6 +12,12 @@
     <Badge variant="info">Queued</Badge>
   </div>
   <div class="ldt-cluster">
+    <Badge variant="success" dot>Approved</Badge>
+    <Badge variant="warning" dot>Changes requested</Badge>
+    <Badge variant="accent" count={4} label="unread comments" />
+    <Badge variant="accent" count={140} label="queued jobs" />
+  </div>
+  <div class="ldt-cluster">
     <Button size="md">Export</Button>
     <Badge variant="accent" size="md">Sized to match</Badge>
     <Badge variant="accent">Inline default</Badge>

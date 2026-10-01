@@ -16,9 +16,13 @@ export const ref = (name: string): TokenRef => ({ $ref: `--loidolt-${name}` });
 export const isRef = (value: unknown): value is TokenRef =>
   typeof value === 'object' && value !== null && '$ref' in value;
 
-const kebab = (value: string) => value.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+const kebab = (value: string) =>
+  value.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`).replace(/([a-z])(\d)/g, '$1-$2');
 
-/** `['font', 'lineHeight', 'tight']` → `--loidolt-font-line-height-tight`. */
+/**
+ * `['font', 'lineHeight', 'tight']` → `--loidolt-font-line-height-tight`; a trailing number is its
+ * own segment, so `chart1` → `--loidolt-chart-1`.
+ */
 export const cssVarName = (path: readonly string[]) => `--loidolt-${kebab(path.join('-'))}`;
 
 export const colors = {
@@ -42,6 +46,59 @@ export const colors = {
   success: '#3f5139',
   warning: '#7c4d17',
   info: '#265162',
+  /**
+   * Categorical series for charts, in the order they are handed out. Earth tones that stay apart
+   * from each other and hold 3:1 against every surface, so a line or bar needs no outline.
+   */
+  series: {
+    1: '#c65224',
+    2: '#2f6f8a',
+    3: '#5b7a3a',
+    4: '#9a6a12',
+    5: '#7a4a78',
+    6: '#4d5a6a',
+    7: '#2f7d6d',
+    8: '#8a5a3c',
+  },
+  /** One warm hue from little to most: heatmaps, choropleths, cluster sizes. */
+  sequential: {
+    1: '#ecd3b8',
+    2: '#dea67a',
+    3: '#c97a45',
+    4: '#a4521f',
+    5: '#6e3314',
+  },
+  /** Below and above a midpoint: slate for below, orange for above, the neutral paper between. */
+  diverging: {
+    1: '#265162',
+    2: '#4f8196',
+    3: '#9cbac3',
+    4: '#ddd7c9',
+    5: '#e0a986',
+    6: '#c96f3d',
+    7: '#9b3a17',
+  },
+  /**
+   * Code highlighting. Code sits on the inverse surface — dark in the light theme — so these are
+   * the light inks; the dark theme's code block is light, and takes dark ones.
+   */
+  syntax: {
+    keyword: '#f0895c',
+    string: '#a3c197',
+    comment: '#b5ae9c',
+    constant: '#e2b56c',
+    function: '#8fc0d4',
+    parameter: '#d3a8cf',
+    punctuation: '#d8d2c4',
+  },
+  /** Basemap fills. Quiet by design: the data drawn on top carries the colour. */
+  map: {
+    water: '#b9cdd3',
+    park: '#d3d8bd',
+    road: '#f5f2e9',
+    roadMajor: '#ffffff',
+    building: '#d8d3c7',
+  },
 } as const;
 
 export const typography = {
@@ -131,6 +188,18 @@ export const zIndex = {
 export const breakpoints = { compact: '760px', expanded: '1024px', wide: '1400px' } as const;
 
 /**
+ * Named frames for media, as CSS `aspect-ratio` values. `Thumbnail`, `AspectRatio` and the media
+ * components accept these names so a gallery and its lightbox agree on shape.
+ */
+export const aspectRatio = {
+  square: '1 / 1',
+  video: '16 / 9',
+  photo: '4 / 3',
+  portrait: '3 / 4',
+  wide: '21 / 9',
+} as const;
+
+/**
  * The role layer. Every value links to a primitive, so overriding a primitive propagates and
  * overriding a role restyles every component that plays it.
  */
@@ -178,6 +247,51 @@ export const semanticDefs = {
   focusRing: ref('color-orange'),
   shadowColor: ref('color-deep'),
   scrim: 'color-mix(in srgb, var(--loidolt-shadow-color) 72%, transparent)',
+  /*
+   * Data visualisation. `chart1`…`chart8` are categorical series; the ramps run from "least" (1)
+   * to "most" (last), whatever the theme; the diverging midpoint (4) is the neutral.
+   */
+  chart1: ref('color-series-1'),
+  chart2: ref('color-series-2'),
+  chart3: ref('color-series-3'),
+  chart4: ref('color-series-4'),
+  chart5: ref('color-series-5'),
+  chart6: ref('color-series-6'),
+  chart7: ref('color-series-7'),
+  chart8: ref('color-series-8'),
+  chartSequential1: ref('color-sequential-1'),
+  chartSequential2: ref('color-sequential-2'),
+  chartSequential3: ref('color-sequential-3'),
+  chartSequential4: ref('color-sequential-4'),
+  chartSequential5: ref('color-sequential-5'),
+  chartDiverging1: ref('color-diverging-1'),
+  chartDiverging2: ref('color-diverging-2'),
+  chartDiverging3: ref('color-diverging-3'),
+  chartDiverging4: ref('color-diverging-4'),
+  chartDiverging5: ref('color-diverging-5'),
+  chartDiverging6: ref('color-diverging-6'),
+  chartDiverging7: ref('color-diverging-7'),
+  /** Gains and losses: candlestick up/down, positive/negative bars. */
+  chartPositive: ref('color-success'),
+  chartNegative: ref('color-error'),
+  /* Basemap roles, read by the map style generator. */
+  mapLand: ref('color-paper'),
+  mapWater: ref('color-map-water'),
+  mapPark: ref('color-map-park'),
+  mapRoad: ref('color-map-road'),
+  mapRoadMajor: ref('color-map-road-major'),
+  mapBuilding: ref('color-map-building'),
+  mapBoundary: ref('color-line-strong'),
+  mapLabel: ref('color-deep'),
+  mapLabelHalo: ref('color-panel'),
+  /* Code highlighting, on the inverse surface where code blocks sit. */
+  syntaxKeyword: ref('color-syntax-keyword'),
+  syntaxString: ref('color-syntax-string'),
+  syntaxComment: ref('color-syntax-comment'),
+  syntaxConstant: ref('color-syntax-constant'),
+  syntaxFunction: ref('color-syntax-function'),
+  syntaxParameter: ref('color-syntax-parameter'),
+  syntaxPunctuation: ref('color-syntax-punctuation'),
 } as const satisfies Record<string, string | TokenRef>;
 
 /**
@@ -258,6 +372,7 @@ export const PRIMITIVE_GROUPS: ReadonlyArray<readonly [string, TokenTree]> = [
   ['shadow', shadows],
   ['motion', motion],
   ['z', zIndex],
+  ['aspect', aspectRatio],
 ];
 
 export const flattenInto = (
@@ -357,7 +472,162 @@ export const darkSemantic = {
   focusRing: '#f0895c',
   shadowColor: '#000000',
   scrim: 'color-mix(in srgb, var(--loidolt-shadow-color) 78%, transparent)',
+  chart1: '#e0672f',
+  chart2: '#6ea5bd',
+  chart3: '#93b287',
+  chart4: '#d9ab63',
+  chart5: '#c49ac0',
+  chart6: '#b8ad96',
+  chart7: '#6fb8a6',
+  chart8: '#c79a78',
+  chartSequential1: '#3a2a1d',
+  chartSequential2: '#6b4225',
+  chartSequential3: '#a4602f',
+  chartSequential4: '#d98a4d',
+  chartSequential5: '#f2bd8a',
+  chartDiverging1: '#85b6ca',
+  chartDiverging2: '#5a8ea3',
+  chartDiverging3: '#35596a',
+  chartDiverging4: '#3a3d34',
+  chartDiverging5: '#7a4428',
+  chartDiverging6: '#bf6a3a',
+  chartDiverging7: '#f0895c',
+  chartPositive: '#93b287',
+  chartNegative: '#e88b81',
+  mapLand: '#161814',
+  mapWater: '#1d2b31',
+  mapPark: '#1f271c',
+  mapRoad: '#2b2e26',
+  mapRoadMajor: '#3a3d34',
+  mapBuilding: '#24271f',
+  mapBoundary: '#787c6b',
+  mapLabel: '#ebe7dc',
+  mapLabelHalo: '#161814',
+  syntaxKeyword: '#a9441d',
+  syntaxString: '#3f5139',
+  syntaxComment: '#5f5b50',
+  syntaxConstant: '#7c4d17',
+  syntaxFunction: '#265162',
+  syntaxParameter: '#7a4a78',
+  syntaxPunctuation: '#474a42',
 } as const satisfies Record<keyof typeof semanticDefs, string>;
+
+export type ColorScheme = 'light' | 'dark';
+export type SemanticRole = keyof typeof semanticDefs;
+
+/** The custom property a semantic role is published as: `chart1` → `--loidolt-chart-1`. */
+export const roleVar = (role: SemanticRole) => cssVarName([role]);
+
+/**
+ * A role's concrete value in the reference light or dark theme. Canvas and WebGL renderers cannot
+ * read `var()`, and neither can the server: this is what they fall back to when the live value
+ * cannot be read from the page.
+ */
+export const roleValue = (role: SemanticRole, scheme: ColorScheme = 'light'): string =>
+  scheme === 'dark' ? darkSemantic[role] : semantic[role];
+
+/** Names roles — singly or as an ordered list — under keys a renderer understands. */
+export type RoleSpec = { readonly [key: string]: SemanticRole | readonly SemanticRole[] };
+
+export type ResolvedRoles<S extends RoleSpec> = {
+  -readonly [K in keyof S]: S[K] extends readonly SemanticRole[] ? string[] : string;
+};
+
+/**
+ * Resolves every role in `spec`. `read` defaults to the reference theme; a runtime passes one
+ * that reads the page, so a consumer's own theme reaches the canvas too.
+ */
+export function resolveRoles<S extends RoleSpec>(
+  spec: S,
+  scheme: ColorScheme = 'light',
+  read: (role: SemanticRole) => string = (role) => roleValue(role, scheme)
+): ResolvedRoles<S> {
+  return Object.fromEntries(
+    Object.entries(spec).map(([key, value]) => [
+      key,
+      typeof value === 'string' ? read(value as SemanticRole) : value.map((role) => read(role)),
+    ])
+  ) as ResolvedRoles<S>;
+}
+
+/** The roles a chart is painted with. */
+export const chartRoles = {
+  categorical: ['chart1', 'chart2', 'chart3', 'chart4', 'chart5', 'chart6', 'chart7', 'chart8'],
+  sequential: [
+    'chartSequential1',
+    'chartSequential2',
+    'chartSequential3',
+    'chartSequential4',
+    'chartSequential5',
+  ],
+  diverging: [
+    'chartDiverging1',
+    'chartDiverging2',
+    'chartDiverging3',
+    'chartDiverging4',
+    'chartDiverging5',
+    'chartDiverging6',
+    'chartDiverging7',
+  ],
+  positive: 'chartPositive',
+  negative: 'chartNegative',
+  text: 'text',
+  muted: 'textMuted',
+  axis: 'border',
+  grid: 'borderSoft',
+  surface: 'surface',
+  background: 'background',
+  accent: 'accent',
+} as const satisfies RoleSpec;
+
+/** The roles a basemap and map overlays are painted with. */
+export const mapRoles = {
+  land: 'mapLand',
+  water: 'mapWater',
+  park: 'mapPark',
+  road: 'mapRoad',
+  roadMajor: 'mapRoadMajor',
+  building: 'mapBuilding',
+  boundary: 'mapBoundary',
+  label: 'mapLabel',
+  labelHalo: 'mapLabelHalo',
+  accent: 'accent',
+  text: 'text',
+  surface: 'surface',
+  focus: 'focusRing',
+  categorical: chartRoles.categorical,
+  sequential: chartRoles.sequential,
+} as const satisfies RoleSpec;
+
+/** The roles code is highlighted with, and the surface it sits on. */
+export const syntaxRoles = {
+  background: 'surfaceInverse',
+  text: 'textInverse',
+  keyword: 'syntaxKeyword',
+  string: 'syntaxString',
+  comment: 'syntaxComment',
+  constant: 'syntaxConstant',
+  function: 'syntaxFunction',
+  parameter: 'syntaxParameter',
+  punctuation: 'syntaxPunctuation',
+} as const satisfies RoleSpec;
+
+export type SyntaxColors = ResolvedRoles<typeof syntaxRoles>;
+
+/** Syntax colours in the reference theme. */
+export const syntaxColors = (scheme: ColorScheme = 'light'): SyntaxColors =>
+  resolveRoles(syntaxRoles, scheme);
+
+export type ChartColors = ResolvedRoles<typeof chartRoles>;
+export type MapColors = ResolvedRoles<typeof mapRoles>;
+
+/** Chart colours in the reference theme. */
+export const chartColors = (scheme: ColorScheme = 'light'): ChartColors =>
+  resolveRoles(chartRoles, scheme);
+
+/** Map colours in the reference theme. */
+export const mapColors = (scheme: ColorScheme = 'light'): MapColors =>
+  resolveRoles(mapRoles, scheme);
 
 const darkDeclarations = () =>
   Object.entries(darkSemantic).map(([name, value]) => `  ${cssVarName([name])}: ${value};`);
@@ -399,6 +669,7 @@ export const tokens = {
   motion,
   zIndex,
   breakpoints,
+  aspectRatio,
   semantic,
   darkSemantic,
   roles,

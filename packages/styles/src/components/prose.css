@@ -1,0 +1,237 @@
+/*
+ * Long-form content: rendered Markdown, documentation, help text — any HTML the application does
+ * not author element by element. Wrap it in `.ldt-prose`; mark islands of ordinary UI inside it
+ * with `.ldt-not-prose`.
+ *
+ * Every descendant selector is wrapped in `:where()` and filtered with `:not(:where(...))`, so the
+ * whole rule weighs (0,0,0). A component class placed inside prose (`.ldt-button`, `.ldt-table`,
+ * `.ldt-card`) therefore always beats these element styles by specificity alone, and the opt-out
+ * class is only needed for bare elements that should look like UI rather than content.
+ *
+ * `--ldt-prose-size` scales the body text; everything else is relative to it.
+ */
+.ldt-prose {
+  max-width: var(--ldt-prose-width, none);
+  color: var(--loidolt-text);
+  font-size: var(--ldt-prose-size, var(--loidolt-font-size-md));
+  line-height: var(--loidolt-font-line-height-relaxed);
+  overflow-wrap: break-word;
+}
+
+/* --- Flow ---------------------------------------------------------------------------------- */
+
+:where(.ldt-prose :is(p, ul, ol, dl, blockquote, pre, table, figure, hr, details)):not(
+  :where(.ldt-not-prose, .ldt-not-prose *)
+) {
+  margin-block: 0 1.1em;
+}
+:where(.ldt-prose > :first-child) {
+  margin-block-start: 0;
+}
+:where(.ldt-prose > :last-child) {
+  margin-block-end: 0;
+}
+
+/* --- Headings ------------------------------------------------------------------------------ */
+
+:where(.ldt-prose :is(h1, h2, h3, h4, h5, h6)):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  margin-block: 1.8em 0.6em;
+  color: var(--loidolt-text);
+  font-family: var(--loidolt-font-display);
+  font-weight: var(--loidolt-heading-weight);
+  line-height: var(--loidolt-font-line-height-tight);
+  /* Clears a sticky top bar when a heading is the target of an in-page link. */
+  scroll-margin-top: calc(var(--loidolt-size-topbar) + var(--loidolt-space-4));
+}
+:where(.ldt-prose h1):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  margin-block-start: 0;
+  font-size: 2em;
+}
+:where(.ldt-prose h2):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  padding-block-end: 0.3em; /* @literal em-based prose rhythm */
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+  font-size: 1.5em;
+}
+:where(.ldt-prose h3):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  font-size: 1.25em;
+}
+:where(.ldt-prose h4):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  font-size: 1.05em;
+}
+/* The two smallest levels switch to the utility face so they stay distinct from body text. */
+:where(.ldt-prose :is(h5, h6)):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  color: var(--loidolt-text-muted);
+  font-family: var(--loidolt-font-utility);
+  font-size: 0.8em;
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
+}
+/* A heading directly after another heading sits closer to it. */
+:where(.ldt-prose :is(h1, h2, h3, h4, h5, h6) + :is(h1, h2, h3, h4, h5, h6)):not(
+  :where(.ldt-not-prose, .ldt-not-prose *)
+) {
+  margin-block-start: 0.6em;
+}
+
+/* --- Inline -------------------------------------------------------------------------------- */
+
+:where(.ldt-prose a):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  color: var(--loidolt-text-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+:where(.ldt-prose a:hover):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  text-decoration-thickness: 2px;
+}
+/* Only one weight per family ships, so bold is synthesized; colour keeps it legible. */
+:where(.ldt-prose :is(strong, b)):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  color: var(--loidolt-text);
+  font-weight: 700; /* @literal bold means bold in running text */
+}
+:where(.ldt-prose :not(pre) > code):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  padding: 0.12em 0.35em; /* @literal em-based inline code */
+  border: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+  border-radius: var(--loidolt-radius-inner);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-sunken);
+  font-size: 0.875em;
+}
+:where(.ldt-prose kbd):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  padding: 0.05em 0.4em; /* @literal em-based key cap */
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  border-radius: var(--loidolt-radius-inner);
+  border-bottom-width: 2px; /* @literal key-cap depth */
+  background: var(--loidolt-surface);
+  font-size: 0.85em;
+}
+:where(.ldt-prose mark):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  color: var(--loidolt-text);
+  background: color-mix(in srgb, var(--loidolt-accent) 22%, transparent);
+}
+
+/* --- Lists --------------------------------------------------------------------------------- */
+
+:where(.ldt-prose :is(ul, ol)):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  padding-inline-start: 1.5em; /* @literal em-based list indent */
+}
+:where(.ldt-prose li):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  margin-block: 0.3em;
+}
+:where(.ldt-prose li)::marker {
+  color: var(--loidolt-text-muted);
+}
+:where(.ldt-prose li > :is(ul, ol)):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  margin-block: 0.3em 0;
+}
+/* GFM task lists: the checkbox is the marker. */
+:where(.ldt-prose li:has(> input[type='checkbox'])):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  list-style: none;
+}
+:where(.ldt-prose li > input[type='checkbox']):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  margin: 0 0.5em 0 -1.4em;
+  vertical-align: -0.1em;
+  accent-color: var(--loidolt-accent);
+}
+:where(.ldt-prose dt):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  font-weight: 700; /* @literal bold means bold in running text */
+}
+:where(.ldt-prose dd):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  margin: 0 0 0.6em 1.5em;
+}
+
+/* --- Blocks -------------------------------------------------------------------------------- */
+
+:where(.ldt-prose blockquote):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  margin-inline: 0;
+  padding: 0.7em 1em; /* @literal em-based prose rhythm */
+  border-inline-start: var(--loidolt-stroke-accent) solid var(--loidolt-accent);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-alt);
+}
+:where(.ldt-prose blockquote > :last-child):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  margin-block-end: 0;
+}
+:where(.ldt-prose hr):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  margin-block: 2em;
+  border: 0;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+:where(.ldt-prose :is(img, video)):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  height: auto;
+}
+:where(.ldt-prose figcaption):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  margin-block-start: 0.5em;
+  color: var(--loidolt-text-muted);
+  font-size: 0.875em;
+}
+/*
+ * Code blocks. The background is set without `!important`: syntax highlighters that write an
+ * inline background (Shiki, Prism themes) keep their own, and plain `<pre>` gets the inverse
+ * surface so it reads as code in both colour schemes.
+ */
+:where(.ldt-prose pre):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  padding: 0.9em 1.1em; /* @literal em-based code rhythm */
+  overflow-x: auto;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-radius: var(--loidolt-radius-surface);
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+  font-size: 0.85em;
+  line-height: var(--loidolt-font-line-height-normal);
+  tab-size: 2;
+}
+:where(.ldt-prose pre code):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font-size: inherit;
+}
+
+/* --- Tables -------------------------------------------------------------------------------- */
+
+/*
+ * `display: block` + `overflow-x: auto` lets a wide Markdown table scroll on its own instead of
+ * widening the page; there is no wrapper element to hang the overflow on.
+ */
+:where(.ldt-prose table):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+:where(.ldt-prose :is(th, td)):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  padding: 0.5em 0.8em; /* @literal em-based table rhythm */
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  text-align: start;
+  vertical-align: top;
+}
+:where(.ldt-prose th):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  background: var(--loidolt-surface-alt);
+  font-weight: 700; /* @literal bold means bold in running text */
+}
+:where(.ldt-prose td):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  background: var(--loidolt-surface);
+}
+:where(.ldt-prose :is(th, td)[align='center']):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  text-align: center;
+}
+:where(.ldt-prose :is(th, td)[align='right']):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  text-align: end;
+}
+
+/* --- Disclosure ---------------------------------------------------------------------------- */
+
+:where(.ldt-prose details):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  padding: 0.5em 0.9em; /* @literal em-based prose rhythm */
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  border-radius: var(--loidolt-radius-surface);
+  background: var(--loidolt-surface);
+}
+:where(.ldt-prose summary):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  font-weight: 700; /* @literal bold means bold in running text */
+}
+:where(.ldt-prose details[open] > summary):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  margin-block-end: 0.5em;
+}

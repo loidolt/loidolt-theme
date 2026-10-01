@@ -1,5 +1,35 @@
 # @loidolt/theme-catalog
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [[`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b), [`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b), [`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b), [`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b), [`dd2ffe2`](https://github.com/loidolt/loidolt-theme/commit/dd2ffe2262092dc2d775888fe57a04da739eab2b)]:
+  - @loidolt/theme-tokens@0.7.0
+  - @loidolt/theme-styles@0.7.0
+  - @loidolt/theme-svelte@0.7.0
+  - @loidolt/theme-charts@0.7.0
+  - @loidolt/theme-docs@0.7.0
+  - @loidolt/theme-maps@0.7.0
+
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [[`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3), [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3), [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3), [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3), [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3), [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3), [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3), [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3), [`5d4c90a`](https://github.com/loidolt/loidolt-theme/commit/5d4c90a4f613da0138a5558f14687559885de8a3)]:
+  - @loidolt/theme-tokens@0.6.0
+  - @loidolt/theme-styles@0.6.0
+  - @loidolt/theme-svelte@0.6.0
+
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`1029b55`](https://github.com/loidolt/loidolt-theme/commit/1029b550c9fbca6834f6c028c2abf73ab9f4aa02)]:
+  - @loidolt/theme-tokens@0.5.0
+  - @loidolt/theme-styles@0.5.0
+  - @loidolt/theme-svelte@0.5.0
+
 ## 0.0.2
 
 ### Patch Changes

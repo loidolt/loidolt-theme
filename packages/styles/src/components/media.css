@@ -1,0 +1,484 @@
+/* Deep slice: assumes the token custom properties are already loaded. */
+
+/* A box that holds its shape before its content loads. */
+.ldt-aspect-ratio {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--ldt-aspect-ratio, 16 / 9);
+  overflow: hidden;
+}
+.ldt-aspect-ratio > :where(img, video, iframe) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+ * Video and audio players. The control bar sits on the inverse surface — the same dark strip in
+ * both themes — so it reads against any frame of video.
+ */
+.ldt-media-player {
+  position: relative;
+  width: 100%;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+}
+.ldt-media-player--video {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  background: var(--loidolt-surface-inverse);
+}
+.ldt-media-player__media {
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--ldt-aspect-ratio, 16 / 9);
+  background: var(--loidolt-surface-inverse);
+}
+.ldt-media-player:fullscreen {
+  border: 0;
+}
+.ldt-media-player:fullscreen .ldt-media-player__media {
+  height: 100%;
+  aspect-ratio: auto;
+}
+.ldt-media-player__overlay {
+  position: absolute;
+  inset: 0 0 auto;
+  padding: var(--loidolt-space-3);
+  color: var(--loidolt-text-inverse);
+  pointer-events: none;
+}
+.ldt-media-player__error {
+  position: absolute;
+  inset: auto var(--loidolt-space-3) calc(var(--loidolt-size-control) + var(--loidolt-space-3));
+  margin: 0;
+  padding: var(--loidolt-space-2) var(--loidolt-space-3);
+  color: var(--loidolt-on-danger);
+  background: var(--loidolt-danger);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+}
+.ldt-media-player--audio {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--loidolt-space-3);
+  padding: var(--loidolt-space-3);
+}
+.ldt-media-player--audio .ldt-media-controls {
+  grid-column: 1 / -1;
+  /* No picture to sit over, so the bar joins the card instead of inverting. */
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-alt);
+}
+.ldt-media-player--audio .ldt-media-player__error {
+  position: static;
+  grid-column: 1 / -1;
+}
+.ldt-media-player__artwork {
+  width: var(--loidolt-size-control-lg);
+  height: var(--loidolt-size-control-lg);
+  object-fit: cover;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+.ldt-media-player__meta {
+  display: grid;
+  gap: 0.1rem; /* @literal hairline between lines */
+  min-width: 0;
+}
+.ldt-media-player--audio .ldt-media-player__meta:first-child {
+  grid-column: 1 / -1;
+}
+.ldt-media-player__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ldt-media-player__artist {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+}
+
+.ldt-media-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--loidolt-space-1) var(--loidolt-space-2);
+  padding: var(--loidolt-space-1) var(--loidolt-space-2);
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+}
+.ldt-media-controls__button {
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--loidolt-size-control-sm);
+  min-height: var(--loidolt-size-control-sm);
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+}
+.ldt-media-controls__button:hover,
+.ldt-media-controls__button[aria-pressed='true'] {
+  color: var(--loidolt-accent);
+}
+.ldt-media-controls__text {
+  letter-spacing: var(--loidolt-label-tracking);
+}
+/* Focus rings on the dark bar follow the ink so they stay visible in both themes. */
+.ldt-media-controls :focus-visible {
+  outline-color: currentColor;
+}
+.ldt-media-controls__scrubber {
+  position: relative;
+  flex: 1 1 8rem;
+  min-width: 6rem;
+  display: flex;
+  align-items: center;
+}
+/* The buffered span sits behind the range input's own track. */
+.ldt-media-controls__scrubber::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  height: 0.25rem;
+  background: currentColor;
+  opacity: 0.35;
+  transform: scaleX(var(--ldt-media-buffered, 0));
+  transform-origin: left center;
+}
+.ldt-media-controls__range {
+  position: relative;
+  width: 100%;
+  min-height: 1.5rem;
+  margin: 0;
+  background: transparent;
+  accent-color: var(--loidolt-accent);
+}
+.ldt-media-controls__volume {
+  width: 5rem;
+  flex: none;
+}
+.ldt-media-controls__time {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ldt-media-controls__speed {
+  min-height: 1.5rem;
+  border: var(--loidolt-border-width) solid currentColor;
+  border-radius: var(--loidolt-radius-control);
+  padding: 0 0.3rem; /* @literal compact readout */
+  color: inherit;
+  background: transparent;
+  font: inherit;
+}
+.ldt-media-controls__speed option {
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+}
+@media (max-width: 760px) {
+  .ldt-media-controls__volume {
+    display: none;
+  }
+}
+
+/* A click-to-load stand-in for a third-party player. */
+.ldt-media-embed {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--ldt-aspect-ratio, 16 / 9);
+  overflow: hidden;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  border-radius: var(--loidolt-radius-surface);
+  background: var(--loidolt-surface-inverse);
+}
+.ldt-media-embed__frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.ldt-media-embed__facade {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--loidolt-space-3);
+  border: 0;
+  padding: var(--loidolt-space-4);
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse) center / cover no-repeat;
+  cursor: pointer;
+}
+.ldt-media-embed__play {
+  display: grid;
+  width: 3.5rem;
+  height: 3.5rem;
+  place-items: center;
+  color: var(--loidolt-on-accent);
+  background: var(--loidolt-accent);
+  transition: background var(--loidolt-motion-fast) var(--loidolt-motion-easing);
+}
+.ldt-media-embed__facade:hover .ldt-media-embed__play {
+  background: var(--loidolt-accent-hover);
+}
+.ldt-media-embed__title {
+  max-width: 32rem;
+  padding: 0.2rem 0.5rem; /* @literal caption chip */
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
+}
+.ldt-media-embed__unsupported {
+  display: grid;
+  height: 100%;
+  margin: 0;
+  place-items: center;
+  padding: var(--loidolt-space-4);
+  color: var(--loidolt-text-inverse);
+  text-align: center;
+}
+
+/* An item shown at full size inside a lightbox or carousel. */
+.ldt-media-stage {
+  width: 100%;
+  max-height: 100%;
+}
+.ldt-media-stage--image {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  touch-action: none;
+}
+.ldt-media-stage__image {
+  max-width: 100%;
+  max-height: 100%;
+  transform-origin: center;
+  transition: transform var(--loidolt-motion-fast) var(--loidolt-motion-easing);
+  user-select: none;
+}
+
+/* A gallery of pressable tiles. `--ldt-media-grid-min` is the narrowest column. */
+.ldt-media-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(100%, var(--ldt-media-grid-min, 12rem)), 1fr)
+  );
+  gap: var(--loidolt-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ldt-media-grid--sm {
+  gap: var(--loidolt-space-1);
+}
+.ldt-media-grid--lg {
+  gap: var(--loidolt-space-5);
+}
+.ldt-media-grid--masonry {
+  display: block;
+  columns: var(--ldt-media-grid-min, 12rem);
+  column-gap: var(--loidolt-space-3);
+}
+.ldt-media-grid--masonry .ldt-media-grid__item {
+  margin-bottom: var(--loidolt-space-3);
+  break-inside: avoid;
+}
+.ldt-media-grid--masonry .ldt-thumbnail {
+  aspect-ratio: auto;
+}
+.ldt-media-tile {
+  width: 100%;
+  display: grid;
+  gap: var(--loidolt-space-1);
+  border: 0;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  text-align: start;
+  cursor: zoom-in;
+}
+.ldt-media-tile .ldt-thumbnail {
+  transition: border-color var(--loidolt-motion-fast) var(--loidolt-motion-easing);
+}
+.ldt-media-tile:hover .ldt-thumbnail {
+  border-color: var(--loidolt-accent);
+}
+.ldt-media-tile__kind {
+  padding: 0.1rem 0.4rem; /* @literal kind chip */
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking);
+  text-transform: var(--loidolt-label-transform);
+}
+.ldt-media-tile__caption {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+}
+
+/* A full-screen viewer on the inverse surface, so images read against a neutral field. */
+.ldt-lightbox__overlay {
+  background: var(--loidolt-scrim);
+}
+.ldt-lightbox {
+  position: fixed;
+  z-index: var(--loidolt-z-dialog);
+  inset: var(--loidolt-space-4);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: var(--loidolt-space-2);
+  padding: var(--loidolt-space-3);
+  color: var(--loidolt-text-inverse);
+  background: var(--loidolt-surface-inverse);
+  box-shadow: var(--loidolt-shadow-modal);
+}
+.ldt-lightbox__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--loidolt-space-2);
+}
+.ldt-lightbox__counter {
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--loidolt-label-tracking);
+}
+.ldt-lightbox__tools {
+  display: flex;
+  gap: var(--loidolt-space-1);
+  margin-inline-start: auto;
+}
+.ldt-lightbox__control {
+  display: inline-grid;
+  min-width: var(--loidolt-size-control-sm);
+  min-height: var(--loidolt-size-control-sm);
+  place-items: center;
+  border: var(--loidolt-border-width) solid currentColor;
+  border-radius: var(--loidolt-radius-control);
+  padding: 0 var(--loidolt-space-2);
+  color: inherit;
+  background: var(--loidolt-surface-inverse);
+  font: var(--loidolt-font-size-base) var(--loidolt-font-utility);
+  text-decoration: none;
+}
+.ldt-lightbox__control:hover:not(:disabled) {
+  color: var(--loidolt-on-accent);
+  border-color: var(--loidolt-accent);
+  background: var(--loidolt-accent);
+}
+.ldt-lightbox__control:disabled {
+  opacity: 0.4;
+}
+.ldt-lightbox :focus-visible {
+  outline-color: currentColor;
+}
+.ldt-lightbox__stage {
+  position: relative;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+.ldt-lightbox__stage[data-zoomed] {
+  cursor: grab;
+}
+.ldt-lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.ldt-lightbox__nav--previous {
+  inset-inline-start: 0;
+}
+.ldt-lightbox__nav--next {
+  inset-inline-end: 0;
+}
+.ldt-lightbox__chevron,
+.ldt-media-carousel__chevron {
+  width: 0.55rem;
+  height: 0.55rem;
+  border: solid currentColor;
+  border-width: 0 0 2px 2px; /* @literal chevron glyph */
+  transform: translateX(0.1rem) rotate(45deg);
+}
+.ldt-lightbox__nav--next .ldt-lightbox__chevron,
+.ldt-media-carousel__control--next .ldt-media-carousel__chevron {
+  transform: translateX(-0.1rem) rotate(-135deg);
+}
+.ldt-lightbox__caption {
+  margin: 0;
+  text-align: center;
+}
+.ldt-lightbox__strip {
+  justify-content: center;
+}
+.ldt-lightbox__strip .ldt-filmstrip__item {
+  color: inherit;
+  background: transparent;
+}
+
+/* A slideshow with its own controls, one slide in view. */
+.ldt-media-carousel {
+  display: grid;
+  gap: var(--loidolt-space-2);
+}
+.ldt-media-carousel__controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--loidolt-space-1);
+}
+.ldt-media-carousel__control {
+  display: inline-grid;
+  min-width: var(--loidolt-size-control-sm);
+  min-height: var(--loidolt-size-control-sm);
+  place-items: center;
+  border: var(--loidolt-border-width) solid var(--loidolt-border-control);
+  border-radius: var(--loidolt-radius-control);
+  padding: 0;
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+}
+.ldt-media-carousel__control:hover:not(:disabled) {
+  color: var(--loidolt-text-inverse);
+  border-color: var(--loidolt-surface-inverse);
+  background: var(--loidolt-surface-inverse);
+}
+.ldt-media-carousel__control:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ldt-media-carousel__viewport {
+  position: relative;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  background: var(--loidolt-surface-sunken);
+}
+.ldt-media-carousel__slide {
+  display: grid;
+}
+/* An author `display` beats the user-agent `[hidden]` rule, so restate it. */
+.ldt-media-carousel__slide[hidden] {
+  display: none;
+}
+.ldt-media-carousel__slide > .ldt-media-stage--image {
+  aspect-ratio: var(--ldt-aspect-ratio, 16 / 9);
+}
+.ldt-media-carousel__slide > .ldt-media-stage--image .ldt-media-stage__image {
+  width: 100%;
+  height: 100%;
+}
+.ldt-media-carousel__caption {
+  margin: 0;
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+  padding: var(--loidolt-space-2) var(--loidolt-space-3);
+  color: var(--loidolt-text-muted);
+  background: var(--loidolt-surface);
+}

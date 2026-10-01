@@ -3,7 +3,8 @@
  *
  * Three tiers:
  * - **Primitives** (`--loidolt-color-*`, `--loidolt-space-*`, …) are the raw palette and scales.
- * - **Colour roles** (`--loidolt-surface`, `--loidolt-text`, …) name what a colour is *for*.
+ * - **Colour roles** (`--loidolt-surface`, `--loidolt-text`, `--loidolt-chart-1`, …) name what a
+ *   colour is *for*.
  * - **Shape and voice roles** (`--loidolt-radius-control`, `--loidolt-pad-cell`, …) do the same
  *   for corners, strokes, density and typographic voice.
  *
@@ -13,28 +14,47 @@
 import { tokens } from './tokens.js';
 
 export {
+  aspectRatio,
   borders,
   breakpoints,
+  chartColors,
+  chartRoles,
   colors,
   cssVarName,
   darkSemantic,
   flattenTokens,
   generateCss,
   generateDarkCss,
+  mapColors,
+  mapRoles,
   motion,
+  resolveRoles,
+  roleValue,
+  roleVar,
   roles,
   semantic,
   shadows,
   sizing,
   spacing,
+  syntaxColors,
+  syntaxRoles,
   tokens,
   typography,
   zIndex,
 } from './tokens.js';
-export type { ThemeTokens, TokenRef } from './tokens.js';
+export type {
+  ChartColors,
+  ColorScheme,
+  MapColors,
+  ResolvedRoles,
+  RoleSpec,
+  SemanticRole,
+  SyntaxColors,
+  ThemeTokens,
+  TokenRef,
+} from './tokens.js';
 
-export { auditContrast, contrastPairs, contrastRatio, luminance } from './contrast.js';
-export type { ColorRoles, ContrastCheck } from './contrast.js';
+export * from './contrast.js';
 
 export { definePreset, generatePresetCss, presetStylesheets } from './presets/define.js';
 export type {

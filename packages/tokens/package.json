@@ -1,6 +1,6 @@
 {
   "name": "@loidolt/theme-tokens",
-  "version": "0.4.0",
+  "version": "0.7.0",
   "description": "Typed design tokens for Loidolt applications",
   "license": "MIT",
   "type": "module",
