@@ -9,7 +9,11 @@
   z-index: var(--loidolt-z-dialog);
   top: 50%;
   left: 50%;
-  display: grid;
+  /* A column whose body alone shrinks and scrolls, so the header and the footer's actions stay in
+     view however tall the content (or short the screen). Flex rather than grid rows, because an
+     AlertDialog without content has no body. */
+  display: flex;
+  flex-direction: column;
   width: min(var(--ldt-dialog-width, 34rem), calc(100vw - 2rem));
   max-height: min(48rem, calc(100dvh - 2rem));
   overflow: hidden;
@@ -36,7 +40,6 @@
   --ldt-dialog-width: 100vw;
   height: calc(100dvh - 2rem);
   max-height: none;
-  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 .ldt-dialog__actions {
   display: flex;
@@ -48,6 +51,10 @@
 .ldt-dialog__body,
 .ldt-dialog__footer {
   padding: var(--loidolt-pad-overlay);
+}
+.ldt-dialog__header,
+.ldt-dialog__footer {
+  flex: none;
 }
 .ldt-dialog__header {
   display: flex;
@@ -61,6 +68,8 @@
   min-width: 0;
 }
 .ldt-dialog__body {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
 }
 .ldt-dialog__footer {

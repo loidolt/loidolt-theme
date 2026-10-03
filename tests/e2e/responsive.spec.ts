@@ -6,6 +6,8 @@ const widths = [320, 360, 390, 768, 844];
 const dimensions = (element: HTMLElement) => ({
   clientWidth: element.clientWidth,
   scrollWidth: element.scrollWidth,
+  clientHeight: element.clientHeight,
+  scrollHeight: element.scrollHeight,
 });
 
 test.describe('responsive catalog', () => {
@@ -163,6 +165,40 @@ test.describe('responsive catalog', () => {
     );
     const drawerSize = await drawer.evaluate(dimensions);
     expect(drawerSize.scrollWidth).toBeLessThanOrEqual(drawerSize.clientWidth);
+  });
+
+  test('a tall dialog scrolls its body and keeps its actions on a short screen', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop-chromium', 'One short viewport is sufficient.');
+    await page.setViewportSize({ width: 1280, height: 420 });
+
+    await page.goto('/components/dialog');
+    await page.getByRole('button', { name: 'Open dialog' }).click();
+    const dialog = page.getByRole('dialog');
+    const body = dialog.locator('.ldt-dialog__body');
+    await body.evaluate((element) => {
+      element.innerHTML = Array.from(
+        { length: 40 },
+        (_, index) => `<p>Layer ${index + 1} will be written as SVG.</p>`
+      ).join('');
+    });
+
+    // Only the body scrolls; the footer's actions stay inside the dialog and on screen.
+    const bodySize = await body.evaluate(dimensions);
+    expect(bodySize.scrollHeight).toBeGreaterThan(bodySize.clientHeight);
+    const dialogSize = await dialog.evaluate(dimensions);
+    expect(dialogSize.scrollHeight).toBeLessThanOrEqual(dialogSize.clientHeight);
+    await expect(dialog.getByRole('button', { name: 'Export' })).toBeInViewport({ ratio: 1 });
+
+    // An alert dialog has no body at all and still lays out header then actions.
+    await page.keyboard.press('Escape');
+    await page.goto('/components/alert-dialog');
+    await page.getByRole('button', { name: 'Delete file' }).click();
+    const alert = page.getByRole('alertdialog');
+    await expect(alert.getByRole('button', { name: 'Delete file' })).toBeInViewport({ ratio: 1 });
+    const alertSize = await alert.evaluate(dimensions);
+    expect(alertSize.scrollHeight).toBeLessThanOrEqual(alertSize.clientHeight);
   });
 
   test('touch contexts enlarge primary targets without shrinking form text', async ({
