@@ -1,5 +1,14 @@
 # @loidolt/theme-styles
 
+## 0.8.1
+
+### Patch Changes
+
+- [#17](https://github.com/loidolt/loidolt-theme/pull/17) [`a75bdb0`](https://github.com/loidolt/loidolt-theme/commit/a75bdb085edc9504cc1a422b9b7e1a904710e28a) Thanks [@loidolt](https://github.com/loidolt)! - Keep a dialog's actions in reach on short screens. `.ldt-dialog` is now a flex column whose body alone shrinks and scrolls; before, a tall body pushed the footer (and its Save or Confirm button) below the dialog's max height, where `overflow: hidden` clipped it out of reach. The `--full` size and an `AlertDialog` without content (no body) lay out the same way.
+
+- Updated dependencies []:
+  - @loidolt/theme-tokens@0.8.1
+
 ## 0.8.0
 
 ### Minor Changes
