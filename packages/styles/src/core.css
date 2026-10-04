@@ -1,0 +1,42 @@
+/*
+ * Layer order is declared up front so consumers can slot their own layers between ours.
+ *
+ * `loidolt.reset` is intentionally empty and reserved: the reset lives in `base.css` behind
+ * `:where()` (zero specificity), and this slot lets an app opt into its own reset ahead of
+ * our base styles without reordering the rest.
+ *
+ * `loidolt.a11y` is last so the focus ring and the reduced-motion overrides beat component
+ * styles by layer order alone — no `!important` needed, which keeps app CSS able to override
+ * them (unlayered styles outrank every layer for normal declarations).
+ *
+ * `loidolt.vendor` holds third-party stylesheets a loidolt package ships with — MapLibre's, for
+ * `@loidolt/theme-maps`. Vendor CSS left unlayered would outrank every layer here; slotted after
+ * `base` and before `components`, our resets cannot break it and our component styles can
+ * restyle it, whichever order the two stylesheets are imported in.
+ */
+@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.vendor, loidolt.components,
+  loidolt.utilities, loidolt.a11y;
+
+/*
+ * `core.css` is the stylesheet for the Svelte components and app layout, without the extras a
+ * page may not use: media players and galleries, charts, maps, long-form prose and docs. Add any
+ * of those back one at a time through `components/*`, inside the components layer:
+ *
+ *   @import '@loidolt/theme-styles/core';
+ *   @import '@loidolt/theme-styles/components/prose' layer(loidolt.components);
+ *
+ * `index.css` is exactly this plus every extra.
+ */
+@import '@loidolt/theme-tokens/css' layer(loidolt.tokens);
+@import './fonts.css' layer(loidolt.base);
+@import './base.css' layer(loidolt.base);
+@import './components/actions.css' layer(loidolt.components);
+@import './components/forms.css' layer(loidolt.components);
+@import './components/surfaces.css' layer(loidolt.components);
+@import './components/data.css' layer(loidolt.components);
+@import './components/feedback.css' layer(loidolt.components);
+@import './components/overlays.css' layer(loidolt.components);
+@import './components/selection.css' layer(loidolt.components);
+@import './components/layout.css' layer(loidolt.components);
+@import './utilities.css' layer(loidolt.utilities);
+@import './accessibility.css' layer(loidolt.a11y);

@@ -7,6 +7,7 @@
   "style": "./src/index.css",
   "exports": {
     ".": "./src/index.css",
+    "./core": "./src/core.css",
     "./tokens": "./src/tokens.css",
     "./dark": "./src/dark.css",
     "./dark-auto": "./src/dark-auto.css",
@@ -15,6 +16,7 @@
     "./accessibility": "./src/accessibility.css",
     "./utilities": "./src/utilities.css",
     "./components": "./src/components.css",
+    "./components/*": "./src/components/*.css",
     "./fonts": "./src/fonts.css",
     "./fonts/*": "./src/fonts/*",
     "./package.json": "./package.json"

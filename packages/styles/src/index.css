@@ -1,25 +1,11 @@
 /*
- * Layer order is declared up front so consumers can slot their own layers between ours.
- *
- * `loidolt.reset` is intentionally empty and reserved: the reset lives in `base.css` behind
- * `:where()` (zero specificity), and this slot lets an app opt into its own reset ahead of
- * our base styles without reordering the rest.
- *
- * `loidolt.a11y` is last so the focus ring and the reduced-motion overrides beat component
- * styles by layer order alone — no `!important` needed, which keeps app CSS able to override
- * them (unlayered styles outrank every layer for normal declarations).
- *
- * `loidolt.vendor` holds third-party stylesheets a loidolt package ships with — MapLibre's, for
- * `@loidolt/theme-maps`. Vendor CSS left unlayered would outrank every layer here; slotted after
- * `base` and before `components`, our resets cannot break it and our component styles can
- * restyle it, whichever order the two stylesheets are imported in.
+ * The whole stylesheet: `core.css` (layer order, tokens, base, the component and layout styles,
+ * utilities and accessibility) plus the extras for media, charts, maps, prose and docs. Pages
+ * that need none of the extras can import `@loidolt/theme-styles/core` instead.
  */
-@layer loidolt.tokens, loidolt.reset, loidolt.base, loidolt.vendor, loidolt.components,
-  loidolt.utilities, loidolt.a11y;
-
-@import '@loidolt/theme-tokens/css' layer(loidolt.tokens);
-@import './fonts.css' layer(loidolt.base);
-@import './base.css' layer(loidolt.base);
-@import './components.css' layer(loidolt.components);
-@import './utilities.css' layer(loidolt.utilities);
-@import './accessibility.css' layer(loidolt.a11y);
+@import './core.css';
+@import './components/media.css' layer(loidolt.components);
+@import './components/charts.css' layer(loidolt.components);
+@import './components/maps.css' layer(loidolt.components);
+@import './components/prose.css' layer(loidolt.components);
+@import './components/docs.css' layer(loidolt.components);
