@@ -1,5 +1,16 @@
 # @loidolt/theme-styles
 
+## 0.9.0
+
+### Minor Changes
+
+- [#19](https://github.com/loidolt/loidolt-theme/pull/19) [`7eaa78f`](https://github.com/loidolt/loidolt-theme/commit/7eaa78f3cc29d60a643a14ee0fdbe290ca847f67) Thanks [@loidolt](https://github.com/loidolt)! - Add `@loidolt/theme-styles/core`: the whole stylesheet without the styles for media, charts, maps, long-form prose and docs, for apps that use only the Svelte components. Each component stylesheet is also published as `@loidolt/theme-styles/components/<name>`, so an app can add one extra back inside the components layer. `index.css` is now `core.css` plus those extras, so the full stylesheet is unchanged.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @loidolt/theme-tokens@0.9.0
+
 ## 0.8.1
 
 ### Patch Changes

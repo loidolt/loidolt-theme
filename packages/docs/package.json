@@ -1,6 +1,6 @@
 {
   "name": "@loidolt/theme-docs",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "Accessible Markdown documentation components for Loidolt applications",
   "license": "MIT",
   "type": "module",
@@ -31,8 +31,8 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@loidolt/theme-svelte": "^0.8.1",
-    "@loidolt/theme-tokens": "^0.8.1",
+    "@loidolt/theme-svelte": "^0.9.0",
+    "@loidolt/theme-tokens": "^0.9.0",
     "marked": "^18.0.0"
   },
   "peerDependencies": {
