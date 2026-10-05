@@ -1,5 +1,14 @@
 # @loidolt/theme-maps
 
+## 0.9.1
+
+### Patch Changes
+
+- [#21](https://github.com/loidolt/loidolt-theme/pull/21) [`f4f628b`](https://github.com/loidolt/loidolt-theme/commit/f4f628bd9e8bcb8066cc034948ab0217759d7db5) Thanks [@loidolt](https://github.com/loidolt)! - Fit a `MapView` to the first `bounds` that arrive after it loads. A map created without `bounds` used to treat the first box it was given as already fitted on load, so only a second change moved the view (a route planner opening a saved route stayed put). The load handler now records a box only when it actually fits one, so the map still fits a box given at creation exactly once. Clearing `bounds` also forgets the last box, so passing the same box again fits it again. When `center`/`zoom` and `bounds` change in the same tick, the fit wins.
+- Updated dependencies []:
+  - @loidolt/theme-svelte@0.9.1
+  - @loidolt/theme-tokens@0.9.1
+
 ## 0.9.0
 
 ### Patch Changes
