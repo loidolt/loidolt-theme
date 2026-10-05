@@ -150,6 +150,8 @@
   let styleVersion = $state(0);
   let failure = $state<string | null>(null);
   let layers = $state.raw<LayerEntry[]>([]);
+  /** The last `bounds` box fitted, as JSON; `null` when none has been. Not reactive. */
+  let fittedBounds: string | null = null;
   /** A style chosen through `setBasemap` with a document of its own. */
   let customBasemap = $state.raw<string | StyleSpecification | null>(null);
 
@@ -315,7 +317,10 @@
         styleVersion += 1;
         if (loaded) return;
         loaded = true;
+        // Record the box only when one was fitted, so a first `bounds` that arrives after
+        // load is still fitted by the effect below.
         const box = untrack(() => bounds);
+        fittedBounds = box ? JSON.stringify(box) : null;
         if (box) created.fitBounds(box, { padding: boundsPadding, animate: false });
         untrack(() => onLoad?.(created));
       });
@@ -396,6 +401,8 @@
   });
 
   // Props into the map. A move the map made itself comes back equal, so it is a no-op.
+  // Declared before the bounds effect on purpose: when `center`/`zoom` and `bounds` change in
+  // the same tick, the ease starts first and the fit then replaces it, so `bounds` wins.
   $effect(() => {
     const target = instance;
     if (!target || !loaded) return;
@@ -412,16 +419,16 @@
     else target.easeTo(next);
   });
 
-  let fittedBounds: string | null = null;
+  // `bounds` into the map: fit whenever the box differs from the last one fitted, including
+  // the first box to arrive after load. Clearing `bounds` forgets it, so the same box fits again.
   $effect(() => {
     const target = instance;
-    const key = bounds ? JSON.stringify(bounds) : null;
-    if (!target || !loaded || !bounds) return;
-    if (fittedBounds === null) {
-      // The load handler made the first fit.
-      fittedBounds = key;
+    if (!bounds) {
+      fittedBounds = null;
       return;
     }
+    if (!target || !loaded) return;
+    const key = JSON.stringify(bounds);
     if (key === fittedBounds) return;
     fittedBounds = key;
     target.fitBounds(bounds, {

@@ -173,6 +173,70 @@ describe('MapView', () => {
     expect(fits()[1][2]).toMatchObject({ animate: true });
   });
 
+  it('fits the first bounds that arrive after load', async () => {
+    const { rerender } = render(MapView, { label: 'Late fit' });
+    const map = await loaded();
+    const fits = () => map.calls.filter(([name]) => name === 'fitBounds');
+    expect(fits()).toHaveLength(0);
+    await rerender({
+      bounds: [
+        [0, 0],
+        [2, 2],
+      ],
+    });
+    await waitFor(() => expect(fits()).toHaveLength(1));
+    expect(fits()[0][2]).toMatchObject({ padding: 32, animate: true });
+    expect(map.center).toEqual([1, 1]);
+  });
+
+  it('fits a box on load only once', async () => {
+    render(MapView, {
+      label: 'Load fit',
+      bounds: [
+        [0, 0],
+        [2, 2],
+      ],
+    });
+    const map = await loaded();
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(map.calls.filter(([name]) => name === 'fitBounds')).toHaveLength(1);
+  });
+
+  it('fits the same box again after bounds were cleared', async () => {
+    const box: [[number, number], [number, number]] = [
+      [0, 0],
+      [2, 2],
+    ];
+    const { rerender } = render(MapView, { label: 'Refit', bounds: box });
+    const map = await loaded();
+    const fits = () => map.calls.filter(([name]) => name === 'fitBounds');
+    expect(fits()).toHaveLength(1);
+    await rerender({ bounds: undefined });
+    await rerender({ bounds: box });
+    await waitFor(() => expect(fits()).toHaveLength(2));
+  });
+
+  it('lets bounds win over center and zoom changed in the same tick', async () => {
+    const { rerender } = render(MapView, { label: 'Both', center: [10, 10], zoom: 3 });
+    const map = await loaded();
+    const calls = map.calls.length;
+    await rerender({
+      center: [30, 40],
+      zoom: 8,
+      bounds: [
+        [0, 0],
+        [2, 2],
+      ],
+    });
+    await waitFor(() => expect(map.calls.some(([name]) => name === 'fitBounds')).toBe(true));
+    const moves = map.calls
+      .slice(calls)
+      .map(([name]) => name)
+      .filter((name) => ['easeTo', 'jumpTo', 'fit'].includes(name));
+    expect(moves.at(-1)).toBe('fit');
+    expect(map.center).toEqual([1, 1]);
+  });
+
   it('announces where a keyboard move lands, and stays quiet for pointer moves', async () => {
     render(MapView, { label: 'Announce' });
     const map = await loaded();
