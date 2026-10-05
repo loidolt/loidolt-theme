@@ -32,11 +32,12 @@ jobs:
       - run: npm ci
       # No `npm run check` here: CI validates this same commit, and `npm run release`
       # rebuilds the packages before publishing.
-      - uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d
+      # v2 is the line built for @changesets/cli v3; it takes the token from its `github-token`
+      # input (default: github.token), not from a GITHUB_TOKEN env var.
+      - uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
-          publish: npm run release
+          publish-script: npm run release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # setup-node writes an .npmrc that authenticates with NODE_AUTH_TOKEN; NPM_TOKEN alone
           # leaves the publish unauthenticated and it 401s.
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
