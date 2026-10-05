@@ -1,6 +1,6 @@
 {
   "name": "@loidolt/theme-styles",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "Base styles, fonts, accessibility helpers, and utilities for Loidolt applications",
   "license": "MIT",
   "type": "module",
@@ -31,7 +31,7 @@
     "build": "node -e \"console.log('theme-styles: source CSS is publish-ready')\""
   },
   "dependencies": {
-    "@loidolt/theme-tokens": "^0.8.1"
+    "@loidolt/theme-tokens": "^0.9.0"
   },
   "publishConfig": {
     "access": "public",
