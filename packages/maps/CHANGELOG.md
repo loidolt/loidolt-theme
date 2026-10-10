@@ -1,5 +1,13 @@
 # @loidolt/theme-maps
 
+## 0.10.0
+
+### Patch Changes
+
+- Updated dependencies [[`97c0994`](https://github.com/loidolt/loidolt-theme/commit/97c099432ed2e2d4c1d3a7ad6a658be800fd05cd)]:
+  - @loidolt/theme-svelte@0.10.0
+  - @loidolt/theme-tokens@0.10.0
+
 ## 0.9.1
 
 ### Patch Changes
