@@ -55,6 +55,15 @@ export interface ChoiceOption<T extends string = string> extends Option<T> {
 /** `Option` is the single vocabulary for choice lists; `NavItem` is kept as a readable alias. */
 export type NavItem<T extends string = string> = Option<T>;
 
+/**
+ * One `Tabs` tab. The icon leads the label, and sits above it in the `rail` variant, where the
+ * label is short; `description` says more on hover and to assistive technology.
+ */
+export interface TabItem<T extends string = string> extends Option<T> {
+  icon?: Snippet;
+  description?: string;
+}
+
 /** One step in a breadcrumb trail. The final crumb is the current page and takes no `href`. */
 export interface Crumb {
   label: string;

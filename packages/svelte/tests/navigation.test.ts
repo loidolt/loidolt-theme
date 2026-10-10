@@ -79,6 +79,90 @@ describe('Tabs', () => {
     render(Tabs, { label: 'Views', tabs, children: tabPanel, 'data-testid': 'views' });
     expect(screen.getByTestId('views')).toBeInTheDocument();
   });
+
+  it('keeps every panel mounted, hiding the unselected ones', () => {
+    render(Tabs, { label: 'Views', tabs, value: 'proof', children: tabPanel });
+    expect(screen.getByText('Panel proof')).toBeVisible();
+    expect(screen.getByText('Panel design').closest('[role="tabpanel"]')).toHaveAttribute('hidden');
+    expect(screen.getByText('Panel export')).not.toBeVisible();
+  });
+});
+
+describe('Tabs rail', () => {
+  const icon = (name: string) =>
+    createRawSnippet(() => ({ render: () => `<svg data-icon="${name}"></svg>` }));
+  const railTabs = [
+    { value: 'place', label: 'Place', icon: icon('pin'), description: 'Where and how big' },
+    { value: 'water', label: 'Water', icon: icon('waves') },
+    { value: 'make', label: 'Make', disabled: true },
+  ];
+
+  it('names each tab by its label, with the icon hidden and the description as a hint', () => {
+    render(Tabs, {
+      label: 'Settings',
+      tabs: railTabs,
+      variant: 'rail',
+      orientation: 'vertical',
+      children: tabPanel,
+    });
+    const place = screen.getByRole('tab', { name: 'Place' });
+    expect(place.querySelector('.ldt-tabs__icon')).toHaveAttribute('aria-hidden', 'true');
+    expect(place.querySelector('svg[data-icon="pin"]')).not.toBeNull();
+    expect(place).toHaveAttribute('title', 'Where and how big');
+    expect(place).toHaveAccessibleDescription('Where and how big');
+    // A tab without an icon keeps its plain label.
+    expect(screen.getByRole('tab', { name: 'Make' }).querySelector('.ldt-tabs__label')).toBeNull();
+    expect(screen.getByRole('tablist', { name: 'Settings' })).toHaveAttribute(
+      'aria-orientation',
+      'vertical'
+    );
+  });
+
+  it('moves along a vertical rail with the up and down arrows', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(Tabs, {
+      label: 'Settings',
+      tabs: railTabs,
+      variant: 'rail',
+      orientation: 'vertical',
+      children: tabPanel,
+      onValueChange,
+    });
+    await user.click(screen.getByRole('tab', { name: 'Place' }));
+    await user.keyboard('{ArrowDown}');
+    expect(onValueChange).toHaveBeenLastCalledWith('water');
+    expect(screen.getByText('Panel water')).toBeVisible();
+    // Disabled tabs are skipped, and the rail wraps.
+    await user.keyboard('{ArrowDown}');
+    expect(screen.getByRole('tab', { name: 'Place' })).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('wraps the panels and renders a shared header once, above them', () => {
+    const header = createRawSnippet(() => ({
+      render: () => '<input aria-label="Find a setting" />',
+    }));
+    const { container } = render(Tabs, {
+      label: 'Settings',
+      tabs: railTabs,
+      variant: 'rail',
+      orientation: 'vertical',
+      panelsClass: 'settings-panels',
+      panelHeader: header,
+      children: tabPanel,
+    });
+    const panels = container.querySelector('.ldt-tabs__panels.settings-panels')!;
+    expect(panels.firstElementChild).toHaveClass('ldt-tabs__panel-header');
+    expect(screen.getAllByRole('textbox', { name: 'Find a setting' })).toHaveLength(1);
+    expect(panels.querySelectorAll('[role="tabpanel"]')).toHaveLength(3);
+    expect(container.querySelector('.ldt-tabs')).toHaveAttribute('data-variant', 'rail');
+  });
+
+  it('leaves line tabs unwrapped unless a header is given', () => {
+    const { container } = render(Tabs, { label: 'Views', tabs, children: tabPanel });
+    expect(container.querySelector('.ldt-tabs__panels')).toBeNull();
+    expect(container.querySelector('.ldt-tabs')).toHaveAttribute('data-variant', 'line');
+  });
 });
 
 describe('DropdownMenu keyboard', () => {

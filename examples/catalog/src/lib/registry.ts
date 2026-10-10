@@ -702,6 +702,9 @@ export const entries: Entry[] = [
     summary: 'Switching between panels of one page.',
     notes: [
       'Defaults to the first tab, and falls back to it if the selected tab disappears — removing a tab cannot blank every panel.',
+      'Every panel stays mounted and hidden while unselected, so panels keep their state.',
+      '`variant="rail"` is an icon rail for a settings sidebar: give each tab an `icon` snippet and a short label, and the root a height so its panels scroll beside the rail. Switch `orientation` to horizontal where the layout stacks; a vertical rail also falls back to a row on phones.',
+      '`panelHeader` renders shared content once above the panels, such as a filter field; the vertical rail pins it while the panels scroll.',
     ],
   },
   {

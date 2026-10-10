@@ -219,5 +219,6 @@ export type {
   Placement,
   SortDirection,
   StatusVariant,
+  TabItem,
   TriggerChildProps,
 } from './types.js';
