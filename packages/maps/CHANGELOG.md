@@ -1,5 +1,13 @@
 # @loidolt/theme-maps
 
+## 0.10.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @loidolt/theme-svelte@0.10.1
+  - @loidolt/theme-tokens@0.10.1
+
 ## 0.10.0
 
 ### Patch Changes
