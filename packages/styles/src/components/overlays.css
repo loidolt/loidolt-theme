@@ -397,33 +397,6 @@
   .ldt-tabs__content[data-orientation='vertical'] {
     padding-block: var(--loidolt-space-4);
   }
-  /* A rail left vertical on a phone lays its tabs out as one row above the panels. */
-  .ldt-tabs--rail[data-orientation='vertical'] {
-    height: auto;
-  }
-  .ldt-tabs--rail .ldt-tabs__list[data-orientation='vertical'] {
-    min-width: 0;
-    flex-direction: row;
-    gap: 0;
-    padding: var(--loidolt-space-1);
-    border-inline-end: 0;
-  }
-  .ldt-tabs--rail .ldt-tabs__trigger[data-orientation='vertical'] {
-    flex: 1 1 0;
-    padding-inline: 0;
-  }
-  .ldt-tabs--rail .ldt-tabs__trigger[data-state='active'][data-orientation='vertical'] {
-    box-shadow: inset 0 calc(-1 * var(--loidolt-stroke-indicator)) 0 var(--loidolt-accent);
-  }
-  .ldt-tabs--rail[data-orientation='vertical'] .ldt-tabs__panels {
-    overflow: visible;
-  }
-  .ldt-tabs--rail[data-orientation='vertical'] .ldt-tabs__panel-header {
-    position: static;
-  }
-  .ldt-tabs--rail .ldt-tabs__content[data-orientation='vertical'] {
-    padding-block: 0;
-  }
 }
 /* A tab's leading icon, beside its label. */
 .ldt-tabs__trigger:has(.ldt-tabs__icon) {
@@ -451,8 +424,9 @@
  * panels, which never scrolls sideways. Give the root a height for the vertical panels to scroll.
  */
 .ldt-tabs--rail {
-  /* Room for an icon over a label of about nine characters; override per app. */
-  --ldt-rail-width: 3.75rem;
+  /* The vertical rail's whole width: room for an icon over a label of about nine characters.
+     Override per app. */
+  --ldt-rail-width: 4.75rem;
   min-height: 0;
 }
 .ldt-tabs--rail[data-orientation='vertical'] {
@@ -466,12 +440,13 @@
   /* The rail's width is its own (a fixed column, or the row it shares); long labels end in an
      ellipsis rather than widening whatever holds the rail. */
   contain: inline-size;
-  gap: var(--loidolt-space-1);
-  padding: var(--loidolt-space-2);
+  /* Tabs meet edge to edge, so the whole rail is target and hover area, with no dead space. */
+  gap: 0;
+  padding: 0;
   overflow: hidden;
 }
 .ldt-tabs--rail .ldt-tabs__list[data-orientation='vertical'] {
-  min-width: calc(var(--ldt-rail-width) + 2 * var(--loidolt-space-2));
+  min-width: var(--ldt-rail-width);
   overflow-y: auto;
   border-right: 0;
   border-inline-end: var(--loidolt-border-width) solid var(--loidolt-border);
@@ -487,7 +462,7 @@
   gap: var(--loidolt-space-1);
   padding: var(--loidolt-space-2) var(--loidolt-space-1);
   border: 0;
-  border-radius: var(--loidolt-radius-control);
+  border-radius: 0;
   font-size: var(--loidolt-font-size-xs);
   letter-spacing: 0; /* tracking would push short labels into ellipses */
   text-align: center;
@@ -497,10 +472,10 @@
   flex: 1 1 0;
   padding-inline: 0;
 }
-/* A row of rail tabs shares one line edge to edge, down to a 320px phone. */
-.ldt-tabs--rail .ldt-tabs__list[data-orientation='horizontal'] {
-  gap: 0;
-  padding: var(--loidolt-space-1);
+/* The vertical indicator sits on the rail's leading edge. Both sides carry a border so the
+   icon stays centred; only the leading one takes the accent. */
+.ldt-tabs--rail .ldt-tabs__trigger[data-orientation='vertical'] {
+  border-inline: var(--loidolt-stroke-indicator) solid transparent;
 }
 .ldt-tabs--rail .ldt-tabs__icon :where(svg) {
   width: 1.25rem; /* @literal rail icons are sized for the eye, not the label */
@@ -521,7 +496,8 @@
   background: var(--loidolt-surface-alt);
 }
 .ldt-tabs--rail .ldt-tabs__trigger[data-state='active'][data-orientation='vertical'] {
-  box-shadow: inset calc(-1 * var(--loidolt-stroke-indicator)) 0 0 var(--loidolt-accent);
+  border-inline-start-color: var(--loidolt-accent);
+  border-inline-end-color: transparent;
 }
 .ldt-tabs--rail .ldt-tabs__trigger[data-state='active'][data-orientation='horizontal'] {
   box-shadow: inset 0 calc(-1 * var(--loidolt-stroke-indicator)) 0 var(--loidolt-accent);
@@ -542,6 +518,35 @@
 }
 .ldt-tabs--rail .ldt-tabs__content {
   padding-block: 0;
+}
+/* After the rail rules, so the phone layout wins over them at equal specificity. */
+@media (max-width: 760px) {
+  /* A rail left vertical on a phone lays its tabs out as one row above the panels. */
+  .ldt-tabs--rail[data-orientation='vertical'] {
+    height: auto;
+  }
+  .ldt-tabs--rail .ldt-tabs__list[data-orientation='vertical'] {
+    min-width: 0;
+    flex-direction: row;
+    border-inline-end: 0;
+  }
+  .ldt-tabs--rail .ldt-tabs__trigger[data-orientation='vertical'] {
+    flex: 1 1 0;
+    padding-inline: 0;
+    border-inline: 0;
+  }
+  .ldt-tabs--rail .ldt-tabs__trigger[data-state='active'][data-orientation='vertical'] {
+    box-shadow: inset 0 calc(-1 * var(--loidolt-stroke-indicator)) 0 var(--loidolt-accent);
+  }
+  .ldt-tabs--rail[data-orientation='vertical'] .ldt-tabs__panels {
+    overflow: visible;
+  }
+  .ldt-tabs--rail[data-orientation='vertical'] .ldt-tabs__panel-header {
+    position: static;
+  }
+  .ldt-tabs--rail .ldt-tabs__content[data-orientation='vertical'] {
+    padding-block: 0;
+  }
 }
 
 /* The option list of Combobox and MultiSelect: the menu surface, sized to its field. */
