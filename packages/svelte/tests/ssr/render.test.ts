@@ -167,6 +167,17 @@ const cases: Array<[CaseName, Record<string, unknown>]> = [
   ['Table', { caption: 'Projects', children: text('<tbody><tr><td>A</td></tr></tbody>') }],
   ['TableHeader', { children: text('Name') }],
   ['Tabs', { label: 'Views', tabs: options, children: tabPanel }],
+  [
+    'Tabs (rail)',
+    {
+      label: 'Settings',
+      tabs: options,
+      variant: 'rail',
+      orientation: 'vertical',
+      panelHeader: text('Search'),
+      children: tabPanel,
+    },
+  ],
   ['Textarea', { 'aria-label': 'Notes' }],
   ['ThemeToggle', { theme: createTheme({ storageKey: null }) }],
   ['Toast', { title: 'Saved' }],

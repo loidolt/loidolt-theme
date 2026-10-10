@@ -46,15 +46,24 @@ test.describe('responsive catalog', () => {
     // labels over ours.
     await page.goto('/components/tabs');
     await page.waitForLoadState('networkidle');
-    await page.locator('.ldt-tabs__trigger').evaluateAll((elements) =>
+    const lineTabs = page.locator('.ldt-tabs:not(.ldt-tabs--rail)');
+    await lineTabs.locator('.ldt-tabs__trigger').evaluateAll((elements) =>
       elements.forEach((element, index) => {
         element.textContent = `Long localized tab label ${index + 1}`;
       })
     );
+    // A rail's row of tabs shares the width instead: long labels end in an ellipsis.
+    await page.locator('.ldt-tabs--rail .ldt-tabs__label').evaluateAll((elements) =>
+      elements.forEach((element, index) => {
+        element.textContent = `Long localized rail label ${index + 1}`;
+      })
+    );
     const tabsRoot = await page.locator('html').evaluate(dimensions);
-    const tabList = await page.locator('.ldt-tabs__list').evaluate(dimensions);
+    const tabList = await lineTabs.locator('.ldt-tabs__list').evaluate(dimensions);
+    const railList = await page.locator('.ldt-tabs--rail .ldt-tabs__list').evaluate(dimensions);
     expect(tabsRoot.scrollWidth).toBeLessThanOrEqual(tabsRoot.clientWidth);
     expect(tabList.scrollWidth).toBeGreaterThan(tabList.clientWidth);
+    expect(railList.scrollWidth).toBeLessThanOrEqual(railList.clientWidth);
 
     await page.goto('/components/toggle-group');
     await page.waitForLoadState('networkidle');

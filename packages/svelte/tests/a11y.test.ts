@@ -136,6 +136,21 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ['Label', Label, { for: 'field-1', children: text('Project name') }],
   ['PageHeader', PageHeader, { eyebrow: 'Projects', title: 'Terrain' }],
   ['Panel', Panel, { title: 'Layers', children: text('<p>Contents</p>') }],
+  [
+    'Tabs (rail)',
+    Tabs,
+    {
+      label: 'Settings',
+      variant: 'rail',
+      orientation: 'vertical',
+      tabs: [
+        { value: 'a', label: 'Place', description: 'Where and how big' },
+        { value: 'b', label: 'Water' },
+      ],
+      children: tabPanel,
+      panelHeader: text('<input aria-label="Find a setting" />'),
+    },
+  ],
   ['Section', Section, { title: 'Recent', children: text('<p>Contents</p>') }],
   [
     'Tabs',
