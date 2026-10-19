@@ -1,5 +1,13 @@
 # @loidolt/theme-styles
 
+## 0.11.1
+
+### Patch Changes
+
+- [#31](https://github.com/loidolt/loidolt-theme/pull/31) [`f13ecfe`](https://github.com/loidolt/loidolt-theme/commit/f13ecfeef6975180a5907abe239c1af615ded9c1) Thanks [@loidolt](https://github.com/loidolt)! - Bounded scroll regions now contain their visually hidden text. `Table`'s wrapper (so `DataTable` too), `Sidebar` and a vertical rail's `Tabs` panels are `position: relative`, so an absolutely positioned `.ldt-sr-only` inside them (a table caption, the live region every `Button` renders) scrolls and clips with the region instead of escaping it. Before, a long sticky table in a short `--ldt-table-height` made the page as tall as all of its rows, and scrolled sticky chrome such as an `AppShell` `TabBar` out of view. Nothing else changes visually; an app that positions these elements itself still wins, since its CSS outranks the theme's layers.
+- Updated dependencies []:
+  - @loidolt/theme-tokens@0.11.1
+
 ## 0.11.0
 
 ### Minor Changes
