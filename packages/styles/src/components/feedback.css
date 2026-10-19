@@ -140,13 +140,24 @@
     background-position: -200% 0;
   }
 }
+/*
+ * Every inset adds the matching safe area (`--ldt-safe-*`; see AppShell), so a toast never lands
+ * under a notch or the home indicator. The logical start inset cannot know which physical side
+ * it ends up on, so it clears the larger of the two.
+ */
 .ldt-toast-viewport {
   position: fixed;
   z-index: var(--loidolt-z-toast);
-  right: 1rem;
-  bottom: 1rem;
+  right: calc(1rem + var(--ldt-safe-right, env(safe-area-inset-right, 0px)));
+  bottom: calc(1rem + var(--ldt-safe-bottom, env(safe-area-inset-bottom, 0px)));
   display: grid;
-  width: min(24rem, calc(100vw - 2rem));
+  width: min(
+    24rem,
+    calc(
+      100vw - 2rem - var(--ldt-safe-left, env(safe-area-inset-left, 0px)) -
+        var(--ldt-safe-right, env(safe-area-inset-right, 0px))
+    )
+  );
   gap: var(--loidolt-space-2);
 }
 .ldt-toast {
@@ -199,7 +210,14 @@
 .ldt-toast-viewport--bottom-start {
   right: auto;
   left: 1rem;
-  inset-inline: 1rem auto;
+  inset-inline: calc(
+      1rem +
+        max(
+          var(--ldt-safe-left, env(safe-area-inset-left, 0px)),
+          var(--ldt-safe-right, env(safe-area-inset-right, 0px))
+        )
+    )
+    auto;
 }
 .ldt-toast-viewport--bottom-center,
 .ldt-toast-viewport--top-center {
@@ -210,12 +228,19 @@
 .ldt-toast-viewport--top-end,
 .ldt-toast-viewport--top-start,
 .ldt-toast-viewport--top-center {
-  top: 1rem;
+  top: calc(1rem + var(--ldt-safe-top, env(safe-area-inset-top, 0px)));
   bottom: auto;
 }
 .ldt-toast-viewport--top-start {
   right: auto;
-  inset-inline: 1rem auto;
+  inset-inline: calc(
+      1rem +
+        max(
+          var(--ldt-safe-left, env(safe-area-inset-left, 0px)),
+          var(--ldt-safe-right, env(safe-area-inset-right, 0px))
+        )
+    )
+    auto;
 }
 /* A colored dot that reports state where a Badge would be too loud. */
 .ldt-status-dot {

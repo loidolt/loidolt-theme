@@ -141,6 +141,23 @@
   border-top-width: var(--loidolt-border-width);
   animation: ldt-drawer-in-bottom var(--loidolt-motion-slow) var(--loidolt-motion-easing);
 }
+/*
+ * The panel's surface runs under the notch and home indicator on the three screen edges it
+ * touches, and its content is inset from them (`--ldt-safe-*`; see AppShell). The open edge
+ * faces the page and needs none.
+ */
+:where(.ldt-drawer--left, .ldt-drawer--right, .ldt-drawer--top) {
+  padding-top: var(--ldt-safe-top, env(safe-area-inset-top, 0px));
+}
+:where(.ldt-drawer--left, .ldt-drawer--right, .ldt-drawer--bottom) {
+  padding-bottom: var(--ldt-safe-bottom, env(safe-area-inset-bottom, 0px));
+}
+:where(.ldt-drawer--left, .ldt-drawer--top, .ldt-drawer--bottom) {
+  padding-left: var(--ldt-safe-left, env(safe-area-inset-left, 0px));
+}
+:where(.ldt-drawer--right, .ldt-drawer--top, .ldt-drawer--bottom) {
+  padding-right: var(--ldt-safe-right, env(safe-area-inset-right, 0px));
+}
 @keyframes ldt-drawer-in-left {
   from {
     transform: translateX(-100%);

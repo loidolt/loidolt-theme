@@ -58,6 +58,7 @@ const cases: Array<[CaseName, Record<string, unknown>]> = [
   ['Alert', { title: 'Export ready', children: text('Done.') }],
   ['AlertDialog', { title: 'Delete file?', open: true, trigger: text('Delete') }],
   ['AppShell', { children: text('Content') }],
+  ['AppShell (tab bar)', { children: text('Content'), tabBar: text('Tabs') }],
   ['AspectRatio', { ratio: 'square', children: text('Box') }],
   ['AudioPlayer', { src: 'talk.mp3', title: 'Shop talk', artwork: 'a.jpg' }],
   ['Avatar', { name: 'Ada Lovelace', src: '/ada.png' }],
@@ -164,6 +165,15 @@ const cases: Array<[CaseName, Record<string, unknown>]> = [
     { label: 'Color', options: [{ value: 'a', color: '#c94f2a', label: 'Terracotta' }] },
   ],
   ['Switch', { children: text('Live preview') }],
+  [
+    'TabBar',
+    {
+      items: [
+        { label: 'Today', href: '/today', current: true, icon: text('icon') },
+        { label: 'Plan', href: '/plan' },
+      ],
+    },
+  ],
   ['Table', { caption: 'Projects', children: text('<tbody><tr><td>A</td></tr></tbody>') }],
   ['TableHeader', { children: text('Name') }],
   ['Tabs', { label: 'Views', tabs: options, children: tabPanel }],
@@ -213,6 +223,20 @@ describe('server-side rendering', () => {
     );
     const tested = new Set(cases.map(([name]) => (name as string).replace(/ \(.+\)$/, '')));
     expect([...tested].sort()).toEqual(exported.sort());
+  });
+
+  it('server-renders TabBar as plain links, current page marked, with no generated ids', () => {
+    const props = {
+      items: [
+        { label: 'Today', href: '/today', current: true },
+        { label: 'Plan', href: '/plan' },
+      ],
+    };
+    const first = render(lib.TabBar, { props });
+    expect(first.body).toContain('aria-current="page"');
+    expect(first.body).toContain('href="/plan"');
+    expect(first.body).not.toMatch(/\sid="/);
+    expect(render(lib.TabBar, { props }).body).toBe(first.body);
   });
 
   it('renders SSR-stable generated ids', () => {

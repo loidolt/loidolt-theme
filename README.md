@@ -110,6 +110,23 @@ server matches the client and hydration never re-labels a control. Nothing touch
 | `--loidolt-*` | The public token contract. Primitives (`--loidolt-color-*`), colour roles (`--loidolt-surface`) and shape/voice roles (`--loidolt-radius-control`). Override these to theme the system.                                    |
 | `--ldt-*`     | Per-component knobs read at a single call site — `--ldt-dialog-width`, `--ldt-sidebar-width`, `--ldt-inspector-width`, `--ldt-gap`, `--ldt-min`, `--ldt-prose-size`. Set them inline or on a wrapper to tune one instance. |
 
+### Safe areas
+
+Under `<meta name="viewport" content="…, viewport-fit=cover">` — a Capacitor or home-screen app —
+a phone draws the page beneath its notch, rounded corners and home indicator. The chrome pads
+itself clear of them with `env(safe-area-inset-*)`, which is 0 in every desktop browser and in any
+page without `viewport-fit=cover`, so nothing moves there:
+
+- `Topbar` runs under the top inset and pads its content below it (and in from the sides).
+- `AppShell` insets the rows under its header from the side insets, and the last row from the
+  bottom one. Its `tabBar` slot pins a `TabBar` to the bottom, which then takes the bottom inset.
+- `Drawer` pads the three screen edges it touches; `ToastViewport` and `FloatingBar` add the inset
+  to their offsets.
+
+Each edge reads a knob first — `--ldt-safe-top`, `--ldt-safe-right`, `--ldt-safe-bottom`,
+`--ldt-safe-left` — and falls back to the environment. Set one to `0px` on an element that does not
+touch that screen edge (a `Topbar` below a banner), or to a length to preview a notch on desktop.
+
 ### Tokens have three tiers
 
 Primitives hold the raw palette and scales. Two **role** tiers name the job a value does, and they
@@ -588,7 +605,7 @@ These live in their own packages, and each README covers it in full. In short:
 - Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`, `DataTable`, `DataTableSearch`, `DataTableFacetedFilter`, `DataTableColumnVisibility`, `DataTablePagination`, `ActiveFilterChips`, `CodeBlock`, `CommentList`, `RecordStepper`, `Filmstrip`
 - Feedback: `Alert`, `Toast`, `ToastViewport`, `Progress`, `Spinner`, `Skeleton`, `StatusDot`, `LiveRegion`, `Marker`
 - Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`
-- Navigation: `Topbar`, `Brand`, `NavMenu`, `SkipLink`, `Breadcrumbs`, `SegmentedNav`, `Tabs`, `Accordion`, `ContextBar`
+- Navigation: `Topbar`, `Brand`, `NavMenu`, `SkipLink`, `Breadcrumbs`, `SegmentedNav`, `TabBar`, `Tabs`, `Accordion`, `ContextBar`
 - Layout: `AppShell`, `Workspace`, `Sidebar`, `FloatingBar`, `AspectRatio`, `Toolbar`, `FilterPanel`
 - Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`, `MediaGrid`, `Lightbox`, `MediaCarousel`
 - Theme: `PresetPicker`, `ThemeToggle`

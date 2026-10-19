@@ -10,6 +10,11 @@
     /** Render the content row without a second `main` landmark inside an embedded preview. */
     embedded?: boolean;
     footer?: Snippet;
+    /**
+     * Bottom navigation, such as `TabBar`, rendered last and pinned to the bottom of the screen
+     * while the page scrolls. It takes the bottom safe-area inset in place of the rows above.
+     */
+    tabBar?: Snippet;
     /** `id` of the content row (`<main>` unless embedded), for skip links or demo targeting. */
     mainId?: string;
     class?: string;
@@ -21,6 +26,7 @@
     children,
     embedded = false,
     footer,
+    tabBar,
     mainId = 'main',
     class: className,
     ref = $bindable(null),
@@ -36,4 +42,5 @@
     <main id={mainId}>{@render children()}</main>
   {/if}
   {#if footer}<footer>{@render footer()}</footer>{/if}
+  {#if tabBar}{@render tabBar()}{/if}
 </div>

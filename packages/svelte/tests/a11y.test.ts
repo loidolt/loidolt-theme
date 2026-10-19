@@ -23,6 +23,7 @@ import Toolbar from '../src/lib/components/Toolbar.svelte';
 import Alert from '../src/lib/components/Alert.svelte';
 import AlertDialog from '../src/lib/components/AlertDialog.svelte';
 import AppShell from '../src/lib/components/AppShell.svelte';
+import TabBar from '../src/lib/components/TabBar.svelte';
 import Avatar from '../src/lib/components/Avatar.svelte';
 import Combobox from '../src/lib/components/Combobox.svelte';
 import MultiSelect from '../src/lib/components/MultiSelect.svelte';
@@ -113,6 +114,29 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ['Alert (body only)', Alert, { children: text('2 fields need attention.') }],
   ['AppShell', AppShell, { children: text('<p>Content</p>') }],
   ['AppShell (embedded)', AppShell, { children: text('<p>Content</p>'), embedded: true }],
+  [
+    'AppShell (tab bar)',
+    AppShell,
+    {
+      children: text('<p>Content</p>'),
+      tabBar: text('<nav class="ldt-tab-bar" aria-label="Primary"><a href="/">Today</a></nav>'),
+    },
+  ],
+  [
+    'TabBar',
+    TabBar,
+    {
+      items: [
+        {
+          label: 'Today',
+          href: '/today',
+          current: true,
+          icon: text('<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /></svg>'),
+        },
+        { label: 'Plan', href: '/plan' },
+      ],
+    },
+  ],
   [
     'Accordion',
     Accordion,
