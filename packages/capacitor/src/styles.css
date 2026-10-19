@@ -1,0 +1,56 @@
+/*
+ * @loidolt/theme-capacitor — the stylesheet half of the native adapters. Import it after the
+ * theme. Every rule is zero-specificity (`:where`), so the app's own CSS always wins, and every
+ * rule is inert in a browser: the variables it reads exist only inside a Capacitor shell.
+ */
+
+/*
+ * Safe areas. Capacitor 8's `SystemBars` (with `insetsHandling: 'css'`, its default) injects
+ * `--safe-area-inset-*` on Android, where web views before Chromium 140 report `env()` as 0. The
+ * theme's `--ldt-safe-*` knobs take those first, then `env()` — which is what iOS reports — so the
+ * Topbar, AppShell, TabBar, Drawer, toasts and floating bars clear the bars on both platforms.
+ */
+:where(:root) {
+  --ldt-safe-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --ldt-safe-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+  --ldt-safe-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --ldt-safe-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+}
+
+/*
+ * The software keyboard (`createNativeKeyboard`). While it is up it covers the home indicator,
+ * so the bottom safe area becomes whatever of the keyboard the page has to clear itself: its full
+ * height when it overlays the page (resize mode `none`), nothing when the web view shrinks for
+ * it. Bottom navigation steps aside, as it does in native apps, rather than riding up on the keys.
+ */
+:where(:root[data-keyboard='open']) {
+  --ldt-safe-bottom: var(--ldt-keyboard-inset, 0px);
+}
+:where([data-keyboard='open'] .ldt-tab-bar) {
+  display: none;
+}
+
+/*
+ * Native touch manners (`data-native-platform`, written by `markNativePlatform`): no grey flash
+ * on tap, and long-pressing a control does not select its label or open the link callout.
+ * Content stays selectable.
+ */
+:where([data-native-platform]) {
+  -webkit-tap-highlight-color: transparent;
+}
+:where([data-native-platform])
+  :where(
+    .ldt-button,
+    .ldt-icon-button,
+    .ldt-switch,
+    .ldt-tabs__trigger,
+    .ldt-toggle-group,
+    .ldt-segmented-nav,
+    .ldt-nav-menu,
+    .ldt-tab-bar,
+    .ldt-topbar
+  ) {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}

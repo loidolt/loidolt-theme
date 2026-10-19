@@ -125,4 +125,14 @@ describe('createTokenColors', () => {
     await settle();
     expect(calls).toHaveLength(2);
   });
+
+  it('hears a preset change, which can recolour every role', async () => {
+    let calls = 0;
+    const stop = observeColorScheme(() => calls++);
+    document.documentElement.dataset.preset = 'soft';
+    await settle();
+    expect(calls).toBe(1);
+    stop();
+    delete document.documentElement.dataset.preset;
+  });
 });

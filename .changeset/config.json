@@ -9,7 +9,8 @@
       "@loidolt/theme-svelte",
       "@loidolt/theme-charts",
       "@loidolt/theme-maps",
-      "@loidolt/theme-docs"
+      "@loidolt/theme-docs",
+      "@loidolt/theme-capacitor"
     ]
   ],
   "linked": [],
