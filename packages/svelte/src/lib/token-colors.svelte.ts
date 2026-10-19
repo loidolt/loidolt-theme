@@ -90,9 +90,14 @@ function subscribe(listener: Listener): () => void {
     };
     const root = document.documentElement;
     const scoped = new MutationObserver(notify);
-    // A theme can be scoped to any subtree, so `data-theme` is watched everywhere; `class` and
-    // `style` only on the root, where apps toggle theme classes and inline overrides.
-    scoped.observe(root, { attributes: true, attributeFilter: ['data-theme'], subtree: true });
+    // A theme or a preset can be scoped to any subtree, so `data-theme` and `data-preset` are
+    // watched everywhere; `class` and `style` only on the root, where apps toggle theme classes
+    // and inline overrides.
+    scoped.observe(root, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'data-preset'],
+      subtree: true,
+    });
     const rootObserver = new MutationObserver(notify);
     rootObserver.observe(root, { attributes: true, attributeFilter: ['class', 'style'] });
     const media =
@@ -114,8 +119,9 @@ function subscribe(listener: Listener): () => void {
 }
 
 /**
- * Calls `callback` whenever the page's colour scheme may have changed: a `data-theme` anywhere,
- * a class or inline style on `<html>`, or the system preference. Returns the unsubscribe.
+ * Calls `callback` whenever the page's colours may have changed: a `data-theme` or `data-preset`
+ * anywhere, a class or inline style on `<html>`, or the system preference. Returns the
+ * unsubscribe.
  */
 export function observeColorScheme(callback: () => void): () => void {
   return subscribe(callback);
