@@ -68,6 +68,7 @@ export { default as Stat } from './components/Stat.svelte';
 export { default as StatusDot } from './components/StatusDot.svelte';
 export { default as SwatchGroup } from './components/SwatchGroup.svelte';
 export { default as Switch } from './components/Switch.svelte';
+export { default as TabBar } from './components/TabBar.svelte';
 export { default as Table } from './components/Table.svelte';
 export { default as TableHeader } from './components/TableHeader.svelte';
 export { default as Tabs } from './components/Tabs.svelte';
@@ -219,6 +220,7 @@ export type {
   Placement,
   SortDirection,
   StatusVariant,
+  TabBarItem,
   TabItem,
   TriggerChildProps,
 } from './types.js';

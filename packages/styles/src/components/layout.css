@@ -21,15 +21,40 @@
      utility covers standalone workspaces without imposing a wrapper element in the component. */
   container: loidolt-workspace / inline-size;
 }
+/*
+ * Safe areas. Under `viewport-fit=cover` a phone draws the page beneath its notch, rounded
+ * corners and home indicator; `env(safe-area-inset-*)` reports how far, and is 0 everywhere else,
+ * so none of this moves a desktop layout. Each edge reads `--ldt-safe-<edge>` first: set it to
+ * `0px` on an element that does not touch that screen edge, or to a length to fake an inset.
+ * The header row pads itself (Topbar), so the shell insets only the rows below it, and the
+ * bottom inset goes to whichever row is last — a TabBar takes it when there is one. Zero
+ * specificity, so an app's own padding on these rows still wins.
+ */
+:where(.ldt-app-shell > :is(main, .ldt-app-shell__main, footer)) {
+  padding-right: var(--ldt-safe-right, env(safe-area-inset-right, 0px));
+  padding-left: var(--ldt-safe-left, env(safe-area-inset-left, 0px));
+}
+:where(.ldt-app-shell > :is(main, .ldt-app-shell__main, footer):last-child) {
+  padding-bottom: var(--ldt-safe-bottom, env(safe-area-inset-bottom, 0px));
+}
+/* A TabBar in AppShell's `tabBar` slot stays on screen while the page scrolls under it. */
+:where(.ldt-app-shell > .ldt-tab-bar) {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--loidolt-z-sticky);
+}
 .ldt-topbar {
   min-width: 0;
-  min-height: var(--loidolt-size-topbar);
+  /* The top inset is added to the height rather than taken out of it. */
+  min-height: calc(var(--loidolt-size-topbar) + var(--ldt-safe-top, env(safe-area-inset-top, 0px)));
   display: flex;
   /* Reflow at whatever width runs out of room, rather than only at the compact breakpoint. */
   flex-wrap: wrap;
   align-items: center;
   gap: var(--loidolt-space-5);
-  padding: 0 var(--loidolt-pad-bar-x);
+  padding: var(--ldt-safe-top, env(safe-area-inset-top, 0px))
+    calc(var(--loidolt-pad-bar-x) + var(--ldt-safe-right, env(safe-area-inset-right, 0px))) 0
+    calc(var(--loidolt-pad-bar-x) + var(--ldt-safe-left, env(safe-area-inset-left, 0px)));
   color: var(--loidolt-text);
   background: var(--loidolt-surface);
 }
@@ -222,21 +247,83 @@
 .ldt-floating-bar--vertical {
   flex-direction: column;
 }
+/* Each corner clears the safe area too, for a stage that fills the screen (a map, a canvas). */
 .ldt-floating-bar--top-start {
-  top: var(--loidolt-space-3);
-  left: var(--loidolt-space-3);
+  top: calc(var(--loidolt-space-3) + var(--ldt-safe-top, env(safe-area-inset-top, 0px)));
+  left: calc(var(--loidolt-space-3) + var(--ldt-safe-left, env(safe-area-inset-left, 0px)));
 }
 .ldt-floating-bar--top-end {
-  top: var(--loidolt-space-3);
-  right: var(--loidolt-space-3);
+  top: calc(var(--loidolt-space-3) + var(--ldt-safe-top, env(safe-area-inset-top, 0px)));
+  right: calc(var(--loidolt-space-3) + var(--ldt-safe-right, env(safe-area-inset-right, 0px)));
 }
 .ldt-floating-bar--bottom-start {
-  bottom: var(--loidolt-space-3);
-  left: var(--loidolt-space-3);
+  bottom: calc(var(--loidolt-space-3) + var(--ldt-safe-bottom, env(safe-area-inset-bottom, 0px)));
+  left: calc(var(--loidolt-space-3) + var(--ldt-safe-left, env(safe-area-inset-left, 0px)));
 }
 .ldt-floating-bar--bottom-end {
-  bottom: var(--loidolt-space-3);
-  right: var(--loidolt-space-3);
+  bottom: calc(var(--loidolt-space-3) + var(--ldt-safe-bottom, env(safe-area-inset-bottom, 0px)));
+  right: calc(var(--loidolt-space-3) + var(--ldt-safe-right, env(safe-area-inset-right, 0px)));
+}
+/*
+ * TabBar: a phone's bottom navigation. Equal destinations edge to edge, so the whole bar is
+ * target with no dead space between; each is at least 44px square. The surface runs under the
+ * home indicator and the links sit above it (`--ldt-safe-*`; see AppShell).
+ */
+.ldt-tab-bar {
+  min-width: 0;
+  display: flex;
+  padding: 0 var(--ldt-safe-right, env(safe-area-inset-right, 0px))
+    var(--ldt-safe-bottom, env(safe-area-inset-bottom, 0px))
+    var(--ldt-safe-left, env(safe-area-inset-left, 0px));
+  border-top: var(--loidolt-border-width) solid var(--loidolt-border);
+  color: var(--loidolt-text-muted);
+  background: var(--loidolt-surface);
+}
+.ldt-tab-bar__item {
+  flex: 1 1 0;
+  min-width: 44px;
+  min-height: max(44px, calc(var(--loidolt-size-control) * 1.5));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--loidolt-space-1);
+  padding: var(--loidolt-space-2) var(--loidolt-space-1);
+  color: inherit;
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-control-weight);
+  letter-spacing: 0; /* tracking would push short labels into ellipses */
+  text-transform: var(--loidolt-control-transform);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+/* A tap leaves `:hover` stuck on touch screens, where it would read as a second current tab. */
+@media (hover: hover) {
+  .ldt-tab-bar__item:hover {
+    color: var(--loidolt-text);
+    background: var(--loidolt-surface-alt);
+    text-decoration: none;
+  }
+}
+/* The indicator is the edge facing the content — the bar's top. */
+.ldt-tab-bar__item[aria-current='page'] {
+  color: var(--loidolt-text-accent);
+  background: var(--loidolt-surface-alt);
+  box-shadow: inset 0 var(--loidolt-stroke-indicator) 0 var(--loidolt-accent);
+}
+.ldt-tab-bar__icon {
+  display: inline-flex;
+  flex: none;
+}
+.ldt-tab-bar__icon :where(svg) {
+  width: 1.5rem; /* @literal icons are sized for the eye, not the label */
+  height: 1.5rem; /* @literal icons are sized for the eye, not the label */
+}
+.ldt-tab-bar__label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .ldt-page-header {
   display: flex;
@@ -278,7 +365,8 @@
 @media (max-width: 760px) {
   .ldt-topbar {
     min-height: auto;
-    padding-block: var(--loidolt-space-3);
+    padding-block: calc(var(--loidolt-space-3) + var(--ldt-safe-top, env(safe-area-inset-top, 0px)))
+      var(--loidolt-space-3);
     gap: var(--loidolt-space-3);
   }
   .ldt-topbar__actions {

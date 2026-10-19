@@ -6,6 +6,8 @@ import Breadcrumbs from '../src/lib/components/Breadcrumbs.svelte';
 import DropdownMenu from '../src/lib/components/DropdownMenu.svelte';
 import Pagination from '../src/lib/components/Pagination.svelte';
 import NavMenu from '../src/lib/components/NavMenu.svelte';
+import AppShell from '../src/lib/components/AppShell.svelte';
+import TabBar from '../src/lib/components/TabBar.svelte';
 import Tabs from '../src/lib/components/Tabs.svelte';
 
 const text = (value: string) => createRawSnippet(() => ({ render: () => value }));
@@ -326,5 +328,86 @@ describe('Pagination', () => {
 
     expect(screen.getByRole('navigation', { name: 'Search results' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Result page 2' })).toBeInTheDocument();
+  });
+});
+
+describe('TabBar', () => {
+  const icon = text('<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /></svg>');
+  const items = [
+    { label: 'Today', href: '/today', current: true, icon },
+    { label: 'Plan', href: '/plan', icon },
+    { label: 'Log', href: '/log' },
+  ];
+
+  it('renders a named navigation region of real links', () => {
+    render(TabBar, { items, label: 'Main' });
+    const nav = screen.getByRole('navigation', { name: 'Main' });
+    expect(nav).toHaveClass('ldt-tab-bar');
+    const links = screen.getAllByRole('link');
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(['/today', '/plan', '/log']);
+    links.forEach((link) => expect(link).toHaveClass('ldt-tab-bar__item'));
+  });
+
+  it('defaults the region name to Primary', () => {
+    render(TabBar, { items });
+    expect(screen.getByRole('navigation', { name: 'Primary' })).toBeInTheDocument();
+  });
+
+  it('marks only the current destination with aria-current="page"', () => {
+    render(TabBar, { items });
+    expect(screen.getByRole('link', { name: 'Today' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('link', { name: 'Plan' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Log' })).not.toHaveAttribute('aria-current');
+  });
+
+  it('keeps the icon decorative so the label is the whole accessible name', () => {
+    const { container } = render(TabBar, { items });
+    const icons = container.querySelectorAll('.ldt-tab-bar__icon');
+    expect(icons).toHaveLength(2);
+    icons.forEach((node) => expect(node).toHaveAttribute('aria-hidden', 'true'));
+    expect(container.querySelector('.ldt-tab-bar__icon svg')).not.toBeNull();
+    // The third item has no icon, and renders no empty slot for one.
+    expect(screen.getByRole('link', { name: 'Log' }).querySelector('.ldt-tab-bar__icon')).toBe(
+      null
+    );
+  });
+
+  it('forwards class, itemClass, rest attributes and ref', () => {
+    let ref: HTMLElement | null = null;
+    render(TabBar, {
+      items,
+      class: 'app-tabs',
+      itemClass: 'app-tab',
+      'data-testid': 'tabs',
+      get ref() {
+        return ref;
+      },
+      set ref(value: HTMLElement | null) {
+        ref = value;
+      },
+    } as never);
+    const nav = screen.getByTestId('tabs');
+    expect(nav).toHaveClass('ldt-tab-bar', 'app-tabs');
+    expect(screen.getByRole('link', { name: 'Plan' })).toHaveClass('ldt-tab-bar__item', 'app-tab');
+    expect(ref).toBe(nav);
+  });
+});
+
+describe('AppShell tabBar', () => {
+  it('renders the tab bar as the last row, after main and footer', () => {
+    const { container } = render(AppShell, {
+      children: text('<p>Content</p>'),
+      footer: text('<p>Footer</p>'),
+      tabBar: text('<nav class="ldt-tab-bar" aria-label="Primary"><a href="/">Today</a></nav>'),
+    });
+    const shell = container.querySelector('.ldt-app-shell')!;
+    const rows = [...shell.children].map((child) => child.tagName.toLowerCase());
+    expect(rows).toEqual(['main', 'footer', 'nav']);
+    expect(shell.lastElementChild).toHaveClass('ldt-tab-bar');
+  });
+
+  it('renders no extra row without one', () => {
+    const { container } = render(AppShell, { children: text('<p>Content</p>') });
+    expect([...container.querySelector('.ldt-app-shell')!.children]).toHaveLength(1);
   });
 });

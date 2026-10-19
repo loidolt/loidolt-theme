@@ -510,7 +510,10 @@ export const entries: Entry[] = [
     name: 'ToastViewport',
     group: 'Feedback',
     summary: 'The fixed live region toasts are announced from.',
-    notes: ['`position` places the stack at any corner or at the top or bottom centre.'],
+    notes: [
+      '`position` places the stack at any corner or at the top or bottom centre.',
+      'Every inset clears the safe area, so a toast never lands under a notch or the home indicator.',
+    ],
   },
   {
     slug: 'progress',
@@ -599,6 +602,7 @@ export const entries: Entry[] = [
       '`--ldt-drawer-size` is the measure across the anchored edge, always capped so the scrim stays reachable.',
       'Same primitive as `Dialog`: focus is trapped, Escape closes, the page behind is inert.',
       '`triggerVariant`/`triggerSize` pick the trigger button clothes; an explicit `triggerClass` wins wholesale.',
+      'The panel insets its content from the safe area on the three screen edges it touches.',
     ],
   },
   {
@@ -648,6 +652,7 @@ export const entries: Entry[] = [
     summary: 'The application bar: brand, navigation, actions.',
     notes: [
       'Plain nav links take the `.ldt-topbar__link` class; the router marks the active page with `aria-current="page"`.',
+      'Under `viewport-fit=cover` the bar runs under the notch and pads its content clear of it; the insets are 0 on desktop. Set `--ldt-safe-top: 0px` on a bar that is not at the top of the screen.',
     ],
   },
   {
@@ -696,6 +701,18 @@ export const entries: Entry[] = [
     ],
   },
   {
+    slug: 'tab-bar',
+    name: 'TabBar',
+    group: 'Navigation',
+    summary: "A phone's bottom navigation: three to five destinations within reach of a thumb.",
+    notes: [
+      'Items are real links; `current` sets `aria-current="page"`, which is also the indicator on the edge facing the content.',
+      'The label is always rendered and is the accessible name; the `icon` snippet above it is decorative.',
+      'Every destination is at least 44px square, and the bar pads its links clear of the home indicator. Put it in `AppShell`’s `tabBar` slot to pin it to the bottom of the screen.',
+      'Feed it the same list as the topbar links and show one or the other at the compact breakpoint.',
+    ],
+  },
+  {
     slug: 'tabs',
     name: 'Tabs',
     group: 'Navigation',
@@ -728,7 +745,11 @@ export const entries: Entry[] = [
     name: 'AppShell',
     group: 'Layout',
     summary: 'Header, main, footer — the outermost frame.',
-    notes: ['`mainId` is the target for a skip link; the default is `main`.'],
+    notes: [
+      '`mainId` is the target for a skip link; the default is `main`.',
+      'Safe areas: the header pads itself (Topbar), the rows below are inset from the side safe areas, and the last row takes the bottom one. Each edge reads `--ldt-safe-top`/`-right`/`-bottom`/`-left` before `env(safe-area-inset-*)`.',
+      '`tabBar` renders bottom navigation such as `TabBar` after the footer, pinned to the bottom of the screen while the page scrolls.',
+    ],
   },
   {
     slug: 'workspace',
@@ -760,6 +781,7 @@ export const entries: Entry[] = [
       'A toolbar pinned to a corner of a positioned container — zoom controls, canvas actions.',
     notes: [
       'The parent must be `position: relative`; the bar is a pointer-events island above stage content.',
+      'Each corner also clears the safe area, for a stage that fills the screen. Set `--ldt-safe-*` to `0px` on a bar whose stage does not.',
     ],
   },
 

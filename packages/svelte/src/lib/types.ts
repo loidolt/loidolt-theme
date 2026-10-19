@@ -64,6 +64,17 @@ export interface TabItem<T extends string = string> extends Option<T> {
   description?: string;
 }
 
+/**
+ * One `TabBar` destination. A link rather than an `Option`, so the bar navigates: `current`
+ * marks the page you are on. The icon sits above the label, which stays the accessible name.
+ */
+export interface TabBarItem {
+  label: string;
+  href: string;
+  current?: boolean;
+  icon?: Snippet;
+}
+
 /** One step in a breadcrumb trail. The final crumb is the current page and takes no `href`. */
 export interface Crumb {
   label: string;
