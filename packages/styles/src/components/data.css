@@ -1,4 +1,11 @@
+/*
+ * The wrapper is a scroll region, so it is also the containing block of what it scrolls:
+ * visually hidden text (the caption, the live region in every Button) is absolutely positioned,
+ * and against an ancestor outside the wrapper it would escape the clipping and stretch the page
+ * to where the last row would have been.
+ */
 .ldt-table-wrap {
+  position: relative;
   width: 100%;
   overflow-x: auto;
   border: var(--loidolt-border-width) solid var(--loidolt-border);

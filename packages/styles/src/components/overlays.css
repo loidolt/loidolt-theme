@@ -523,6 +523,8 @@
   border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
 }
 .ldt-tabs--rail[data-orientation='vertical'] .ldt-tabs__panels {
+  /* The containing block of what it scrolls; see `.ldt-table-wrap`. */
+  position: relative;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;

@@ -214,7 +214,10 @@
   grid-column: 1 / -1;
   min-width: 0;
 }
+/* Positioned so absolutely positioned content (visually hidden text) scrolls and clips with the
+   pane instead of stretching the page; see `.ldt-table-wrap`. */
 .ldt-sidebar {
+  position: relative;
   min-width: 0;
   overflow-y: auto;
   padding: var(--loidolt-pad-pane);
