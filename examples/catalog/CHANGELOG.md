@@ -1,5 +1,17 @@
 # @loidolt/theme-catalog
 
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies [[`215e78f`](https://github.com/loidolt/loidolt-theme/commit/215e78f4aff68f787514dd51eae6e45e5dff09b0)]:
+  - @loidolt/theme-styles@0.11.0
+  - @loidolt/theme-svelte@0.11.0
+  - @loidolt/theme-charts@0.11.0
+  - @loidolt/theme-docs@0.11.0
+  - @loidolt/theme-maps@0.11.0
+  - @loidolt/theme-tokens@0.11.0
+
 ## 0.0.8
 
 ### Patch Changes
