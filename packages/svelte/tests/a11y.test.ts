@@ -189,6 +189,7 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
     },
   ],
   ['Topbar', Topbar, { brand: text('<span>Loidolt</span>') }],
+  ['Topbar as a drag region', Topbar, { brand: text('<span>Loidolt</span>'), dragRegion: true }],
   ['Badge', Badge, { children: text('Ready'), variant: 'success' }],
   ['Button', Button, { children: text('Create project'), variant: 'primary' }],
   ['Card', Card, { title: 'Terrain project', children: text('Details'), headingLevel: 2 }],

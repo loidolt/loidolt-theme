@@ -34,3 +34,12 @@ quickest check that the Rust side builds.
   `src-tauri/capabilities/default.json`).
 - The platform badge reads `desktop.platform`: `null` in a browser, the OS in a window.
 - `@loidolt/theme-tauri/styles.css` after the theme's stylesheet.
+- Window chrome: `getCurrentWindow` and the `createTheme` store passed to `setupTauri`, with
+  `chrome: { titleBar: 'overlay' }`. In `src-tauri/tauri.conf.json` the window starts hidden
+  (`"visible": false`) in the theme's launch colour (`"backgroundColor"`, which is
+  `windowBackground('light')`), with an overlay title bar (`"titleBarStyle": "Overlay"`,
+  `"hiddenTitle": true`). `setupTauri` paints the window in the theme and then shows it, so it
+  opens without a white flash; switch the theme and the window background and appearance follow.
+- On macOS the page clears the window buttons through `--ldt-safe-top`, which full screen gives
+  back, and `<Topbar dragRegion>` moves the window. The window permissions this needs are in
+  `src-tauri/capabilities/default.json`.

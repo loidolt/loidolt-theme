@@ -64,3 +64,31 @@ export function fakeOs(type: 'linux' | 'windows' | 'macos' | 'ios' | 'android' =
 
 /** Lets pending promise callbacks run. */
 export const flush = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+
+/**
+ * The window from `getCurrentWindow()`. `resize()` fires the `onResized` handlers, after setting
+ * what `isFullscreen()` reports.
+ */
+export function fakeWindow(options: { fullscreen?: boolean } = {}) {
+  let fullscreen = options.fullscreen ?? false;
+  const handlers = new Set<() => void>();
+  const unlisten = vi.fn();
+  return {
+    setBackgroundColor: vi.fn(async (_color: string) => {}),
+    setTheme: vi.fn(async (_theme?: 'light' | 'dark' | null) => {}),
+    isFullscreen: vi.fn(async () => fullscreen),
+    onResized: vi.fn(async (handler: () => void) => {
+      handlers.add(handler);
+      return () => {
+        handlers.delete(handler);
+        unlisten();
+      };
+    }),
+    show: vi.fn(async () => {}),
+    unlisten,
+    resize(next: { fullscreen: boolean }) {
+      fullscreen = next.fullscreen;
+      for (const handler of handlers) handler();
+    },
+  };
+}

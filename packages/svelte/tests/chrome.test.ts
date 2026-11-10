@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import ActiveFilterChips from '../src/lib/components/ActiveFilterChips.svelte';
 import FilterPanel from '../src/lib/components/FilterPanel.svelte';
 import Toolbar from '../src/lib/components/Toolbar.svelte';
+import Topbar from '../src/lib/components/Topbar.svelte';
 import FilterChipsHarness from './fixtures/FilterChipsHarness.svelte';
 
 const html = (value: string) => createRawSnippet(() => ({ render: () => value }));
@@ -105,5 +106,53 @@ describe('FilterPanel', () => {
 
     await rerender({ activeCount: 0 });
     expect(screen.queryByRole('button', { name: 'Clear all' })).not.toBeInTheDocument();
+  });
+});
+
+describe('Topbar', () => {
+  const regions = (bar: HTMLElement) => [
+    bar,
+    ...bar.querySelectorAll<HTMLElement>(':scope > div, :scope > nav'),
+  ];
+
+  it('is no drag region by default', () => {
+    render(Topbar, {
+      brand: html('<span>Loidolt</span>'),
+      navigation: html('<a href="/">Home</a>'),
+      actions: html('<button>Search</button>'),
+    });
+    const bar = screen.getByRole('banner');
+    expect(bar.querySelectorAll('[data-tauri-drag-region]')).toHaveLength(0);
+    expect(bar).not.toHaveAttribute('data-tauri-drag-region');
+  });
+
+  it('drags the window from the bar and its regions, never from its controls', () => {
+    render(Topbar, {
+      dragRegion: true,
+      brand: html('<span>Loidolt</span>'),
+      navigation: html('<a href="/">Home</a>'),
+      actions: html('<button>Search</button>'),
+    });
+    const bar = screen.getByRole('banner');
+    const marked = regions(bar);
+    expect(marked).toHaveLength(4);
+    for (const region of marked) expect(region).toHaveAttribute('data-tauri-drag-region', 'deep');
+    expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute(
+      'data-tauri-drag-region'
+    );
+    expect(screen.getByRole('button', { name: 'Search' })).not.toHaveAttribute(
+      'data-tauri-drag-region'
+    );
+  });
+
+  it('marks only the regions it renders, and lets the app override the bar', () => {
+    render(Topbar, {
+      dragRegion: true,
+      'data-tauri-drag-region': 'false',
+      brand: html('<span>Loidolt</span>'),
+    });
+    const bar = screen.getByRole('banner');
+    expect(bar).toHaveAttribute('data-tauri-drag-region', 'false');
+    expect(bar.querySelectorAll('[data-tauri-drag-region="deep"]')).toHaveLength(1);
   });
 });

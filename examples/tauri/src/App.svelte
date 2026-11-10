@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { getCurrentWindow } from '@tauri-apps/api/window';
   import * as os from '@tauri-apps/plugin-os';
   import {
     AppShell,
@@ -15,8 +16,16 @@
 
   const theme = createTheme();
 
-  // In a browser (`npm run dev`) this is inert: platform is null and <html> is left alone.
-  const desktop = setupTauri({ plugins: { os } });
+  // In a browser (`npm run dev`) this is inert: platform is null and <html> is left alone. In a
+  // window it paints the window in the theme, insets the page under the overlay title bar set up
+  // in tauri.conf.json, and shows the window, which starts hidden, once the theme is in.
+  // `getCurrentWindow` goes in uncalled: it needs the Tauri runtime, and setupTauri only calls it
+  // inside a window.
+  const desktop = setupTauri({
+    plugins: { os, window: getCurrentWindow },
+    theme,
+    chrome: { titleBar: 'overlay' },
+  });
 
   const names = {
     macos: 'macOS',
@@ -32,7 +41,7 @@
 
 <AppShell mainId="main">
   {#snippet header()}
-    <Topbar navLabel="Example app">
+    <Topbar navLabel="Example app" dragRegion>
       {#snippet brand()}<Brand name="Theme example" meta="Desktop" />{/snippet}
       {#snippet actions()}<ThemeToggle {theme} />{/snippet}
     </Topbar>
@@ -54,6 +63,13 @@
         selectable, as in a native app.
       </p>
       <Button variant="primary" onclick={() => count++}>Clicked {count} times</Button>
+    </Section>
+    <Section title="Window chrome" headingLevel={2}>
+      <p>
+        On macOS the title bar is an overlay: the top bar runs to the window's top edge, leaves a
+        strip for the window buttons, and drags the window from anywhere but its controls. Switch
+        the theme and the window background and appearance follow; full screen gives the strip back.
+      </p>
     </Section>
   </div>
 </AppShell>
