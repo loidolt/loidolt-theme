@@ -132,7 +132,8 @@ ${endScript}
     Below the <code>compact</code> breakpoint a navigation column has nowhere to sit. Swap it for a
     <code>Drawer</code>: same content, modal presentation, focus trapped while it is open. This site
     does exactly that — narrow the window and the component list moves behind
-    <em>Browse</em>.
+    <em>Browse</em>. Shipping the same app to a phone as a native shell? See
+    <a href={`${base}/patterns/native`}>Native apps</a> for safe areas, the back button and the keyboard.
   </p>
   <Demo label="The drawer that replaces the column">
     <Drawer title="Navigation" description="Everything in this project">
@@ -154,4 +155,12 @@ ${endScript}
     count your rows, so decide the empty case where the data is.
   </p>
   <CodeBlock code={emptyTable} />
+</Section>
+
+<Section title="Without Svelte" headingLevel={2}>
+  <p class="docs-note">
+    The styles do not need the components. A page with no bundler, such as a generated HTML report,
+    can inline one prebuilt stylesheet and write the same <code>ldt-</code> markup by hand: see
+    <a href={`${base}/patterns/css-only`}>CSS only</a>.
+  </p>
 </Section>
