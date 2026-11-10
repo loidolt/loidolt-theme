@@ -256,6 +256,20 @@ export const entries: Entry[] = [
     notes: ['`onFiles` fires only when at least one file is chosen; `onchange` still forwards.'],
   },
   {
+    slug: 'dropzone',
+    name: 'Dropzone',
+    group: 'Forms',
+    summary:
+      'A drop target for files that is also a file picker, with type, size and count filtering.',
+    notes: [
+      'The area is the label of a real `<input type="file">`: a click, Enter or Space opens the picker, `label` is its accessible name, and `name` submits the accepted files with a form.',
+      '`accept` uses the `<input accept>` syntax — `.pdf`, `application/pdf`, `image/*` — and the same check is exported as `matchesAccept` and `filterFiles` for other code that receives files.',
+      '`onFiles(accepted, rejected)` fires for every batch, whatever its source. Rejections carry a `reason` (`type`, `size` or `count`); `rejectedLabel` words the message shown under the area and announced through a live region.',
+      'Files from elsewhere — a native window drop event, a paste handler, a test — go through `addFiles(files)` on the component instance (`bind:this`), which runs the same filtering, message and callback. It takes a `File[]` or a `FileList` and returns `{ accepted, rejected }`.',
+      'The root carries `data-dragging` while files are over the area. With `window`, files dropped anywhere on the page are taken too: the root gets `data-window-dragging` and an overlay covers the viewport. A drop another target already handled (`preventDefault`) is left alone.',
+    ],
+  },
+  {
     slug: 'swatch-group',
     name: 'SwatchGroup',
     group: 'Forms',

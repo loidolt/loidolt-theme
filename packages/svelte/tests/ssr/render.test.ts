@@ -86,6 +86,7 @@ const cases: Array<[CaseName, Record<string, unknown>]> = [
   ['DataTableSearch', { table: sheets }],
   ['Drawer', { title: 'Navigation', open: true, children: text('Links') }],
   ['DropdownMenu', { trigger: text('Actions'), items: options, open: true }],
+  ['Dropzone', { label: 'Drop PDFs', hint: 'PDF only', accept: '.pdf', window: true }],
   ['EmptyState', { title: 'No projects yet' }],
   ['Field', { label: 'Email', children: fieldControl }],
   ['FileInput', { 'aria-label': 'Artwork file' }],
