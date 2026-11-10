@@ -711,6 +711,7 @@ export const entries: Entry[] = [
     notes: [
       'Plain nav links take the `.ldt-topbar__link` class; the router marks the active page with `aria-current="page"`.',
       'Under `viewport-fit=cover` the bar runs under the notch and pads its content clear of it; the insets are 0 on desktop. Set `--ldt-safe-top: 0px` on a bar that is not at the top of the screen.',
+      'In a desktop app, `dragRegion` makes the bar drag its window: it sets `data-tauri-drag-region` on the bar and its regions, and the buttons, links and fields in it stay clickable. A plain attribute in a browser. See the Desktop apps pattern for the overlay title bar it pairs with.',
     ],
   },
   {

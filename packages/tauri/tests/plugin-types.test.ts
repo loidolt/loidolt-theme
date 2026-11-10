@@ -1,3 +1,4 @@
+import type { getCurrentWindow } from '@tauri-apps/api/window';
 import type * as os from '@tauri-apps/plugin-os';
 import { describe, expectTypeOf, it } from 'vitest';
 import type { TauriPlugins } from '../src/lib/index.js';
@@ -12,5 +13,12 @@ describe('the real modules fit the adapters', () => {
   it('fits the os plugin', () => {
     expectTypeOf<typeof os>().toExtend<Shapes.OsPlugin>();
     expectTypeOf<typeof os>().toExtend<NonNullable<TauriPlugins['os']>>();
+  });
+
+  it('fits the window from getCurrentWindow()', () => {
+    type CurrentWindow = ReturnType<typeof getCurrentWindow>;
+    expectTypeOf<CurrentWindow>().toExtend<Shapes.WindowPlugin>();
+    expectTypeOf<CurrentWindow>().toExtend<NonNullable<TauriPlugins['window']>>();
+    expectTypeOf<typeof getCurrentWindow>().toExtend<NonNullable<TauriPlugins['window']>>();
   });
 });
