@@ -210,6 +210,14 @@ const cases: Array<[CaseName, Record<string, unknown>]> = [
     },
   ],
   ['Textarea', { 'aria-label': 'Notes' }],
+  [
+    'AnnotatedText',
+    {
+      label: 'Page text',
+      value: 'Two sheets of ply',
+      marks: [{ id: 'a', start: 4, end: 10, variant: 'warning', label: 'Low confidence' }],
+    },
+  ],
   ['ThemeToggle', { theme: createTheme({ storageKey: null }) }],
   ['Toast', { title: 'Saved' }],
   ['ToastViewport', { children: text('None yet') }],

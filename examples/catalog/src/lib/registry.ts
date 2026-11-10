@@ -129,6 +129,21 @@ export const entries: Entry[] = [
     summary: 'Multi-line text, sharing the input treatment.',
   },
   {
+    slug: 'annotated-text',
+    name: 'AnnotatedText',
+    group: 'Forms',
+    summary: 'Plain text with marked ranges that stay on their characters while you edit.',
+    notes: [
+      'A real `<textarea>` over a mirror that draws the marks, so native undo, spellcheck, IME input, mobile selection and form labelling all keep working. Plain text only.',
+      'Marks are UTF-16 offsets with an exclusive `end`. Every edit (typing, paste, cut, drag and drop, undo) moves them: edits before a mark shift it, edits inside resize it, and a mark with no characters left is dropped. `bind:marks` gives you what remains.',
+      "Text typed exactly at a mark's start pushes the mark along; text typed at its end does not extend it. Replacing a whole mark removes it. The rules live in the exported `shiftMarks(marks, edit)`, with `diffText(before, after)` to derive the edit.",
+      'An IME composition is applied once, when it is committed. Setting `value` from outside replaces the text without moving marks, so set `marks` with it.',
+      '`F8` selects the next mark and `Shift+F8` the previous one, wrapping at the ends; the buttons do the same and `controls={false}` hides them. The component also exposes `next()`, `previous()` and `focusMark(id)`.',
+      "Each mark shows its `label` as a tooltip on hover and while the caret is in it (`Escape` dismisses it). For screen readers the field is described by the current mark's label, and entering a mark is announced.",
+      'Variants follow the status set, and each one has its own underline style, so marks do not rely on colour alone.',
+    ],
+  },
+  {
     slug: 'number-field',
     name: 'NumberField',
     group: 'Forms',
