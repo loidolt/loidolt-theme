@@ -1,3 +1,4 @@
+import type * as notification from '@tauri-apps/plugin-notification';
 import type * as os from '@tauri-apps/plugin-os';
 import { describe, expectTypeOf, it } from 'vitest';
 import type { TauriPlugins } from '../src/lib/index.js';
@@ -12,5 +13,10 @@ describe('the real modules fit the adapters', () => {
   it('fits the os plugin', () => {
     expectTypeOf<typeof os>().toExtend<Shapes.OsPlugin>();
     expectTypeOf<typeof os>().toExtend<NonNullable<TauriPlugins['os']>>();
+  });
+
+  it('fits the notification plugin', () => {
+    expectTypeOf<typeof notification>().toExtend<Shapes.NotificationPlugin>();
+    expectTypeOf<typeof notification>().toExtend<NonNullable<TauriPlugins['notification']>>();
   });
 });

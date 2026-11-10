@@ -32,5 +32,9 @@ quickest check that the Rust side builds.
 - `setupTauri({ plugins: { os } })` in the root component, with `@tauri-apps/plugin-os` passed in
   (and `tauri-plugin-os` registered in `src-tauri/src/lib.rs`, allowed in
   `src-tauri/capabilities/default.json`).
+- `desktop.notifications`, with `@tauri-apps/plugin-notification` passed in (`tauri-plugin-notification`
+  registered and `notification:default` allowed): a button asks for permission on the click and
+  sends "Export finished" three seconds later, so you can switch away and see it arrive. In a
+  browser the same button goes through the Web Notifications API, or a toast without it.
 - The platform badge reads `desktop.platform`: `null` in a browser, the OS in a window.
 - `@loidolt/theme-tauri/styles.css` after the theme's stylesheet.

@@ -1,6 +1,16 @@
 <script lang="ts">
-  import { Badge, PageHeader, Section, Table, TableHeader } from '@loidolt/theme-svelte';
-  import { isTauri, tauriPlatform } from '@loidolt/theme-tauri';
+  import {
+    Badge,
+    Button,
+    createToaster,
+    PageHeader,
+    Section,
+    Table,
+    TableHeader,
+    Toast,
+    ToastViewport,
+  } from '@loidolt/theme-svelte';
+  import { createNotifications, isTauri, tauriPlatform } from '@loidolt/theme-tauri';
   import CodeBlock from '$lib/components/CodeBlock.svelte';
   import Demo from '$lib/components/Demo.svelte';
 
@@ -37,12 +47,41 @@ ${endScript}
 
 {@render children()}`;
 
+  const notificationsCode = `<script lang="ts">
+  import * as notification from '@tauri-apps/plugin-notification';
+  import { setupTauri } from '@loidolt/theme-tauri';
+
+  const desktop = setupTauri({ plugins: { notification }, notifications: { toaster } });
+${endScript}
+
+<!-- ask on a click: browsers ignore a prompt no user gesture asked for -->
+<Button onclick={() => desktop.notifications?.requestPermission()}>Turn on notifications</Button>
+
+// later, from anywhere: resolves whether it reached the OS
+await desktop.notifications?.notify({ title: 'Export finished', body: 'The file is ready.' });`;
+
   const exports = [
     ['setupTauri', 'Every adapter in one call; returns platform, ready and destroy()'],
     ['isTauri', 'Whether the page runs in a Tauri 2 window, without loading the Tauri runtime'],
     ['tauriPlatform', "'macos', 'windows', 'linux', 'ios', 'android' or null"],
     ['markTauriPlatform', 'data-tauri-platform on <html>, for platform-specific CSS'],
+    [
+      'createNotifications',
+      'permission, requestPermission() and notify(); the Web Notifications API outside Tauri',
+    ],
   ] as const;
+
+  const toaster = createToaster({ duration: 6000 });
+  const notifications = createNotifications({ toaster });
+  let outcome = $state('');
+
+  async function sendSample() {
+    const shown = await notifications.notify({
+      title: 'Export finished',
+      body: 'The report is ready in your downloads.',
+    });
+    outcome = shown ? 'Sent as a system notification.' : 'Shown as a toast instead.';
+  }
 
   const inTauri = isTauri();
   const platform = tauriPlatform();
@@ -95,6 +134,49 @@ ${endScript}
     </dl>
   </Demo>
 </Section>
+
+<Section title="Notifications" headingLevel={2}>
+  <p class="docs-note">
+    Pass <code>@tauri-apps/plugin-notification</code> and <code>desktop.notifications</code> sends
+    OS notifications from Rust. In a browser it uses the Web Notifications API instead, and with
+    neither (or without permission) <code>notify()</code> resolves <code>false</code>, showing a
+    toast when given a <code>toaster</code>. <code>notify()</code> never prompts; ask with
+    <code>requestPermission()</code> from a click.
+  </p>
+  <CodeBlock code={notificationsCode} />
+  <Demo label="createNotifications on this page, through the Web Notifications API">
+    <div class="ldt-stack">
+      <p>
+        Backend <Badge>{notifications.backend}</Badge> Permission
+        <Badge variant={notifications.permission === 'granted' ? 'success' : 'default'}>
+          {notifications.permission}
+        </Badge>
+      </p>
+      <div class="ldt-cluster">
+        <Button
+          variant="quiet"
+          disabled={notifications.permission !== 'default'}
+          onclick={() => notifications.requestPermission()}
+        >
+          Ask for permission
+        </Button>
+        <Button onclick={sendSample}>Send a sample notification</Button>
+      </div>
+      <p class="ldt-utility-text" role="status">{outcome}</p>
+    </div>
+  </Demo>
+</Section>
+
+<ToastViewport
+  onpointerenter={toaster.pause}
+  onpointerleave={toaster.resume}
+  onfocusin={toaster.pause}
+  onfocusout={toaster.resume}
+>
+  {#each toaster.toasts as toast (toast.id)}
+    <Toast {...toast} onDismiss={() => toaster.dismiss(toast.id)} />
+  {/each}
+</ToastViewport>
 
 <Section title="Exports" headingLevel={2}>
   <Table caption="Exports of @loidolt/theme-tauri">

@@ -16,3 +16,15 @@ export type UnlistenFn = () => void;
 export interface OsPlugin {
   type(): 'linux' | 'windows' | 'macos' | 'ios' | 'android';
 }
+
+/** `@tauri-apps/plugin-notification`, for OS notifications sent from Rust. */
+export interface NotificationPlugin {
+  isPermissionGranted(): Promise<boolean>;
+  requestPermission(): Promise<'granted' | 'denied' | 'default'>;
+  sendNotification(options: {
+    title: string;
+    body?: string;
+    icon?: string;
+    silent?: boolean;
+  }): void;
+}
