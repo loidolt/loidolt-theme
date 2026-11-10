@@ -133,7 +133,9 @@ ${endScript}
     <code>Drawer</code>: same content, modal presentation, focus trapped while it is open. This site
     does exactly that — narrow the window and the component list moves behind
     <em>Browse</em>. Shipping the same app to a phone as a native shell? See
-    <a href={`${base}/patterns/native`}>Native apps</a> for safe areas, the back button and the keyboard.
+    <a href={`${base}/patterns/native`}>Native apps</a> for safe areas, the back button and the
+    keyboard, or
+    <a href={`${base}/patterns/desktop`}>Desktop apps</a> for a Tauri window.
   </p>
   <Demo label="The drawer that replaces the column">
     <Drawer title="Navigation" description="Everything in this project">

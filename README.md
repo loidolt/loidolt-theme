@@ -21,10 +21,11 @@ accessibility contract, and a generated prop table for every component.
 | `@loidolt/theme-maps`      | Accessible MapLibre maps on a token-coloured basemap, with keyboard markers and layer tools ([README](packages/maps))          |
 | `@loidolt/theme-docs`      | Safe, server-rendered Markdown documentation: pages, contents, highlighted code, diagrams ([README](packages/docs))            |
 | `@loidolt/theme-capacitor` | Capacitor adapters for native iOS and Android apps: system bars, back button, keyboard, haptics ([README](packages/capacitor)) |
+| `@loidolt/theme-tauri`     | Tauri 2 adapters for desktop apps: platform detection and desktop manners, inert in a browser ([README](packages/tauri))       |
 
-The last four are optional. Each has its own heavy peer (`echarts`, `maplibre-gl`, optionally
-`shiki`/`mermaid`, and `@capacitor/core`), so an app that draws no charts never installs ECharts.
-All seven are released together on one version.
+The last five are optional. Each has its own heavy peer (`echarts`, `maplibre-gl`, optionally
+`shiki`/`mermaid`, `@capacitor/core`, and `@tauri-apps/api`), so an app that draws no charts never
+installs ECharts. All eight are released together on one version.
 
 ## Requirements
 

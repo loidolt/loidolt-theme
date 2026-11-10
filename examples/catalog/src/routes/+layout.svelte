@@ -39,6 +39,7 @@
     { href: `${base}/presets`, label: 'Presets' },
     { href: `${base}/patterns`, label: 'Patterns' },
     { href: `${base}/patterns/native`, label: 'Native' },
+    { href: `${base}/patterns/desktop`, label: 'Desktop' },
     { href: `${base}/components`, label: 'Components' },
   ];
 

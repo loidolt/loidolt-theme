@@ -1,0 +1,26 @@
+/*
+ * @loidolt/theme-tauri — the stylesheet half of the desktop adapters. Import it after the theme.
+ * Every rule is zero-specificity (`:where`), so the app's own CSS always wins, and every rule is
+ * inert in a browser: it keys to `data-tauri-platform`, which only `markTauriPlatform` (or
+ * `setupTauri`) writes, and only inside a Tauri window.
+ */
+
+/*
+ * Desktop manners: clicking or dragging across the app's chrome does not select its labels, as
+ * in a native window. Content stays selectable.
+ */
+:where([data-tauri-platform])
+  :where(
+    .ldt-button,
+    .ldt-icon-button,
+    .ldt-switch,
+    .ldt-tabs__trigger,
+    .ldt-toggle-group,
+    .ldt-segmented-nav,
+    .ldt-nav-menu,
+    .ldt-tab-bar,
+    .ldt-topbar
+  ) {
+  -webkit-user-select: none;
+  user-select: none;
+}

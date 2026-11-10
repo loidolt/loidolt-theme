@@ -10,7 +10,8 @@
       "@loidolt/theme-charts",
       "@loidolt/theme-maps",
       "@loidolt/theme-docs",
-      "@loidolt/theme-capacitor"
+      "@loidolt/theme-capacitor",
+      "@loidolt/theme-tauri"
     ]
   ],
   "linked": [],
