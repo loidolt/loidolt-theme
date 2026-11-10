@@ -1,0 +1,45 @@
+{
+  "name": "@loidolt/theme-capacitor-example",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A minimal Capacitor 8 app on @loidolt/theme-svelte and @loidolt/theme-capacitor, for trying the native adapters in the iOS Simulator",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "types": "svelte-check --tsconfig ./tsconfig.json",
+    "ios:sync": "vite build && cap sync ios",
+    "ios:run": "vite build && cap run ios",
+    "ios:open": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/browser": "^8.0.5",
+    "@capacitor/clipboard": "^8.0.1",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/ios": "^8.6.0",
+    "@capacitor/keyboard": "^8.0.6",
+    "@capacitor/network": "^8.0.1",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/share": "^8.0.3",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4",
+    "@capacitor/text-zoom": "^8.0.1",
+    "@capawesome/capacitor-file-picker": "^8.1.1",
+    "@loidolt/theme-capacitor": "^0.11.1",
+    "@loidolt/theme-styles": "^0.11.1",
+    "@loidolt/theme-svelte": "^0.11.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.0",
+    "@types/node": "^24.3.0",
+    "@sveltejs/vite-plugin-svelte": "^7.3.0",
+    "svelte": "^5.56.10",
+    "svelte-check": "^4.3.2",
+    "typescript": "^6.0.3",
+    "vite": "^8.2.2"
+  }
+}

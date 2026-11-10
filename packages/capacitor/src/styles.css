@@ -18,6 +18,23 @@
 }
 
 /*
+ * The status bar backdrop. Topbar pads itself under the status bar, but it scrolls away with the
+ * page, and the page would then run under the clock and the Dynamic Island. A native app never
+ * shows content there, so a strip as tall as the top inset stays fixed over it, in the `surface`
+ * colour Topbar paints and `syncNativeAppearance` matches the status bar icons to. It is 0px tall
+ * in landscape, and absent in a browser.
+ */
+:where([data-native-platform] body)::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: var(--loidolt-z-sticky);
+  height: var(--ldt-safe-top);
+  background: var(--loidolt-surface);
+  pointer-events: none;
+}
+
+/*
  * The software keyboard (`createNativeKeyboard`). While it is up it covers the home indicator,
  * so the bottom safe area becomes whatever of the keyboard the page has to clear itself: its full
  * height when it overlays the page (resize mode `none`), nothing when the web view shrinks for

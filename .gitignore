@@ -16,6 +16,9 @@ examples/catalog/src/lib/generated/
 **/src-tauri/target
 **/src-tauri/gen
 
+# Capacitor native build output (examples/capacitor); ios/.gitignore covers the rest
+**/ios/DerivedData
+
 # Wrangler build/state cache
 .wrangler
 
