@@ -101,3 +101,68 @@ export interface TrayModule {
     }): Promise<TrayIconHandle>;
   };
 }
+
+/*
+ * The native menu bar. The same `@tauri-apps/api/menu` module as the tray's, with the pieces the
+ * menu bar builds from on top; the real module has them all.
+ */
+
+/** A built-in item the OS provides and handles itself: the clipboard, Quit, Hide and the rest. */
+export type PredefinedMenuItemName =
+  | 'Separator'
+  | 'Copy'
+  | 'Cut'
+  | 'Paste'
+  | 'SelectAll'
+  | 'Undo'
+  | 'Redo'
+  | 'Minimize'
+  | 'Maximize'
+  | 'Fullscreen'
+  | 'Hide'
+  | 'HideOthers'
+  | 'ShowAll'
+  | 'CloseWindow'
+  | 'Quit'
+  | 'Services'
+  | 'BringAllToFront'
+  | 'About';
+
+/** A menu item from `MenuItem.new`, changed in place. */
+export interface MenuItemHandle extends TauriResource {
+  setText(text: string): Promise<void>;
+  setEnabled(enabled: boolean): Promise<void>;
+  setAccelerator(accelerator: string | null): Promise<void>;
+}
+
+/** A submenu from `Submenu.new`: one heading of the menu bar. */
+export interface SubmenuHandle extends TauriResource {
+  setText(text: string): Promise<void>;
+  /** macOS: makes it the menu that lists the open windows. */
+  setAsWindowsMenuForNSApp?(): Promise<void>;
+  /** macOS: makes it the Help menu, with the system's search field. */
+  setAsHelpMenuForNSApp?(): Promise<void>;
+}
+
+/** A menu from `Menu.new` that can become the menu bar. Each call returns the menu it replaced. */
+export interface AppMenuHandle extends TauriResource {
+  setAsAppMenu(): Promise<AppMenuHandle | null>;
+  setAsWindowMenu(): Promise<AppMenuHandle | null>;
+}
+
+/**
+ * `@tauri-apps/api/menu`, for the menu bar. Items go in as Tauri builds them (an item from
+ * `MenuItem.new`, or the options of a predefined one), so they are typed loosely here.
+ */
+export interface MenuBarModule extends MenuModule {
+  Menu: { 'new'(options?: { items?: unknown[] }): Promise<AppMenuHandle> };
+  Submenu: { 'new'(options: { text: string; items?: unknown[] }): Promise<SubmenuHandle> };
+  MenuItem: {
+    'new'(options: {
+      text: string;
+      enabled?: boolean;
+      accelerator?: string;
+      action?: (id: string) => void;
+    }): Promise<MenuItemHandle>;
+  };
+}
