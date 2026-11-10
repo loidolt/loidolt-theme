@@ -36,6 +36,16 @@ export type {
 } from './files.js';
 export { createFileDrop } from './file-drop.svelte.js';
 export type { FileDrop, FileDropOptions, FileDropTarget } from './file-drop.svelte.js';
+export { createMenuBar, isMenuBarModule, menuAccelerator } from './menu-bar.svelte.js';
+export type {
+  MenuBar,
+  MenuBarEntry,
+  MenuBarLabels,
+  MenuBarLayoutContext,
+  MenuBarMenu,
+  MenuBarOptions,
+  MenuBarPlatform,
+} from './menu-bar.svelte.js';
 export { setupTauri } from './setup.js';
 export type { SetupTauriOptions, TauriPlugins, TauriSetup } from './setup.js';
 export {
@@ -57,6 +67,13 @@ export type {
   FsPlugin,
   PhysicalPoint,
   WebviewPlugin,
+} from './types.js';
+export type {
+  AppMenuHandle,
+  MenuBarModule,
+  MenuItemHandle,
+  PredefinedMenuItemName,
+  SubmenuHandle,
 } from './types.js';
 export type {
   DeepLinkPlugin,

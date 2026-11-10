@@ -15,6 +15,12 @@ import {
   tauriPlatform,
   type TauriPlatform,
 } from './platform.js';
+import {
+  createMenuBar,
+  isMenuBarModule,
+  type MenuBar,
+  type MenuBarOptions,
+} from './menu-bar.svelte.js';
 import { handleSecondInstance, type SingleInstanceOptions } from './single-instance.js';
 import { createTray, type Tray, type TrayOptions } from './tray.js';
 import type {
@@ -62,6 +68,7 @@ export interface TauriPlugins {
   deepLink?: DeepLinkPlugin;
   /** `@tauri-apps/api/tray` and `@tauri-apps/api/menu`: a tray icon, with `tray`. */
   tray?: TrayModule;
+  /** `@tauri-apps/api/menu`: the tray's menu, with `tray`, and the menu bar, with `menuBar`. */
   menu?: MenuModule;
   /** `@tauri-apps/plugin-dialog`: native open and save dialogs, in `desktop.files`. */
   dialog?: DialogPlugin;
@@ -120,6 +127,8 @@ export interface SetupTauriOptions {
   files?: false;
   /** Files dropped on the window, as `desktop.fileDrop`. Needs `webview`, and `fs` to read them. */
   fileDrop?: Omit<FileDropOptions, 'webview' | 'fs'>;
+  /** The native menu bar, built from a command registry, as `desktop.menuBar`. Needs `menu`. */
+  menuBar?: Omit<MenuBarOptions, 'menu'>;
 }
 
 export interface TauriSetup {
@@ -138,6 +147,8 @@ export interface TauriSetup {
   readonly files: DesktopFiles | undefined;
   /** Present when `fileDrop` options and the `webview` module were given; reactive `dragging`. */
   readonly fileDrop: FileDrop | undefined;
+  /** Present when `menuBar` options and the `menu` module were given. */
+  readonly menuBar: MenuBar | undefined;
   /** Removes everything. Automatic when called during component initialisation. */
   destroy(): void;
 }
@@ -208,6 +219,12 @@ export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
     teardowns.push(fileDrop.destroy);
   }
 
+  let menuBar: MenuBar | undefined;
+  if (menu && options.menuBar && isMenuBarModule(menu)) {
+    menuBar = createMenuBar({ ...options.menuBar, menu }, os);
+    teardowns.push(menuBar.destroy);
+  }
+
   let windowReady = Promise.resolve();
   if (win) {
     const appearanceOptions = on(options.appearance);
@@ -222,7 +239,9 @@ export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
     windowReady = show ? showWindow({ ...show, window: win, until: applied }, os) : applied;
   }
 
-  const ready = Promise.all([windowReady, notifications?.ready, tray?.ready]).then(() => {});
+  const ready = Promise.all([windowReady, notifications?.ready, tray?.ready, menuBar?.ready]).then(
+    () => {}
+  );
 
   const destroy = combine(...teardowns);
   try {
@@ -231,5 +250,5 @@ export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
     /* module scope: the caller owns `destroy()` */
   }
 
-  return { platform, ready, notifications, tray, files, fileDrop, destroy };
+  return { platform, ready, notifications, tray, menuBar, files, fileDrop, destroy };
 }

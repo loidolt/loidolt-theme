@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
 
 /**
  * Stand-ins for what a Tauri window injects. Nothing is mocked at the module level: the package
@@ -237,5 +237,165 @@ export function fakeWebview() {
     }),
     fire: (payload: unknown) => handler?.({ payload }),
     unlisten,
+  };
+}
+
+/*
+ * The menu bar: `@tauri-apps/api/menu` with `Menu`, `Submenu` and `MenuItem`, and the app and
+ * window menu bars they are installed into.
+ */
+
+type FakeItem = {
+  kind: 'item';
+  text: string;
+  enabled: boolean;
+  accelerator: string | null;
+  action?: (id: string) => void;
+  setText: Mock<(text: string) => Promise<void>>;
+  setEnabled: Mock<(enabled: boolean) => Promise<void>>;
+  setAccelerator: Mock<(accelerator: string | null) => Promise<void>>;
+  close: Mock<() => Promise<void>>;
+};
+type FakePredefined = { item: unknown; text?: string };
+type FakeSubmenu = {
+  kind: 'submenu';
+  text: string;
+  items: Array<FakeItem | FakePredefined>;
+  setText: Mock<(text: string) => Promise<void>>;
+  setAsWindowsMenuForNSApp: Mock<() => Promise<void>>;
+  setAsHelpMenuForNSApp: Mock<() => Promise<void>>;
+  close: Mock<() => Promise<void>>;
+};
+type FakeMenu = {
+  name: string;
+  items: FakeSubmenu[];
+  setAsAppMenu: Mock<() => Promise<FakeMenu | null>>;
+  setAsWindowMenu: Mock<() => Promise<FakeMenu | null>>;
+  close: Mock<() => Promise<void>>;
+};
+
+/**
+ * `@tauri-apps/api/menu` for the menu bar. `bar.app` and `bar.window` are what is installed;
+ * `initial` starts as the app menu, as Tauri's default menu does on macOS. `bar.titles()` reads
+ * the installed bar as headings and item texts, and `bar.click(text)` chooses an item.
+ */
+export function fakeMenuBar(options: { initial?: boolean } = {}) {
+  const menus: FakeMenu[] = [];
+  const items: FakeItem[] = [];
+  const submenus: FakeSubmenu[] = [];
+  const bar: { app: FakeMenu | null; window: FakeMenu | null } = { app: null, window: null };
+
+  const newMenu = (name: string, list: FakeSubmenu[]): FakeMenu => {
+    const menu: FakeMenu = {
+      name,
+      items: list,
+      setAsAppMenu: vi.fn(async () => {
+        const replaced = bar.app;
+        bar.app = menu;
+        return replaced;
+      }),
+      setAsWindowMenu: vi.fn(async () => {
+        const replaced = bar.window;
+        bar.window = menu;
+        return replaced;
+      }),
+      close: vi.fn(async () => {}),
+    };
+    return menu;
+  };
+  const initial = options.initial ? newMenu('initial', []) : null;
+  bar.app = initial;
+
+  const module = {
+    Menu: {
+      new: vi.fn(async (opts?: { items?: unknown[] }) => {
+        const menu = newMenu(`menu-${menus.length}`, (opts?.items ?? []) as FakeSubmenu[]);
+        menus.push(menu);
+        return menu;
+      }),
+    },
+    Submenu: {
+      new: vi.fn(async (opts: { text: string; items?: unknown[] }) => {
+        const submenu: FakeSubmenu = {
+          kind: 'submenu',
+          text: opts.text,
+          items: (opts.items ?? []) as FakeSubmenu['items'],
+          setText: vi.fn(async (text: string) => {
+            submenu.text = text;
+          }),
+          setAsWindowsMenuForNSApp: vi.fn(async () => {}),
+          setAsHelpMenuForNSApp: vi.fn(async () => {}),
+          close: vi.fn(async () => {}),
+        };
+        submenus.push(submenu);
+        return submenu;
+      }),
+    },
+    MenuItem: {
+      new: vi.fn(
+        async (opts: {
+          text: string;
+          enabled?: boolean;
+          accelerator?: string;
+          action?: (id: string) => void;
+        }) => {
+          const item: FakeItem = {
+            kind: 'item',
+            text: opts.text,
+            enabled: opts.enabled ?? true,
+            accelerator: opts.accelerator ?? null,
+            action: opts.action,
+            setText: vi.fn(async (text: string) => {
+              item.text = text;
+            }),
+            setEnabled: vi.fn(async (enabled: boolean) => {
+              item.enabled = enabled;
+            }),
+            setAccelerator: vi.fn(async (accelerator: string | null) => {
+              item.accelerator = accelerator;
+            }),
+            close: vi.fn(async () => {}),
+          };
+          items.push(item);
+          return item;
+        }
+      ),
+    },
+  };
+
+  const label = (entry: FakeItem | FakePredefined) =>
+    'kind' in entry
+      ? entry.text
+      : `<${typeof entry.item === 'string' ? entry.item : Object.keys(entry.item as object)[0]}${entry.text ? `:${entry.text}` : ''}>`;
+
+  const installed = (where: 'app' | 'window' = 'app') => bar[where];
+
+  return {
+    menu: module,
+    bar,
+    initial,
+    menus,
+    items,
+    submenus,
+    /** The installed bar as `{ heading: [item, …] }`, predefined items as `<Name>`. */
+    titles(where: 'app' | 'window' = 'app') {
+      const menu = installed(where);
+      return menu
+        ? Object.fromEntries(menu.items.map((sub) => [sub.text, sub.items.map(label)]))
+        : null;
+    },
+    /** The installed item with this text. */
+    item(text: string, where: 'app' | 'window' = 'app') {
+      for (const sub of installed(where)?.items ?? []) {
+        for (const entry of sub.items) if ('kind' in entry && entry.text === text) return entry;
+      }
+      return undefined;
+    },
+    /** Chooses the installed item with this text, as a click or its accelerator would. */
+    click(text: string, where: 'app' | 'window' = 'app') {
+      const entry = this.item(text, where);
+      if (!entry) throw new Error(`no menu item "${text}"`);
+      entry.action?.(text);
+    },
   };
 }

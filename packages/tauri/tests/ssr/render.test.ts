@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { createCommands } from '@loidolt/theme-svelte';
 import * as lib from '../../src/lib/index.js';
 
 /**
@@ -29,9 +30,10 @@ describe('on the server', () => {
       onOpenUrl: vi.fn(async () => () => {}),
     };
     const tray = { TrayIcon: { new: vi.fn() } };
-    const menu = { Menu: { new: vi.fn() } };
+    const menu = { Menu: { new: vi.fn() }, Submenu: { new: vi.fn() }, MenuItem: { new: vi.fn() } };
     const desktop = lib.setupTauri({
       plugins: { os, notification, event, deepLink, tray, menu },
+      menuBar: { commands: createCommands() },
       singleInstance: { onSecondInstance: () => {} },
       deepLinks: { navigate: () => {} },
       tray: { tooltip: 'Running', items: [{ id: 'quit', label: 'Quit' }] },
@@ -48,6 +50,10 @@ describe('on the server', () => {
     expect(deepLink.getCurrent).not.toHaveBeenCalled();
     expect(tray.TrayIcon.new).not.toHaveBeenCalled();
     expect(menu.Menu.new).not.toHaveBeenCalled();
+    expect(menu.MenuItem.new).not.toHaveBeenCalled();
+    expect(desktop.menuBar).toBeDefined();
+    await desktop.menuBar?.ready;
+    await desktop.menuBar?.refresh();
     await desktop.tray?.update({ tooltip: 'Idle' });
     expect(lib.markTauriPlatform()).toBeTypeOf('function');
     desktop.destroy();

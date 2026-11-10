@@ -16,6 +16,7 @@
     Brand,
     Button,
     Dropzone,
+    createCommands,
     createTheme,
     createToaster,
     PageHeader,
@@ -57,6 +58,59 @@
 
   const toaster = createToaster({ duration: 6000 });
 
+  let count = $state(0);
+
+  // The menu bar is built from this registry: one menu per group, each command an item with its
+  // shortcut, kept in step as labels and enabled states change. In a browser there is no menu
+  // bar, and the same shortcuts still work through `commands.listen()`.
+  const commands = createCommands();
+  commands.registerAll([
+    {
+      id: 'open',
+      label: 'Open files…',
+      shortcut: 'Mod+O',
+      group: 'File',
+      handler: () => openFiles(),
+    },
+    {
+      id: 'save',
+      label: 'Save the list…',
+      shortcut: 'Mod+S',
+      group: 'File',
+      handler: () => saveNotes(),
+    },
+    {
+      id: 'notify',
+      label: 'Notify in 3 seconds',
+      shortcut: 'Mod+Shift+N',
+      group: 'File',
+      handler: () => notifyLater(),
+    },
+    {
+      id: 'count',
+      label: 'Count a click',
+      shortcut: 'Mod+K',
+      group: 'Edit',
+      handler: () => count++,
+    },
+    {
+      id: 'reset',
+      label: 'Reset the count',
+      shortcut: 'Mod+Shift+K',
+      group: 'Edit',
+      enabled: () => count > 0,
+      handler: () => (count = 0),
+    },
+    {
+      id: 'watch',
+      label: 'Pause watching',
+      shortcut: 'Mod+P',
+      group: 'View',
+      handler: () => toggleWatching(),
+    },
+  ]);
+  $effect(() => commands.listen());
+
   // In a browser (`npm run dev`) this is inert: platform is null, <html> is left alone, there is
   // no tray, and notifications fall back to the Web Notifications API, or to a toast without
   // either. In a window it paints the window in the theme, insets the page under the overlay
@@ -83,6 +137,7 @@
     deepLinks: { onUrl: (url) => (link = url) },
     // Files dropped on the window go into the Dropzone below, which filters them by its accept.
     fileDrop: { target: () => dropzone },
+    menuBar: { commands, appName: 'Theme example' },
     tray: {
       icon: isTauri() ? defaultWindowIcon() : null,
       tooltip: 'Watching for new files',
@@ -93,6 +148,7 @@
 
   function toggleWatching() {
     watching = !watching;
+    commands.update('watch', { label: watching ? 'Pause watching' : 'Resume watching' });
     desktop.tray?.update({
       tooltip: watching ? 'Watching for new files' : 'Paused',
       items: trayItems(),
@@ -126,7 +182,6 @@
           : 'Not saved';
   }
 
-  let count = $state(0);
   let sent = $state<boolean | null>(null);
 
   async function notifyLater() {
@@ -167,6 +222,17 @@
         selectable, as in a native app.
       </p>
       <Button variant="primary" onclick={() => count++}>Clicked {count} times</Button>
+    </Section>
+    <Section title="Menu bar" headingLevel={2}>
+      <p>
+        The menu bar comes from the app's command registry: Count a click (<kbd>⌘K</kbd> on a Mac,
+        <kbd>Ctrl+K</kbd> elsewhere) sits in Edit, and Reset the count next to it greys out while the
+        count is zero. Pausing from the tray or the button below renames the View item. On macOS the bar
+        also has the app, Edit and Window menus every Mac app has.
+      </p>
+      <Button onclick={() => commands.execute('reset')} disabled={count === 0}
+        >Reset the count</Button
+      >
     </Section>
     <Section title="Window chrome" headingLevel={2}>
       <p>

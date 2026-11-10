@@ -64,4 +64,16 @@ describe('the real modules fit the adapters', () => {
     expectTypeOf<CurrentWebview>().toExtend<NonNullable<TauriPlugins['webview']>>();
     expectTypeOf<typeof getCurrentWebview>().toExtend<NonNullable<TauriPlugins['webview']>>();
   });
+
+  it('fits the menu module for the menu bar', () => {
+    expectTypeOf<typeof menu>().toExtend<Shapes.MenuBarModule>();
+    expectTypeOf<menu.Menu>().toExtend<Shapes.AppMenuHandle>();
+    expectTypeOf<menu.Submenu>().toExtend<Shapes.SubmenuHandle>();
+    expectTypeOf<menu.MenuItem>().toExtend<Shapes.MenuItemHandle>();
+    expectTypeOf<Shapes.PredefinedMenuItemName>().toExtend<
+      Extract<menu.PredefinedMenuItemOptions['item'], string> | 'About'
+    >();
+    expectTypeOf<{ About: null }>().toExtend<menu.PredefinedMenuItemOptions['item']>();
+    expectTypeOf<NonNullable<TauriPlugins['menu']>>().toEqualTypeOf<Shapes.MenuModule>();
+  });
 });

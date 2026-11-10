@@ -2,6 +2,7 @@
   import {
     Badge,
     Button,
+    createCommands,
     createToaster,
     Dropzone,
     PageHeader,
@@ -18,6 +19,7 @@
     deepLinkPath,
     filesFromArgs,
     isTauri,
+    menuAccelerator,
     tauriPlatform,
     windowBackground,
   } from '@loidolt/theme-tauri';
@@ -191,7 +193,47 @@ ${endScript}`;
     ],
     ['acceptToFilters', 'An accept string as the dialog filters Tauri takes'],
     ['readDesktopFiles', 'Paths read into Files typed by their extension'],
+    ['createMenuBar', 'The native menu bar from a command registry, kept in step with it'],
+    ['menuAccelerator', 'The accelerator a command gets in the menu bar, or null for a plain key'],
+    ['isMenuBarModule', 'Whether a menu module can build a menu bar, not only a tray menu'],
   ] as const;
+
+  const menuBarCode = `<script lang="ts">
+  import * as menu from '@tauri-apps/api/menu';
+  import { createCommands } from '@loidolt/theme-svelte';
+  import { setupTauri } from '@loidolt/theme-tauri';
+
+  const commands = createCommands();
+  commands.registerAll([
+    { id: 'new', label: 'New note', shortcut: 'Mod+N', group: 'File', handler: create },
+    { id: 'save', label: 'Save', shortcut: 'Mod+S', group: 'File', enabled: () => dirty, handler: save },
+    { id: 'zoom-in', label: 'Zoom in', shortcut: 'Mod+=', group: 'View', handler: zoomIn },
+  ]);
+  $effect(() => commands.listen()); // still runs the shortcuts in a browser
+
+  const desktop = setupTauri({ plugins: { menu }, menuBar: { commands, appName: 'Notes' } });
+${endScript}`;
+
+  const menuLayout = `menuBar: {
+  commands,
+  // Settings… under About; a command placed twice shows only at its first place
+  layout: (menus) => {
+    menus.find((menu) => menu.id === 'app')?.items.splice(1, 0, 'separator', { command: 'settings' });
+    return menus;
+  },
+  labels: { edit: 'Edit', copy: 'Copy' }, // headings and built-in items, for translation
+}`;
+
+  // A registry of its own, for the table below: never listened to, so it runs nothing.
+  const sampleCommands = createCommands({ platform: 'mac' });
+  sampleCommands.registerAll([
+    { id: 'new', label: 'New note', shortcut: 'Mod+N', group: 'File', handler: () => {} },
+    { id: 'export', label: 'Export…', shortcut: 'Mod+Shift+E', group: 'File', handler: () => {} },
+    { id: 'zoom-in', label: 'Zoom in', shortcut: 'Mod+=', group: 'View', handler: () => {} },
+    { id: 'next', label: 'Next item', shortcut: 'Alt+ArrowDown', group: 'View', handler: () => {} },
+    { id: 'help', label: 'Keyboard shortcuts', shortcut: '?', group: 'Help', handler: () => {} },
+    { id: 'docs', label: 'Documentation', shortcut: 'F1', group: 'Help', handler: () => {} },
+  ]);
 
   const toaster = createToaster({ duration: 6000 });
   const notifications = createNotifications({ toaster });
@@ -485,6 +527,55 @@ ${endScript}
       </dl>
     </div>
   </Demo>
+</Section>
+
+<Section title="Menu bar" headingLevel={2}>
+  <p class="docs-note">
+    Pass <code>@tauri-apps/api/menu</code> and the app's command registry, and the native menu bar follows
+    it: one menu per group, in order, each command an item with its label, its first shortcut as the accelerator
+    and its enabled state. Labels, enabled states and accelerators change in place; a command coming or
+    going rebuilds the menu. Choosing an item runs the command.
+  </p>
+  <CodeBlock code={menuBarCode} />
+  <p class="docs-note">
+    <strong>macOS</strong> gets the app menu (About, Hide, Quit), an Edit menu with the clipboard
+    items — without it, copy and paste shortcuts do nothing in the web view — and a Window menu,
+    around the registry's groups; groups named Edit and Window join them, and a Help group becomes
+    the system Help menu. <strong>Windows and Linux</strong> get the groups alone, on the page's own
+    window.
+    <code>appMenu</code>, <code>editMenu</code> and <code>windowMenu</code> take <code>false</code>,
+    and <code>layout</code> rearranges the menus before they are built.
+  </p>
+  <CodeBlock code={menuLayout} />
+  <p class="docs-note">
+    <strong>One keystroke, one run.</strong> The page sees a key before the menu does on macOS, so a shortcut
+    the registry handled never fires the menu item too; for web views that deliver both, the menu bar
+    skips the second. Only chords and function keys become accelerators: a plain key would fire while
+    the user types.
+  </p>
+  <Table caption="What a sample registry's commands get in the menu bar, from menuAccelerator()">
+    <thead>
+      <tr>
+        <TableHeader>Menu</TableHeader>
+        <TableHeader>Item</TableHeader>
+        <TableHeader>Shortcut</TableHeader>
+        <TableHeader>Accelerator</TableHeader>
+      </tr>
+    </thead>
+    <tbody>
+      {#each sampleCommands.list() as command (command.id)}
+        {@const accelerator = menuAccelerator(command)}
+        <tr>
+          <td>{command.group}</td>
+          <td>{command.label}</td>
+          <td><code>{command.shortcuts[0]?.source}</code></td>
+          <td>
+            {#if accelerator}<code>{accelerator}</code>{:else}none: left to the page{/if}
+          </td>
+        </tr>
+      {/each}
+    </tbody>
+  </Table>
 </Section>
 
 <Section title="Exports" headingLevel={2}>

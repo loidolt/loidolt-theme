@@ -39,6 +39,7 @@ npm install @tauri-apps/plugin-os
 | `@tauri-apps/api` (`event`, `tray`, `menu`) | Second launches, and a tray icon with a menu                     |
 | `@tauri-apps/plugin-deep-link`              | URLs that open the app, routed into it                           |
 | `@tauri-apps/plugin-dialog`, `plugin-fs`    | Native open and save dialogs, and files dropped on the window    |
+| `@tauri-apps/api` (`menu`)                  | The native menu bar, built from a command registry               |
 
 ## Set up
 
@@ -386,6 +387,92 @@ which breaks sortable lists and the like. To keep HTML drag and drop instead, se
 `"dragDropEnabled": false` on the window: Tauri then reports no drops, `fileDrop` stays idle, and
 the `Dropzone`'s own `window` handling takes the drop as in a browser, as `File`s without paths.
 
+## Menu bar
+
+The native menu bar, built from the app's command registry (`createCommands` from
+`@loidolt/theme-svelte`): pass `@tauri-apps/api/menu` and `menuBar: { commands }`, and
+`desktop.menuBar` keeps the menus in step with the registry.
+
+```svelte
+<script lang="ts">
+  import * as menu from '@tauri-apps/api/menu';
+  import { createCommands } from '@loidolt/theme-svelte';
+  import { setupTauri } from '@loidolt/theme-tauri';
+
+  const commands = createCommands();
+  commands.registerAll([
+    { id: 'new', label: 'New note', shortcut: 'Mod+N', group: 'File', handler: create },
+    {
+      id: 'save',
+      label: 'Save',
+      shortcut: 'Mod+S',
+      group: 'File',
+      enabled: () => dirty,
+      handler: save,
+    },
+    { id: 'zoom-in', label: 'Zoom in', shortcut: 'Mod+=', group: 'View', handler: zoomIn },
+  ]);
+  $effect(() => commands.listen());
+
+  const desktop = setupTauri({ plugins: { menu }, menuBar: { commands, appName: 'Notes' } });
+</script>
+```
+
+- **One menu per group**, in the order the groups first appear; commands without a group go in a
+  Commands menu (`labels.commands`). Each command is an item with its label, its first shortcut as
+  the accelerator (`Mod+S` shows as ⌘S on a Mac and Ctrl+S elsewhere), and its enabled state.
+  Choosing it runs `commands.execute(id)`.
+- **In step.** Registering, unregistering and `commands.update()` reach the menu, and so does an
+  `enabled` function that reads `$state`. A new label, enabled state or shortcut is changed on the
+  item in place; a command coming or going rebuilds the menu. Changes are gathered for `debounce`
+  ms (16) first. For an `enabled` that reads something else, call `desktop.menuBar.refresh()`.
+- **macOS manners.** The bar starts with the app menu (About, Services, Hide, Hide Others, Show
+  All, Quit) and has an Edit menu (Undo, Redo, Cut, Copy, Paste, Select All) and a Window menu
+  (Minimize, Zoom, Close Window), all items the OS provides. Without the Edit menu the clipboard
+  shortcuts do nothing in a macOS web view. The order is app, File, Edit, the other groups, Window,
+  Help; groups named Edit and Window join the standard menus, and a Help group becomes the system
+  Help menu. `appMenu: false`, `editMenu: false` and `windowMenu: false` leave one out.
+- **Windows and Linux** get the registry's groups alone, on the window the page runs in (Tauri's
+  `setAsWindowMenu`: a menu bar belongs to a window there). `target: 'app'` puts it on every window
+  without a menu of its own instead, and `platforms: ['macos']` keeps Windows and Linux bare.
+- **Plain keys stay with the page.** Only a chord (with Mod, Ctrl, Meta or Alt) or a function key
+  becomes an accelerator; `?` or `J` would fire while typing. `menuAccelerator(command)` says
+  what an item gets.
+- **`layout`** sees the menus before they are built, `{ id, label, items }` each, and returns the
+  menus to build: move a command into the app menu, add a predefined item, drop a group. Items
+  are `{ command: id }`, `{ predefined: 'Fullscreen', label? }` or `'separator'`; stray separators
+  are tidied away, and a command placed twice appears only at its first place.
+
+```ts
+menuBar: {
+  commands,
+  layout: (menus) => {
+    // Settings… under About, as macOS apps have it; it then stays out of its own group's menu
+    menus.find((menu) => menu.id === 'app')?.items.splice(1, 0, 'separator', { command: 'settings' });
+    // a group kept out of the bar
+    return menus.filter((menu) => menu.id !== 'group:Debug');
+  },
+}
+```
+
+Menu ids are `'app'`, `'edit'`, `'window'`, `'help'`, `'commands'` and `group:<name>`.
+`labels` translates the headings (`edit`, `window`, `commands`, and `file` and `help`, the group
+names placed first and last on macOS) and the built-in items (`about`, `quit`, `copy`, …; unset,
+Tauri's own text). `&` in a label is shown as is.
+
+**One keystroke, one run.** The registry's own listener and the menu accelerator never both run a
+command for the same key. On macOS, WebKit gives the page the key first and passes the menu only
+what the page did not `preventDefault`, so a shortcut the registry handled stops there, and one
+it left alone — a command without `allowInInputs` while the user types in a field, say — runs from
+the menu, as a native menu item would. For web views that deliver both, the menu bar remembers the
+last keystroke the page handled and skips the menu action it causes, and the other way round.
+Which side sees a key first differs between web views, so keep `commands.listen()` on: it runs
+the shortcuts wherever the menu does not see the key, and in a browser.
+
+`desktop.destroy()` (or `createMenuBar(…).destroy()`) puts back the menu bar that was there before,
+Tauri's default on macOS, or leaves an empty one on a window that had none. The menu calls are in
+`core:default`. In a browser and on the server it does nothing.
+
 ## Exports
 
 Each piece is also exported on its own. Every one is a no-op outside a Tauri window, except
@@ -412,6 +499,9 @@ Each piece is also exported on its own. Every one is a no-op outside a Tauri win
 | `acceptToFilters`      | An `accept` string as the dialog filters Tauri takes                                        |
 | `readDesktopFiles`     | Paths read into `File`s typed by extension (`readDesktopFile` for one)                      |
 | `mimeTypeOf`           | The MIME type for a file name by its extension                                              |
+| `createMenuBar`        | The native menu bar from a command registry, kept in step; `refresh()` and `destroy()`      |
+| `menuAccelerator`      | The accelerator a command gets in the menu bar, or `null` for a plain key                   |
+| `isMenuBarModule`      | Whether a `menu` module can build a menu bar (not only a tray menu)                         |
 
 `isTauri` reads the same global as `isTauri()` from `@tauri-apps/api/core`, so the two agree; this
 one never loads the Tauri runtime, which keeps it safe in a server bundle.
