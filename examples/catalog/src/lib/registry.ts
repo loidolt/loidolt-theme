@@ -541,6 +541,20 @@ export const entries: Entry[] = [
     ],
   },
   {
+    slug: 'stage-stepper',
+    name: 'StageStepper',
+    group: 'Feedback',
+    summary:
+      'An ordered run of named steps, each pending, running, done, skipped or failed, with optional progress.',
+    notes: [
+      'An `<ol>`: each step\'s state is read in words from `stateLabels`, never left to the glyph or colour. The first running step carries `aria-current="step"`.',
+      "`progress` is 0 to 100, Progress's default scale, and draws a small bar under the step: green once done, red when the step failed part-way.",
+      "A change to a step's `state` under the same `id` is spoken through a polite live region. Pass `announce={false}` when another stepper or message already reports the run.",
+      '`orientation="horizontal"` falls back to a column when its container is narrower than 36rem. The running indicator turns, and holds still under reduced motion.',
+      "`onSelect` turns each label into a button, for opening a step's log or details.",
+    ],
+  },
+  {
     slug: 'spinner',
     name: 'Spinner',
     group: 'Feedback',

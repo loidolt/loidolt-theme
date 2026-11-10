@@ -159,6 +159,16 @@ const cases: Array<[CaseName, Record<string, unknown>]> = [
   ['SkipLink', { targetId: 'main' }],
   ['Slider', { label: 'Kerf', value: [2, 8], showValue: true, name: 'kerf' }],
   ['Spinner', { label: 'Loading' }],
+  [
+    'StageStepper',
+    {
+      steps: [
+        { id: 'a', label: 'Upload', state: 'done' },
+        { id: 'b', label: 'Convert', state: 'running', progress: 40 },
+      ],
+      onSelect: () => {},
+    },
+  ],
   ['Stat', { value: 12, label: 'Artworks' }],
   ['StatusDot', { variant: 'success', label: 'Approved' }],
   [

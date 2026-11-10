@@ -65,6 +65,7 @@ export { default as Skeleton } from './components/Skeleton.svelte';
 export { default as SkipLink } from './components/SkipLink.svelte';
 export { default as Slider } from './components/Slider.svelte';
 export { default as Spinner } from './components/Spinner.svelte';
+export { default as StageStepper } from './components/StageStepper.svelte';
 export { default as Stat } from './components/Stat.svelte';
 export { default as StatusDot } from './components/StatusDot.svelte';
 export { default as SwatchGroup } from './components/SwatchGroup.svelte';
@@ -228,6 +229,8 @@ export type {
   Orientation,
   Placement,
   SortDirection,
+  StageState,
+  StageStep,
   StatusVariant,
   TabBarItem,
   TabItem,
