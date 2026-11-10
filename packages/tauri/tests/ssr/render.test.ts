@@ -18,10 +18,27 @@ describe('on the server', () => {
 
   it('sets up as a no-op with every plugin given', async () => {
     const os = { type: vi.fn(() => 'macos' as const) };
-    const desktop = lib.setupTauri({ plugins: { os } });
+    const event = { listen: vi.fn(async () => () => {}) };
+    const deepLink = {
+      getCurrent: vi.fn(async () => ['myapp://a']),
+      onOpenUrl: vi.fn(async () => () => {}),
+    };
+    const tray = { TrayIcon: { new: vi.fn() } };
+    const menu = { Menu: { new: vi.fn() } };
+    const desktop = lib.setupTauri({
+      plugins: { os, event, deepLink, tray, menu },
+      singleInstance: { onSecondInstance: () => {} },
+      deepLinks: { navigate: () => {} },
+      tray: { tooltip: 'Running', items: [{ id: 'quit', label: 'Quit' }] },
+    });
     await desktop.ready;
     expect(desktop.platform).toBeNull();
     expect(os.type).not.toHaveBeenCalled();
+    expect(event.listen).not.toHaveBeenCalled();
+    expect(deepLink.getCurrent).not.toHaveBeenCalled();
+    expect(tray.TrayIcon.new).not.toHaveBeenCalled();
+    expect(menu.Menu.new).not.toHaveBeenCalled();
+    await desktop.tray?.update({ tooltip: 'Idle' });
     expect(lib.markTauriPlatform()).toBeTypeOf('function');
     desktop.destroy();
   });

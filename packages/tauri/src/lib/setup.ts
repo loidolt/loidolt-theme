@@ -1,6 +1,16 @@
 import { onDestroy } from 'svelte';
+import { handleDeepLinks, type DeepLinkOptions } from './deep-links.js';
 import { combine, markTauriPlatform, tauriPlatform, type TauriPlatform } from './platform.js';
-import type { OsPlugin, Teardown } from './types.js';
+import { handleSecondInstance, type SingleInstanceOptions } from './single-instance.js';
+import { createTray, type Tray, type TrayOptions } from './tray.js';
+import type {
+  DeepLinkPlugin,
+  EventModule,
+  MenuModule,
+  OsPlugin,
+  Teardown,
+  TrayModule,
+} from './types.js';
 
 /**
  * The Tauri modules you installed, passed as namespaces (`import * as os from
@@ -9,12 +19,25 @@ import type { OsPlugin, Teardown } from './types.js';
 export interface TauriPlugins {
   /** `@tauri-apps/plugin-os`: the platform from Rust instead of the user agent. */
   os?: OsPlugin;
+  /** `@tauri-apps/api/event`: second launches, with `singleInstance`. */
+  event?: EventModule;
+  /** `@tauri-apps/plugin-deep-link`: URLs that open the app, with `deepLinks`. */
+  deepLink?: DeepLinkPlugin;
+  /** `@tauri-apps/api/tray` and `@tauri-apps/api/menu`: a tray icon, with `tray`. */
+  tray?: TrayModule;
+  menu?: MenuModule;
 }
 
 export interface SetupTauriOptions {
   plugins?: TauriPlugins;
   /** `data-tauri-platform` on `<html>`. On by default; `false` leaves the root alone. */
   markPlatform?: boolean;
+  /** Second launches of the app, forwarded by `tauri-plugin-single-instance`. Needs `event`. */
+  singleInstance?: Omit<SingleInstanceOptions, 'event'>;
+  /** Links that open the app, routed with `navigate` or `onUrl`. Needs `deepLink`. */
+  deepLinks?: Omit<DeepLinkOptions, 'deepLink'>;
+  /** A tray icon with a menu, as `desktop.tray`. Needs `tray` and `menu`. */
+  tray?: Omit<TrayOptions, 'tray' | 'menu'>;
 }
 
 export interface TauriSetup {
@@ -22,6 +45,8 @@ export interface TauriSetup {
   readonly platform: TauriPlatform | null;
   /** Settles once every adapter that needs a round trip to Rust has applied. */
   readonly ready: Promise<void>;
+  /** Present when `tray` options and the `tray` and `menu` modules were given. */
+  readonly tray: Tray | undefined;
   /** Removes everything. Automatic when called during component initialisation. */
   destroy(): void;
 }
@@ -42,13 +67,25 @@ export interface TauriSetup {
  * In a browser (or on the server) every adapter is a no-op, so the same layout ships to the web.
  */
 export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
-  const { os } = options.plugins ?? {};
+  const { os, event, deepLink, tray: trayModule, menu } = options.plugins ?? {};
   const platform = tauriPlatform(os);
   const teardowns: Teardown[] = [];
 
   if (options.markPlatform !== false) teardowns.push(markTauriPlatform(undefined, os));
 
-  const ready = Promise.resolve();
+  if (event && options.singleInstance) {
+    teardowns.push(handleSecondInstance({ ...options.singleInstance, event }));
+  }
+  if (deepLink && options.deepLinks) {
+    teardowns.push(handleDeepLinks({ ...options.deepLinks, deepLink }));
+  }
+  let tray: Tray | undefined;
+  if (trayModule && menu && options.tray) {
+    tray = createTray({ ...options.tray, tray: trayModule, menu });
+    teardowns.push(tray.destroy);
+  }
+
+  const ready = Promise.all([tray?.ready]).then(() => {});
 
   const destroy = combine(...teardowns);
   try {
@@ -57,5 +94,5 @@ export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
     /* module scope: the caller owns `destroy()` */
   }
 
-  return { platform, ready, destroy };
+  return { platform, ready, tray, destroy };
 }

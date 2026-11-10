@@ -62,5 +62,79 @@ export function fakeOs(type: 'linux' | 'windows' | 'macos' | 'ios' | 'android' =
   return { type: vi.fn(() => type) };
 }
 
+/** `@tauri-apps/api/event`, with `emit` standing in for Rust. */
+export function fakeEvent() {
+  const handlers = new Map<string, Array<(event: { payload: unknown }) => void>>();
+  const unlisten = vi.fn();
+  const listen = vi.fn(async (name: string, handler: (event: { payload: unknown }) => void) => {
+    handlers.set(name, [...(handlers.get(name) ?? []), handler]);
+    return () => {
+      unlisten(name);
+      handlers.set(
+        name,
+        (handlers.get(name) ?? []).filter((h) => h !== handler)
+      );
+    };
+  });
+  const emit = (name: string, payload: unknown) => {
+    for (const handler of handlers.get(name) ?? []) handler({ payload });
+  };
+  return { listen, emit, unlisten };
+}
+
+/** `@tauri-apps/plugin-deep-link`, launched by `current`; `open` delivers a link while running. */
+export function fakeDeepLink(current: string[] | null = null) {
+  let handler: ((urls: string[]) => void) | undefined;
+  const unlisten = vi.fn();
+  return {
+    getCurrent: vi.fn(async () => current),
+    onOpenUrl: vi.fn(async (next: (urls: string[]) => void) => {
+      handler = next;
+      return unlisten;
+    }),
+    open: (...urls: string[]) => handler?.(urls),
+    unlisten,
+  };
+}
+
+/** `@tauri-apps/api/tray` and `@tauri-apps/api/menu`, keeping what was created. */
+export function fakeTrayModules() {
+  const menus: Array<{ items: unknown[]; close: ReturnType<typeof vi.fn> }> = [];
+  const icons: Array<{
+    options: Record<string, unknown>;
+    close: ReturnType<typeof vi.fn>;
+    setIcon: ReturnType<typeof vi.fn>;
+    setTooltip: ReturnType<typeof vi.fn>;
+    setTitle: ReturnType<typeof vi.fn>;
+    setMenu: ReturnType<typeof vi.fn>;
+  }> = [];
+  const menu = {
+    Menu: {
+      new: vi.fn(async (options?: { items?: unknown[] }) => {
+        const created = { items: options?.items ?? [], close: vi.fn(async () => {}) };
+        menus.push(created);
+        return created;
+      }),
+    },
+  };
+  const tray = {
+    TrayIcon: {
+      new: vi.fn(async (options: Record<string, unknown> = {}) => {
+        const created = {
+          options,
+          close: vi.fn(async () => {}),
+          setIcon: vi.fn(async () => {}),
+          setTooltip: vi.fn(async () => {}),
+          setTitle: vi.fn(async () => {}),
+          setMenu: vi.fn(async () => {}),
+        };
+        icons.push(created);
+        return created;
+      }),
+    },
+  };
+  return { tray, menu, menus, icons };
+}
+
 /** Lets pending promise callbacks run. */
 export const flush = () => new Promise<void>((resolve) => setTimeout(resolve, 0));

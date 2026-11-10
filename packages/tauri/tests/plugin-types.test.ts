@@ -1,3 +1,7 @@
+import type * as event from '@tauri-apps/api/event';
+import type * as menu from '@tauri-apps/api/menu';
+import type * as tray from '@tauri-apps/api/tray';
+import type * as deepLink from '@tauri-apps/plugin-deep-link';
 import type * as os from '@tauri-apps/plugin-os';
 import { describe, expectTypeOf, it } from 'vitest';
 import type { TauriPlugins } from '../src/lib/index.js';
@@ -12,5 +16,22 @@ describe('the real modules fit the adapters', () => {
   it('fits the os plugin', () => {
     expectTypeOf<typeof os>().toExtend<Shapes.OsPlugin>();
     expectTypeOf<typeof os>().toExtend<NonNullable<TauriPlugins['os']>>();
+  });
+
+  it('fits the event module', () => {
+    expectTypeOf<typeof event>().toExtend<Shapes.EventModule>();
+    expectTypeOf<typeof event>().toExtend<NonNullable<TauriPlugins['event']>>();
+  });
+
+  it('fits the deep-link plugin', () => {
+    expectTypeOf<typeof deepLink>().toExtend<Shapes.DeepLinkPlugin>();
+    expectTypeOf<typeof deepLink>().toExtend<NonNullable<TauriPlugins['deepLink']>>();
+  });
+
+  it('fits the tray and menu modules', () => {
+    expectTypeOf<typeof tray>().toExtend<Shapes.TrayModule>();
+    expectTypeOf<typeof menu>().toExtend<Shapes.MenuModule>();
+    expectTypeOf<typeof tray>().toExtend<NonNullable<TauriPlugins['tray']>>();
+    expectTypeOf<typeof menu>().toExtend<NonNullable<TauriPlugins['menu']>>();
   });
 });

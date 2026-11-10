@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Badge, PageHeader, Section, Table, TableHeader } from '@loidolt/theme-svelte';
-  import { isTauri, tauriPlatform } from '@loidolt/theme-tauri';
+  import { deepLinkPath, filesFromArgs, isTauri, tauriPlatform } from '@loidolt/theme-tauri';
   import CodeBlock from '$lib/components/CodeBlock.svelte';
   import Demo from '$lib/components/Demo.svelte';
 
@@ -37,11 +37,61 @@ ${endScript}
 
 {@render children()}`;
 
+  const background = `<script lang="ts">
+  import { goto } from '$app/navigation';
+  import { defaultWindowIcon } from '@tauri-apps/api/app';
+  import * as event from '@tauri-apps/api/event';
+  import * as menu from '@tauri-apps/api/menu';
+  import * as tray from '@tauri-apps/api/tray';
+  import * as deepLink from '@tauri-apps/plugin-deep-link';
+  import { isTauri, setupTauri } from '@loidolt/theme-tauri';
+
+  const desktop = setupTauri({
+    plugins: { event, deepLink, tray, menu },
+    // a second launch focuses this window and hands over its files
+    singleInstance: { onSecondInstance: ({ files }) => files.forEach(openFile) },
+    // myapp://projects/42 → goto('/projects/42'), at startup and while running
+    deepLinks: { navigate: goto },
+    tray: {
+      icon: isTauri() ? defaultWindowIcon() : null,
+      tooltip: 'Watching for new files',
+      items: [
+        { id: 'show', label: 'Show window', action: showWindow },
+        'separator',
+        'quit',
+      ],
+      onClick: showWindow,
+    },
+  });
+  // later: desktop.tray?.update({ tooltip: '2 jobs running' })
+${endScript}`;
+
+  const singleInstanceRust = `// src-tauri/src/lib.rs: registered first, before every other plugin
+.plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.unminimize();
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+    let _ = app.emit("single-instance", SecondInstance { args, cwd });
+}))`;
+
+  const deepLinkConfig = `// tauri.conf.json
+{ "plugins": { "deep-link": { "desktop": { "schemes": ["myapp"] } } } }`;
+
+  const sampleLink = 'myapp://projects/42?tab=files';
+  const sampleArgs = ['/usr/bin/app', '--minimized', 'notes/today.md', '/tmp/report.pdf'];
+
   const exports = [
     ['setupTauri', 'Every adapter in one call; returns platform, ready and destroy()'],
     ['isTauri', 'Whether the page runs in a Tauri 2 window, without loading the Tauri runtime'],
     ['tauriPlatform', "'macos', 'windows', 'linux', 'ios', 'android' or null"],
     ['markTauriPlatform', 'data-tauri-platform on <html>, for platform-specific CSS'],
+    ['handleSecondInstance', 'Second launches forwarded by tauri-plugin-single-instance'],
+    ['filesFromArgs', 'The file paths in a command line, resolved against its directory'],
+    ['handleDeepLinks', 'Links that open the app, at startup and while it runs'],
+    ['deepLinkPath', 'myapp://projects/42 becomes /projects/42'],
+    ['createTray', 'A tray icon with a menu, update() and destroy()'],
   ] as const;
 
   const inTauri = isTauri();
@@ -96,6 +146,38 @@ ${endScript}
   </Demo>
 </Section>
 
+<Section title="Running in the background" headingLevel={2}>
+  <p class="docs-note">
+    For an app that keeps working with its window closed. Each piece turns on when it gets both its
+    module and its options, and does nothing in a browser.
+  </p>
+  <CodeBlock code={background} />
+  <p class="docs-note">
+    <strong>Single instance.</strong> <code>tauri-plugin-single-instance</code> has no JavaScript
+    side: register it first in Rust, focus the window there, and emit the launch for
+    <code>onSecondInstance</code>. On macOS, files opened from the Finder arrive as
+    <code>RunEvent::Opened</code> instead; the example app forwards those as the same event.
+  </p>
+  <CodeBlock code={singleInstanceRust} />
+  <p class="docs-note">
+    <strong>Deep links.</strong> Declare the scheme for <code>@tauri-apps/plugin-deep-link</code>.
+    macOS registers it from the bundle, so links open an installed build, not
+    <code>tauri dev</code>.
+  </p>
+  <CodeBlock code={deepLinkConfig} />
+  <Demo label="deepLinkPath() and filesFromArgs() on sample input">
+    <dl class="docs-desktop-facts">
+      <dt><code>deepLinkPath</code></dt>
+      <dd><code>{sampleLink}</code> → <code>{deepLinkPath(sampleLink)}</code></dd>
+      <dt><code>filesFromArgs</code></dt>
+      <dd>
+        <code>{sampleArgs.join(' ')}</code> in <code>/home/sam</code> →
+        <code>{filesFromArgs(sampleArgs, '/home/sam').join(', ')}</code>
+      </dd>
+    </dl>
+  </Demo>
+</Section>
+
 <Section title="Exports" headingLevel={2}>
   <Table caption="Exports of @loidolt/theme-tauri">
     <thead>
@@ -128,6 +210,8 @@ ${endScript}
     margin: 0;
     & dd {
       margin: 0;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
   }
 </style>

@@ -32,5 +32,13 @@ quickest check that the Rust side builds.
 - `setupTauri({ plugins: { os } })` in the root component, with `@tauri-apps/plugin-os` passed in
   (and `tauri-plugin-os` registered in `src-tauri/src/lib.rs`, allowed in
   `src-tauri/capabilities/default.json`).
+- Running in the background: `tauri-plugin-single-instance` registered first in
+  `src-tauri/src/lib.rs`, focusing the window and emitting each second launch (and, on macOS, files
+  opened from the Finder) for `singleInstance`; `tauri-plugin-deep-link` with the
+  `theme-example://` scheme in `tauri.conf.json` for `deepLinks` (on macOS only a built bundle
+  registers it); and a tray icon (the `tray-icon` feature of `tauri`) whose menu shows the window,
+  pauses and resumes, and quits. Run `npm run tauri:dev`, then launch the binary again with a file
+  path after it (`src-tauri/target/debug/theme-tauri-example notes.md`) to see the second launch
+  arrive in the first window.
 - The platform badge reads `desktop.platform`: `null` in a browser, the OS in a window.
 - `@loidolt/theme-tauri/styles.css` after the theme's stylesheet.

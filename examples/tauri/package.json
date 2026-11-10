@@ -17,6 +17,7 @@
     "@loidolt/theme-svelte": "^0.11.1",
     "@loidolt/theme-tauri": "^0.11.1",
     "@tauri-apps/api": "^2.12.4",
+    "@tauri-apps/plugin-deep-link": "^2.6.3",
     "@tauri-apps/plugin-os": "^2.4.0"
   },
   "devDependencies": {

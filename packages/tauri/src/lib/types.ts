@@ -16,3 +16,56 @@ export type UnlistenFn = () => void;
 export interface OsPlugin {
   type(): 'linux' | 'windows' | 'macos' | 'ios' | 'android';
 }
+
+/** `@tauri-apps/api/event`, for events the Rust side emits. */
+export interface EventModule {
+  listen<T>(event: string, handler: (event: { payload: T }) => void): Promise<UnlistenFn>;
+}
+
+/** `@tauri-apps/plugin-deep-link`, for URLs that open the app. */
+export interface DeepLinkPlugin {
+  getCurrent(): Promise<string[] | null>;
+  onOpenUrl(handler: (urls: string[]) => void): Promise<UnlistenFn>;
+}
+
+/** A path, PNG or ICO bytes, or an `Image` from `@tauri-apps/api/image`. */
+export type TrayImage = string | Uint8Array | ArrayBuffer | number[] | object;
+
+/** A menu or tray icon living on the Rust side; `close()` frees it. */
+export interface TauriResource {
+  close(): Promise<void>;
+}
+
+/** What the tray adapter puts in a menu: plain items and separators. */
+export type TrayMenuEntry =
+  | { id: string; text: string; enabled?: boolean; action?: (id: string) => void }
+  | { item: 'Separator' | 'Quit' };
+
+/** `@tauri-apps/api/menu`, for the tray's menu. */
+export interface MenuModule {
+  Menu: { 'new'(options?: { items?: TrayMenuEntry[] }): Promise<TauriResource> };
+}
+
+/** A tray icon from `@tauri-apps/api/tray`. */
+export interface TrayIconHandle extends TauriResource {
+  setIcon(icon: TrayImage | null): Promise<void>;
+  setTooltip(tooltip: string | null): Promise<void>;
+  setTitle(title: string | null): Promise<void>;
+  setMenu(menu: TauriResource | null): Promise<void>;
+}
+
+/** `@tauri-apps/api/tray`. */
+export interface TrayModule {
+  TrayIcon: {
+    'new'(options?: {
+      id?: string;
+      icon?: TrayImage;
+      tooltip?: string;
+      title?: string;
+      menu?: TauriResource;
+      iconAsTemplate?: boolean;
+      showMenuOnLeftClick?: boolean;
+      action?(event: { type: string; button?: string; buttonState?: string }): void;
+    }): Promise<TrayIconHandle>;
+  };
+}

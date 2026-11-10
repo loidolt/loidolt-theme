@@ -1,4 +1,10 @@
 <script lang="ts">
+  import { defaultWindowIcon } from '@tauri-apps/api/app';
+  import * as event from '@tauri-apps/api/event';
+  import * as menu from '@tauri-apps/api/menu';
+  import * as tray from '@tauri-apps/api/tray';
+  import { getCurrentWindow } from '@tauri-apps/api/window';
+  import * as deepLink from '@tauri-apps/plugin-deep-link';
   import * as os from '@tauri-apps/plugin-os';
   import {
     AppShell,
@@ -11,12 +17,54 @@
     ThemeToggle,
     Topbar,
   } from '@loidolt/theme-svelte';
-  import { setupTauri } from '@loidolt/theme-tauri';
+  import {
+    isTauri,
+    setupTauri,
+    type SecondInstance,
+    type TrayMenuItem,
+  } from '@loidolt/theme-tauri';
 
   const theme = createTheme();
 
-  // In a browser (`npm run dev`) this is inert: platform is null and <html> is left alone.
-  const desktop = setupTauri({ plugins: { os } });
+  let launch = $state<SecondInstance | null>(null);
+  let link = $state<string | null>(null);
+  let watching = $state(true);
+
+  async function showWindow() {
+    const window = getCurrentWindow();
+    await window.unminimize();
+    await window.show();
+    await window.setFocus();
+  }
+
+  const trayItems = (): TrayMenuItem[] => [
+    { id: 'show', label: 'Show window', action: showWindow },
+    { id: 'watch', label: watching ? 'Pause watching' : 'Resume watching', action: toggleWatching },
+    'separator',
+    'quit',
+  ];
+
+  // In a browser (`npm run dev`) this is inert: platform is null, <html> is left alone and
+  // there is no tray.
+  const desktop = setupTauri({
+    plugins: { os, event, deepLink, tray, menu },
+    singleInstance: { onSecondInstance: (next) => (launch = next) },
+    deepLinks: { onUrl: (url) => (link = url) },
+    tray: {
+      icon: isTauri() ? defaultWindowIcon() : null,
+      tooltip: 'Watching for new files',
+      items: trayItems(),
+      onClick: showWindow,
+    },
+  });
+
+  function toggleWatching() {
+    watching = !watching;
+    desktop.tray?.update({
+      tooltip: watching ? 'Watching for new files' : 'Paused',
+      items: trayItems(),
+    });
+  }
 
   const names = {
     macos: 'macOS',
@@ -54,6 +102,35 @@
         selectable, as in a native app.
       </p>
       <Button variant="primary" onclick={() => count++}>Clicked {count} times</Button>
+    </Section>
+    <Section title="In the background" headingLevel={2}>
+      <p>
+        The tray icon stays while the app runs; a left click brings this window back, and its menu
+        pauses and resumes. <Badge variant={watching ? 'success' : 'default'}>
+          {watching ? 'Watching' : 'Paused'}
+        </Badge>
+      </p>
+      <Button onclick={toggleWatching}>{watching ? 'Pause watching' : 'Resume watching'}</Button>
+      <p>
+        Launch the app again, with a file path after it, and this window comes forward instead of a
+        second one opening:
+      </p>
+      <p>
+        {#if launch}
+          Second launch with {launch.files.length === 1
+            ? '1 file'
+            : `${launch.files.length} files`}{launch.files.length
+            ? `: ${launch.files.join(', ')}`
+            : ''}.
+        {:else}
+          No second launch yet.
+        {/if}
+      </p>
+      <p>
+        Open <code>theme-example://projects/42</code> from a browser (in a bundled build) to deep
+        link here:
+        {link ? link : 'no link yet.'}
+      </p>
     </Section>
   </div>
 </AppShell>

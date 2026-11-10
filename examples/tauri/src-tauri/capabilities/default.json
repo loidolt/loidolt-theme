@@ -3,5 +3,12 @@
   "identifier": "default",
   "description": "What the example's main window may call",
   "windows": ["main"],
-  "permissions": ["core:default", "os:default"]
+  "permissions": [
+    "core:default",
+    "core:window:allow-show",
+    "core:window:allow-unminimize",
+    "core:window:allow-set-focus",
+    "deep-link:default",
+    "os:default"
+  ]
 }
