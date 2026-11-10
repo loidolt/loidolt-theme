@@ -1,13 +1,18 @@
 import type { Theme } from '@loidolt/theme-svelte';
 import { onDestroy } from 'svelte';
 import {
+  createNotifications,
+  type Notifications,
+  type NotificationsOptions,
+} from './notifications.svelte.js';
+import {
   combine,
   isTauri,
   markTauriPlatform,
   tauriPlatform,
   type TauriPlatform,
 } from './platform.js';
-import type { OsPlugin, Teardown, WindowPlugin } from './types.js';
+import type { NotificationPlugin, OsPlugin, Teardown, WindowPlugin } from './types.js';
 import {
   insetWindowChrome,
   showWindow,
@@ -32,6 +37,8 @@ export interface TauriPlugins {
    * hidden.
    */
   window?: WindowPlugin | (() => WindowPlugin);
+  /** `@tauri-apps/plugin-notification`: OS notifications from Rust. */
+  notification?: NotificationPlugin;
 }
 
 /** `false` turns one adapter off even though its module is present. */
@@ -62,6 +69,11 @@ export interface SetupTauriOptions {
    * `window`.
    */
   show?: Toggle<Omit<ShowWindowOptions, 'window' | 'until'>>;
+  /**
+   * `desktop.notifications`: through `notification` in a window, the Web Notifications API in a
+   * browser. `false` leaves it out.
+   */
+  notifications?: Omit<NotificationsOptions, 'plugin'> | false;
 }
 
 export interface TauriSetup {
@@ -72,6 +84,8 @@ export interface TauriSetup {
    * the window has its background and appearance and has been shown. Never rejects.
    */
   readonly ready: Promise<void>;
+  /** OS notifications with their permission; absent with `notifications: false`. */
+  readonly notifications: Notifications | undefined;
   /** Removes everything. Automatic when called during component initialisation. */
   destroy(): void;
 }
@@ -98,7 +112,7 @@ export interface TauriSetup {
  * In a browser (or on the server) every adapter is a no-op, so the same layout ships to the web.
  */
 export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
-  const { os, window: windowOption } = options.plugins ?? {};
+  const { os, window: windowOption, notification } = options.plugins ?? {};
   const platform = tauriPlatform(os);
   const win =
     typeof windowOption === 'function' ? (isTauri() ? windowOption() : undefined) : windowOption;
@@ -106,7 +120,13 @@ export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
 
   if (options.markPlatform !== false) teardowns.push(markTauriPlatform(undefined, os));
 
-  let ready = Promise.resolve();
+  let notifications: Notifications | undefined;
+  if (options.notifications !== false) {
+    notifications = createNotifications({ ...options.notifications, plugin: notification });
+    teardowns.push(notifications.destroy);
+  }
+
+  let windowReady = Promise.resolve();
   if (win) {
     const appearanceOptions = on(options.appearance);
     const appearance = appearanceOptions
@@ -117,8 +137,10 @@ export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
     if (chrome) teardowns.push(insetWindowChrome({ ...chrome, window: win }, os));
     const applied = appearance?.ready ?? Promise.resolve();
     const show = on(options.show);
-    ready = show ? showWindow({ ...show, window: win, until: applied }, os) : applied;
+    windowReady = show ? showWindow({ ...show, window: win, until: applied }, os) : applied;
   }
+
+  const ready = Promise.all([windowReady, notifications?.ready]).then(() => {});
 
   const destroy = combine(...teardowns);
   try {
@@ -127,5 +149,5 @@ export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
     /* module scope: the caller owns `destroy()` */
   }
 
-  return { platform, ready, destroy };
+  return { platform, ready, notifications, destroy };
 }

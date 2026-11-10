@@ -18,10 +18,20 @@ describe('on the server', () => {
 
   it('sets up as a no-op with every plugin given', async () => {
     const os = { type: vi.fn(() => 'macos' as const) };
-    const desktop = lib.setupTauri({ plugins: { os } });
+    const notification = {
+      isPermissionGranted: vi.fn(async () => true),
+      requestPermission: vi.fn(async () => 'granted' as const),
+      sendNotification: vi.fn(),
+    };
+    const desktop = lib.setupTauri({ plugins: { os, notification } });
     await desktop.ready;
     expect(desktop.platform).toBeNull();
     expect(os.type).not.toHaveBeenCalled();
+    expect(desktop.notifications?.permission).toBe('unsupported');
+    expect(await desktop.notifications?.requestPermission()).toBe('unsupported');
+    expect(await desktop.notifications?.notify({ title: 'Export finished' })).toBe(false);
+    expect(notification.isPermissionGranted).not.toHaveBeenCalled();
+    expect(notification.sendNotification).not.toHaveBeenCalled();
     expect(lib.markTauriPlatform()).toBeTypeOf('function');
     desktop.destroy();
   });
