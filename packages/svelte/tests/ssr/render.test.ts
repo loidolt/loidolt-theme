@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import * as lib from '../../src/lib/index.js';
 import { createDataTable } from '../../src/lib/data-table.svelte.js';
 import { createTheme } from '../../src/lib/theme.svelte.js';
+import { createCommands } from '../../src/lib/commands.svelte.js';
 
 /**
  * Server-renders every component with minimal props. This is the README's SSR-safety claim
@@ -141,6 +142,13 @@ const cases: Array<[CaseName, Record<string, unknown>]> = [
   ['SegmentedNav', { items: [{ label: 'R1', href: '#r1', current: true }] }],
   ['Select', { label: 'Format', options }],
   ['Separator', {}],
+  [
+    'ShortcutHelp',
+    {
+      commands: createCommands(),
+      trigger: text('Shortcuts'),
+    },
+  ],
   ['Sidebar', { children: text('Nav') }],
   ['Skeleton', {}],
   ['SignaturePad', { label: 'Signature', name: 'signature' }],
@@ -244,5 +252,18 @@ describe('server-side rendering', () => {
       props: { label: 'Email', children: fieldControl } as never,
     });
     expect(first.body).toMatch(/id="[^"]+"/);
+  });
+});
+
+describe('command registry on the server', () => {
+  it('registers, lists and formats without a window', () => {
+    const commands = createCommands();
+    expect(commands.platform).toBe('other');
+    commands.register({ id: 'save', label: 'Save', shortcut: 'Mod+S', handler: () => {} });
+    expect(commands.list()).toHaveLength(1);
+    const stop = commands.listen();
+    stop();
+    expect(lib.formatShortcut('Mod+S')).toBe('Ctrl+S');
+    commands.destroy();
   });
 });
