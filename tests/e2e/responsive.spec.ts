@@ -138,7 +138,7 @@ test.describe('responsive catalog', () => {
     await page.setViewportSize({ width: 844, height: 640 });
     await page.goto('/components/workspace');
 
-    const frame = page.locator('.docs-frame');
+    const frame = page.locator('.docs-frame').first();
     const workspace = frame.locator('.ldt-workspace');
     expect((await frame.evaluate(dimensions)).clientWidth).toBeLessThan(760);
     await expect(workspace).toHaveCSS('display', 'block');

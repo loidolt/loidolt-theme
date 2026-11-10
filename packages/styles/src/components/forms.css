@@ -64,6 +64,94 @@
   min-height: 6rem;
   resize: vertical;
 }
+/*
+ * AnnotatedText: a real textarea over a mirror that draws the marks. Both elements share the
+ * textarea classes, so the box, padding and type line up; the rules below only make the textarea
+ * see-through and the mirror's text invisible, and keep every wrapping property identical.
+ */
+.ldt-annotated-text {
+  display: grid;
+  gap: var(--loidolt-gap-field);
+  min-width: 0;
+}
+.ldt-annotated-text__field {
+  position: relative;
+  min-width: 0;
+}
+.ldt-annotated-text__input,
+.ldt-annotated-text__mirror {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  tab-size: 4;
+  font: inherit;
+  letter-spacing: normal;
+  text-align: start;
+}
+.ldt-annotated-text__input {
+  position: relative;
+  display: block;
+  background: transparent;
+}
+.ldt-annotated-text__mirror {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-color: transparent;
+  color: transparent;
+  pointer-events: none;
+  resize: none;
+  user-select: none;
+}
+/* Colour is never the only signal: each variant also has its own underline style. */
+.ldt-annotated-text__mark {
+  --ldt-mark-color: var(--loidolt-border-strong);
+  border-radius: var(--loidolt-radius-inner);
+  background: color-mix(in srgb, var(--ldt-mark-color) 16%, transparent);
+  text-decoration: underline dashed var(--ldt-mark-color);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+.ldt-annotated-text__mark--accent {
+  --ldt-mark-color: var(--loidolt-accent);
+  text-decoration-style: solid;
+}
+.ldt-annotated-text__mark--info {
+  --ldt-mark-color: var(--loidolt-info);
+  text-decoration-style: dotted;
+}
+.ldt-annotated-text__mark--success {
+  --ldt-mark-color: var(--loidolt-success);
+  text-decoration-style: solid;
+}
+.ldt-annotated-text__mark--warning {
+  --ldt-mark-color: var(--loidolt-warning);
+  text-decoration-style: double;
+}
+.ldt-annotated-text__mark--error {
+  --ldt-mark-color: var(--loidolt-danger);
+  text-decoration-style: wavy;
+}
+.ldt-annotated-text__mark--active {
+  background: color-mix(in srgb, var(--ldt-mark-color) 30%, transparent);
+}
+.ldt-annotated-text__tooltip {
+  position: absolute;
+  width: max-content;
+  /* Never wider than the field it labels. */
+  max-width: min(18rem, 100%);
+}
+.ldt-annotated-text__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--loidolt-space-2);
+}
+@media (forced-colors: active) {
+  .ldt-annotated-text__mark {
+    background: Mark;
+    forced-color-adjust: none;
+  }
+}
 .ldt-choice {
   /* The label is the pointer target for the input it wraps, so it carries the 24px minimum. */
   min-height: 1.5rem;
@@ -198,6 +286,88 @@
 }
 .ldt-file-input::file-selector-button:hover {
   color: var(--loidolt-text-accent);
+}
+/*
+ * A drop target for files that is also a file picker: the area is the label of a visually hidden
+ * file input, so a click, Enter or Space opens the picker and forms submit what was accepted.
+ */
+.ldt-dropzone {
+  display: grid;
+  gap: var(--loidolt-space-2);
+  min-width: 0;
+}
+.ldt-dropzone__target {
+  position: relative;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--loidolt-space-1);
+  min-height: var(--ldt-dropzone-height, 8rem);
+  border: var(--loidolt-border-width) dashed var(--loidolt-border-strong);
+  border-radius: var(--loidolt-radius-surface);
+  padding: var(--loidolt-pad-surface);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-input);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--loidolt-motion-fast) var(--loidolt-motion-easing);
+}
+.ldt-dropzone__target:hover {
+  border-color: var(--loidolt-accent);
+}
+/* The input is hidden, so its focus ring is drawn on the area it names. */
+.ldt-dropzone__target:has(.ldt-dropzone__input:focus-visible) {
+  outline: var(--loidolt-stroke-focus) solid var(--loidolt-focus-ring);
+  outline-offset: 2px; /* @literal clearance between control and ring */
+}
+.ldt-dropzone:is([data-dragging], [data-window-dragging]) .ldt-dropzone__target {
+  border-style: solid;
+  border-color: var(--loidolt-accent);
+  background: var(--loidolt-surface-alt);
+}
+.ldt-dropzone[data-disabled] .ldt-dropzone__target {
+  border-color: var(--loidolt-border-control);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.ldt-dropzone__label {
+  font: var(--loidolt-font-size-md) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-strong-weight);
+}
+.ldt-dropzone__browse {
+  color: var(--loidolt-text-accent);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  text-decoration: underline;
+}
+.ldt-dropzone__hint {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) / 1.5 var(--loidolt-font-utility);
+}
+.ldt-dropzone__error {
+  margin: 0;
+  color: var(--loidolt-text-danger);
+  font: var(--loidolt-font-size-xs) / 1.5 var(--loidolt-font-utility);
+}
+/* Whole-window mode: shown while files are dragged anywhere over the page. */
+.ldt-dropzone__overlay {
+  position: fixed;
+  z-index: var(--loidolt-z-overlay);
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--loidolt-pad-page);
+  background: var(--loidolt-scrim);
+  pointer-events: none;
+}
+.ldt-dropzone__overlay-label {
+  border: var(--loidolt-stroke-indicator) dashed var(--loidolt-accent);
+  border-radius: var(--loidolt-radius-overlay);
+  padding: var(--loidolt-pad-overlay);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-modal);
+  font: var(--loidolt-font-size-lg) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-strong-weight);
 }
 /* A palette as a real radio group: one pressed swatch, arrow-key movement. */
 .ldt-swatch-group {

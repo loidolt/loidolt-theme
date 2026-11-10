@@ -206,6 +206,67 @@
       var(--loidolt-size-inspector)
     );
 }
+/*
+ * `resizable`: the main pane and the inspector share what the sidebar leaves as flex fractions
+ * the component writes (`--ldt-main-share`, `--ldt-inspector-share`), with the divider in an
+ * auto column between them.
+ */
+.ldt-workspace--resizable {
+  grid-template-columns:
+    minmax(0, var(--ldt-main-share, 70fr)) auto
+    minmax(0, var(--ldt-inspector-share, 30fr));
+}
+.ldt-workspace--sidebar.ldt-workspace--resizable {
+  grid-template-columns:
+    var(--ldt-sidebar-width, var(--loidolt-size-sidebar)) minmax(0, var(--ldt-main-share, 70fr))
+    auto minmax(0, var(--ldt-inspector-share, 30fr));
+}
+.ldt-workspace--resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+/* The wrapper is the grid item; the inspector inside fills it and scrolls on its own. */
+.ldt-workspace__inspector {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+}
+/* The divider draws the line between the panes, so a Sidebar beside it drops its own. */
+.ldt-workspace__inspector > .ldt-sidebar--right {
+  border-left: 0;
+}
+.ldt-workspace__divider {
+  position: relative;
+  z-index: var(--loidolt-z-raised);
+  width: var(--loidolt-border-width);
+  background: var(--loidolt-border);
+  cursor: col-resize;
+  /* A touch drag resizes rather than scrolling the page. */
+  touch-action: none;
+}
+/* The hit area: 24px, the WCAG 2.5.8 target minimum, centred on the 1px line. */
+.ldt-workspace__divider::before,
+.ldt-workspace__divider::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  translate: -50% 0;
+}
+.ldt-workspace__divider::before {
+  width: var(--loidolt-space-6);
+}
+/* The grip line, drawn in accent while hovered, focused or dragged. */
+.ldt-workspace__divider::after {
+  width: var(--loidolt-stroke-indicator);
+  background: transparent;
+  transition: background-color var(--loidolt-motion-fast) var(--loidolt-motion-easing);
+}
+.ldt-workspace__divider:focus-visible::after,
+.ldt-workspace--resizing .ldt-workspace__divider::after {
+  background: var(--loidolt-accent);
+}
 /* An optional header row (ContextBar, toolbars) above the panes, spanning every column. */
 .ldt-workspace--header {
   grid-template-rows: auto minmax(0, 1fr);
@@ -302,6 +363,9 @@
 }
 /* A tap leaves `:hover` stuck on touch screens, where it would read as a second current tab. */
 @media (hover: hover) {
+  .ldt-workspace__divider:hover::after {
+    background: var(--loidolt-accent);
+  }
   .ldt-tab-bar__item:hover {
     color: var(--loidolt-text);
     background: var(--loidolt-surface-alt);
@@ -404,6 +468,13 @@
   .ldt-workspace__main {
     padding: var(--loidolt-space-4);
   }
+  /* Stacked, there is nothing to resize: the divider leaves the layout and the tab order. */
+  .ldt-workspace__divider {
+    display: none;
+  }
+  .ldt-workspace__inspector {
+    display: block;
+  }
   .ldt-page-header {
     align-items: start;
     flex-direction: column;
@@ -426,6 +497,13 @@
   }
   .ldt-workspace__main {
     padding: var(--loidolt-space-4);
+  }
+  /* Stacked, there is nothing to resize: the divider leaves the layout and the tab order. */
+  .ldt-workspace__divider {
+    display: none;
+  }
+  .ldt-workspace__inspector {
+    display: block;
   }
 }
 /* A row of list controls — search, filters, view options — on the recessed surface. */
