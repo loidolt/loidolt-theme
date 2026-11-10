@@ -86,6 +86,7 @@ const cases: Array<[CaseName, Record<string, unknown>]> = [
   ['DataTableSearch', { table: sheets }],
   ['Drawer', { title: 'Navigation', open: true, children: text('Links') }],
   ['DropdownMenu', { trigger: text('Actions'), items: options, open: true }],
+  ['Dropzone', { label: 'Drop PDFs', hint: 'PDF only', accept: '.pdf', window: true }],
   ['EmptyState', { title: 'No projects yet' }],
   ['Field', { label: 'Email', children: fieldControl }],
   ['FileInput', { 'aria-label': 'Artwork file' }],
@@ -94,6 +95,16 @@ const cases: Array<[CaseName, Record<string, unknown>]> = [
   ['FloatingBar', { label: 'Zoom', children: text('+') }],
   ['Fieldset', { legend: 'Output', children: text('<input />') }],
   ['IconButton', { label: 'Close', children: text('×') }],
+  [
+    'ImageViewer',
+    {
+      src: 'page.png',
+      alt: 'Page',
+      width: 400,
+      height: 600,
+      regions: [{ id: 'r1', x: 0, y: 0, width: 100, height: 40, label: 'Heading' }],
+    },
+  ],
   ['Input', { 'aria-label': 'Name' }],
   ['Label', { for: 'x', children: text('Name') }],
   ['Lightbox', { items: gallery, open: true, showThumbnails: true }],
@@ -158,6 +169,16 @@ const cases: Array<[CaseName, Record<string, unknown>]> = [
   ['SkipLink', { targetId: 'main' }],
   ['Slider', { label: 'Kerf', value: [2, 8], showValue: true, name: 'kerf' }],
   ['Spinner', { label: 'Loading' }],
+  [
+    'StageStepper',
+    {
+      steps: [
+        { id: 'a', label: 'Upload', state: 'done' },
+        { id: 'b', label: 'Convert', state: 'running', progress: 40 },
+      ],
+      onSelect: () => {},
+    },
+  ],
   ['Stat', { value: 12, label: 'Artworks' }],
   ['StatusDot', { variant: 'success', label: 'Approved' }],
   [
@@ -245,6 +266,28 @@ describe('server-side rendering', () => {
     expect(first.body).toContain('href="/plan"');
     expect(first.body).not.toMatch(/\sid="/);
     expect(render(lib.TabBar, { props }).body).toBe(first.body);
+  });
+
+  it('server-renders a resizable workspace with a pre-paint size restore', () => {
+    const props = {
+      children: text('Main'),
+      inspector: text('Notes'),
+      resizable: true,
+      inspectorSize: 40,
+      storageKey: '</script><b>key',
+    };
+    const { body } = render(lib.Workspace, { props: props as never });
+    expect(body).toContain('role="separator"');
+    expect(body).toContain('aria-valuenow="40"');
+    expect(body).toContain('--ldt-inspector-share: 40fr');
+    expect(body).toContain('--ldt-main-share: 60fr');
+    // The key is JSON-escaped: it cannot close the script it sits in.
+    expect(body).toContain('localStorage.getItem("\\u003c/script>\\u003cb>key")');
+    expect(body.match(/<\/script>/g)).toHaveLength(1);
+    const withoutKey = render(lib.Workspace, {
+      props: { ...props, storageKey: undefined } as never,
+    });
+    expect(withoutKey.body).not.toContain('<script');
   });
 
   it('renders SSR-stable generated ids', () => {

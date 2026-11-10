@@ -24,6 +24,7 @@ export { default as DataTableSearch } from './components/DataTableSearch.svelte'
 export { default as Dialog } from './components/Dialog.svelte';
 export { default as Drawer } from './components/Drawer.svelte';
 export { default as DropdownMenu } from './components/DropdownMenu.svelte';
+export { default as Dropzone } from './components/Dropzone.svelte';
 export { default as EmptyState } from './components/EmptyState.svelte';
 export { default as Field } from './components/Field.svelte';
 export { default as Fieldset } from './components/Fieldset.svelte';
@@ -32,6 +33,7 @@ export { default as Filmstrip } from './components/Filmstrip.svelte';
 export { default as FilterPanel } from './components/FilterPanel.svelte';
 export { default as FloatingBar } from './components/FloatingBar.svelte';
 export { default as IconButton } from './components/IconButton.svelte';
+export { default as ImageViewer } from './components/ImageViewer.svelte';
 export { default as Input } from './components/Input.svelte';
 export { default as Label } from './components/Label.svelte';
 export { default as Lightbox } from './components/Lightbox.svelte';
@@ -64,6 +66,7 @@ export { default as Skeleton } from './components/Skeleton.svelte';
 export { default as SkipLink } from './components/SkipLink.svelte';
 export { default as Slider } from './components/Slider.svelte';
 export { default as Spinner } from './components/Spinner.svelte';
+export { default as StageStepper } from './components/StageStepper.svelte';
 export { default as Stat } from './components/Stat.svelte';
 export { default as StatusDot } from './components/StatusDot.svelte';
 export { default as SwatchGroup } from './components/SwatchGroup.svelte';
@@ -107,6 +110,14 @@ export {
 } from 'bits-ui';
 
 export { cx, describedBy } from './utils.js';
+export { filterFiles, matchesAccept, parseAccept } from './file-accept.js';
+export type {
+  FileFilterOptions,
+  FileFilterResult,
+  FileLike,
+  FileRejection,
+  FileRejectionReason,
+} from './file-accept.js';
 export { autofocus, clickOutside, escapeKey, focusTrap, rovingFocus } from './attachments.js';
 export type {
   AutofocusOptions,
@@ -145,7 +156,13 @@ export type {
 export { createMediaPlayer } from './media-player.svelte.js';
 export type { MediaPlayer, MediaPlayerOptions, MediaTrackInfo } from './media-player.svelte.js';
 export { createMediaZoom } from './media-zoom.svelte.js';
-export type { MediaZoom, MediaZoomOptions } from './media-zoom.svelte.js';
+export type {
+  MediaZoom,
+  MediaZoomFit,
+  MediaZoomOptions,
+  MediaZoomRect,
+  MediaZoomSize,
+} from './media-zoom.svelte.js';
 export { canPlayHlsNatively, loadHls, setHlsLoader } from './hls.js';
 export type { HlsConstructor, HlsErrorData, HlsInstance, HlsLoader } from './hls.js';
 export { createHlsSource } from './hls.svelte.js';
@@ -218,6 +235,7 @@ export type {
   ControlSize,
   DialogSize,
   HeadingLevel,
+  ImageRegion,
   MenuCheckboxItem,
   MenuEntry,
   MenuGroup,
@@ -230,6 +248,8 @@ export type {
   Orientation,
   Placement,
   SortDirection,
+  StageState,
+  StageStep,
   StatusVariant,
   TabBarItem,
   TabItem,

@@ -271,6 +271,20 @@ export const entries: Entry[] = [
     notes: ['`onFiles` fires only when at least one file is chosen; `onchange` still forwards.'],
   },
   {
+    slug: 'dropzone',
+    name: 'Dropzone',
+    group: 'Forms',
+    summary:
+      'A drop target for files that is also a file picker, with type, size and count filtering.',
+    notes: [
+      'The area is the label of a real `<input type="file">`: a click, Enter or Space opens the picker, `label` is its accessible name, and `name` submits the accepted files with a form.',
+      '`accept` uses the `<input accept>` syntax — `.pdf`, `application/pdf`, `image/*` — and the same check is exported as `matchesAccept` and `filterFiles` for other code that receives files.',
+      '`onFiles(accepted, rejected)` fires for every batch, whatever its source. Rejections carry a `reason` (`type`, `size` or `count`); `rejectedLabel` words the message shown under the area and announced through a live region.',
+      'Files from elsewhere — a native window drop event, a paste handler, a test — go through `addFiles(files)` on the component instance (`bind:this`), which runs the same filtering, message and callback. It takes a `File[]` or a `FileList` and returns `{ accepted, rejected }`.',
+      'The root carries `data-dragging` while files are over the area. With `window`, files dropped anywhere on the page are taken too: the root gets `data-window-dragging` and an overlay covers the viewport. A drop another target already handled (`preventDefault`) is left alone.',
+    ],
+  },
+  {
     slug: 'swatch-group',
     name: 'SwatchGroup',
     group: 'Forms',
@@ -542,6 +556,20 @@ export const entries: Entry[] = [
     ],
   },
   {
+    slug: 'stage-stepper',
+    name: 'StageStepper',
+    group: 'Feedback',
+    summary:
+      'An ordered run of named steps, each pending, running, done, skipped or failed, with optional progress.',
+    notes: [
+      'An `<ol>`: each step\'s state is read in words from `stateLabels`, never left to the glyph or colour. The first running step carries `aria-current="step"`.',
+      "`progress` is 0 to 100, Progress's default scale, and draws a small bar under the step: green once done, red when the step failed part-way.",
+      "A change to a step's `state` under the same `id` is spoken through a polite live region. Pass `announce={false}` when another stepper or message already reports the run.",
+      '`orientation="horizontal"` falls back to a column when its container is narrower than 36rem. The running indicator turns, and holds still under reduced motion.',
+      "`onSelect` turns each label into a button, for opening a step's log or details.",
+    ],
+  },
+  {
     slug: 'spinner',
     name: 'Spinner',
     group: 'Feedback',
@@ -776,6 +804,8 @@ export const entries: Entry[] = [
       '`sidebarOpen` and `inspectorOpen` collapse a pane by leaving it unrendered, so nothing collapsed stays in the tab order.',
       'The `header` snippet renders a full-width row above the panes — the home for a ContextBar or toolbar.',
       '`mainClass` styles the main pane without reaching into `.ldt-workspace__main` from outside.',
+      '`resizable` puts a divider (`role="separator"`) between the main pane and the inspector. Drag it, or focus it and use Left/Right (Shift for bigger steps), Home/End for the limits and Enter to collapse and restore. `inspectorSize` is bindable, in percent of the width the two panes share; `inspectorMinSize`/`inspectorMaxSize` bound it, and the divider reports the same percentages as `aria-valuenow`/`aria-valuemin`/`aria-valuemax`.',
+      'With a `storageKey` the size the divider sets is kept in `localStorage` and restored on reload, before first paint on a server-rendered page (via a small inline script, so a strict CSP without `unsafe-inline` falls back to restoring at hydration). Below the compact breakpoint the panes stack and the divider is hidden.',
     ],
   },
   {
@@ -908,6 +938,20 @@ export const entries: Entry[] = [
       'Swipe to move on when the image is not zoomed. The next and previous images are loaded ahead of time.',
       'Each move is announced once ("Canyon relief, cork, 2 of 6") through a live region; the visible counter is hidden from assistive tech so it is not read twice.',
       'Videos, audio and embeds play in place with their own controls.',
+    ],
+  },
+  {
+    slug: 'image-viewer',
+    name: 'ImageViewer',
+    group: 'Media',
+    summary:
+      'An inline, non-modal zoomable image for a pane, with rectangles drawn over it — outlined text blocks on a scan, annotated areas on a plan.',
+    notes: [
+      'The frame is one tab stop: + and − zoom, 0 fits the image again, arrow keys pan. Pinch, Ctrl + wheel and double-click zoom around the pointer; dragging or the plain wheel pans once the image overflows the frame.',
+      "`regions` are in the image's natural pixels. They are placed inside the same box as the image, so they stay aligned at every zoom by construction.",
+      'The regions are a listbox with one tab stop: arrow keys, Home and End move between them in the order given, Enter selects, Escape clears. Each is named by its `label`; colour (`variant`) is never the only signal, so say the status in the label too.',
+      'Bind `selectedRegionId` (and `hoveredRegionId`) to link a list beside the viewer both ways. Selecting from outside pans the region into view and announces it through a live region.',
+      'Give `width` and `height` when you know them, so the viewer is laid out before the image loads. Fit width, Fit height and Fit whole image are in the controls; `fit` picks the one used first.',
     ],
   },
   {

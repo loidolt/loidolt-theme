@@ -482,3 +482,98 @@
   color: var(--loidolt-text-muted);
   background: var(--loidolt-surface);
 }
+
+/*
+ * An inline zoomable image for a pane. The layer is sized to the image at the current zoom and
+ * the regions are placed in percentages of it, so they line up with the image by construction.
+ */
+.ldt-image-viewer {
+  --ldt-image-viewer-region: var(--loidolt-border-strong);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  gap: var(--loidolt-space-2);
+}
+.ldt-image-viewer__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--loidolt-space-1);
+}
+.ldt-image-viewer__level {
+  min-width: 4ch; /* @literal fits "400%" */
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.ldt-image-viewer__frame {
+  position: relative;
+  min-height: var(--ldt-image-viewer-min-height, 16rem);
+  /* `clip`, not `hidden`: focus must never scroll the frame behind the zoom engine's back. */
+  overflow: clip;
+  border: var(--loidolt-border-width) solid var(--loidolt-border);
+  background: var(--loidolt-surface-sunken);
+  touch-action: pan-x pan-y;
+  user-select: none;
+}
+.ldt-image-viewer__frame[data-pannable] {
+  cursor: grab;
+  touch-action: none;
+}
+.ldt-image-viewer__frame:focus-visible {
+  outline-offset: calc(-1 * var(--loidolt-stroke-focus));
+}
+.ldt-image-viewer__layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  transform-origin: 0 0;
+}
+.ldt-image-viewer__layer[data-ready] {
+  visibility: visible;
+}
+.ldt-image-viewer__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+.ldt-image-viewer__regions {
+  position: absolute;
+  inset: 0;
+}
+.ldt-image-viewer__region {
+  position: absolute;
+  margin: 0;
+  border: var(--loidolt-stroke-indicator) solid var(--ldt-image-viewer-region);
+  padding: 0;
+  background: color-mix(in srgb, var(--ldt-image-viewer-region) 8%, transparent);
+  cursor: pointer;
+}
+.ldt-image-viewer__region:hover,
+.ldt-image-viewer__region[data-hovered] {
+  background: color-mix(in srgb, var(--ldt-image-viewer-region) 22%, transparent);
+}
+/* Selected reads in greyscale too: a heavier edge and a stronger fill, not only a colour. */
+.ldt-image-viewer__region[aria-selected='true'] {
+  border-width: var(--loidolt-stroke-accent);
+  background: color-mix(in srgb, var(--ldt-image-viewer-region) 30%, transparent);
+  box-shadow: 0 0 0 var(--loidolt-border-width) var(--loidolt-surface); /* @literal halo keeps the edge visible on dark scans */
+}
+.ldt-image-viewer__region--accent {
+  --ldt-image-viewer-region: var(--loidolt-accent);
+}
+.ldt-image-viewer__region--info {
+  --ldt-image-viewer-region: var(--loidolt-info);
+}
+.ldt-image-viewer__region--success {
+  --ldt-image-viewer-region: var(--loidolt-success);
+}
+.ldt-image-viewer__region--warning {
+  --ldt-image-viewer-region: var(--loidolt-warning);
+}
+.ldt-image-viewer__region--error {
+  --ldt-image-viewer-region: var(--loidolt-danger);
+}

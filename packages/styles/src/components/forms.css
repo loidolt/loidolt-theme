@@ -287,6 +287,88 @@
 .ldt-file-input::file-selector-button:hover {
   color: var(--loidolt-text-accent);
 }
+/*
+ * A drop target for files that is also a file picker: the area is the label of a visually hidden
+ * file input, so a click, Enter or Space opens the picker and forms submit what was accepted.
+ */
+.ldt-dropzone {
+  display: grid;
+  gap: var(--loidolt-space-2);
+  min-width: 0;
+}
+.ldt-dropzone__target {
+  position: relative;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--loidolt-space-1);
+  min-height: var(--ldt-dropzone-height, 8rem);
+  border: var(--loidolt-border-width) dashed var(--loidolt-border-strong);
+  border-radius: var(--loidolt-radius-surface);
+  padding: var(--loidolt-pad-surface);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface-input);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--loidolt-motion-fast) var(--loidolt-motion-easing);
+}
+.ldt-dropzone__target:hover {
+  border-color: var(--loidolt-accent);
+}
+/* The input is hidden, so its focus ring is drawn on the area it names. */
+.ldt-dropzone__target:has(.ldt-dropzone__input:focus-visible) {
+  outline: var(--loidolt-stroke-focus) solid var(--loidolt-focus-ring);
+  outline-offset: 2px; /* @literal clearance between control and ring */
+}
+.ldt-dropzone:is([data-dragging], [data-window-dragging]) .ldt-dropzone__target {
+  border-style: solid;
+  border-color: var(--loidolt-accent);
+  background: var(--loidolt-surface-alt);
+}
+.ldt-dropzone[data-disabled] .ldt-dropzone__target {
+  border-color: var(--loidolt-border-control);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.ldt-dropzone__label {
+  font: var(--loidolt-font-size-md) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-strong-weight);
+}
+.ldt-dropzone__browse {
+  color: var(--loidolt-text-accent);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  text-decoration: underline;
+}
+.ldt-dropzone__hint {
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) / 1.5 var(--loidolt-font-utility);
+}
+.ldt-dropzone__error {
+  margin: 0;
+  color: var(--loidolt-text-danger);
+  font: var(--loidolt-font-size-xs) / 1.5 var(--loidolt-font-utility);
+}
+/* Whole-window mode: shown while files are dragged anywhere over the page. */
+.ldt-dropzone__overlay {
+  position: fixed;
+  z-index: var(--loidolt-z-overlay);
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--loidolt-pad-page);
+  background: var(--loidolt-scrim);
+  pointer-events: none;
+}
+.ldt-dropzone__overlay-label {
+  border: var(--loidolt-stroke-indicator) dashed var(--loidolt-accent);
+  border-radius: var(--loidolt-radius-overlay);
+  padding: var(--loidolt-pad-overlay);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  box-shadow: var(--loidolt-shadow-modal);
+  font: var(--loidolt-font-size-lg) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-strong-weight);
+}
 /* A palette as a real radio group: one pressed swatch, arrow-key movement. */
 .ldt-swatch-group {
   display: flex;
