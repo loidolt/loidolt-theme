@@ -29,6 +29,7 @@ import {
 import { combine, markNativePlatform } from './platform.js';
 import { bridgeClipboard, followSystemTextSize, hideSplashScreen } from './system.js';
 import type { HideSplashOptions } from './system.js';
+import { createFiles, type NativeFiles, type NativeFilesOptions } from './files.js';
 import { persistTheme } from './theme-storage.svelte.js';
 import type {
   AppResumePlugin,
@@ -37,6 +38,8 @@ import type {
   BackButtonPlugin,
   BrowserPlugin,
   ClipboardPlugin,
+  FilePickerPlugin,
+  FilesystemPlugin,
   HapticsPlugin,
   KeyboardPlugin,
   KeyboardStylePlugin,
@@ -53,6 +56,8 @@ export interface CapacitorPlugins {
   App?: BackButtonPlugin & AppStatePlugin & AppUrlPlugin & AppResumePlugin;
   Browser?: BrowserPlugin;
   Clipboard?: ClipboardPlugin;
+  FilePicker?: FilePickerPlugin;
+  Filesystem?: FilesystemPlugin;
   Haptics?: HapticsPlugin;
   Keyboard?: KeyboardPlugin & KeyboardStylePlugin;
   Network?: NetworkPlugin;
@@ -81,6 +86,7 @@ export interface SetupCapacitorOptions {
   links?: Toggle<Omit<ExternalLinksOptions, 'Browser'>>;
   network?: Toggle<Omit<NetworkStatusOptions, 'Network' | 'toaster'>>;
   splash?: Toggle<Omit<HideSplashOptions, 'SplashScreen' | 'until'>>;
+  files?: Toggle<Omit<NativeFilesOptions, 'FilePicker' | 'Filesystem'>>;
   textSize?: boolean;
   clipboard?: boolean;
 }
@@ -94,6 +100,11 @@ export interface CapacitorSetup {
   readonly lifecycle: AppLifecycle | undefined;
   /** Present when `Network` was given. */
   readonly network: NetworkStatus | undefined;
+  /**
+   * Picking files with `FilePicker` and saving them with `Filesystem` in a native shell, a file
+   * input and a download in a browser. Present unless `files: false`: the browser needs no plugin.
+   */
+  readonly files: NativeFiles | undefined;
   /** The toaster you passed, with haptics on its status toasts when `Haptics` was given. */
   readonly toaster: Toaster | undefined;
   /** Settles once the stored theme is restored and the splash screen has lifted. */
@@ -133,7 +144,7 @@ const on = <T extends object>(value: Toggle<T> | undefined): T | null =>
 export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
   const { plugins, theme, navigate } = options;
   const { App, Browser, Clipboard, Haptics, Keyboard, Network, Preferences } = plugins;
-  const { SplashScreen, StatusBar, TextZoom } = plugins;
+  const { FilePicker, Filesystem, SplashScreen, StatusBar, TextZoom } = plugins;
   const teardowns: Teardown[] = [markNativePlatform()];
 
   const appearance = on(options.appearance);
@@ -186,6 +197,9 @@ export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
   }
   if (Clipboard && options.clipboard !== false) teardowns.push(bridgeClipboard({ Clipboard }));
 
+  const filesOptions = on(options.files);
+  const files = filesOptions ? createFiles({ ...filesOptions, FilePicker, Filesystem }) : undefined;
+
   const restored = persisted?.ready ?? Promise.resolve();
   const splash = on(options.splash);
   const ready =
@@ -200,5 +214,5 @@ export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
     /* module scope: the caller owns `destroy()` */
   }
 
-  return { haptics, keyboard, lifecycle, network, toaster, ready, destroy };
+  return { files, haptics, keyboard, lifecycle, network, toaster, ready, destroy };
 }

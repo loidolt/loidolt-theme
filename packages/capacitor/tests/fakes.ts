@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+import type { PickedNativeFile } from '../src/lib/types.js';
 
 /**
  * Stand-ins for `@capacitor/core` and the plugins. `@capacitor/core` is mocked for every suite
@@ -16,6 +17,7 @@ export const core = {
   Capacitor: {
     isNativePlatform: () => platform.current !== 'web',
     getPlatform: () => platform.current,
+    convertFileSrc: (path: string) => `capacitor://localhost/_capacitor_file_${path}`,
   },
   SystemBars: systemBars,
 };
@@ -99,5 +101,31 @@ export function fakeToaster() {
     warning: vi.fn((_title: string, _options?: unknown) => `toast-${++counter}`),
     success: vi.fn((_title: string, _options?: unknown) => `toast-${++counter}`),
     dismiss: vi.fn((_id: string) => {}),
+  };
+}
+
+export function fakeFilePicker(files: PickedNativeFile[] = []) {
+  return {
+    pickFiles: vi.fn(async (_options?: { types?: string[]; limit?: number }) => ({ files })),
+  };
+}
+
+/** A Filesystem that keeps what it is given, keyed `DIRECTORY/path`. */
+export function fakeFilesystem(publicStorage = 'granted', afterRequest = publicStorage) {
+  const files = new Map<string, string | Blob>();
+  return {
+    files,
+    writeFile: vi.fn(async (options: { path: string; data: string | Blob; directory?: string }) => {
+      const key = `${options.directory}/${options.path}`;
+      files.set(key, options.data);
+      return { uri: `file:///${key}` };
+    }),
+    stat: vi.fn(async ({ path, directory }: { path: string; directory?: string }) => {
+      const key = `${directory}/${path}`;
+      if (!files.has(key)) throw new Error('File does not exist');
+      return { uri: `file:///${key}` };
+    }),
+    checkPermissions: vi.fn(async () => ({ publicStorage })),
+    requestPermissions: vi.fn(async () => ({ publicStorage: afterRequest })),
   };
 }

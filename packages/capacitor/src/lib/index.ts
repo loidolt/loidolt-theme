@@ -25,6 +25,15 @@ export { createNetworkStatus } from './network.svelte.js';
 export type { NetworkStatus, NetworkStatusOptions } from './network.svelte.js';
 export { openExternalLinks } from './links.js';
 export type { ExternalLinksOptions } from './links.js';
+export { acceptToMimeTypes, createFiles, EXTENSION_TYPES, FilePermissionError } from './files.js';
+export type {
+  NativeFiles,
+  NativeFilesOptions,
+  PickOptions,
+  SaveableFile,
+  SaveOptions,
+  SaveOutcome,
+} from './files.js';
 export { bridgeClipboard, followSystemTextSize, hideSplashScreen } from './system.js';
 export type { HideSplashOptions, SystemTextSizeOptions } from './system.js';
 export type {
@@ -34,10 +43,13 @@ export type {
   BackButtonPlugin,
   BrowserPlugin,
   ClipboardPlugin,
+  FilePickerPlugin,
+  FilesystemPlugin,
   HapticsPlugin,
   KeyboardPlugin,
   KeyboardStylePlugin,
   NetworkPlugin,
+  PickedNativeFile,
   PluginListenerHandle,
   PreferencesPlugin,
   SplashScreenPlugin,

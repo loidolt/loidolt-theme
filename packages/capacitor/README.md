@@ -20,6 +20,8 @@ platform around them.
 - **Native storage, native links, native text size.** The theme choice survives iOS evicting
   `localStorage`; links that leave the app open in the in-app browser in the theme's colour; text
   follows Dynamic Type and Android's font scale; copy buttons work on Android.
+- **Open and save files like a native app.** The system file picker, and saving to the
+  device's Documents, with a file input and a download in the browser — `File`s either way.
 - **Inert on the web.** Every adapter checks for a native shell first, so the same root layout
   ships to the browser and to the server unchanged.
 
@@ -39,19 +41,21 @@ npm install @loidolt/theme-capacitor @capacitor/core
 npm install @capacitor/app @capacitor/keyboard @capacitor/haptics @capacitor/preferences @capacitor/splash-screen
 ```
 
-| Plugin                     | Turns on                                                                 |
-| -------------------------- | ------------------------------------------------------------------------ |
-| `@capacitor/core`          | Status and navigation bar styling (`SystemBars` is bundled in core)      |
-| `@capacitor/app`           | Android back button, foreground/background, deep links, text-size resume |
-| `@capacitor/keyboard`      | Keyboard tracking and layout, keyboard appearance                        |
-| `@capacitor/haptics`       | Haptics on controls and status toasts                                    |
-| `@capacitor/preferences`   | Native persistence for the theme and preset                              |
-| `@capacitor/splash-screen` | Lifting the splash once the theme and fonts are in                       |
-| `@capacitor/network`       | Reactive connectivity, with offline and back-online toasts               |
-| `@capacitor/browser`       | External links in the in-app browser                                     |
-| `@capacitor/text-zoom`     | Following the system text size                                           |
-| `@capacitor/clipboard`     | Copy buttons on Android                                                  |
-| `@capacitor/status-bar`    | Only for Android apps that opt out of edge-to-edge                       |
+| Plugin                              | Turns on                                                                 |
+| ----------------------------------- | ------------------------------------------------------------------------ |
+| `@capacitor/core`                   | Status and navigation bar styling (`SystemBars` is bundled in core)      |
+| `@capacitor/app`                    | Android back button, foreground/background, deep links, text-size resume |
+| `@capacitor/keyboard`               | Keyboard tracking and layout, keyboard appearance                        |
+| `@capacitor/haptics`                | Haptics on controls and status toasts                                    |
+| `@capacitor/preferences`            | Native persistence for the theme and preset                              |
+| `@capacitor/splash-screen`          | Lifting the splash once the theme and fonts are in                       |
+| `@capacitor/network`                | Reactive connectivity, with offline and back-online toasts               |
+| `@capacitor/browser`                | External links in the in-app browser                                     |
+| `@capacitor/text-zoom`              | Following the system text size                                           |
+| `@capacitor/clipboard`              | Copy buttons on Android                                                  |
+| `@capawesome/capacitor-file-picker` | The native file picker                                                   |
+| `@capacitor/filesystem`             | Saving files to the device                                               |
+| `@capacitor/status-bar`             | Only for Android apps that opt out of edge-to-edge                       |
 
 ## Set up
 
@@ -120,24 +124,25 @@ and `native.ready` settles once the theme is restored and the splash is gone.
 Each piece is also exported on its own, for apps that want only one or wire them differently.
 Every one returns a teardown (or a store with `destroy()`), and is a no-op outside a native shell.
 
-| Export                 | Does                                                                                                                      |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `syncNativeAppearance` | Bar icon styles from the `surface` role (configurable per bar), legacy Android status bar colour, iOS keyboard appearance |
-| `handleBackButton`     | Android back: closes the top layer, then `onBack`, then history, then `atRoot` (`minimize`, `exit`, `none`)               |
-| `closeTopLayer`        | Closes the innermost open overlay the way Escape does; returns whether something took it                                  |
-| `createNativeKeyboard` | `visible` and `height`, `data-keyboard="open"`, `--ldt-keyboard-height` and `--ldt-keyboard-inset` on `<html>`            |
-| `createHaptics`        | `impact(weight)`, `selection()`, `notify(variant)`, and `install()` for delegated feedback on controls                    |
-| `withHaptics`          | Wraps a toaster so status toasts play the matching notification pattern                                                   |
-| `persistTheme`         | Restores and mirrors a `createTheme` store through `Preferences`; `ready` settles once restored                           |
-| `createAppLifecycle`   | Reactive `active`; pauses playing media in the background; `onPause` and `onResume`                                       |
-| `handleDeepLinks`      | Universal links, app links and custom schemes into the app router (`deepLinkPath` maps the URL)                           |
-| `createNetworkStatus`  | Reactive `connected` and `type`; optional offline and back-online toasts                                                  |
-| `openExternalLinks`    | Other-origin links open in the in-app browser with a themed toolbar                                                       |
-| `hideSplashScreen`     | Lifts the splash after `until`, the fonts and a painted frame; no fade under reduced motion                               |
-| `followSystemTextSize` | Applies the system text size, and re-reads it on resume                                                                   |
-| `bridgeClipboard`      | Routes `navigator.clipboard.writeText` through the Clipboard plugin                                                       |
-| `markNativePlatform`   | `data-native-platform="ios"` or `"android"` on `<html>`, for platform-specific CSS                                        |
-| `nativePlatform`       | `'ios'`, `'android'` or `null`                                                                                            |
+| Export                 | Does                                                                                                                          |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `syncNativeAppearance` | Bar icon styles from the `surface` role (configurable per bar), legacy Android status bar colour, iOS keyboard appearance     |
+| `handleBackButton`     | Android back: closes the top layer, then `onBack`, then history, then `atRoot` (`minimize`, `exit`, `none`)                   |
+| `closeTopLayer`        | Closes the innermost open overlay the way Escape does; returns whether something took it                                      |
+| `createNativeKeyboard` | `visible` and `height`, `data-keyboard="open"`, `--ldt-keyboard-height` and `--ldt-keyboard-inset` on `<html>`                |
+| `createHaptics`        | `impact(weight)`, `selection()`, `notify(variant)`, and `install()` for delegated feedback on controls                        |
+| `withHaptics`          | Wraps a toaster so status toasts play the matching notification pattern                                                       |
+| `persistTheme`         | Restores and mirrors a `createTheme` store through `Preferences`; `ready` settles once restored                               |
+| `createAppLifecycle`   | Reactive `active`; pauses playing media in the background; `onPause` and `onResume`                                           |
+| `handleDeepLinks`      | Universal links, app links and custom schemes into the app router (`deepLinkPath` maps the URL)                               |
+| `createNetworkStatus`  | Reactive `connected` and `type`; optional offline and back-online toasts                                                      |
+| `openExternalLinks`    | Other-origin links open in the in-app browser with a themed toolbar                                                           |
+| `hideSplashScreen`     | Lifts the splash after `until`, the fonts and a painted frame; no fade under reduced motion                                   |
+| `followSystemTextSize` | Applies the system text size, and re-reads it on resume                                                                       |
+| `bridgeClipboard`      | Routes `navigator.clipboard.writeText` through the Clipboard plugin                                                           |
+| `createFiles`          | `pick({ accept, multiple })` resolves `File`s from the native picker or a file input; `save(file)` to Documents or a download |
+| `markNativePlatform`   | `data-native-platform="ios"` or `"android"` on `<html>`, for platform-specific CSS                                            |
+| `nativePlatform`       | `'ios'`, `'android'` or `null`                                                                                                |
 
 ### Back button and overlays
 
@@ -160,6 +165,53 @@ above it. `--ldt-keyboard-height` is there for anything of your own.
 and `TabBar` links — the moments a native control ticks. Plain buttons are left alone on purpose;
 opt one in with `data-haptic` (`data-haptic="medium"` or `"heavy"` for weight). Pass
 `enabled: () => settings.vibration` to honour an in-app setting.
+
+### Files
+
+`setupCapacitor` returns `native.files`, which works without any plugin: in a browser it opens a
+file input and downloads. Pass `FilePicker` from
+[`@capawesome/capacitor-file-picker`](https://capawesome.io/plugins/file-picker/) (Capacitor has
+no official picker) and `Filesystem` for the native versions:
+
+```ts
+import { FilePicker } from '@capawesome/capacitor-file-picker';
+import { Filesystem } from '@capacitor/filesystem';
+
+const native = setupCapacitor({ plugins: { FilePicker, Filesystem /* … */ } });
+
+const picked = await native.files!.pick({ accept: '.pdf,application/pdf', multiple: true });
+await upload(picked); // the same File[] a FileInput's onFiles gives you, as an array
+
+const saved = await native.files!.save(new File([bytes], 'export.pdf'));
+```
+
+Or on its own: `createFiles({ FilePicker, Filesystem, directory })`.
+
+**`pick({ accept, multiple })`** resolves `File` objects either way, so the code that handles a
+`FileInput`'s or a drop zone's files handles these too. `accept` is written as for
+`<input accept>` (MIME types, `image/*`, `.pdf`); the native pickers filter by MIME type, so
+extensions are mapped through `EXTENSION_TYPES` (`acceptToMimeTypes` does it), and an extension
+it does not know turns the filter off rather than make the file unpickable — like the attribute,
+it is a hint, not a check. Dismissing the picker resolves `[]`. Picking needs no permission: the
+system draws the picker. Natively each file is read into memory through its web view URL; in a
+browser the hidden file input must be opened from a click or key handler, like any file input,
+and resolves `[]` on its `cancel` event.
+
+**`save(file, { folder, overwrite })`** writes a `File` or `{ blob, name }` with `Filesystem` and
+resolves `{ method: 'filesystem', uri, path, directory }`; in a browser it downloads and resolves
+`{ method: 'download', name }`. A taken name becomes `name (1).ext` unless `overwrite: true`.
+The default directory is `DOCUMENTS`:
+
+- **iOS**: the app's Documents folder. It appears in the Files app under the app's name once
+  `Info.plist` sets `UIFileSharingEnabled` and `LSSupportsOpeningDocumentsInPlace` to `YES`.
+- **Android**: the shared Documents folder, which every file manager shows. Android 11 and newer
+  need no permission for files the app creates there. Android 10 and older need storage access:
+  `save` checks and requests it, and rejects with `FilePermissionError` if the user refuses (add
+  `WRITE_EXTERNAL_STORAGE` to the manifest, and `requestLegacyExternalStorage` for Android 10).
+
+Pass `directory: 'DATA'` (or any `Directory` value) to keep files private to the app instead.
+Files cross the native bridge as base64, so keep them to what fits in memory. Write failures
+reject with the plugin's error; on the server `pick` resolves `[]` and `save` `{ method: 'none' }`.
 
 ### Styles
 

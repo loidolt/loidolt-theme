@@ -120,5 +120,45 @@ export interface ClipboardPlugin {
   write(options: { string?: string }): Promise<void>;
 }
 
+/** A file `FilePickerPlugin.pickFiles` returns. */
+export interface PickedNativeFile {
+  name: string;
+  mimeType: string;
+  size: number;
+  /** Milliseconds since the epoch. */
+  modifiedAt?: number;
+  /** Android and iOS: the file's path on the device. */
+  path?: string;
+  /** A URL the web view can load the file from. */
+  webPath?: string;
+  /** Web only: the file itself. */
+  blob?: Blob;
+}
+
+/** `@capawesome/capacitor-file-picker`. */
+export interface FilePickerPlugin {
+  pickFiles(options?: {
+    types?: string[];
+    limit?: number;
+    readData?: boolean;
+  }): Promise<{ files: PickedNativeFile[] }>;
+}
+
+/**
+ * `@capacitor/filesystem`, for the files these adapters write. `directory` is one of the
+ * plugin's `Directory` values (`'DOCUMENTS'`, `'CACHE'`, …); natively, `data` is base64.
+ */
+export interface FilesystemPlugin {
+  writeFile(options: {
+    path: string;
+    data: string | Blob;
+    directory?: string;
+    recursive?: boolean;
+  }): Promise<{ uri: string }>;
+  stat(options: { path: string; directory?: string }): Promise<{ uri: string }>;
+  checkPermissions(): Promise<{ publicStorage: string }>;
+  requestPermissions(): Promise<{ publicStorage: string }>;
+}
+
 /** Undoes whatever the adapter installed. Safe to call twice. */
 export type Teardown = () => void;
