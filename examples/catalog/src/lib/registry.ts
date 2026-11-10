@@ -687,6 +687,21 @@ export const entries: Entry[] = [
     group: 'Overlays',
     summary: 'App-level tooltip grouping and delays.',
   },
+  {
+    slug: 'shortcut-help',
+    name: 'ShortcutHelp',
+    group: 'Overlays',
+    summary:
+      'A dialog listing every keyboard shortcut in a `createCommands()` registry, opened with `?`.',
+    notes: [
+      '`createCommands()` is the registry behind it: `register({ id, label, shortcut, handler, enabled, group })` returns an unregister function, `execute(id)` runs a command from a button or menu, and `list()` / `groups()` feed this dialog or a native menu bar. `$effect(() => commands.listen())` handles keydown window-wide; `{@attach commands.listen}` scopes it to an element.',
+      'Shortcuts are written `Mod+Shift+S`, `Alt+ArrowDown`, `?` or `F8`. `Mod` is Command on macOS and iOS and Control elsewhere; other modifiers match exactly. A symbol key such as `?` ignores Shift, and a non-Latin layout falls back to the physical key, so `Mod+S` still works in Cyrillic.',
+      'Keys typed into a text field, select or contenteditable are left alone unless the command sets `allowInInputs`, as do keys pressed during IME composition. A disabled command does not run and does not swallow its key.',
+      'When two commands share a shortcut, the one registered last wins, and the earlier one returns when it unregisters. A duplicate `id` throws.',
+      '`formatShortcut` prints `⇧⌘S` on a Mac and `Ctrl+Shift+S` elsewhere; `describeShortcut` gives the words a screen reader should hear, and `toAccelerator` the `CmdOrCtrl+Shift+S` form Tauri and Electron menus take. `commands.version` and `subscribe` tell a native menu when to rebuild.',
+      'A single-character shortcut like `?` can be triggered by speech input by accident (WCAG 2.1.4). Offer a way to turn it off: `shortcut={null}` registers nothing, as the switch in this demo does.',
+    ],
+  },
 
   {
     slug: 'topbar',
