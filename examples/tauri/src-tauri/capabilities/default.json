@@ -12,6 +12,9 @@
     "core:window:allow-start-dragging",
     "core:window:allow-unminimize",
     "deep-link:default",
+    "dialog:default",
+    "fs:allow-read-file",
+    "fs:allow-write-file",
     "notification:default",
     "os:default"
   ]

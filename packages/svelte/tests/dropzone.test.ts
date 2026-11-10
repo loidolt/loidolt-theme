@@ -425,4 +425,27 @@ describe('Dropzone', () => {
       expect(onFiles).not.toHaveBeenCalled();
     });
   });
+  describe('external dragging', () => {
+    it('shows the window overlay for a drag reported from outside the page', async () => {
+      const onFiles = vi.fn();
+      const { container, rerender } = render(Dropzone, {
+        props: { externalDragging: true, label: 'Drop anywhere', onFiles },
+      });
+      expect(root(container)).toHaveAttribute('data-window-dragging');
+      expect(container.querySelector('.ldt-dropzone__overlay')).toHaveTextContent('Drop anywhere');
+      expect((await scan(container)).violations).toEqual([]);
+      await rerender({ externalDragging: false, label: 'Drop anywhere', onFiles });
+      expect(root(container)).not.toHaveAttribute('data-window-dragging');
+      expect(container.querySelector('.ldt-dropzone__overlay')).toBeNull();
+    });
+
+    it('combines with the window target, and stays hidden while disabled', async () => {
+      const { container, rerender } = render(Dropzone, {
+        props: { window: true, externalDragging: true },
+      });
+      expect(root(container)).toHaveAttribute('data-window-dragging');
+      await rerender({ window: true, externalDragging: true, disabled: true });
+      expect(root(container)).not.toHaveAttribute('data-window-dragging');
+    });
+  });
 });

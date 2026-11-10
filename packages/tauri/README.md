@@ -38,6 +38,7 @@ npm install @tauri-apps/plugin-os
 | `@tauri-apps/plugin-notification`           | OS notifications from Rust, in `desktop.notifications`           |
 | `@tauri-apps/api` (`event`, `tray`, `menu`) | Second launches, and a tray icon with a menu                     |
 | `@tauri-apps/plugin-deep-link`              | URLs that open the app, routed into it                           |
+| `@tauri-apps/plugin-dialog`, `plugin-fs`    | Native open and save dialogs, and files dropped on the window    |
 | `@tauri-apps/api` (`menu`)                  | The native menu bar, built from a command registry               |
 
 ## Set up
@@ -276,6 +277,116 @@ click on the icon, and then the menu opens on a right click only.
 `desktop.tray.update({ tooltip, title, icon, items })` changes what it is given, and teardown
 removes the icon and frees its menu.
 
+## Files
+
+Native open and save dialogs, and files dropped on the window, both handed over as `File`s: the
+same objects a `Dropzone` or `FileInput` gives you, so one upload path serves the browser and the
+window.
+
+```sh
+npm install @tauri-apps/plugin-dialog @tauri-apps/plugin-fs
+```
+
+Register both plugins in `src-tauri/src/lib.rs` (`.plugin(tauri_plugin_dialog::init())` and
+`.plugin(tauri_plugin_fs::init())`) and allow them in the capability file:
+
+```json
+"permissions": ["core:default", "dialog:default", "fs:allow-read-file", "fs:allow-write-file"]
+```
+
+No fs scope is needed for this: a path chosen in a dialog, and a path dropped on the window, is
+added to the fs scope at run time by the plugins themselves. (`scopeDroppedPaths: false` under
+`plugins.fs` in `tauri.conf.json` turns that off for drops.) Grant wider scopes only for paths the
+app reads on its own.
+
+```svelte
+<script lang="ts">
+  import { getCurrentWebview } from '@tauri-apps/api/webview';
+  import * as dialog from '@tauri-apps/plugin-dialog';
+  import * as fs from '@tauri-apps/plugin-fs';
+  import { Dropzone } from '@loidolt/theme-svelte';
+  import { setupTauri } from '@loidolt/theme-tauri';
+
+  let dropzone = $state<ReturnType<typeof Dropzone>>();
+
+  const desktop = setupTauri({
+    plugins: { dialog, fs, webview: getCurrentWebview },
+    fileDrop: { target: () => dropzone },
+  });
+
+  async function openFiles() {
+    const files = (await desktop.files?.pick({ accept: '.pdf,image/*', multiple: true })) ?? [];
+    dropzone?.addFiles(files);
+  }
+</script>
+
+<Dropzone
+  bind:this={dropzone}
+  accept=".pdf,image/*"
+  multiple
+  window
+  externalDragging={desktop.fileDrop?.dragging}
+  onFiles={upload}
+/>
+<button onclick={openFiles}>Open…</button>
+<button onclick={() => desktop.files?.save(new File([bytes], 'export.pdf'))}>Save…</button>
+```
+
+### Open and save
+
+`desktop.files` (or `createDesktopFiles({ dialog, fs })` on its own) has the same shape as
+`createFiles` in `@loidolt/theme-capacitor`, so an app can treat both alike:
+
+- **`pick({ accept, multiple, title, defaultPath, filters })`** opens the native dialog and resolves
+  the chosen files as `File`s, named and typed by their extension, each with the `path` it was read
+  from. `accept` is written as for `<input accept>` and becomes the dialog's filters (`.pdf` →
+  `pdf`, `image/*` → every known image extension; `acceptToFilters` does the same on its own); a
+  MIME type it has no extension for means no filter rather than nothing pickable. `filters`, as
+  Tauri takes them, replaces it. Dismissing the dialog resolves `[]`.
+- **`pickPaths({ …, directory })`** resolves the chosen paths without reading them, folders with
+  `directory: true`. A browser has no paths to give, so it resolves `[]` there.
+- **`save(file, { defaultPath, filters, title })`** takes a `File` or `{ blob, name }`, opens the
+  save dialog with the name filled in (and, by default, a filter for its extension, which on macOS
+  keeps the extension on whatever the user types), and writes it there. It resolves
+  `{ method: 'filesystem', path }`, or `{ method: 'cancelled' }` when the dialog is dismissed.
+
+In a browser `pick` opens a hidden file input (call it from a click) and `save` downloads,
+resolving `{ method: 'download', name }`. In a window without the plugins `pick` uses the web
+view's own file input, and `save` throws, since a web view has no download manager. On the server
+`pick` resolves `[]` and `save` `{ method: 'none' }`. `files: false` leaves `desktop.files` out.
+
+**Large files.** `readFile` and `writeFile` cross the IPC bridge whole, so a picked, dropped or
+saved file is held in memory in full, once as bytes and once as the `File`. That is fine for
+documents and images; for video, archives or anything in the hundreds of megabytes, use
+`pickPaths()` or `onPaths` and hand the paths to a Rust command that streams them.
+
+### Files dropped on the window
+
+A Tauri window takes files dragged in from the OS before the page sees them, so the page's HTML
+drag and drop events never fire for them, and a `Dropzone` alone never hears of the drop.
+`fileDrop` (or `createFileDrop({ webview, fs, … })` on its own) listens to the web view's drag and
+drop event instead. Pass `getCurrentWebview` from `@tauri-apps/api/webview` uncalled, as with
+`window`.
+
+- **`target`** is where the files go: a `Dropzone` instance (`bind:this`), or a function returning
+  one, read at drop time. Its `addFiles()` runs them through its own `accept`, `maxSize` and
+  `maxFiles`, its messages and its `onFiles`, as for a drop of its own.
+- **`desktop.fileDrop.dragging`** is reactive while files are over the window, and `paths` holds
+  them. Pass it to the `Dropzone`'s `externalDragging` and it shows the same window overlay as for
+  a browser drag.
+- **`onFiles`** gets the read files first, **`onPaths`** the raw paths before anything is read,
+  and **`onError`** each path that could not be read, such as a dropped folder; the rest still
+  arrive.
+
+Keep `window` on the `Dropzone`: in a browser that is what takes drops anywhere on the page, and in
+a window it does nothing, because the HTML events do not fire there.
+
+**`dragDropEnabled`.** The window's `dragDropEnabled` (on by default in `tauri.conf.json`) is what
+routes OS drops to Tauri. It also stops HTML drag and drop of any kind inside the page on Windows,
+which breaks sortable lists and the like. To keep HTML drag and drop instead, set
+`"dragDropEnabled": false` on the window: Tauri then reports no drops, `fileDrop` stays idle, and
+the `Dropzone`'s own `window` handling takes the drop as in a browser, as `File`s without paths.
+
 ## Menu bar
 
 The native menu bar, built from the app's command registry (`createCommands` from
@@ -383,6 +494,11 @@ Each piece is also exported on its own. Every one is a no-op outside a Tauri win
 | `handleDeepLinks`      | Links that open the app, at startup and while it runs, into its router                      |
 | `deepLinkPath`         | `myapp://projects/42` → `/projects/42`                                                      |
 | `createTray`           | A tray icon with a menu, `update()` and `destroy()`                                         |
+| `createDesktopFiles`   | `pick()`, `pickPaths()`, `save()`: native dialogs, or a file input and a download           |
+| `createFileDrop`       | Files dropped on the window, as `File`s into a `Dropzone`, with a reactive `dragging`       |
+| `acceptToFilters`      | An `accept` string as the dialog filters Tauri takes                                        |
+| `readDesktopFiles`     | Paths read into `File`s typed by extension (`readDesktopFile` for one)                      |
+| `mimeTypeOf`           | The MIME type for a file name by its extension                                              |
 | `createMenuBar`        | The native menu bar from a command registry, kept in step; `refresh()` and `destroy()`      |
 | `menuAccelerator`      | The accelerator a command gets in the menu bar, or `null` for a plain key                   |
 | `isMenuBarModule`      | Whether a `menu` module can build a menu bar (not only a tray menu)                         |

@@ -44,6 +44,13 @@ quickest check that the Rust side builds.
   pauses and resumes, and quits. Run `npm run tauri:dev`, then launch the binary again with a file
   path after it (`src-tauri/target/debug/theme-tauri-example notes.md`) to see the second launch
   arrive in the first window.
+- Files: `tauri-plugin-dialog` and `tauri-plugin-fs` registered in `src-tauri/src/lib.rs`, with
+  `dialog:default`, `fs:allow-read-file` and `fs:allow-write-file` in the capability file, and
+  `@tauri-apps/plugin-dialog`, `@tauri-apps/plugin-fs` and `getCurrentWebview` passed to
+  `setupTauri`. Drop text files anywhere on the window and they land in the `Dropzone` (with its
+  window overlay while you drag), or pick them with "Open files…" through the native open dialog;
+  "Save the list…" writes the received names through the native save dialog. In a browser the same
+  `Dropzone` takes the page's own drops, and the buttons use a file input and a download.
 - The menu bar: a `createCommands` registry passed as `menuBar: { commands }`, with
   `@tauri-apps/api/menu` (already in `core:default`). Its groups become File, Edit and View menus
   around the standard macOS app, Edit and Window menus; Reset the count greys out at zero, and

@@ -198,6 +198,48 @@ export function fakeWindow(options: { fullscreen?: boolean } = {}) {
   };
 }
 
+/* Files: the dialog and fs plugins and the web view's drag and drop event. */
+
+/** `@tauri-apps/plugin-dialog`, answering every open and save with what it is told. */
+export function fakeDialog(
+  picked: string | string[] | null = null,
+  savedTo: string | null = '/Users/sam/Documents/export.pdf'
+) {
+  return {
+    open: vi.fn(async (_options?: Record<string, unknown>) => picked),
+    save: vi.fn(async (_options?: Record<string, unknown>) => savedTo),
+  };
+}
+
+/** `@tauri-apps/plugin-fs` over an in-memory disk of path → text. */
+export function fakeFs(disk: Record<string, string> = {}) {
+  const written = new Map<string, Uint8Array>();
+  return {
+    readFile: vi.fn(async (path: string) => {
+      if (!(path in disk)) throw new Error(`No such file: ${path}`);
+      return new TextEncoder().encode(disk[path]);
+    }),
+    writeFile: vi.fn(async (path: string, data: Uint8Array) => {
+      written.set(path, data);
+    }),
+    written,
+  };
+}
+
+/** The web view from `getCurrentWebview()`; `fire` stands in for an OS drag. */
+export function fakeWebview() {
+  let handler: ((event: { payload: unknown }) => void) | undefined;
+  const unlisten = vi.fn();
+  return {
+    onDragDropEvent: vi.fn(async (next: (event: { payload: never }) => void) => {
+      handler = next as (event: { payload: unknown }) => void;
+      return unlisten;
+    }),
+    fire: (payload: unknown) => handler?.({ payload }),
+    unlisten,
+  };
+}
+
 /*
  * The menu bar: `@tauri-apps/api/menu` with `Menu`, `Submenu` and `MenuItem`, and the app and
  * window menu bars they are installed into.

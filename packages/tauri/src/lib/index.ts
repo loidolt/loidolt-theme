@@ -15,6 +15,27 @@ export { filesFromArgs, handleSecondInstance } from './single-instance.js';
 export type { SecondInstance, SingleInstanceOptions } from './single-instance.js';
 export { createTray } from './tray.js';
 export type { Tray, TrayContent, TrayMenuItem, TrayOptions } from './tray.js';
+export {
+  acceptToFilters,
+  baseName,
+  createDesktopFiles,
+  EXTENSION_TYPES,
+  mimeTypeOf,
+  readDesktopFile,
+  readDesktopFiles,
+} from './files.js';
+export type {
+  DesktopFile,
+  DesktopFiles,
+  DesktopFilesOptions,
+  PickOptions,
+  PickPathsOptions,
+  SaveableFile,
+  SaveOptions,
+  SaveOutcome,
+} from './files.js';
+export { createFileDrop } from './file-drop.svelte.js';
+export type { FileDrop, FileDropOptions, FileDropTarget } from './file-drop.svelte.js';
 export { createMenuBar, isMenuBarModule, menuAccelerator } from './menu-bar.svelte.js';
 export type {
   MenuBar,
@@ -39,6 +60,14 @@ export type {
   WindowAppearanceOptions,
   WindowChromeOptions,
 } from './window.svelte.js';
+export type {
+  DialogFilter,
+  DialogPlugin,
+  DragDropPayload,
+  FsPlugin,
+  PhysicalPoint,
+  WebviewPlugin,
+} from './types.js';
 export type {
   AppMenuHandle,
   MenuBarModule,
