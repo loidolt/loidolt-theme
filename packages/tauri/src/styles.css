@@ -24,3 +24,12 @@
   -webkit-user-select: none;
   user-select: none;
 }
+
+/*
+ * An overlay title bar with the macOS window buttons in the topbar's own row (`insetWindowChrome`
+ * with `trafficLights: 'beside'`): the bar alone is inset from the left to clear them. The
+ * attribute is gone in full screen, where the buttons hide.
+ */
+:where([data-tauri-platform][data-tauri-traffic-lights='beside']) :where(.ldt-topbar) {
+  --ldt-safe-left: var(--ldt-tauri-traffic-lights, 78px);
+}

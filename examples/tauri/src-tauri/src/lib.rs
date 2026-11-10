@@ -33,6 +33,8 @@ pub fn run() {
         .plugin(tauri_plugin_deep_link::init())
         // `@tauri-apps/plugin-os` on the JS side, passed to `setupTauri({ plugins: { os } })`.
         .plugin(tauri_plugin_os::init())
+        // `@tauri-apps/plugin-notification`, passed as `plugins: { notification }`.
+        .plugin(tauri_plugin_notification::init())
         .setup(|_app| {
             // Windows and Linux register the scheme at run time (macOS does it from the bundle).
             #[cfg(any(windows, target_os = "linux"))]

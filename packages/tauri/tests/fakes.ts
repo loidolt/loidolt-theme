@@ -54,12 +54,43 @@ export function leaveTauri(): void {
   delete scope.__TAURI_INTERNALS__;
   delete scope.isTauri;
   delete (navigator as { maxTouchPoints?: number }).maxTouchPoints;
+  delete (window as { Notification?: unknown }).Notification;
   vi.restoreAllMocks();
 }
 
 /** `@tauri-apps/plugin-os`, reporting the given OS type. */
 export function fakeOs(type: 'linux' | 'windows' | 'macos' | 'ios' | 'android' = 'macos') {
   return { type: vi.fn(() => type) };
+}
+
+/** `@tauri-apps/plugin-notification`, answering the permission question as told. */
+export function fakeNotification(
+  granted = true,
+  answer: 'granted' | 'denied' | 'default' = 'granted'
+) {
+  return {
+    isPermissionGranted: vi.fn(async () => granted),
+    requestPermission: vi.fn(async () => answer),
+    sendNotification: vi.fn(),
+  };
+}
+
+/** Installs a Web Notifications API in the given state; `leaveTauri` removes it. */
+export function fakeWebNotification(
+  permission: 'granted' | 'denied' | 'default' = 'default',
+  answer: 'granted' | 'denied' | 'default' = 'granted'
+) {
+  const shown: Array<{ title: string; options?: object }> = [];
+  const api = vi.fn(function (this: unknown, title: string, options?: object) {
+    shown.push({ title, options });
+  }) as unknown as { permission: string; requestPermission: ReturnType<typeof vi.fn> };
+  api.permission = permission;
+  api.requestPermission = vi.fn(async () => {
+    api.permission = answer;
+    return answer;
+  });
+  (window as unknown as Record<string, unknown>).Notification = api;
+  return { api, shown };
 }
 
 /** `@tauri-apps/api/event`, with `emit` standing in for Rust. */
@@ -138,3 +169,31 @@ export function fakeTrayModules() {
 
 /** Lets pending promise callbacks run. */
 export const flush = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+
+/**
+ * The window from `getCurrentWindow()`. `resize()` fires the `onResized` handlers, after setting
+ * what `isFullscreen()` reports.
+ */
+export function fakeWindow(options: { fullscreen?: boolean } = {}) {
+  let fullscreen = options.fullscreen ?? false;
+  const handlers = new Set<() => void>();
+  const unlisten = vi.fn();
+  return {
+    setBackgroundColor: vi.fn(async (_color: string) => {}),
+    setTheme: vi.fn(async (_theme?: 'light' | 'dark' | null) => {}),
+    isFullscreen: vi.fn(async () => fullscreen),
+    onResized: vi.fn(async (handler: () => void) => {
+      handlers.add(handler);
+      return () => {
+        handlers.delete(handler);
+        unlisten();
+      };
+    }),
+    show: vi.fn(async () => {}),
+    unlisten,
+    resize(next: { fullscreen: boolean }) {
+      fullscreen = next.fullscreen;
+      for (const handler of handlers) handler();
+    },
+  };
+}

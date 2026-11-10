@@ -1,3 +1,5 @@
+import type { getCurrentWindow } from '@tauri-apps/api/window';
+import type * as notification from '@tauri-apps/plugin-notification';
 import type * as event from '@tauri-apps/api/event';
 import type * as menu from '@tauri-apps/api/menu';
 import type * as tray from '@tauri-apps/api/tray';
@@ -16,6 +18,18 @@ describe('the real modules fit the adapters', () => {
   it('fits the os plugin', () => {
     expectTypeOf<typeof os>().toExtend<Shapes.OsPlugin>();
     expectTypeOf<typeof os>().toExtend<NonNullable<TauriPlugins['os']>>();
+  });
+
+  it('fits the window from getCurrentWindow()', () => {
+    type CurrentWindow = ReturnType<typeof getCurrentWindow>;
+    expectTypeOf<CurrentWindow>().toExtend<Shapes.WindowPlugin>();
+    expectTypeOf<CurrentWindow>().toExtend<NonNullable<TauriPlugins['window']>>();
+    expectTypeOf<typeof getCurrentWindow>().toExtend<NonNullable<TauriPlugins['window']>>();
+  });
+
+  it('fits the notification plugin', () => {
+    expectTypeOf<typeof notification>().toExtend<Shapes.NotificationPlugin>();
+    expectTypeOf<typeof notification>().toExtend<NonNullable<TauriPlugins['notification']>>();
   });
 
   it('fits the event module', () => {

@@ -32,6 +32,10 @@ quickest check that the Rust side builds.
 - `setupTauri({ plugins: { os } })` in the root component, with `@tauri-apps/plugin-os` passed in
   (and `tauri-plugin-os` registered in `src-tauri/src/lib.rs`, allowed in
   `src-tauri/capabilities/default.json`).
+- `desktop.notifications`, with `@tauri-apps/plugin-notification` passed in (`tauri-plugin-notification`
+  registered and `notification:default` allowed): a button asks for permission on the click and
+  sends "Export finished" three seconds later, so you can switch away and see it arrive. In a
+  browser the same button goes through the Web Notifications API, or a toast without it.
 - Running in the background: `tauri-plugin-single-instance` registered first in
   `src-tauri/src/lib.rs`, focusing the window and emitting each second launch (and, on macOS, files
   opened from the Finder) for `singleInstance`; `tauri-plugin-deep-link` with the
@@ -42,3 +46,12 @@ quickest check that the Rust side builds.
   arrive in the first window.
 - The platform badge reads `desktop.platform`: `null` in a browser, the OS in a window.
 - `@loidolt/theme-tauri/styles.css` after the theme's stylesheet.
+- Window chrome: `getCurrentWindow` and the `createTheme` store passed to `setupTauri`, with
+  `chrome: { titleBar: 'overlay' }`. In `src-tauri/tauri.conf.json` the window starts hidden
+  (`"visible": false`) in the theme's launch colour (`"backgroundColor"`, which is
+  `windowBackground('light')`), with an overlay title bar (`"titleBarStyle": "Overlay"`,
+  `"hiddenTitle": true`). `setupTauri` paints the window in the theme and then shows it, so it
+  opens without a white flash; switch the theme and the window background and appearance follow.
+- On macOS the page clears the window buttons through `--ldt-safe-top`, which full screen gives
+  back, and `<Topbar dragRegion>` moves the window. The window permissions this needs are in
+  `src-tauri/capabilities/default.json`.

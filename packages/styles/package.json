@@ -19,16 +19,21 @@
     "./components/*": "./src/components/*.css",
     "./fonts": "./src/fonts.css",
     "./fonts/*": "./src/fonts/*",
+    "./standalone.css": "./dist/standalone.css",
+    "./standalone-core.css": "./dist/standalone-core.css",
+    "./fonts-embedded.css": "./dist/fonts-embedded.css",
     "./package.json": "./package.json"
   },
   "files": [
-    "src"
+    "src",
+    "dist"
   ],
   "sideEffects": [
     "**/*.css"
   ],
   "scripts": {
-    "build": "node -e \"console.log('theme-styles: source CSS is publish-ready')\""
+    "build": "node scripts/build-standalone.mjs",
+    "prepack": "npm run build"
   },
   "dependencies": {
     "@loidolt/theme-tokens": "^0.11.1"

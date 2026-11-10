@@ -37,6 +37,30 @@ describe('on the server', () => {
     native.destroy();
   });
 
+  it('shares nothing', async () => {
+    const share = vi.fn();
+    const sharing = lib.createShare({ Share: { share, canShare: vi.fn() } });
+    expect(await sharing.share({ url: 'https://example.com/' })).toEqual({
+      method: 'none',
+      cancelled: false,
+    });
+    expect(await sharing.canShare()).toBe(false);
+    expect(share).not.toHaveBeenCalled();
+  });
+
+  it('picks and saves nothing', async () => {
+    const pickFiles = vi.fn();
+    const writeFile = vi.fn();
+    const files = lib.createFiles({
+      FilePicker: { pickFiles },
+      Filesystem: { writeFile } as unknown as lib.FilesystemPlugin,
+    });
+    expect(await files.pick({ accept: '.pdf' })).toEqual([]);
+    expect(await files.save({ blob: new Blob(['x']), name: 'a.txt' })).toEqual({ method: 'none' });
+    expect(pickFiles).not.toHaveBeenCalled();
+    expect(writeFile).not.toHaveBeenCalled();
+  });
+
   it('builds the Capacitor config', () => {
     expect(themeConfig().plugins.SystemBars.insetsHandling).toBe('css');
   });

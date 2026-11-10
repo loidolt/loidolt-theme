@@ -75,6 +75,21 @@ export interface TabBarItem {
   icon?: Snippet;
 }
 
+/** Where one `StageStepper` step stands. */
+export type StageState = 'pending' | 'running' | 'done' | 'skipped' | 'failed';
+
+/** One named step of a `StageStepper` run. */
+export interface StageStep {
+  /** Stable key: a step whose `state` changes under the same id is announced. */
+  id: string;
+  label: string;
+  state: StageState;
+  /** 0 to 100, the scale `Progress` defaults to. Omit for a step with no measurable progress. */
+  progress?: number;
+  /** A secondary line: what the step does, or what went wrong. */
+  description?: string;
+}
+
 /** One step in a breadcrumb trail. The final crumb is the current page and takes no `href`. */
 export interface Crumb {
   label: string;
@@ -158,4 +173,19 @@ export type MenuEntry<T extends string = string> =
  */
 export interface TriggerChildProps {
   props: Record<string, unknown>;
+}
+
+/**
+ * A rectangle drawn over an `ImageViewer` image, in the image's natural pixels (so it stays put
+ * whatever the zoom). `label` is its accessible name — it is announced, not drawn.
+ */
+export interface ImageRegion {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  label: string;
+  /** Status colour of the outline; color is never the only signal, so say it in `label` too. */
+  variant?: BadgeVariant;
 }

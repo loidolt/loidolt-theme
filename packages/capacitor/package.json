@@ -42,13 +42,16 @@
     "@capacitor/browser": "^8.0.0",
     "@capacitor/clipboard": "^8.0.0",
     "@capacitor/core": "^8.0.0",
+    "@capacitor/filesystem": "^8.0.0",
     "@capacitor/haptics": "^8.0.0",
     "@capacitor/keyboard": "^8.0.0",
     "@capacitor/network": "^8.0.0",
     "@capacitor/preferences": "^8.0.0",
+    "@capacitor/share": "^8.0.0",
     "@capacitor/splash-screen": "^8.0.0",
     "@capacitor/status-bar": "^8.0.0",
     "@capacitor/text-zoom": "^8.0.0",
+    "@capawesome/capacitor-file-picker": "^8.1.0",
     "svelte": "^5.33.0"
   },
   "peerDependenciesMeta": {
@@ -59,6 +62,9 @@
       "optional": true
     },
     "@capacitor/clipboard": {
+      "optional": true
+    },
+    "@capacitor/filesystem": {
       "optional": true
     },
     "@capacitor/haptics": {
@@ -73,6 +79,9 @@
     "@capacitor/preferences": {
       "optional": true
     },
+    "@capacitor/share": {
+      "optional": true
+    },
     "@capacitor/splash-screen": {
       "optional": true
     },
@@ -81,6 +90,9 @@
     },
     "@capacitor/text-zoom": {
       "optional": true
+    },
+    "@capawesome/capacitor-file-picker": {
+      "optional": true
     }
   },
   "devDependencies": {
@@ -88,13 +100,16 @@
     "@capacitor/browser": "^8.0.5",
     "@capacitor/clipboard": "^8.0.1",
     "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
     "@capacitor/haptics": "^8.0.2",
     "@capacitor/keyboard": "^8.0.6",
     "@capacitor/network": "^8.0.1",
     "@capacitor/preferences": "^8.0.1",
+    "@capacitor/share": "^8.0.3",
     "@capacitor/splash-screen": "^8.0.2",
     "@capacitor/status-bar": "^8.0.4",
     "@capacitor/text-zoom": "^8.0.1",
+    "@capawesome/capacitor-file-picker": "^8.1.1",
     "@sveltejs/package": "^2.5.8",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@testing-library/jest-dom": "^6.8.0",

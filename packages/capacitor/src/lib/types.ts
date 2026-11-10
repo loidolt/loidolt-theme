@@ -120,5 +120,58 @@ export interface ClipboardPlugin {
   write(options: { string?: string }): Promise<void>;
 }
 
+/** `@capacitor/share`. */
+export interface SharePlugin {
+  canShare(): Promise<{ value: boolean }>;
+  share(options: {
+    title?: string;
+    text?: string;
+    url?: string;
+    files?: string[];
+    dialogTitle?: string;
+  }): Promise<{ activityType?: string }>;
+}
+
+/**
+ * `@capacitor/filesystem`, for the files these adapters write. `directory` is one of the
+ * plugin's `Directory` values (`'CACHE'`, `'DOCUMENTS'`, …); natively, `data` is base64.
+ */
+export interface FilesystemPlugin {
+  writeFile(options: {
+    path: string;
+    data: string | Blob;
+    directory?: string;
+    recursive?: boolean;
+  }): Promise<{ uri: string }>;
+  rmdir(options: { path: string; directory?: string; recursive?: boolean }): Promise<void>;
+  stat(options: { path: string; directory?: string }): Promise<{ uri: string }>;
+  checkPermissions(): Promise<{ publicStorage: string }>;
+  requestPermissions(): Promise<{ publicStorage: string }>;
+}
+
+/** A file `FilePickerPlugin.pickFiles` returns. */
+export interface PickedNativeFile {
+  name: string;
+  mimeType: string;
+  size: number;
+  /** Milliseconds since the epoch. */
+  modifiedAt?: number;
+  /** Android and iOS: the file's path on the device. */
+  path?: string;
+  /** A URL the web view can load the file from. */
+  webPath?: string;
+  /** Web only: the file itself. */
+  blob?: Blob;
+}
+
+/** `@capawesome/capacitor-file-picker`. */
+export interface FilePickerPlugin {
+  pickFiles(options?: {
+    types?: string[];
+    limit?: number;
+    readData?: boolean;
+  }): Promise<{ files: PickedNativeFile[] }>;
+}
+
 /** Undoes whatever the adapter installed. Safe to call twice. */
 export type Teardown = () => void;
