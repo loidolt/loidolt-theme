@@ -3,6 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { setupCapacitor } from '../src/lib/index.js';
 import {
   fakeApp,
+  fakeFilePicker,
+  fakeFilesystem,
   fakeHaptics,
   fakeKeyboard,
   fakeNetwork,
@@ -18,6 +20,8 @@ function plugins() {
     App: fakeApp(),
     Browser: { open: vi.fn(async () => {}) },
     Clipboard: { write: vi.fn(async () => {}) },
+    FilePicker: fakeFilePicker(),
+    Filesystem: fakeFilesystem(),
     Haptics: fakeHaptics(),
     Keyboard: fakeKeyboard(),
     Network: fakeNetwork(),
@@ -83,6 +87,11 @@ describe('setupCapacitor', () => {
     await native.share?.share({ text: 'Hello' });
     expect(all.Share.share).toHaveBeenCalledWith(expect.objectContaining({ text: 'Hello' }));
 
+    await native.files?.save({ blob: new Blob(['x']), name: 'notes.txt' });
+    expect(all.Filesystem.writeFile).toHaveBeenCalledOnce();
+    expect(await native.files?.pick()).toEqual([]);
+    expect(all.FilePicker.pickFiles).toHaveBeenCalledOnce();
+
     native.destroy();
     await flush();
     expect(all.App.count('backButton')).toBe(0);
@@ -106,6 +115,7 @@ describe('setupCapacitor', () => {
       textSize: false,
       clipboard: false,
       share: false,
+      files: false,
     });
     await native.ready;
     await flush();
@@ -119,6 +129,7 @@ describe('setupCapacitor', () => {
     expect(native.network).toBeUndefined();
     expect(native.lifecycle).toBeUndefined();
     expect(native.share).toBeUndefined();
+    expect(native.files).toBeUndefined();
     native.destroy();
   });
 
@@ -129,6 +140,7 @@ describe('setupCapacitor', () => {
     await native.ready;
     expect(native.toaster).toBe(toaster);
     expect(native.share).toBeDefined();
+    expect(native.files).toBeDefined();
     native.destroy();
   });
 });

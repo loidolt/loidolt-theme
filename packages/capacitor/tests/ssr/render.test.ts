@@ -48,6 +48,19 @@ describe('on the server', () => {
     expect(share).not.toHaveBeenCalled();
   });
 
+  it('picks and saves nothing', async () => {
+    const pickFiles = vi.fn();
+    const writeFile = vi.fn();
+    const files = lib.createFiles({
+      FilePicker: { pickFiles },
+      Filesystem: { writeFile } as unknown as lib.FilesystemPlugin,
+    });
+    expect(await files.pick({ accept: '.pdf' })).toEqual([]);
+    expect(await files.save({ blob: new Blob(['x']), name: 'a.txt' })).toEqual({ method: 'none' });
+    expect(pickFiles).not.toHaveBeenCalled();
+    expect(writeFile).not.toHaveBeenCalled();
+  });
+
   it('builds the Capacitor config', () => {
     expect(themeConfig().plugins.SystemBars.insetsHandling).toBe('css');
   });

@@ -97,7 +97,11 @@ await native.ready; // theme restored, splash gone`;
     ['@capacitor/text-zoom', 'Following the system text size'],
     ['@capacitor/clipboard', 'Copy buttons on Android'],
     ['@capacitor/share', 'The native share sheet'],
-    ['@capacitor/filesystem', 'Sharing a File or Blob natively (written to the cache first)'],
+    [
+      '@capacitor/filesystem',
+      'Saving files to the device, and sharing a File or Blob natively (written to the cache first)',
+    ],
+    ['@capawesome/capacitor-file-picker', 'The native file picker'],
     ['@capacitor/status-bar', 'Only for Android apps that opt out of edge-to-edge'],
   ] as const;
 
@@ -174,6 +178,11 @@ await native.ready; // theme restored, splash gone`;
       'share() through the native sheet, the Web Share API, then a download or the clipboard; canShare()',
     ],
     [
+      'createFiles',
+      'file-picker, filesystem',
+      'pick() resolves Files from the native picker or a file input; save() writes to Documents or downloads',
+    ],
+    [
       'markNativePlatform',
       '—',
       'data-native-platform="ios" or "android" on <html>, for platform-specific CSS',
@@ -227,6 +236,32 @@ const label = (await native.share!.canShare({ files })) ? 'Share' : 'Download';`
       'Anything else',
       'Files download; a link or text is copied to the clipboard (fallback: open opens a link in a new tab instead)',
     ],
+  ] as const;
+
+  const filesCode = `import { FilePicker } from '@capawesome/capacitor-file-picker';
+import { Filesystem } from '@capacitor/filesystem';
+
+const native = setupCapacitor({ plugins: { FilePicker, Filesystem /* … */ } });
+
+// The native picker in the app, a file input in the browser: File[] either way.
+const files = await native.files!.pick({ accept: '.pdf,application/pdf', multiple: true });
+
+// Documents on the device, a download in the browser.
+const saved = await native.files!.save(new File([bytes], 'export.pdf'), { folder: 'Exports' });
+if (saved.method === 'filesystem') console.log(saved.uri);`;
+
+  const fileSteps = [
+    [
+      'pick()',
+      'The system file picker; accept is mapped to MIME types',
+      'A hidden file input with the same accept and multiple',
+    ],
+    [
+      'save()',
+      'Filesystem writes to Documents (iOS: the app’s folder in Files; Android: shared Documents)',
+      'A download',
+    ],
+    ['Dismissed', 'pick() resolves []', 'pick() resolves [] on the input’s cancel event'],
   ] as const;
 
   /*
@@ -419,6 +454,42 @@ const label = (await native.share!.canShare({ files })) ? 'Share' : 'Download';`
     </tbody>
   </Table>
   <CodeBlock code={sharing} />
+</Section>
+
+<Section title="Files" headingLevel={2}>
+  <p class="docs-note">
+    <code>native.files</code> is there with or without plugins. With <code>FilePicker</code> from
+    <code>@capawesome/capacitor-file-picker</code> and <code>Filesystem</code> it uses the system
+    picker and saves to the device; in a browser it opens a file input and downloads. Picked files
+    are
+    <code>File</code> objects either way, the same ones a <code>FileInput</code> hands you, so one upload
+    path serves both.
+  </p>
+  <Table caption="What pick() and save() do in an app and in a browser">
+    <thead>
+      <tr>
+        <TableHeader>Call</TableHeader>
+        <TableHeader>In an app</TableHeader>
+        <TableHeader>In a browser</TableHeader>
+      </tr>
+    </thead>
+    <tbody>
+      {#each fileSteps as [call, app, browser] (call)}
+        <tr>
+          <td><code>{call}</code></td>
+          <td>{app}</td>
+          <td>{browser}</td>
+        </tr>
+      {/each}
+    </tbody>
+  </Table>
+  <CodeBlock code={filesCode} />
+  <p class="docs-note">
+    Saving needs storage access only on Android 10 and older; <code>save</code> asks for it and
+    rejects with <code>FilePermissionError</code> if the user refuses. On iOS the saved files appear
+    in the Files app once <code>Info.plist</code> sets <code>UIFileSharingEnabled</code> and
+    <code>LSSupportsOpeningDocumentsInPlace</code>.
+  </p>
 </Section>
 
 <Section title="Adapters" headingLevel={2}>

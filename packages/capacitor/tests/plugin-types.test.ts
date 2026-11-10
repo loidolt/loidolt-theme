@@ -11,6 +11,7 @@ import type { SharePlugin } from '@capacitor/share';
 import type { SplashScreenPlugin } from '@capacitor/splash-screen';
 import type { StatusBarPlugin } from '@capacitor/status-bar';
 import type { TextZoomPlugin } from '@capacitor/text-zoom';
+import type { FilePickerPlugin } from '@capawesome/capacitor-file-picker';
 import { describe, expectTypeOf, it } from 'vitest';
 import type { CapacitorPlugins } from '../src/lib/index.js';
 import type * as Shapes from '../src/lib/types.js';
@@ -32,6 +33,7 @@ describe('the real plugins fit the adapters', () => {
   it('fits the rest', () => {
     expectTypeOf<BrowserPlugin>().toExtend<Shapes.BrowserPlugin>();
     expectTypeOf<ClipboardPlugin>().toExtend<Shapes.ClipboardPlugin>();
+    expectTypeOf<FilePickerPlugin>().toExtend<Shapes.FilePickerPlugin>();
     expectTypeOf<FilesystemPlugin>().toExtend<Shapes.FilesystemPlugin>();
     expectTypeOf<HapticsPlugin>().toExtend<Shapes.HapticsPlugin>();
     expectTypeOf<KeyboardPlugin>().toExtend<NonNullable<CapacitorPlugins['Keyboard']>>();

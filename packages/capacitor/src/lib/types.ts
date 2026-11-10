@@ -144,6 +144,33 @@ export interface FilesystemPlugin {
     recursive?: boolean;
   }): Promise<{ uri: string }>;
   rmdir(options: { path: string; directory?: string; recursive?: boolean }): Promise<void>;
+  stat(options: { path: string; directory?: string }): Promise<{ uri: string }>;
+  checkPermissions(): Promise<{ publicStorage: string }>;
+  requestPermissions(): Promise<{ publicStorage: string }>;
+}
+
+/** A file `FilePickerPlugin.pickFiles` returns. */
+export interface PickedNativeFile {
+  name: string;
+  mimeType: string;
+  size: number;
+  /** Milliseconds since the epoch. */
+  modifiedAt?: number;
+  /** Android and iOS: the file's path on the device. */
+  path?: string;
+  /** A URL the web view can load the file from. */
+  webPath?: string;
+  /** Web only: the file itself. */
+  blob?: Blob;
+}
+
+/** `@capawesome/capacitor-file-picker`. */
+export interface FilePickerPlugin {
+  pickFiles(options?: {
+    types?: string[];
+    limit?: number;
+    readData?: boolean;
+  }): Promise<{ files: PickedNativeFile[] }>;
 }
 
 /** Undoes whatever the adapter installed. Safe to call twice. */

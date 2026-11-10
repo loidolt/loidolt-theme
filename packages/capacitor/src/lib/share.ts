@@ -40,7 +40,7 @@ export interface NativeShareOptions {
    * `Filesystem` from `@capacitor/filesystem`. Needed to share a `File` or Blob natively: it is
    * written to the cache directory first, since the share sheet only takes file URIs.
    */
-  Filesystem?: FilesystemPlugin;
+  Filesystem?: Pick<FilesystemPlugin, 'writeFile' | 'rmdir'>;
   /**
    * Where a link or text goes when no share sheet is available: `copy` puts it on the clipboard
    * (the URL when there is one, otherwise the text), `open` opens the URL in a new tab, `false`

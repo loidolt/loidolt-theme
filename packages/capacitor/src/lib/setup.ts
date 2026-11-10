@@ -30,6 +30,7 @@ import { combine, markNativePlatform } from './platform.js';
 import { bridgeClipboard, followSystemTextSize, hideSplashScreen } from './system.js';
 import type { HideSplashOptions } from './system.js';
 import { createShare, type NativeShare, type NativeShareOptions } from './share.js';
+import { createFiles, type NativeFiles, type NativeFilesOptions } from './files.js';
 import { persistTheme } from './theme-storage.svelte.js';
 import type {
   AppResumePlugin,
@@ -38,6 +39,7 @@ import type {
   BackButtonPlugin,
   BrowserPlugin,
   ClipboardPlugin,
+  FilePickerPlugin,
   FilesystemPlugin,
   HapticsPlugin,
   KeyboardPlugin,
@@ -56,6 +58,7 @@ export interface CapacitorPlugins {
   App?: BackButtonPlugin & AppStatePlugin & AppUrlPlugin & AppResumePlugin;
   Browser?: BrowserPlugin;
   Clipboard?: ClipboardPlugin;
+  FilePicker?: FilePickerPlugin;
   Filesystem?: FilesystemPlugin;
   Haptics?: HapticsPlugin;
   Keyboard?: KeyboardPlugin & KeyboardStylePlugin;
@@ -87,6 +90,7 @@ export interface SetupCapacitorOptions {
   network?: Toggle<Omit<NetworkStatusOptions, 'Network' | 'toaster'>>;
   splash?: Toggle<Omit<HideSplashOptions, 'SplashScreen' | 'until'>>;
   share?: Toggle<Omit<NativeShareOptions, 'Share' | 'Filesystem' | 'toaster'>>;
+  files?: Toggle<Omit<NativeFilesOptions, 'FilePicker' | 'Filesystem'>>;
   textSize?: boolean;
   clipboard?: boolean;
 }
@@ -105,6 +109,11 @@ export interface CapacitorSetup {
    * a download in a browser. Present unless `share: false`: the browser fallbacks need no plugin.
    */
   readonly share: NativeShare | undefined;
+  /**
+   * Picking files with `FilePicker` and saving them with `Filesystem` in a native shell, a file
+   * input and a download in a browser. Present unless `files: false`: the browser needs no plugin.
+   */
+  readonly files: NativeFiles | undefined;
   /** The toaster you passed, with haptics on its status toasts when `Haptics` was given. */
   readonly toaster: Toaster | undefined;
   /** Settles once the stored theme is restored and the splash screen has lifted. */
@@ -144,7 +153,7 @@ const on = <T extends object>(value: Toggle<T> | undefined): T | null =>
 export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
   const { plugins, theme, navigate } = options;
   const { App, Browser, Clipboard, Haptics, Keyboard, Network, Preferences } = plugins;
-  const { Filesystem, Share, SplashScreen, StatusBar, TextZoom } = plugins;
+  const { FilePicker, Filesystem, Share, SplashScreen, StatusBar, TextZoom } = plugins;
   const teardowns: Teardown[] = [markNativePlatform()];
 
   const appearance = on(options.appearance);
@@ -202,6 +211,9 @@ export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
     ? createShare({ ...shareOptions, Share, Filesystem, toaster })
     : undefined;
 
+  const filesOptions = on(options.files);
+  const files = filesOptions ? createFiles({ ...filesOptions, FilePicker, Filesystem }) : undefined;
+
   const restored = persisted?.ready ?? Promise.resolve();
   const splash = on(options.splash);
   const ready =
@@ -216,5 +228,5 @@ export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
     /* module scope: the caller owns `destroy()` */
   }
 
-  return { haptics, keyboard, lifecycle, network, share, toaster, ready, destroy };
+  return { files, haptics, keyboard, lifecycle, network, share, toaster, ready, destroy };
 }

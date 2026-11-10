@@ -34,6 +34,15 @@ export type {
   NativeShareOptions,
   ShareOutcome,
 } from './share.js';
+export { acceptToMimeTypes, createFiles, EXTENSION_TYPES, FilePermissionError } from './files.js';
+export type {
+  NativeFiles,
+  NativeFilesOptions,
+  PickOptions,
+  SaveableFile,
+  SaveOptions,
+  SaveOutcome,
+} from './files.js';
 export { bridgeClipboard, followSystemTextSize, hideSplashScreen } from './system.js';
 export type { HideSplashOptions, SystemTextSizeOptions } from './system.js';
 export type {
@@ -43,11 +52,13 @@ export type {
   BackButtonPlugin,
   BrowserPlugin,
   ClipboardPlugin,
+  FilePickerPlugin,
   FilesystemPlugin,
   HapticsPlugin,
   KeyboardPlugin,
   KeyboardStylePlugin,
   NetworkPlugin,
+  PickedNativeFile,
   PluginListenerHandle,
   PreferencesPlugin,
   SharePlugin,
