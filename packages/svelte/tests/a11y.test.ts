@@ -64,6 +64,7 @@ import LiveRegion from '../src/lib/components/LiveRegion.svelte';
 import Switch from '../src/lib/components/Switch.svelte';
 import Table from '../src/lib/components/Table.svelte';
 import Textarea from '../src/lib/components/Textarea.svelte';
+import AnnotatedText from '../src/lib/components/AnnotatedText.svelte';
 import Toast from '../src/lib/components/Toast.svelte';
 import ToastViewport from '../src/lib/components/ToastViewport.svelte';
 import Tooltip from '../src/lib/components/Tooltip.svelte';
@@ -333,6 +334,15 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ['Table (sortable)', TableHarness, { rows: [{ name: 'bracket.svg', sheets: 3 }] }],
   ['Table (empty)', TableHarness, { rows: [] }],
   ['Textarea', Textarea, { boxed: true, 'aria-label': 'Project note' }],
+  [
+    'AnnotatedText',
+    AnnotatedText,
+    {
+      label: 'Page text',
+      value: 'Two sheets of ply',
+      marks: [{ id: 'a', start: 4, end: 10, variant: 'warning', label: 'Low confidence' }],
+    },
+  ],
   [
     'ToggleGroup',
     ToggleGroup,

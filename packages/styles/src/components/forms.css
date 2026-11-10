@@ -64,6 +64,94 @@
   min-height: 6rem;
   resize: vertical;
 }
+/*
+ * AnnotatedText: a real textarea over a mirror that draws the marks. Both elements share the
+ * textarea classes, so the box, padding and type line up; the rules below only make the textarea
+ * see-through and the mirror's text invisible, and keep every wrapping property identical.
+ */
+.ldt-annotated-text {
+  display: grid;
+  gap: var(--loidolt-gap-field);
+  min-width: 0;
+}
+.ldt-annotated-text__field {
+  position: relative;
+  min-width: 0;
+}
+.ldt-annotated-text__input,
+.ldt-annotated-text__mirror {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  tab-size: 4;
+  font: inherit;
+  letter-spacing: normal;
+  text-align: start;
+}
+.ldt-annotated-text__input {
+  position: relative;
+  display: block;
+  background: transparent;
+}
+.ldt-annotated-text__mirror {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-color: transparent;
+  color: transparent;
+  pointer-events: none;
+  resize: none;
+  user-select: none;
+}
+/* Colour is never the only signal: each variant also has its own underline style. */
+.ldt-annotated-text__mark {
+  --ldt-mark-color: var(--loidolt-border-strong);
+  border-radius: var(--loidolt-radius-inner);
+  background: color-mix(in srgb, var(--ldt-mark-color) 16%, transparent);
+  text-decoration: underline dashed var(--ldt-mark-color);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+.ldt-annotated-text__mark--accent {
+  --ldt-mark-color: var(--loidolt-accent);
+  text-decoration-style: solid;
+}
+.ldt-annotated-text__mark--info {
+  --ldt-mark-color: var(--loidolt-info);
+  text-decoration-style: dotted;
+}
+.ldt-annotated-text__mark--success {
+  --ldt-mark-color: var(--loidolt-success);
+  text-decoration-style: solid;
+}
+.ldt-annotated-text__mark--warning {
+  --ldt-mark-color: var(--loidolt-warning);
+  text-decoration-style: double;
+}
+.ldt-annotated-text__mark--error {
+  --ldt-mark-color: var(--loidolt-danger);
+  text-decoration-style: wavy;
+}
+.ldt-annotated-text__mark--active {
+  background: color-mix(in srgb, var(--ldt-mark-color) 30%, transparent);
+}
+.ldt-annotated-text__tooltip {
+  position: absolute;
+  width: max-content;
+  /* Never wider than the field it labels. */
+  max-width: min(18rem, 100%);
+}
+.ldt-annotated-text__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--loidolt-space-2);
+}
+@media (forced-colors: active) {
+  .ldt-annotated-text__mark {
+    background: Mark;
+    forced-color-adjust: none;
+  }
+}
 .ldt-choice {
   /* The label is the pointer target for the input it wraps, so it carries the 24px minimum. */
   min-height: 1.5rem;

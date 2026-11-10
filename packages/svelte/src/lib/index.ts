@@ -73,6 +73,7 @@ export { default as Table } from './components/Table.svelte';
 export { default as TableHeader } from './components/TableHeader.svelte';
 export { default as Tabs } from './components/Tabs.svelte';
 export { default as Textarea } from './components/Textarea.svelte';
+export { default as AnnotatedText } from './components/AnnotatedText.svelte';
 export { default as ThemeToggle } from './components/ThemeToggle.svelte';
 export { default as Thumbnail } from './components/Thumbnail.svelte';
 export { default as Toast } from './components/Toast.svelte';
@@ -150,6 +151,16 @@ export type { HlsConstructor, HlsErrorData, HlsInstance, HlsLoader } from './hls
 export { createHlsSource } from './hls.svelte.js';
 export type { HlsSource, HlsSourceOptions, HlsStatus } from './hls.svelte.js';
 export type { MediaPlayerLabels } from './internal/media/labels.js';
+export {
+  diffText,
+  markAt,
+  nextMark,
+  previousMark,
+  segmentText,
+  shiftMarks,
+  sortMarks,
+} from './annotated-text.js';
+export type { TextEdit, TextMark, TextSegment } from './annotated-text.js';
 export { strokeLength, strokePath, strokesToSvg, validateSignature } from './signature.js';
 export type {
   SignatureError,
