@@ -43,6 +43,7 @@ import DropdownMenu from '../src/lib/components/DropdownMenu.svelte';
 import EmptyState from '../src/lib/components/EmptyState.svelte';
 import IconButton from '../src/lib/components/IconButton.svelte';
 import Input from '../src/lib/components/Input.svelte';
+import ImageViewer from '../src/lib/components/ImageViewer.svelte';
 import Label from '../src/lib/components/Label.svelte';
 import PageHeader from '../src/lib/components/PageHeader.svelte';
 import Pagination from '../src/lib/components/Pagination.svelte';
@@ -208,6 +209,21 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ['Fieldset', FieldsetHarness, { legend: 'Output formats', description: 'Pick at least one.' }],
   ['Fieldset (invalid)', FieldsetHarness, { legend: 'Output formats', error: 'Choose a format' }],
   ['IconButton', IconButton, { label: 'Add item', children: text('+') }],
+  [
+    'ImageViewer',
+    ImageViewer,
+    {
+      src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>',
+      alt: 'Scanned page',
+      width: 400,
+      height: 600,
+      selectedRegionId: 'r1',
+      regions: [
+        { id: 'r1', x: 0, y: 0, width: 100, height: 40, label: 'Heading', variant: 'success' },
+        { id: 'r2', x: 0, y: 60, width: 300, height: 90, label: 'Paragraph, low confidence' },
+      ],
+    },
+  ],
   ['Pagination', Pagination, { count: 120, perPage: 10, page: 3 }],
   ['NumberField', NumberField, { label: 'Layer count', min: 1, max: 40, value: 12 }],
   ['Progress', Progress, { value: 72, label: 'Generation progress' }],

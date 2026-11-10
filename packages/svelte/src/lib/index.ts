@@ -32,6 +32,7 @@ export { default as Filmstrip } from './components/Filmstrip.svelte';
 export { default as FilterPanel } from './components/FilterPanel.svelte';
 export { default as FloatingBar } from './components/FloatingBar.svelte';
 export { default as IconButton } from './components/IconButton.svelte';
+export { default as ImageViewer } from './components/ImageViewer.svelte';
 export { default as Input } from './components/Input.svelte';
 export { default as Label } from './components/Label.svelte';
 export { default as Lightbox } from './components/Lightbox.svelte';
@@ -144,7 +145,13 @@ export type {
 export { createMediaPlayer } from './media-player.svelte.js';
 export type { MediaPlayer, MediaPlayerOptions, MediaTrackInfo } from './media-player.svelte.js';
 export { createMediaZoom } from './media-zoom.svelte.js';
-export type { MediaZoom, MediaZoomOptions } from './media-zoom.svelte.js';
+export type {
+  MediaZoom,
+  MediaZoomFit,
+  MediaZoomOptions,
+  MediaZoomRect,
+  MediaZoomSize,
+} from './media-zoom.svelte.js';
 export { canPlayHlsNatively, loadHls, setHlsLoader } from './hls.js';
 export type { HlsConstructor, HlsErrorData, HlsInstance, HlsLoader } from './hls.js';
 export { createHlsSource } from './hls.svelte.js';
@@ -207,6 +214,7 @@ export type {
   ControlSize,
   DialogSize,
   HeadingLevel,
+  ImageRegion,
   MenuCheckboxItem,
   MenuEntry,
   MenuGroup,

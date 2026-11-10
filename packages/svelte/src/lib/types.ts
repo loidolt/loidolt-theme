@@ -159,3 +159,18 @@ export type MenuEntry<T extends string = string> =
 export interface TriggerChildProps {
   props: Record<string, unknown>;
 }
+
+/**
+ * A rectangle drawn over an `ImageViewer` image, in the image's natural pixels (so it stays put
+ * whatever the zoom). `label` is its accessible name — it is announced, not drawn.
+ */
+export interface ImageRegion {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  label: string;
+  /** Status colour of the outline; color is never the only signal, so say it in `label` too. */
+  variant?: BadgeVariant;
+}
