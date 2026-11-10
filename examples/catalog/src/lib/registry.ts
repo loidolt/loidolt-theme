@@ -775,6 +775,8 @@ export const entries: Entry[] = [
       '`sidebarOpen` and `inspectorOpen` collapse a pane by leaving it unrendered, so nothing collapsed stays in the tab order.',
       'The `header` snippet renders a full-width row above the panes — the home for a ContextBar or toolbar.',
       '`mainClass` styles the main pane without reaching into `.ldt-workspace__main` from outside.',
+      '`resizable` puts a divider (`role="separator"`) between the main pane and the inspector. Drag it, or focus it and use Left/Right (Shift for bigger steps), Home/End for the limits and Enter to collapse and restore. `inspectorSize` is bindable, in percent of the width the two panes share; `inspectorMinSize`/`inspectorMaxSize` bound it, and the divider reports the same percentages as `aria-valuenow`/`aria-valuemin`/`aria-valuemax`.',
+      'With a `storageKey` the size the divider sets is kept in `localStorage` and restored on reload, before first paint on a server-rendered page (via a small inline script, so a strict CSP without `unsafe-inline` falls back to restoring at hydration). Below the compact breakpoint the panes stack and the divider is hidden.',
     ],
   },
   {

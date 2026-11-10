@@ -368,6 +368,11 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ['ToastViewport', ToastViewport, { children: text('<p>Nothing yet</p>') }],
   ['Tooltip', Tooltip, { content: 'Precise settings', trigger: text('Settings') }],
   ['Workspace', WorkspaceHarness, { withSidebar: true, withInspector: true }],
+  [
+    'Workspace (resizable)',
+    WorkspaceHarness,
+    { withSidebar: true, withInspector: true, resizable: true, storageKey: 'a11y-split' },
+  ],
 ];
 
 describe('component accessibility', () => {

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Weekly summary</title>
+    <style>
+      /* Paste the contents of @loidolt/theme-styles/standalone.css here. */
+    </style>
+  </head>
+  <body>
+    <main id="top" class="ldt-container ldt-stack" style="padding-block: 2rem">
+      <header class="ldt-page-header">
+        <div>
+          <p class="ldt-eyebrow">Report</p>
+          <h1 class="ldt-page-header__title">Weekly summary</h1>
+          <p class="ldt-page-header__description">Generated on 4 March from the latest export.</p>
+        </div>
+      </header>
+
+      <div class="ldt-grid" style="--ldt-min: 10rem">
+        <div class="ldt-stat">
+          <p class="ldt-stat__value">128</p>
+          <p class="ldt-stat__label">Files processed</p>
+        </div>
+        <div class="ldt-stat">
+          <p class="ldt-stat__value">3</p>
+          <p class="ldt-stat__label">Needing review</p>
+        </div>
+      </div>
+
+      <div class="ldt-alert ldt-alert--warning" role="status">
+        <h2 class="ldt-alert__title">Three files need a second look</h2>
+        <div class="ldt-alert__description">Their scale differs from the rest of the batch.</div>
+      </div>
+
+      <div class="ldt-table-wrap" role="region" tabindex="0" aria-label="Processed files">
+        <table class="ldt-table">
+          <caption class="ldt-sr-only">
+            Processed files
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">File</th>
+              <th scope="col">Layers</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>crater-lake.svg</td>
+              <td>12</td>
+              <td><span class="ldt-badge ldt-badge--success">Ready</span></td>
+            </tr>
+            <tr>
+              <td>north-ridge.svg</td>
+              <td>18</td>
+              <td><span class="ldt-badge ldt-badge--warning">Review</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <section class="ldt-card">
+        <header class="ldt-card__header">
+          <h2 class="ldt-card__title">Notes</h2>
+        </header>
+        <div class="ldt-card__content">
+          <p>Scales are compared against the first file in the batch.</p>
+        </div>
+      </section>
+
+      <p><a class="ldt-button ldt-button--primary" href="#top">Back to top</a></p>
+    </main>
+  </body>
+</html>

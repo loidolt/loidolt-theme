@@ -12,18 +12,19 @@ accessibility contract, and a generated prop table for every component.
 
 ## Packages
 
-| Package                 | Purpose                                                                                                               |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `@loidolt/theme-tokens` | Typed colour, typography, spacing, sizing, border, shadow, z-index, and motion values plus generated CSS variables    |
-| `@loidolt/theme-styles` | Bundled fonts, base styles, accessibility helpers, component classes, and layout utilities                            |
-| `@loidolt/theme-svelte` | Accessible Svelte 5 controls, overlays, feedback, surfaces, and application layouts                                   |
-| `@loidolt/theme-charts` | Accessible ECharts charts painted from the tokens, each with a data-table alternative ([README](packages/charts))     |
-| `@loidolt/theme-maps`   | Accessible MapLibre maps on a token-coloured basemap, with keyboard markers and layer tools ([README](packages/maps)) |
-| `@loidolt/theme-docs`   | Safe, server-rendered Markdown documentation: pages, contents, highlighted code, diagrams ([README](packages/docs))   |
+| Package                    | Purpose                                                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `@loidolt/theme-tokens`    | Typed colour, typography, spacing, sizing, border, shadow, z-index, and motion values plus generated CSS variables             |
+| `@loidolt/theme-styles`    | Bundled fonts, base styles, accessibility helpers, component classes, and layout utilities                                     |
+| `@loidolt/theme-svelte`    | Accessible Svelte 5 controls, overlays, feedback, surfaces, and application layouts                                            |
+| `@loidolt/theme-charts`    | Accessible ECharts charts painted from the tokens, each with a data-table alternative ([README](packages/charts))              |
+| `@loidolt/theme-maps`      | Accessible MapLibre maps on a token-coloured basemap, with keyboard markers and layer tools ([README](packages/maps))          |
+| `@loidolt/theme-docs`      | Safe, server-rendered Markdown documentation: pages, contents, highlighted code, diagrams ([README](packages/docs))            |
+| `@loidolt/theme-capacitor` | Capacitor adapters for native iOS and Android apps: system bars, back button, keyboard, haptics ([README](packages/capacitor)) |
 
-The last three are optional. Each has its own heavy peer (`echarts`, `maplibre-gl`, and optionally
-`shiki`/`mermaid`), so an app that draws no charts never installs ECharts. All six are released
-together on one version.
+The last four are optional. Each has its own heavy peer (`echarts`, `maplibre-gl`, optionally
+`shiki`/`mermaid`, and `@capacitor/core`), so an app that draws no charts never installs ECharts.
+All seven are released together on one version.
 
 ## Requirements
 
@@ -126,6 +127,11 @@ page without `viewport-fit=cover`, so nothing moves there:
 Each edge reads a knob first — `--ldt-safe-top`, `--ldt-safe-right`, `--ldt-safe-bottom`,
 `--ldt-safe-left` — and falls back to the environment. Set one to `0px` on an element that does not
 touch that screen edge (a `Topbar` below a banner), or to a length to preview a notch on desktop.
+
+Android web views before Chromium 140 report every inset as 0. In a Capacitor app, import
+`@loidolt/theme-capacitor/styles.css`, which feeds the knobs from the values Capacitor injects; the
+[capacitor package](packages/capacitor) also styles the system bars, handles the back button and
+the keyboard, and adds haptics.
 
 ### Tokens have three tiers
 
@@ -457,6 +463,21 @@ collapsed pane stays in the tab order.
 `AppShell`. For a standalone or deeply nested workspace, put `ldt-workspace-container` on its
 nearest sizing wrapper; the panes stack when that wrapper is 760px or narrower. The viewport media
 query remains as a fallback for existing markup.
+
+`resizable` puts a divider between the main pane and the inspector. It drags with a mouse, pen or
+finger, and from the keyboard it is a `role="separator"`: Left/Right move it (Shift for bigger
+steps), Home/End jump to the limits and Enter collapses and restores the inspector. Sizes are the
+inspector's percentage of the width the two panes share, bindable as `inspectorSize` and bounded by
+`inspectorMinSize`/`inspectorMaxSize`; the divider reports the same numbers as
+`aria-valuenow`/`aria-valuemin`/`aria-valuemax`. Give it a `storageKey` to remember the size in
+`localStorage`. When the panes stack, the divider is hidden.
+
+```svelte
+<Workspace resizable bind:inspectorSize storageKey="review-split">
+  <img src={page.src} alt={page.alt} />
+  {#snippet inspector()}<Sidebar side="right" label="Notes">…</Sidebar>{/snippet}
+</Workspace>
+```
 
 On coarse-pointer devices, interactive components expand to 44px touch targets while mouse and
 keyboard layouts retain the compact density shown by the size tokens.
