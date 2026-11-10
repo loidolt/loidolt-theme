@@ -24,6 +24,7 @@ export { default as DataTableSearch } from './components/DataTableSearch.svelte'
 export { default as Dialog } from './components/Dialog.svelte';
 export { default as Drawer } from './components/Drawer.svelte';
 export { default as DropdownMenu } from './components/DropdownMenu.svelte';
+export { default as Dropzone } from './components/Dropzone.svelte';
 export { default as EmptyState } from './components/EmptyState.svelte';
 export { default as Field } from './components/Field.svelte';
 export { default as Fieldset } from './components/Fieldset.svelte';
@@ -65,6 +66,7 @@ export { default as Skeleton } from './components/Skeleton.svelte';
 export { default as SkipLink } from './components/SkipLink.svelte';
 export { default as Slider } from './components/Slider.svelte';
 export { default as Spinner } from './components/Spinner.svelte';
+export { default as StageStepper } from './components/StageStepper.svelte';
 export { default as Stat } from './components/Stat.svelte';
 export { default as StatusDot } from './components/StatusDot.svelte';
 export { default as SwatchGroup } from './components/SwatchGroup.svelte';
@@ -107,6 +109,14 @@ export {
 } from 'bits-ui';
 
 export { cx, describedBy } from './utils.js';
+export { filterFiles, matchesAccept, parseAccept } from './file-accept.js';
+export type {
+  FileFilterOptions,
+  FileFilterResult,
+  FileLike,
+  FileRejection,
+  FileRejectionReason,
+} from './file-accept.js';
 export { autofocus, clickOutside, escapeKey, focusTrap, rovingFocus } from './attachments.js';
 export type {
   AutofocusOptions,
@@ -227,6 +237,8 @@ export type {
   Orientation,
   Placement,
   SortDirection,
+  StageState,
+  StageStep,
   StatusVariant,
   TabBarItem,
   TabItem,

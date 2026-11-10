@@ -297,3 +297,193 @@
 .ldt-marker--active {
   outline: 2px solid var(--loidolt-surface); /* @literal halo that lifts the pin off a canvas */
 }
+/*
+ * An ordered run of named steps. The root is a size container so a horizontal stepper can fall
+ * back to a column when the space it is given — not the viewport — is too narrow for a row.
+ * Each step is a two-column grid: the indicator, and beside it either the connector to the next
+ * step (horizontal, with the text below) or the text (vertical, with the connector below).
+ */
+.ldt-stage-stepper {
+  container: ldt-stage-stepper / inline-size;
+}
+.ldt-stage-stepper__list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ldt-stage-stepper__step {
+  --ldt-stage-stepper-tone: var(--loidolt-border-strong);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--loidolt-space-1) var(--loidolt-space-2);
+  min-width: 0;
+}
+.ldt-stage-stepper__indicator {
+  position: relative;
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: var(--loidolt-stroke-indicator) solid var(--ldt-stage-stepper-tone);
+  border-radius: var(--loidolt-border-radius-pill);
+  color: var(--loidolt-text-muted);
+  background: var(--loidolt-surface);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font-variant-numeric: tabular-nums;
+}
+/* The line to the next step. The last step has none. */
+.ldt-stage-stepper__step:not(:last-child)::after {
+  content: '';
+  grid-area: 1 / 2;
+  height: var(--loidolt-stroke-indicator);
+  margin-inline-end: var(--loidolt-space-2);
+  background: var(--loidolt-border);
+}
+.ldt-stage-stepper__step--done:not(:last-child)::after {
+  background: var(--loidolt-success);
+}
+.ldt-stage-stepper__body {
+  grid-area: 2 / 1 / auto / -1;
+  display: grid;
+  gap: var(--loidolt-space-1);
+  min-width: 0;
+  padding-inline-end: var(--loidolt-space-3);
+}
+.ldt-stage-stepper__label {
+  color: var(--loidolt-text);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-label-weight);
+  overflow-wrap: anywhere;
+}
+.ldt-stage-stepper__action {
+  justify-self: start;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: start;
+  cursor: pointer;
+}
+.ldt-stage-stepper__action:hover {
+  color: var(--loidolt-text-accent);
+  text-decoration: underline;
+}
+.ldt-stage-stepper__description {
+  margin: 0;
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-sm);
+  overflow-wrap: anywhere;
+}
+.ldt-stage-stepper__progress {
+  min-width: 0;
+}
+/* A bar the width of a wide column reads as a page divider; keep it to a line's length. */
+.ldt-stage-stepper__body > .ldt-progress-field {
+  max-width: 24rem;
+}
+.ldt-stage-stepper--horizontal .ldt-stage-stepper__step {
+  flex: 1 1 0;
+  align-content: start;
+}
+.ldt-stage-stepper--horizontal .ldt-stage-stepper__step:last-child {
+  flex-grow: 0.6;
+}
+/* A column: the text sits beside its indicator and the connector runs down beneath it. */
+.ldt-stage-stepper--vertical .ldt-stage-stepper__list {
+  flex-direction: column;
+}
+.ldt-stage-stepper--vertical .ldt-stage-stepper__step {
+  align-items: start;
+}
+.ldt-stage-stepper--vertical .ldt-stage-stepper__body {
+  grid-area: 1 / 2 / span 2 / auto;
+  align-self: center;
+  padding-block-end: var(--loidolt-space-4);
+}
+.ldt-stage-stepper--vertical .ldt-stage-stepper__step:last-child .ldt-stage-stepper__body {
+  padding-block-end: 0;
+}
+.ldt-stage-stepper--vertical .ldt-stage-stepper__step:not(:last-child)::after {
+  grid-area: 2 / 1;
+  justify-self: center;
+  width: var(--loidolt-stroke-indicator);
+  height: auto;
+  min-height: var(--loidolt-space-4);
+  align-self: stretch;
+  margin: 0;
+}
+/* A row of steps too narrow to read: the same column the vertical stepper draws. */
+@container ldt-stage-stepper (max-width: 36rem) {
+  .ldt-stage-stepper--horizontal .ldt-stage-stepper__list {
+    flex-direction: column;
+  }
+  .ldt-stage-stepper--horizontal .ldt-stage-stepper__step {
+    align-items: start;
+  }
+  .ldt-stage-stepper--horizontal .ldt-stage-stepper__body {
+    grid-area: 1 / 2 / span 2 / auto;
+    align-self: center;
+    padding-block-end: var(--loidolt-space-4);
+  }
+  .ldt-stage-stepper--horizontal .ldt-stage-stepper__step:last-child .ldt-stage-stepper__body {
+    padding-block-end: 0;
+  }
+  .ldt-stage-stepper--horizontal .ldt-stage-stepper__step:not(:last-child)::after {
+    grid-area: 2 / 1;
+    justify-self: center;
+    width: var(--loidolt-stroke-indicator);
+    height: auto;
+    min-height: var(--loidolt-space-4);
+    align-self: stretch;
+    margin: 0;
+  }
+}
+.ldt-stage-stepper__step--running {
+  --ldt-stage-stepper-tone: var(--loidolt-border);
+}
+.ldt-stage-stepper__step--running .ldt-stage-stepper__indicator {
+  color: var(--loidolt-text-accent);
+}
+/* Activity: an accent arc turning around the ring. Under reduced motion it holds still. */
+.ldt-stage-stepper__activity {
+  position: absolute;
+  inset: calc(var(--loidolt-stroke-indicator) * -1);
+  border: var(--loidolt-stroke-indicator) solid transparent;
+  border-top-color: var(--loidolt-accent);
+  border-right-color: var(--loidolt-accent);
+  border-radius: var(--loidolt-border-radius-pill);
+  animation: ldt-spin 1s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ldt-stage-stepper__activity {
+    animation: none;
+  }
+}
+.ldt-stage-stepper__step--done {
+  --ldt-stage-stepper-tone: var(--loidolt-success);
+}
+.ldt-stage-stepper__step--done .ldt-stage-stepper__indicator {
+  color: var(--loidolt-on-success);
+  background: var(--loidolt-success);
+}
+.ldt-stage-stepper__step--failed {
+  --ldt-stage-stepper-tone: var(--loidolt-danger);
+}
+.ldt-stage-stepper__step--failed .ldt-stage-stepper__indicator {
+  color: var(--loidolt-on-danger);
+  background: var(--loidolt-danger);
+}
+.ldt-stage-stepper__step--failed .ldt-stage-stepper__description {
+  color: var(--loidolt-text-danger);
+}
+.ldt-stage-stepper__step--skipped .ldt-stage-stepper__indicator {
+  border-style: dashed;
+}
+.ldt-stage-stepper__step--skipped .ldt-stage-stepper__label,
+.ldt-stage-stepper__step--pending .ldt-stage-stepper__label {
+  color: var(--loidolt-text-muted);
+}

@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { axe } from 'vitest-axe';
 import Accordion from '../src/lib/components/Accordion.svelte';
 import SignaturePad from '../src/lib/components/SignaturePad.svelte';
+import Dropzone from '../src/lib/components/Dropzone.svelte';
 import MediaCarousel from '../src/lib/components/MediaCarousel.svelte';
 import MediaGrid from '../src/lib/components/MediaGrid.svelte';
 import AspectRatio from '../src/lib/components/AspectRatio.svelte';
@@ -61,6 +62,7 @@ import Separator from '../src/lib/components/Separator.svelte';
 import Skeleton from '../src/lib/components/Skeleton.svelte';
 import SkipLink from '../src/lib/components/SkipLink.svelte';
 import Spinner from '../src/lib/components/Spinner.svelte';
+import StageStepper from '../src/lib/components/StageStepper.svelte';
 import LiveRegion from '../src/lib/components/LiveRegion.svelte';
 import Switch from '../src/lib/components/Switch.svelte';
 import Table from '../src/lib/components/Table.svelte';
@@ -337,9 +339,36 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
     { items: gallery, label: 'Featured', autoplay: true, showThumbnails: true },
   ],
   ['SignaturePad', SignaturePad, { label: 'Customer signature', name: 'signature' }],
+  ['Dropzone', Dropzone, { label: 'Drop PDFs', hint: 'PDF only', accept: '.pdf', name: 'docs' }],
+  ['Dropzone (disabled)', Dropzone, { disabled: true }],
   ['SignaturePad (typed)', SignaturePad, { label: 'Signature', mode: 'type' }],
   ['Spinner', Spinner, { label: 'Generating preview' }],
   ['LiveRegion', LiveRegion, { message: 'Three results' }],
+  [
+    'StageStepper',
+    StageStepper,
+    {
+      steps: [
+        { id: 'upload', label: 'Upload', state: 'done' },
+        { id: 'convert', label: 'Convert', state: 'skipped', description: 'Nothing to convert.' },
+        { id: 'package', label: 'Package', state: 'running', progress: 40 },
+        { id: 'verify', label: 'Verify', state: 'failed' },
+        { id: 'publish', label: 'Publish', state: 'pending' },
+      ],
+    },
+  ],
+  [
+    'StageStepper (vertical, selectable)',
+    StageStepper,
+    {
+      orientation: 'vertical',
+      steps: [
+        { id: 'upload', label: 'Upload', state: 'done', progress: 100 },
+        { id: 'package', label: 'Package', state: 'running' },
+      ],
+      onSelect: () => {},
+    },
+  ],
   ['Switch', Switch, { children: text('Live preview') }],
   [
     'Table',
@@ -381,6 +410,11 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ['ToastViewport', ToastViewport, { children: text('<p>Nothing yet</p>') }],
   ['Tooltip', Tooltip, { content: 'Precise settings', trigger: text('Settings') }],
   ['Workspace', WorkspaceHarness, { withSidebar: true, withInspector: true }],
+  [
+    'Workspace (resizable)',
+    WorkspaceHarness,
+    { withSidebar: true, withInspector: true, resizable: true, storageKey: 'a11y-split' },
+  ],
 ];
 
 describe('component accessibility', () => {
