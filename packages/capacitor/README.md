@@ -81,6 +81,21 @@ export default withTheme<CapacitorConfig>({
 Everything you set wins over the theme's defaults, down to single plugin options. `withTheme(config,
 { scheme: 'dark' })` paints the launch dark; `themeConfig()` returns the defaults on their own.
 
+The splash screen shows the native launch screen, and its colour is the one thing the config
+cannot set: `SplashScreen`'s `backgroundColor` would paint one fixed colour over it, so the
+theme leaves it out. Give the launch screen the theme's background instead, so it follows the
+system's dark mode:
+
+- **iOS**: Capacitor's template fills `LaunchScreen.storyboard` with a white `Splash` image.
+  Replace the image view with a plain view whose background is a colour asset (for example
+  `LaunchBackground` in `Assets.xcassets`) with the light `background` (`#ebe7dc`) for Any and the
+  dark one (`#161814`) for Dark. `examples/capacitor` in this repository does exactly that.
+- **Android**: set `windowSplashScreenBackground` in `values/styles.xml` and `values-night/styles.xml`
+  to the same two colours.
+
+iOS cannot know the in-app choice before the app runs, so someone who picked dark on a light
+phone sees the light launch colour for a moment, then the dark app — never white.
+
 **2. `app.html`** — draw under the bars, and import the stylesheet after the theme's:
 
 ```html

@@ -330,7 +330,10 @@ if (saved.method === 'filesystem') console.log(saved.uri);`;
     <strong>1. The Capacitor config.</strong> <code>withTheme</code> paints the launch background in
     the theme's colour so there is no white flash, turns the safe-area variables on, and holds the
     splash screen until the theme is in. Everything you set wins over its defaults, down to single
-    plugin options; <code>withTheme(config, &#123; scheme: 'dark' &#125;)</code> paints the launch dark.
+    plugin options; <code>withTheme(config, &#123; scheme: 'dark' &#125;)</code> paints the launch
+    dark. The splash's own colour comes from the native launch screen: give it the theme's light and
+    dark backgrounds (a colour asset in <code>LaunchScreen.storyboard</code> on iOS,
+    <code>windowSplashScreenBackground</code> on Android) so it follows dark mode.
   </p>
   <CodeBlock code={config} />
   <p class="docs-note">
