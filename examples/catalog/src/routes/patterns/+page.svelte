@@ -156,3 +156,11 @@ ${endScript}
   </p>
   <CodeBlock code={emptyTable} />
 </Section>
+
+<Section title="Without Svelte" headingLevel={2}>
+  <p class="docs-note">
+    The styles do not need the components. A page with no bundler, such as a generated HTML report,
+    can inline one prebuilt stylesheet and write the same <code>ldt-</code> markup by hand: see
+    <a href={`${base}/patterns/css-only`}>CSS only</a>.
+  </p>
+</Section>
