@@ -628,7 +628,7 @@ These live in their own packages, and each README covers it in full. In short:
 - Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`
 - Navigation: `Topbar`, `Brand`, `NavMenu`, `SkipLink`, `Breadcrumbs`, `SegmentedNav`, `TabBar`, `Tabs`, `Accordion`, `ContextBar`
 - Layout: `AppShell`, `Workspace`, `Sidebar`, `FloatingBar`, `AspectRatio`, `Toolbar`, `FilterPanel`
-- Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`, `MediaGrid`, `Lightbox`, `MediaCarousel`
+- Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`, `MediaGrid`, `Lightbox`, `MediaCarousel`, `ImageViewer`
 - Theme: `PresetPicker`, `ThemeToggle`
 
 Complex focus, portal, dismissal, and keyboard behavior is powered by Bits UI. Icons remain
@@ -726,7 +726,9 @@ setHlsLoader(() => import('hls.js').then((module) => module.default));
 
 The players are built on `createMediaPlayer()` — reactive state and commands over any `<video>`
 or `<audio>` (`{@attach player.attach}`) — for when you want your own controls.
-`createMediaZoom()` provides pinch, trackpad and drag-to-pan zoom for an image in a frame, and
+`createMediaZoom()` provides pinch, trackpad and drag-to-pan zoom for an image in a frame; given a
+`contentSize` (or `setContentSize()`) it works in the content's own pixels, with fit to width,
+height or whole, zoom around a point and `reveal()` for a rectangle, as `ImageViewer` uses it. And
 `formatDuration`, `formatDurationSpoken`, `parseEmbedUrl`, `buildEmbedSrc` and `inferMediaKind`
 are exported for your own media UI.
 

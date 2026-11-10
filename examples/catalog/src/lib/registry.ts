@@ -926,6 +926,20 @@ export const entries: Entry[] = [
     ],
   },
   {
+    slug: 'image-viewer',
+    name: 'ImageViewer',
+    group: 'Media',
+    summary:
+      'An inline, non-modal zoomable image for a pane, with rectangles drawn over it — outlined text blocks on a scan, annotated areas on a plan.',
+    notes: [
+      'The frame is one tab stop: + and − zoom, 0 fits the image again, arrow keys pan. Pinch, Ctrl + wheel and double-click zoom around the pointer; dragging or the plain wheel pans once the image overflows the frame.',
+      "`regions` are in the image's natural pixels. They are placed inside the same box as the image, so they stay aligned at every zoom by construction.",
+      'The regions are a listbox with one tab stop: arrow keys, Home and End move between them in the order given, Enter selects, Escape clears. Each is named by its `label`; colour (`variant`) is never the only signal, so say the status in the label too.',
+      'Bind `selectedRegionId` (and `hoveredRegionId`) to link a list beside the viewer both ways. Selecting from outside pans the region into view and announces it through a live region.',
+      'Give `width` and `height` when you know them, so the viewer is laid out before the image loads. Fit width, Fit height and Fit whole image are in the controls; `fit` picks the one used first.',
+    ],
+  },
+  {
     slug: 'media-carousel',
     name: 'MediaCarousel',
     group: 'Media',

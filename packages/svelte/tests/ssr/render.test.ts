@@ -95,6 +95,16 @@ const cases: Array<[CaseName, Record<string, unknown>]> = [
   ['FloatingBar', { label: 'Zoom', children: text('+') }],
   ['Fieldset', { legend: 'Output', children: text('<input />') }],
   ['IconButton', { label: 'Close', children: text('×') }],
+  [
+    'ImageViewer',
+    {
+      src: 'page.png',
+      alt: 'Page',
+      width: 400,
+      height: 600,
+      regions: [{ id: 'r1', x: 0, y: 0, width: 100, height: 40, label: 'Heading' }],
+    },
+  ],
   ['Input', { 'aria-label': 'Name' }],
   ['Label', { for: 'x', children: text('Name') }],
   ['Lightbox', { items: gallery, open: true, showThumbnails: true }],
