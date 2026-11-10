@@ -35,4 +35,15 @@ describe('styles.css', () => {
   it('is zero-specificity throughout, so the app always wins', () => {
     for (const selector of selectors(sheet)) expect(selector).toMatch(/^:where\(/);
   });
+
+  it('keeps scrolled content out from under the status bar in a native shell', () => {
+    // Topbar scrolls away with the page; without a backdrop the page ran under the clock.
+    const rule = sheet.match(/:where\(\[data-native-platform\] body\)::before \{([^}]*)\}/);
+    expect(rule, 'status bar backdrop').not.toBeNull();
+    const body = rule![1];
+    expect(body).toContain('position: fixed;');
+    expect(body).toContain('height: var(--ldt-safe-top);');
+    expect(body).toContain('background: var(--loidolt-surface);');
+    expect(body).toContain('pointer-events: none;');
+  });
 });

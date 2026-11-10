@@ -6,7 +6,9 @@ import svelteParser from 'svelte-eslint-parser';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/.svelte-kit/**', '**/coverage/**', '**/src-tauri/**'] },
+  {
+    ignores: ['**/dist/**', '**/.svelte-kit/**', '**/coverage/**', '**/src-tauri/**', '**/ios/**'],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...svelte.configs['flat/recommended'],

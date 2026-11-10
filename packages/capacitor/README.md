@@ -144,24 +144,6 @@ Every one returns a teardown (or a store with `destroy()`), and is a no-op outsi
 | `followSystemTextSize` | Applies the system text size, and re-reads it on resume                                                                       |
 | `bridgeClipboard`      | Routes `navigator.clipboard.writeText` through the Clipboard plugin                                                           |
 | `createShare`          | `share(content)` through the native sheet, the Web Share API, then a download or the clipboard; `canShare(content?)`          |
-| `markNativePlatform`   | `data-native-platform="ios"` or `"android"` on `<html>`, for platform-specific CSS                                            |
-| `nativePlatform`       | `'ios'`, `'android'` or `null`                                                                                                |
-| Export                 | Does                                                                                                                          |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `syncNativeAppearance` | Bar icon styles from the `surface` role (configurable per bar), legacy Android status bar colour, iOS keyboard appearance     |
-| `handleBackButton`     | Android back: closes the top layer, then `onBack`, then history, then `atRoot` (`minimize`, `exit`, `none`)                   |
-| `closeTopLayer`        | Closes the innermost open overlay the way Escape does; returns whether something took it                                      |
-| `createNativeKeyboard` | `visible` and `height`, `data-keyboard="open"`, `--ldt-keyboard-height` and `--ldt-keyboard-inset` on `<html>`                |
-| `createHaptics`        | `impact(weight)`, `selection()`, `notify(variant)`, and `install()` for delegated feedback on controls                        |
-| `withHaptics`          | Wraps a toaster so status toasts play the matching notification pattern                                                       |
-| `persistTheme`         | Restores and mirrors a `createTheme` store through `Preferences`; `ready` settles once restored                               |
-| `createAppLifecycle`   | Reactive `active`; pauses playing media in the background; `onPause` and `onResume`                                           |
-| `handleDeepLinks`      | Universal links, app links and custom schemes into the app router (`deepLinkPath` maps the URL)                               |
-| `createNetworkStatus`  | Reactive `connected` and `type`; optional offline and back-online toasts                                                      |
-| `openExternalLinks`    | Other-origin links open in the in-app browser with a themed toolbar                                                           |
-| `hideSplashScreen`     | Lifts the splash after `until`, the fonts and a painted frame; no fade under reduced motion                                   |
-| `followSystemTextSize` | Applies the system text size, and re-reads it on resume                                                                       |
-| `bridgeClipboard`      | Routes `navigator.clipboard.writeText` through the Clipboard plugin                                                           |
 | `createFiles`          | `pick({ accept, multiple })` resolves `File`s from the native picker or a file input; `save(file)` to Documents or a download |
 | `markNativePlatform`   | `data-native-platform="ios"` or `"android"` on `<html>`, for platform-specific CSS                                            |
 | `nativePlatform`       | `'ios'`, `'android'` or `null`                                                                                                |
@@ -282,6 +264,9 @@ reject with the plugin's error; on the server `pick` resolves `[]` and `save` `{
 `styles.css` is zero-specificity throughout, so your own CSS always wins, and inert in a browser:
 
 - `--ldt-safe-*` from Capacitor's injected `--safe-area-inset-*`, then `env()`.
+- Under `data-native-platform`: a fixed strip as tall as the top safe area, in `surface`, so the
+  page never scrolls under the clock or the Dynamic Island once `Topbar` has scrolled away.
+  Override `body::before` to restyle or remove it.
 - While the keyboard is up: the bottom safe area becomes `--ldt-keyboard-inset`, and `TabBar` is
   hidden.
 - Under `data-native-platform`: no tap highlight, and long-pressing a control does not select its

@@ -1,0 +1,8 @@
+@import '@loidolt/theme-svelte/styles.css';
+@import '@loidolt/theme-styles/presets/loidolt';
+@import '@loidolt/theme-styles/presets/loidolt-dark';
+@import '@loidolt/theme-styles/presets/soft';
+@import '@loidolt/theme-styles/presets/soft-dark';
+@import '@loidolt/theme-styles/presets/compact';
+@import '@loidolt/theme-styles/presets/compact-dark';
+@import '@loidolt/theme-capacitor/styles.css';

@@ -7,3 +7,8 @@ __snapshots__
 *-snapshots
 **/src-tauri/target
 **/src-tauri/gen
+**/ios/App/App/public
+**/ios/DerivedData
+**/ios/App/CapApp-SPM
+**/ios/App/App/capacitor.config.json
+**/ios/App/App/config.xml
