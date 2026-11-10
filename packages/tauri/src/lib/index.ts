@@ -15,6 +15,16 @@ export { filesFromArgs, handleSecondInstance } from './single-instance.js';
 export type { SecondInstance, SingleInstanceOptions } from './single-instance.js';
 export { createTray } from './tray.js';
 export type { Tray, TrayContent, TrayMenuItem, TrayOptions } from './tray.js';
+export { createMenuBar, isMenuBarModule, menuAccelerator } from './menu-bar.svelte.js';
+export type {
+  MenuBar,
+  MenuBarEntry,
+  MenuBarLabels,
+  MenuBarLayoutContext,
+  MenuBarMenu,
+  MenuBarOptions,
+  MenuBarPlatform,
+} from './menu-bar.svelte.js';
 export { setupTauri } from './setup.js';
 export type { SetupTauriOptions, TauriPlugins, TauriSetup } from './setup.js';
 export {
@@ -29,6 +39,13 @@ export type {
   WindowAppearanceOptions,
   WindowChromeOptions,
 } from './window.svelte.js';
+export type {
+  AppMenuHandle,
+  MenuBarModule,
+  MenuItemHandle,
+  PredefinedMenuItemName,
+  SubmenuHandle,
+} from './types.js';
 export type {
   DeepLinkPlugin,
   EventModule,

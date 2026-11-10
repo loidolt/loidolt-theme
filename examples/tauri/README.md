@@ -44,6 +44,10 @@ quickest check that the Rust side builds.
   pauses and resumes, and quits. Run `npm run tauri:dev`, then launch the binary again with a file
   path after it (`src-tauri/target/debug/theme-tauri-example notes.md`) to see the second launch
   arrive in the first window.
+- The menu bar: a `createCommands` registry passed as `menuBar: { commands }`, with
+  `@tauri-apps/api/menu` (already in `core:default`). Its groups become File, Edit and View menus
+  around the standard macOS app, Edit and Window menus; Reset the count greys out at zero, and
+  pausing renames the View item. The same shortcuts work in a browser through `commands.listen()`.
 - The platform badge reads `desktop.platform`: `null` in a browser, the OS in a window.
 - `@loidolt/theme-tauri/styles.css` after the theme's stylesheet.
 - Window chrome: `getCurrentWindow` and the `createTheme` store passed to `setupTauri`, with
