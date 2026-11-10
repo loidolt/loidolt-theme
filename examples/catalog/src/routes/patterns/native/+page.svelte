@@ -96,6 +96,8 @@ await native.ready; // theme restored, splash gone`;
     ['@capacitor/browser', 'External links in the in-app browser'],
     ['@capacitor/text-zoom', 'Following the system text size'],
     ['@capacitor/clipboard', 'Copy buttons on Android'],
+    ['@capacitor/share', 'The native share sheet'],
+    ['@capacitor/filesystem', 'Sharing a File or Blob natively (written to the cache first)'],
     ['@capacitor/status-bar', 'Only for Android apps that opt out of edge-to-edge'],
   ] as const;
 
@@ -167,6 +169,11 @@ await native.ready; // theme restored, splash gone`;
       'Routes navigator.clipboard.writeText through the Clipboard plugin',
     ],
     [
+      'createShare',
+      'share',
+      'share() through the native sheet, the Web Share API, then a download or the clipboard; canShare()',
+    ],
+    [
       'markNativePlatform',
       '—',
       'data-native-platform="ios" or "android" on <html>, for platform-specific CSS',
@@ -186,6 +193,41 @@ await native.ready; // theme restored, splash gone`;
 :where([data-keyboard='open'] .ldt-tab-bar) {
   display: none;
 }`;
+
+  const sharing = `import { Filesystem } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+
+const native = setupCapacitor({ plugins: { Share, Filesystem /* … */ }, toaster });
+
+// Share the exported file: the native sheet, else the browser's, else a download.
+const { method, cancelled } = await native.share!.share({
+  title: 'Export',
+  files: [new File([bytes], 'export.pdf', { type: 'application/pdf' })],
+});
+
+// A link: the sheet, else copied to the clipboard with a toast.
+await native.share!.share({ url: location.href });
+
+// Label the button for what will happen.
+const label = (await native.share!.canShare({ files })) ? 'Share' : 'Download';`;
+
+  const shareSteps = [
+    [
+      'Native share sheet',
+      'iOS or Android shell with Share',
+      'A File or Blob is written to the cache with Filesystem first; the last share’s files are cleared at the start of the next',
+    ],
+    [
+      'Web Share API',
+      'navigator.share, and navigator.canShare for files',
+      'The browser’s own share sheet',
+    ],
+    [
+      'Fallback',
+      'Anything else',
+      'Files download; a link or text is copied to the clipboard (fallback: open opens a link in a new tab instead)',
+    ],
+  ] as const;
 
   /*
    * The demo device. Insets match a current iPhone in portrait; the keyboard is drawn over the
@@ -349,6 +391,34 @@ await native.ready; // theme restored, splash gone`;
     to move.
   </p>
   <CodeBlock code={knobs} />
+</Section>
+
+<Section title="Sharing" headingLevel={2}>
+  <p class="docs-note">
+    <code>native.share</code> is there with or without plugins. Pass <code>Share</code>, and
+    <code>Filesystem</code> to share files, for the native sheet in the app; in a browser it uses
+    the Web Share API and then falls back. It resolves with the channel it used and whether the user
+    closed the sheet: a cancel is <code>cancelled: true</code>, never an error.
+  </p>
+  <Table caption="What share() tries, in order">
+    <thead>
+      <tr>
+        <TableHeader>Channel</TableHeader>
+        <TableHeader>When</TableHeader>
+        <TableHeader>Does</TableHeader>
+      </tr>
+    </thead>
+    <tbody>
+      {#each shareSteps as [channel, when, does] (channel)}
+        <tr>
+          <td>{channel}</td>
+          <td>{when}</td>
+          <td>{does}</td>
+        </tr>
+      {/each}
+    </tbody>
+  </Table>
+  <CodeBlock code={sharing} />
 </Section>
 
 <Section title="Adapters" headingLevel={2}>

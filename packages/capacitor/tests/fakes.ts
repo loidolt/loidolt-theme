@@ -101,3 +101,28 @@ export function fakeToaster() {
     dismiss: vi.fn((_id: string) => {}),
   };
 }
+
+export function fakeShare(result: { activityType?: string } = {}) {
+  return {
+    canShare: vi.fn(async () => ({ value: true })),
+    share: vi.fn(async (_options: Record<string, unknown>) => result),
+  };
+}
+
+/** A Filesystem that keeps what it is given, keyed `DIRECTORY/path`. */
+export function fakeFilesystem() {
+  const files = new Map<string, string | Blob>();
+  return {
+    files,
+    writeFile: vi.fn(async (options: { path: string; data: string | Blob; directory?: string }) => {
+      const key = `${options.directory}/${options.path}`;
+      files.set(key, options.data);
+      return { uri: `file:///${key}` };
+    }),
+    rmdir: vi.fn(async ({ path, directory }: { path: string; directory?: string }) => {
+      for (const key of [...files.keys()]) {
+        if (key.startsWith(`${directory}/${path}/`)) files.delete(key);
+      }
+    }),
+  };
+}

@@ -120,5 +120,31 @@ export interface ClipboardPlugin {
   write(options: { string?: string }): Promise<void>;
 }
 
+/** `@capacitor/share`. */
+export interface SharePlugin {
+  canShare(): Promise<{ value: boolean }>;
+  share(options: {
+    title?: string;
+    text?: string;
+    url?: string;
+    files?: string[];
+    dialogTitle?: string;
+  }): Promise<{ activityType?: string }>;
+}
+
+/**
+ * `@capacitor/filesystem`, for the files these adapters write. `directory` is one of the
+ * plugin's `Directory` values (`'CACHE'`, `'DOCUMENTS'`, …); natively, `data` is base64.
+ */
+export interface FilesystemPlugin {
+  writeFile(options: {
+    path: string;
+    data: string | Blob;
+    directory?: string;
+    recursive?: boolean;
+  }): Promise<{ uri: string }>;
+  rmdir(options: { path: string; directory?: string; recursive?: boolean }): Promise<void>;
+}
+
 /** Undoes whatever the adapter installed. Safe to call twice. */
 export type Teardown = () => void;
