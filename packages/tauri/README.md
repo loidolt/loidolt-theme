@@ -31,11 +31,13 @@ adapters for, together with the matching Rust crate in `src-tauri`:
 npm install @tauri-apps/plugin-os
 ```
 
-| Module                                 | Turns on                                                         |
-| -------------------------------------- | ---------------------------------------------------------------- |
-| `@tauri-apps/api` (`getCurrentWindow`) | Window background, appearance, overlay title bar, hidden launch  |
-| `@tauri-apps/plugin-os`                | The platform read from Rust instead of the web view's user agent |
-| `@tauri-apps/plugin-notification`      | OS notifications from Rust, in `desktop.notifications`           |
+| Module                                      | Turns on                                                         |
+| ------------------------------------------- | ---------------------------------------------------------------- |
+| `@tauri-apps/api` (`getCurrentWindow`)      | Window background, appearance, overlay title bar, hidden launch  |
+| `@tauri-apps/plugin-os`                     | The platform read from Rust instead of the web view's user agent |
+| `@tauri-apps/plugin-notification`           | OS notifications from Rust, in `desktop.notifications`           |
+| `@tauri-apps/api` (`event`, `tray`, `menu`) | Second launches, and a tray icon with a menu                     |
+| `@tauri-apps/plugin-deep-link`              | URLs that open the app, routed into it                           |
 
 ## Set up
 
@@ -178,6 +180,101 @@ becomes an `info` toast when a `toaster` was given, and it still resolves `false
 
 `notifications: false` leaves `desktop.notifications` out.
 
+## Running in the background
+
+For an app that keeps working with its window closed: one instance, links that open it, and a
+tray icon.
+
+```svelte
+<script lang="ts">
+  import { goto } from '$app/navigation';
+  import { defaultWindowIcon } from '@tauri-apps/api/app';
+  import * as event from '@tauri-apps/api/event';
+  import * as menu from '@tauri-apps/api/menu';
+  import * as tray from '@tauri-apps/api/tray';
+  import * as deepLink from '@tauri-apps/plugin-deep-link';
+  import { isTauri, setupTauri } from '@loidolt/theme-tauri';
+
+  const desktop = setupTauri({
+    plugins: { event, deepLink, tray, menu },
+    singleInstance: { onSecondInstance: ({ files }) => files.forEach(openFile) },
+    deepLinks: { navigate: goto },
+    tray: {
+      icon: isTauri() ? defaultWindowIcon() : null,
+      tooltip: 'Watching for new files',
+      items: [{ id: 'show', label: 'Show window', action: showWindow }, 'separator', 'quit'],
+      onClick: showWindow,
+    },
+  });
+</script>
+```
+
+Each piece is on only when its module and its options are both given, and does nothing in a
+browser. They are also exported on their own: `handleSecondInstance`, `handleDeepLinks` and
+`createTray`, each returning its teardown (`createTray` an object with `destroy()`).
+
+### Single instance
+
+`tauri-plugin-single-instance` has no JavaScript side. Register it **first** in
+`src-tauri/src/lib.rs`, with a callback that focuses the running window and emits the second
+launch as an event:
+
+```rust
+use tauri::{Emitter, Manager};
+
+#[derive(Clone, serde::Serialize)]
+struct SecondInstance { args: Vec<String>, cwd: String }
+
+tauri::Builder::default()
+    .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
+        if let Some(window) = app.get_webview_window("main") {
+            let _ = window.unminimize();
+            let _ = window.show();
+            let _ = window.set_focus();
+        }
+        let _ = app.emit("single-instance", SecondInstance { args, cwd });
+    }))
+```
+
+`singleInstance: { onSecondInstance }` (or `handleSecondInstance({ event, onSecondInstance })`)
+listens for it and calls back with `{ args, cwd, files }`. `files` are the paths in `args`:
+everything after the executable that is not a flag or a URL, resolved against `cwd`
+(`filesFromArgs(args, cwd)` does the same on its own). Rust may send `files` itself; on macOS,
+which keeps one instance on its own, files opened from the Finder while the app runs arrive as
+`RunEvent::Opened`, and `examples/tauri` forwards those as the same event. `eventName` changes
+`'single-instance'`.
+
+### Deep links
+
+Pass `@tauri-apps/plugin-deep-link` (`tauri_plugin_deep_link::init()`, `deep-link:default`) and
+`deepLinks: { navigate }`: the link that launched the app is read once at startup, and every link
+that arrives while it runs follows. `deepLinkPath` turns `myapp://projects/42` into
+`/projects/42`; `resolve` replaces it (return `null` to skip one), and `onUrl` sees every raw URL.
+
+Declare the scheme in `tauri.conf.json`:
+
+```json
+{ "plugins": { "deep-link": { "desktop": { "schemes": ["myapp"] } } } }
+```
+
+On macOS the scheme is registered from the bundle's `Info.plist`, so links only open a built and
+installed app (`tauri build`), not `tauri dev`. On Windows and Linux, call
+`app.deep_link().register_all()` in `setup` for development, and enable the `deep-link` feature of
+`tauri-plugin-single-instance` so a link opened while the app runs reaches the running instance
+instead of starting a second one.
+
+### Tray icon
+
+Pass `@tauri-apps/api/tray` and `@tauri-apps/api/menu` (and enable the `tray-icon` feature of the
+`tauri` crate) with `tray` options, and `desktop.tray` is an icon in the menu bar or system tray:
+`icon` (a path, bytes, an `Image`, or a promise of one such as `defaultWindowIcon()`), `tooltip`,
+`title` (macOS, beside the icon), and `items`, a list of `{ id, label, enabled?, action? }`,
+`'separator'` or `'quit'` (the platform's own Quit item; not on Linux). `onClick` handles a left
+click on the icon, and then the menu opens on a right click only.
+
+`desktop.tray.update({ tooltip, title, icon, items })` changes what it is given, and teardown
+removes the icon and frees its menu.
+
 ## Exports
 
 Each piece is also exported on its own. Every one is a no-op outside a Tauri window, except
@@ -194,6 +291,11 @@ Each piece is also exported on its own. Every one is a no-op outside a Tauri win
 | `showWindow`           | Shows a window that starts hidden once the theme and fonts are in                           |
 | `windowBackground`     | The theme's launch colour, for `backgroundColor` in `tauri.conf.json`                       |
 | `createNotifications`  | `permission`, `requestPermission()` and `notify()`; the Web Notifications API outside Tauri |
+| `handleSecondInstance` | Second launches forwarded by `tauri-plugin-single-instance`, with their files               |
+| `filesFromArgs`        | The file paths in a command line, resolved against its working directory                    |
+| `handleDeepLinks`      | Links that open the app, at startup and while it runs, into its router                      |
+| `deepLinkPath`         | `myapp://projects/42` → `/projects/42`                                                      |
+| `createTray`           | A tray icon with a menu, `update()` and `destroy()`                                         |
 
 `isTauri` reads the same global as `isTauri()` from `@tauri-apps/api/core`, so the two agree; this
 one never loads the Tauri runtime, which keeps it safe in a server bundle.

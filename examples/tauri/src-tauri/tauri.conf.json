@@ -27,6 +27,13 @@
       "csp": null
     }
   },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["theme-example"]
+      }
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",

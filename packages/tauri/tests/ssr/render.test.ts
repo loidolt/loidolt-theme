@@ -23,7 +23,19 @@ describe('on the server', () => {
       requestPermission: vi.fn(async () => 'granted' as const),
       sendNotification: vi.fn(),
     };
-    const desktop = lib.setupTauri({ plugins: { os, notification } });
+    const event = { listen: vi.fn(async () => () => {}) };
+    const deepLink = {
+      getCurrent: vi.fn(async () => ['myapp://a']),
+      onOpenUrl: vi.fn(async () => () => {}),
+    };
+    const tray = { TrayIcon: { new: vi.fn() } };
+    const menu = { Menu: { new: vi.fn() } };
+    const desktop = lib.setupTauri({
+      plugins: { os, notification, event, deepLink, tray, menu },
+      singleInstance: { onSecondInstance: () => {} },
+      deepLinks: { navigate: () => {} },
+      tray: { tooltip: 'Running', items: [{ id: 'quit', label: 'Quit' }] },
+    });
     await desktop.ready;
     expect(desktop.platform).toBeNull();
     expect(os.type).not.toHaveBeenCalled();
@@ -32,6 +44,11 @@ describe('on the server', () => {
     expect(await desktop.notifications?.notify({ title: 'Export finished' })).toBe(false);
     expect(notification.isPermissionGranted).not.toHaveBeenCalled();
     expect(notification.sendNotification).not.toHaveBeenCalled();
+    expect(event.listen).not.toHaveBeenCalled();
+    expect(deepLink.getCurrent).not.toHaveBeenCalled();
+    expect(tray.TrayIcon.new).not.toHaveBeenCalled();
+    expect(menu.Menu.new).not.toHaveBeenCalled();
+    await desktop.tray?.update({ tooltip: 'Idle' });
     expect(lib.markTauriPlatform()).toBeTypeOf('function');
     desktop.destroy();
   });

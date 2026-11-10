@@ -9,6 +9,12 @@ export type {
   NotificationToaster,
   NotifyOptions,
 } from './notifications.svelte.js';
+export { deepLinkPath, handleDeepLinks } from './deep-links.js';
+export type { DeepLinkOptions } from './deep-links.js';
+export { filesFromArgs, handleSecondInstance } from './single-instance.js';
+export type { SecondInstance, SingleInstanceOptions } from './single-instance.js';
+export { createTray } from './tray.js';
+export type { Tray, TrayContent, TrayMenuItem, TrayOptions } from './tray.js';
 export { setupTauri } from './setup.js';
 export type { SetupTauriOptions, TauriPlugins, TauriSetup } from './setup.js';
 export {
@@ -24,9 +30,17 @@ export type {
   WindowChromeOptions,
 } from './window.svelte.js';
 export type {
+  DeepLinkPlugin,
+  EventModule,
+  MenuModule,
   NotificationPlugin,
   OsPlugin,
+  TauriResource,
   Teardown,
+  TrayIconHandle,
+  TrayImage,
+  TrayMenuEntry,
+  TrayModule,
   UnlistenFn,
   WindowPlugin,
   WindowTheme,
