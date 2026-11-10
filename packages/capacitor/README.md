@@ -239,8 +239,10 @@ Or on its own: `createFiles({ FilePicker, Filesystem, directory })`.
 extensions are mapped through `EXTENSION_TYPES` (`acceptToMimeTypes` does it), and an extension
 it does not know turns the filter off rather than make the file unpickable — like the attribute,
 it is a hint, not a check. Dismissing the picker resolves `[]`. Picking needs no permission: the
-system draws the picker. Natively each file is read into memory through its web view URL; in a
-browser the hidden file input must be opened from a click or key handler, like any file input,
+system draws the picker. Natively each file is read into memory through its web view URL; on
+iOS the picker first copies it into the app's cache, and with `Filesystem` passed `pick` deletes
+that copy once it is read (only paths inside the cache, and a failed delete never fails the pick);
+in a browser the hidden file input must be opened from a click or key handler, like any file input,
 and resolves `[]` on its `cancel` event.
 
 **`save(file, { folder, overwrite })`** writes a `File` or `{ blob, name }` with `Filesystem` and

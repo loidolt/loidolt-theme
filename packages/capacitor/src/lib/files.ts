@@ -3,10 +3,16 @@ import { blobToBase64, downloadBlob, safeFileName } from './blob.js';
 import { nativePlatform } from './platform.js';
 import type { FilePickerPlugin, FilesystemPlugin, PickedNativeFile } from './types.js';
 
-/** The part of `@capacitor/filesystem` saving uses. */
+/** The part of `@capacitor/filesystem` saving, and clearing up after picking, use. */
 type FilesSystemPlugin = Pick<
   FilesystemPlugin,
-  'writeFile' | 'stat' | 'checkPermissions' | 'requestPermissions'
+  | 'writeFile'
+  | 'stat'
+  | 'checkPermissions'
+  | 'requestPermissions'
+  | 'getUri'
+  | 'deleteFile'
+  | 'rmdir'
 >;
 
 export interface PickOptions {
@@ -45,7 +51,10 @@ export type SaveOutcome =
 export interface NativeFilesOptions {
   /** `FilePicker` from `@capawesome/capacitor-file-picker`. Without it, the browser's picker. */
   FilePicker?: FilePickerPlugin;
-  /** `Filesystem` from `@capacitor/filesystem`. Needed to save in a native shell. */
+  /**
+   * `Filesystem` from `@capacitor/filesystem`. Needed to save in a native shell; with it, `pick`
+   * also removes the copies the native picker leaves in the app's cache once they are read.
+   */
   Filesystem?: FilesSystemPlugin;
   /**
    * The `Directory` files are saved to. Defaults to `'DOCUMENTS'`: on iOS the app's Documents
@@ -153,6 +162,45 @@ async function toFile(picked: PickedNativeFile): Promise<File> {
   });
 }
 
+/**
+ * The path of a picked file inside the app's cache directory, as `Filesystem` takes it with
+ * `directory: 'CACHE'`, or `null` when it lies anywhere else (or cannot be told).
+ */
+function cachePath(path: string | undefined, cacheUri: string): string | null {
+  const root = cacheUri.replace(/\/+$/, '');
+  if (!path || !root || !path.startsWith(`${root}/`)) return null;
+  let segments: string[];
+  try {
+    segments = path
+      .slice(root.length + 1)
+      .split('/')
+      .map(decodeURIComponent);
+  } catch {
+    return null;
+  }
+  if (segments.some((segment) => !segment || segment === '.' || segment === '..')) return null;
+  return segments.join('/');
+}
+
+/**
+ * Removes the copy the native picker left in the cache directory (iOS copies every picked file
+ * into `Library/Caches/<uuid>/`), and the folder it made for it when that is empty now. Files
+ * outside the cache are the user's own and are left alone. Failures are ignored: the file has
+ * been read already, and the cache is the system's to clear.
+ */
+async function removePickedCopy(fs: FilesSystemPlugin, path: string, cacheUri: string) {
+  const inCache = cachePath(path, cacheUri);
+  if (!inCache) return;
+  try {
+    await fs.deleteFile({ path: inCache, directory: 'CACHE' });
+    const folder = inCache.slice(0, inCache.lastIndexOf('/'));
+    // Not recursive: the folder goes only when nothing else is in it.
+    if (folder) await fs.rmdir({ path: folder, directory: 'CACHE', recursive: false });
+  } catch {
+    // Left for the system to clear.
+  }
+}
+
 /** The browser's own picker: a hidden file input, opened and removed again. */
 function pickInBrowser({ accept, multiple = false }: PickOptions): Promise<File[]> {
   return new Promise((resolve) => {
@@ -238,7 +286,22 @@ export function createFiles(options: NativeFilesOptions = {}): NativeFiles {
         if (isCancel(error)) return [];
         throw error;
       }
-      return Promise.all(picked.map(toFile));
+      if (!Filesystem) return Promise.all(picked.map(toFile));
+      const cacheUri = picked.some((file) => file.path)
+        ? Filesystem.getUri({ path: '', directory: 'CACHE' }).then(
+            ({ uri }) => uri,
+            () => ''
+          )
+        : Promise.resolve('');
+      return Promise.all(
+        picked.map(async (file) => {
+          try {
+            return await toFile(file);
+          } finally {
+            if (file.path) await removePickedCopy(Filesystem, file.path, await cacheUri);
+          }
+        })
+      );
     },
 
     async save(file, saveOptions = {}) {

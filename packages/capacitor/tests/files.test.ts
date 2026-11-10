@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { acceptToMimeTypes, createFiles, FilePermissionError } from '../src/lib/index.js';
 import { blobToBase64 } from '../src/lib/blob.js';
-import { fakeFilePicker, fakeFilesystem, platform } from './fakes.js';
+import { CACHE_URI, fakeFilePicker, fakeFilesystem, platform } from './fakes.js';
 
 const pdf = () => new File(['%PDF-1.7'], 'export.pdf', { type: 'application/pdf' });
 
@@ -123,6 +123,82 @@ describe('pick in a native shell', () => {
     await expect(createFiles({ FilePicker: unreadable }).pick()).rejects.toThrow('Could not read');
     const pathless = fakeFilePicker([{ name: 'b', mimeType: '', size: 0 }]);
     await expect(createFiles({ FilePicker: pathless }).pick()).rejects.toThrow('no path');
+  });
+
+  it('removes the copies the picker left in the cache once they are read', async () => {
+    platform.current = 'ios';
+    const read: string[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        read.push(url);
+        return { ok: true, blob: async () => new Blob(['x']) };
+      })
+    );
+    const Filesystem = fakeFilesystem();
+    Filesystem.files.set('CACHE/UUID-1/a b.pdf', 'x');
+    Filesystem.files.set('CACHE/UUID-2/c.pdf', 'x');
+    Filesystem.files.set('CACHE/UUID-2/other.txt', 'x');
+    const FilePicker = fakeFilePicker([
+      { name: 'a b.pdf', mimeType: '', size: 1, path: `${CACHE_URI}/UUID-1/a%20b.pdf` },
+      { name: 'c.pdf', mimeType: '', size: 1, path: `${CACHE_URI}/UUID-2/c.pdf` },
+      // Android hands back content URIs, and files outside the cache are the user's own.
+      { name: 'd.pdf', mimeType: '', size: 1, path: 'content://media/d.pdf' },
+      { name: 'e.pdf', mimeType: '', size: 1, path: `${CACHE_URI}/../Documents/e.pdf` },
+    ]);
+
+    const files = await createFiles({ FilePicker, Filesystem }).pick({ multiple: true });
+
+    expect(files.map((file) => file.name)).toEqual(['a b.pdf', 'c.pdf', 'd.pdf', 'e.pdf']);
+    expect(read).toHaveLength(4);
+    expect(Filesystem.getUri).toHaveBeenCalledOnce();
+    expect(Filesystem.deleteFile.mock.calls.map(([options]) => options)).toEqual([
+      { path: 'UUID-1/a b.pdf', directory: 'CACHE' },
+      { path: 'UUID-2/c.pdf', directory: 'CACHE' },
+    ]);
+    // The picker's folder goes with its copy, unless something else is in it.
+    expect(Filesystem.rmdir).toHaveBeenCalledWith({
+      path: 'UUID-1',
+      directory: 'CACHE',
+      recursive: false,
+    });
+    expect([...Filesystem.files.keys()]).toEqual(['CACHE/UUID-2/other.txt']);
+  });
+
+  it('never fails a pick over the clean-up', async () => {
+    platform.current = 'ios';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({ ok: true, blob: async () => new Blob(['x']) }))
+    );
+    const picked = [{ name: 'a.pdf', mimeType: '', size: 1, path: `${CACHE_URI}/U/a.pdf` }];
+    const Filesystem = fakeFilesystem();
+    Filesystem.deleteFile.mockRejectedValueOnce(new Error('Permission denied'));
+    expect(
+      await createFiles({ FilePicker: fakeFilePicker(picked), Filesystem }).pick()
+    ).toHaveLength(1);
+
+    Filesystem.getUri.mockRejectedValueOnce(new Error('No cache'));
+    Filesystem.deleteFile.mockClear();
+    expect(
+      await createFiles({ FilePicker: fakeFilePicker(picked), Filesystem }).pick()
+    ).toHaveLength(1);
+    expect(Filesystem.deleteFile).not.toHaveBeenCalled();
+  });
+
+  it('removes the copy even when it cannot be read', async () => {
+    platform.current = 'ios';
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('', { status: 404 }))
+    );
+    const Filesystem = fakeFilesystem();
+    Filesystem.files.set('CACHE/U/a.pdf', 'x');
+    const FilePicker = fakeFilePicker([
+      { name: 'a.pdf', mimeType: '', size: 1, path: `${CACHE_URI}/U/a.pdf` },
+    ]);
+    await expect(createFiles({ FilePicker, Filesystem }).pick()).rejects.toThrow('Could not read');
+    expect(Filesystem.files.size).toBe(0);
   });
 
   it('falls back to the file input without the plugin', async () => {
