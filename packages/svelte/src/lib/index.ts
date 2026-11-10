@@ -24,6 +24,7 @@ export { default as DataTableSearch } from './components/DataTableSearch.svelte'
 export { default as Dialog } from './components/Dialog.svelte';
 export { default as Drawer } from './components/Drawer.svelte';
 export { default as DropdownMenu } from './components/DropdownMenu.svelte';
+export { default as Dropzone } from './components/Dropzone.svelte';
 export { default as EmptyState } from './components/EmptyState.svelte';
 export { default as Field } from './components/Field.svelte';
 export { default as Fieldset } from './components/Fieldset.svelte';
@@ -106,6 +107,14 @@ export {
 } from 'bits-ui';
 
 export { cx, describedBy } from './utils.js';
+export { filterFiles, matchesAccept, parseAccept } from './file-accept.js';
+export type {
+  FileFilterOptions,
+  FileFilterResult,
+  FileLike,
+  FileRejection,
+  FileRejectionReason,
+} from './file-accept.js';
 export { autofocus, clickOutside, escapeKey, focusTrap, rovingFocus } from './attachments.js';
 export type {
   AutofocusOptions,
