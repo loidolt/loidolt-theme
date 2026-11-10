@@ -132,7 +132,8 @@ ${endScript}
     Below the <code>compact</code> breakpoint a navigation column has nowhere to sit. Swap it for a
     <code>Drawer</code>: same content, modal presentation, focus trapped while it is open. This site
     does exactly that — narrow the window and the component list moves behind
-    <em>Browse</em>.
+    <em>Browse</em>. Shipping the same app to a phone as a native shell? See
+    <a href={`${base}/patterns/native`}>Native apps</a> for safe areas, the back button and the keyboard.
   </p>
   <Demo label="The drawer that replaces the column">
     <Drawer title="Navigation" description="Everything in this project">
