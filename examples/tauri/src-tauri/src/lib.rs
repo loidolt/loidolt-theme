@@ -35,6 +35,10 @@ pub fn run() {
         .plugin(tauri_plugin_os::init())
         // `@tauri-apps/plugin-notification`, passed as `plugins: { notification }`.
         .plugin(tauri_plugin_notification::init())
+        // `@tauri-apps/plugin-dialog` and `@tauri-apps/plugin-fs`, passed as `plugins: { dialog, fs }`
+        // for the open and save dialogs and for reading files dropped on the window.
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
         .setup(|_app| {
             // Windows and Linux register the scheme at run time (macOS does it from the bundle).
             #[cfg(any(windows, target_os = "linux"))]

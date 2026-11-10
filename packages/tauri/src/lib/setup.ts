@@ -1,6 +1,8 @@
 import type { Theme } from '@loidolt/theme-svelte';
 import { onDestroy } from 'svelte';
 import { handleDeepLinks, type DeepLinkOptions } from './deep-links.js';
+import { createFileDrop, type FileDrop, type FileDropOptions } from './file-drop.svelte.js';
+import { createDesktopFiles, type DesktopFiles } from './files.js';
 import {
   createNotifications,
   type Notifications,
@@ -17,6 +19,9 @@ import { handleSecondInstance, type SingleInstanceOptions } from './single-insta
 import { createTray, type Tray, type TrayOptions } from './tray.js';
 import type {
   DeepLinkPlugin,
+  DialogPlugin,
+  FsPlugin,
+  WebviewPlugin,
   EventModule,
   MenuModule,
   NotificationPlugin,
@@ -58,6 +63,15 @@ export interface TauriPlugins {
   /** `@tauri-apps/api/tray` and `@tauri-apps/api/menu`: a tray icon, with `tray`. */
   tray?: TrayModule;
   menu?: MenuModule;
+  /** `@tauri-apps/plugin-dialog`: native open and save dialogs, in `desktop.files`. */
+  dialog?: DialogPlugin;
+  /** `@tauri-apps/plugin-fs`: reading picked and dropped files, writing saved ones. */
+  fs?: FsPlugin;
+  /**
+   * The web view: `getCurrentWebview` from `@tauri-apps/api/webview`, uncalled like `window`, or
+   * the web view it returns. Files dropped on the window, with `fileDrop`.
+   */
+  webview?: WebviewPlugin | (() => WebviewPlugin);
 }
 
 /** `false` turns one adapter off even though its module is present. */
@@ -99,6 +113,13 @@ export interface SetupTauriOptions {
   deepLinks?: Omit<DeepLinkOptions, 'deepLink'>;
   /** A tray icon with a menu, as `desktop.tray`. Needs `tray` and `menu`. */
   tray?: Omit<TrayOptions, 'tray' | 'menu'>;
+  /**
+   * `desktop.files`: native open and save dialogs through `dialog` and `fs` in a window, a file
+   * input and a download in a browser. `false` leaves it out.
+   */
+  files?: false;
+  /** Files dropped on the window, as `desktop.fileDrop`. Needs `webview`, and `fs` to read them. */
+  fileDrop?: Omit<FileDropOptions, 'webview' | 'fs'>;
 }
 
 export interface TauriSetup {
@@ -113,6 +134,10 @@ export interface TauriSetup {
   readonly notifications: Notifications | undefined;
   /** Present when `tray` options and the `tray` and `menu` modules were given. */
   readonly tray: Tray | undefined;
+  /** `pick()`, `pickPaths()` and `save()`; absent with `files: false`. */
+  readonly files: DesktopFiles | undefined;
+  /** Present when `fileDrop` options and the `webview` module were given; reactive `dragging`. */
+  readonly fileDrop: FileDrop | undefined;
   /** Removes everything. Automatic when called during component initialisation. */
   destroy(): void;
 }
@@ -147,6 +172,9 @@ export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
     deepLink,
     tray: trayModule,
     menu,
+    dialog,
+    fs,
+    webview,
   } = options.plugins ?? {};
   const platform = tauriPlatform(os);
   const win =
@@ -173,6 +201,13 @@ export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
     teardowns.push(tray.destroy);
   }
 
+  const files = options.files === false ? undefined : createDesktopFiles({ dialog, fs });
+  let fileDrop: FileDrop | undefined;
+  if (webview && options.fileDrop) {
+    fileDrop = createFileDrop({ ...options.fileDrop, webview, fs });
+    teardowns.push(fileDrop.destroy);
+  }
+
   let windowReady = Promise.resolve();
   if (win) {
     const appearanceOptions = on(options.appearance);
@@ -196,5 +231,5 @@ export function setupTauri(options: SetupTauriOptions = {}): TauriSetup {
     /* module scope: the caller owns `destroy()` */
   }
 
-  return { platform, ready, notifications, tray, destroy };
+  return { platform, ready, notifications, tray, files, fileDrop, destroy };
 }

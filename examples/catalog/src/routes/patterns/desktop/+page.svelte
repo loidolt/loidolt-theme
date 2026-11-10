@@ -3,6 +3,7 @@
     Badge,
     Button,
     createToaster,
+    Dropzone,
     PageHeader,
     Section,
     Table,
@@ -11,6 +12,8 @@
     ToastViewport,
   } from '@loidolt/theme-svelte';
   import {
+    acceptToFilters,
+    createDesktopFiles,
     createNotifications,
     deepLinkPath,
     filesFromArgs,
@@ -178,6 +181,16 @@ ${endScript}`;
     ['handleDeepLinks', 'Links that open the app, at startup and while it runs'],
     ['deepLinkPath', 'myapp://projects/42 becomes /projects/42'],
     ['createTray', 'A tray icon with a menu, update() and destroy()'],
+    [
+      'createDesktopFiles',
+      'pick(), pickPaths() and save() through the native dialogs; a file input and a download outside Tauri',
+    ],
+    [
+      'createFileDrop',
+      'Files dropped on the window, as Files into a Dropzone, with reactive dragging',
+    ],
+    ['acceptToFilters', 'An accept string as the dialog filters Tauri takes'],
+    ['readDesktopFiles', 'Paths read into Files typed by their extension'],
   ] as const;
 
   const toaster = createToaster({ duration: 6000 });
@@ -190,6 +203,68 @@ ${endScript}`;
       body: 'The report is ready in your downloads.',
     });
     outcome = shown ? 'Sent as a system notification.' : 'Shown as a toast instead.';
+  }
+
+  /* Files: dialogs and window drops. */
+
+  const filesCode = `<script lang="ts">
+  import { getCurrentWebview } from '@tauri-apps/api/webview';
+  import * as dialog from '@tauri-apps/plugin-dialog';
+  import * as fs from '@tauri-apps/plugin-fs';
+  import { Dropzone } from '@loidolt/theme-svelte';
+  import { setupTauri } from '@loidolt/theme-tauri';
+
+  let dropzone = $state<ReturnType<typeof Dropzone>>();
+
+  const desktop = setupTauri({
+    plugins: { dialog, fs, webview: getCurrentWebview },
+    // files dropped on the window go through the Dropzone's accept and onFiles
+    fileDrop: { target: () => dropzone },
+  });
+
+  async function openFiles() {
+    const files = (await desktop.files?.pick({ accept: '.pdf,image/*', multiple: true })) ?? [];
+    dropzone?.addFiles(files);
+  }
+${endScript}
+
+<Dropzone
+  bind:this={dropzone}
+  accept=".pdf,image/*"
+  multiple
+  window
+  externalDragging={desktop.fileDrop?.dragging}
+  onFiles={upload}
+/>
+<Button onclick={openFiles}>Open…</Button>
+<Button onclick={() => desktop.files?.save(new File([bytes], 'export.pdf'))}>Save…</Button>`;
+
+  const filesCapability = `// src-tauri/capabilities/default.json
+{
+  "permissions": ["core:default", "dialog:default", "fs:allow-read-file", "fs:allow-write-file"]
+}`;
+
+  const dropConfig = `// src-tauri/tauri.conf.json, in app.windows[0]: on by default
+{ "dragDropEnabled": true }`;
+
+  const sampleAccept = '.pdf, image/jpeg';
+  const sampleFilters = JSON.stringify(acceptToFilters(sampleAccept));
+
+  const files = createDesktopFiles();
+  let fileDemoDropzone = $state<ReturnType<typeof Dropzone>>();
+  let fileNames = $state<string[]>([]);
+  let saveOutcome = $state('');
+
+  async function openSample() {
+    const picked = await files.pick({ accept: '.txt,.md,.json', multiple: true });
+    if (picked.length) fileDemoDropzone?.addFiles(picked);
+  }
+
+  async function saveSample() {
+    const outcome = await files.save(
+      new File([`${fileNames.join('\n')}\n`], 'files.txt', { type: 'text/plain' })
+    );
+    saveOutcome = outcome.method === 'download' ? `Downloaded as ${outcome.name}.` : '';
   }
 
   const inTauri = isTauri();
@@ -352,6 +427,63 @@ ${endScript}`;
         <code>{filesFromArgs(sampleArgs, '/home/sam').join(', ')}</code>
       </dd>
     </dl>
+  </Demo>
+</Section>
+
+<Section title="Files" headingLevel={2}>
+  <p class="docs-note">
+    Pass <code>@tauri-apps/plugin-dialog</code> and <code>@tauri-apps/plugin-fs</code> and
+    <code>desktop.files</code> opens and saves through the native dialogs: <code>pick()</code>
+    resolves the chosen files as <code>File</code>s with their <code>path</code>, the same objects a
+    <code>Dropzone</code> hands you, and <code>save()</code> asks where and writes there. The API
+    matches
+    <code>createFiles</code> in the Capacitor package. In a browser, a file input and a download.
+  </p>
+  <p class="docs-note">
+    <strong>Dropped on the window.</strong> A Tauri window takes files dragged in from the OS before
+    the page sees them, so HTML drop events never fire. Pass <code>getCurrentWebview</code> uncalled
+    and <code>fileDrop</code>: the dropped paths are read into files and handed to the
+    <code>Dropzone</code>'s <code>addFiles()</code>, and <code>desktop.fileDrop.dragging</code>
+    drives its window overlay through <code>externalDragging</code>.
+  </p>
+  <CodeBlock code={filesCode} />
+  <p class="docs-note">
+    Paths picked in a dialog or dropped on the window join the fs scope on their own, so the file
+    commands are all the capability file needs. Each file is read whole into memory; for very large
+    ones use <code>pickPaths()</code> and read them in Rust.
+  </p>
+  <CodeBlock code={filesCapability} />
+  <p class="docs-note">
+    <strong><code>dragDropEnabled</code></strong> is what routes OS drops to Tauri. On Windows it
+    also stops HTML drag and drop inside the page; set it to <code>false</code> to keep that, and
+    the
+    <code>Dropzone</code>'s own <code>window</code> handling takes file drops as in a browser, without
+    paths.
+  </p>
+  <CodeBlock code={dropConfig} />
+  <Demo label="createDesktopFiles() and a Dropzone on this page, through the browser">
+    <div class="ldt-stack">
+      <Dropzone
+        bind:this={fileDemoDropzone}
+        accept=".txt,.md,.json"
+        multiple
+        hint="Text, Markdown or JSON"
+        onFiles={(accepted) => (fileNames = [...fileNames, ...accepted.map((file) => file.name)])}
+      />
+      <div class="ldt-cluster">
+        <Button onclick={openSample}>Open files</Button>
+        <Button variant="quiet" disabled={!fileNames.length} onclick={saveSample}>
+          Save the list
+        </Button>
+      </div>
+      <p class="ldt-utility-text" role="status">
+        {fileNames.length ? `Received ${fileNames.join(', ')}. ` : ''}{saveOutcome}
+      </p>
+      <dl class="docs-desktop-facts">
+        <dt><code>acceptToFilters</code></dt>
+        <dd><code>{sampleAccept}</code> → <code>{sampleFilters}</code></dd>
+      </dl>
+    </div>
   </Demo>
 </Section>
 

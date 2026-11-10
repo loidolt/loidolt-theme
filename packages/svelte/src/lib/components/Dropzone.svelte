@@ -24,6 +24,12 @@
      */
     window?: boolean;
     /**
+     * Shows the same window-drag state (`data-window-dragging` and the overlay) for a drag the page
+     * cannot see itself: files dragged over a desktop app's window, which Tauri reports outside the
+     * DOM. Hand the dropped files to `addFiles()`. Works with or without `window`.
+     */
+    externalDragging?: boolean;
+    /**
      * Fired for every batch that arrives — drop, picker, or `addFiles()` — with the files that
      * passed `accept`, `maxSize` and `maxFiles`, and the ones that did not.
      */
@@ -65,6 +71,7 @@
     maxSize,
     maxFiles,
     window: windowTarget = false,
+    externalDragging = false,
     onFiles,
     label = 'Drop files here',
     browseLabel = 'or choose files',
@@ -96,7 +103,9 @@
   let current: File[] = [];
 
   const dragging = $derived(areaDepth > 0);
-  const windowDragging = $derived(windowTarget && windowDepth > 0);
+  const windowDragging = $derived(
+    !disabled && ((windowTarget && windowDepth > 0) || externalDragging)
+  );
 
   const hasFiles = (event: DragEvent) =>
     Array.from(event.dataTransfer?.types ?? []).includes('Files');

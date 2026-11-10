@@ -75,3 +75,21 @@ describe('the window adapters on the server', () => {
     expect(lib.windowBackground('dark')).toMatch(/^#[0-9a-f]{6}$/);
   });
 });
+
+describe('the file adapters on the server', () => {
+  it('pick nothing, save nowhere and never listen for drops', async () => {
+    const dialog = { open: vi.fn(async () => '/a.txt'), save: vi.fn(async () => '/a.txt') };
+    const fs = { readFile: vi.fn(async () => new Uint8Array()), writeFile: vi.fn(async () => {}) };
+    const webview = vi.fn(() => ({ onDragDropEvent: vi.fn(async () => () => {}) }));
+    const desktop = lib.setupTauri({ plugins: { dialog, fs, webview }, fileDrop: {} });
+    expect(await desktop.files?.pick()).toEqual([]);
+    expect(await desktop.files?.pickPaths()).toEqual([]);
+    expect(await desktop.files?.save(new Blob([]) as File)).toEqual({ method: 'none' });
+    expect(desktop.fileDrop?.dragging).toBe(false);
+    desktop.destroy();
+    for (const call of [dialog.open, dialog.save, fs.readFile, fs.writeFile, webview]) {
+      expect(call).not.toHaveBeenCalled();
+    }
+    expect(lib.acceptToFilters('.pdf')).toEqual([{ name: 'PDF', extensions: ['pdf'] }]);
+  });
+});

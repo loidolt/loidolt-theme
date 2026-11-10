@@ -4,7 +4,7 @@ import { render } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import { setupTauri } from '../src/lib/index.js';
 import Harness from './Harness.svelte';
-import { enterTauri, fakeOs, fakeWindow } from './fakes.js';
+import { enterTauri, fakeDialog, fakeFs, fakeOs, fakeWebview, fakeWindow, flush } from './fakes.js';
 
 describe('setupTauri', () => {
   it('does nothing in a browser and is ready at once', async () => {
@@ -124,6 +124,60 @@ describe('setupTauri with the window', () => {
     await desktop.ready;
     expect(win.show).toHaveBeenCalledOnce();
     expect(win.onResized).not.toHaveBeenCalled();
+    desktop.destroy();
+  });
+});
+
+describe('setupTauri with files', () => {
+  it('gives desktop.files through the dialog and fs plugins in a window', async () => {
+    enterTauri('mac');
+    const dialog = fakeDialog('/Users/sam/a.txt');
+    const fs = fakeFs({ '/Users/sam/a.txt': 'a' });
+    const desktop = setupTauri({ plugins: { dialog, fs } });
+    const [file] = (await desktop.files?.pick({ accept: '.txt' })) ?? [];
+    expect(file).toMatchObject({ name: 'a.txt', path: '/Users/sam/a.txt' });
+    expect(desktop.fileDrop).toBeUndefined();
+    desktop.destroy();
+  });
+
+  it('leaves desktop.files out when told to', () => {
+    const desktop = setupTauri({ files: false });
+    expect(desktop.files).toBeUndefined();
+    desktop.destroy();
+  });
+
+  it('wires file drops through the web view and fs, and stops them on destroy', async () => {
+    enterTauri('mac');
+    const webview = fakeWebview();
+    const fs = fakeFs({ '/a.txt': 'a' });
+    const onFiles = vi.fn();
+    const desktop = setupTauri({
+      plugins: { webview: () => webview, fs },
+      fileDrop: { onFiles },
+    });
+    webview.fire({ type: 'enter', paths: ['/a.txt'], position: { x: 0, y: 0 } });
+    expect(desktop.fileDrop?.dragging).toBe(true);
+    webview.fire({ type: 'drop', paths: ['/a.txt'], position: { x: 0, y: 0 } });
+    await flush();
+    expect(onFiles).toHaveBeenCalledWith([expect.objectContaining({ name: 'a.txt' })]);
+    desktop.destroy();
+    await flush();
+    expect(webview.unlisten).toHaveBeenCalledOnce();
+  });
+
+  it('needs both the web view and fileDrop options for file drops', () => {
+    enterTauri('mac');
+    const webview = fakeWebview();
+    expect(setupTauri({ plugins: { webview } }).fileDrop).toBeUndefined();
+    expect(setupTauri({ fileDrop: {} }).fileDrop).toBeUndefined();
+    expect(webview.onDragDropEvent).not.toHaveBeenCalled();
+  });
+
+  it('keeps file drops inert in a browser', () => {
+    const webview = vi.fn(fakeWebview);
+    const desktop = setupTauri({ plugins: { webview }, fileDrop: {} });
+    expect(desktop.fileDrop?.dragging).toBe(false);
+    expect(webview).not.toHaveBeenCalled();
     desktop.destroy();
   });
 });

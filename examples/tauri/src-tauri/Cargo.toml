@@ -18,6 +18,9 @@ tauri-build = { version = "2", features = [] }
 # `tray-icon` for `@tauri-apps/api/tray`.
 tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-deep-link = "2"
+# Native open and save dialogs, and reading and writing the files they pick.
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
 tauri-plugin-notification = "2"
 tauri-plugin-os = "2"
 # `deep-link` hands links opened while the app runs (Windows, Linux) to the running instance.

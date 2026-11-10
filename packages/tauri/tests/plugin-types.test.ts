@@ -1,4 +1,7 @@
+import type { getCurrentWebview } from '@tauri-apps/api/webview';
 import type { getCurrentWindow } from '@tauri-apps/api/window';
+import type * as dialog from '@tauri-apps/plugin-dialog';
+import type * as fs from '@tauri-apps/plugin-fs';
 import type * as notification from '@tauri-apps/plugin-notification';
 import type * as event from '@tauri-apps/api/event';
 import type * as menu from '@tauri-apps/api/menu';
@@ -47,5 +50,18 @@ describe('the real modules fit the adapters', () => {
     expectTypeOf<typeof menu>().toExtend<Shapes.MenuModule>();
     expectTypeOf<typeof tray>().toExtend<NonNullable<TauriPlugins['tray']>>();
     expectTypeOf<typeof menu>().toExtend<NonNullable<TauriPlugins['menu']>>();
+  });
+  it('fits the dialog and fs plugins', () => {
+    expectTypeOf<typeof dialog>().toExtend<Shapes.DialogPlugin>();
+    expectTypeOf<typeof fs>().toExtend<Shapes.FsPlugin>();
+    expectTypeOf<typeof dialog>().toExtend<NonNullable<TauriPlugins['dialog']>>();
+    expectTypeOf<typeof fs>().toExtend<NonNullable<TauriPlugins['fs']>>();
+  });
+
+  it('fits the web view from getCurrentWebview()', () => {
+    type CurrentWebview = ReturnType<typeof getCurrentWebview>;
+    expectTypeOf<CurrentWebview>().toExtend<Shapes.WebviewPlugin>();
+    expectTypeOf<CurrentWebview>().toExtend<NonNullable<TauriPlugins['webview']>>();
+    expectTypeOf<typeof getCurrentWebview>().toExtend<NonNullable<TauriPlugins['webview']>>();
   });
 });

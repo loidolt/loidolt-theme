@@ -101,3 +101,60 @@ export interface TrayModule {
     }): Promise<TrayIconHandle>;
   };
 }
+
+/* Files: native dialogs, reading and writing, and drops on the window. */
+
+/** A file type filter in a native dialog: a name and the extensions it lets through, no dots. */
+export interface DialogFilter {
+  name: string;
+  extensions: string[];
+}
+
+/**
+ * `@tauri-apps/plugin-dialog`, for the native open and save dialogs (`dialog:default`, or
+ * `dialog:allow-open` and `dialog:allow-save`). The paths it returns are added to the fs scope.
+ */
+export interface DialogPlugin {
+  open(options?: {
+    title?: string;
+    filters?: DialogFilter[];
+    defaultPath?: string;
+    multiple?: boolean;
+    directory?: boolean;
+  }): Promise<string | string[] | null>;
+  save(options?: {
+    title?: string;
+    filters?: DialogFilter[];
+    defaultPath?: string;
+  }): Promise<string | null>;
+}
+
+/**
+ * `@tauri-apps/plugin-fs`, for reading picked and dropped files (`fs:allow-read-file`) and writing
+ * saved ones (`fs:allow-write-file`).
+ */
+export interface FsPlugin {
+  readFile(path: string): Promise<Uint8Array>;
+  writeFile(path: string, data: Uint8Array): Promise<void>;
+}
+
+/** A point in the window, in physical pixels. */
+export interface PhysicalPoint {
+  x: number;
+  y: number;
+}
+
+/** What the web view's drag and drop event carries: Tauri's `DragDropEvent`. */
+export type DragDropPayload =
+  | { type: 'enter'; paths: string[]; position: PhysicalPoint }
+  | { type: 'over'; position: PhysicalPoint }
+  | { type: 'drop'; paths: string[]; position: PhysicalPoint }
+  | { type: 'leave' };
+
+/**
+ * The web view the page runs in: what `getCurrentWebview()` from `@tauri-apps/api/webview`
+ * returns. Its drag and drop event is in `core:default`.
+ */
+export interface WebviewPlugin {
+  onDragDropEvent(handler: (event: { payload: DragDropPayload }) => void): Promise<UnlistenFn>;
+}

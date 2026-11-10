@@ -3,8 +3,11 @@
   import * as event from '@tauri-apps/api/event';
   import * as menu from '@tauri-apps/api/menu';
   import * as tray from '@tauri-apps/api/tray';
+  import { getCurrentWebview } from '@tauri-apps/api/webview';
   import { getCurrentWindow } from '@tauri-apps/api/window';
   import * as deepLink from '@tauri-apps/plugin-deep-link';
+  import * as dialog from '@tauri-apps/plugin-dialog';
+  import * as fs from '@tauri-apps/plugin-fs';
   import * as notification from '@tauri-apps/plugin-notification';
   import * as os from '@tauri-apps/plugin-os';
   import {
@@ -12,6 +15,7 @@
     Badge,
     Brand,
     Button,
+    Dropzone,
     createTheme,
     createToaster,
     PageHeader,
@@ -33,6 +37,9 @@
   let launch = $state<SecondInstance | null>(null);
   let link = $state<string | null>(null);
   let watching = $state(true);
+  let dropzone = $state<ReturnType<typeof Dropzone>>();
+  let received = $state<string[]>([]);
+  let saved = $state('');
 
   async function showWindow() {
     const window = getCurrentWindow();
@@ -57,12 +64,25 @@
   // theme is in. `getCurrentWindow` goes in uncalled: it needs the Tauri runtime, and setupTauri
   // only calls it inside a window.
   const desktop = setupTauri({
-    plugins: { os, notification, event, deepLink, tray, menu, window: getCurrentWindow },
+    plugins: {
+      os,
+      notification,
+      event,
+      deepLink,
+      tray,
+      menu,
+      dialog,
+      fs,
+      window: getCurrentWindow,
+      webview: getCurrentWebview,
+    },
     theme,
     chrome: { titleBar: 'overlay' },
     notifications: { toaster },
     singleInstance: { onSecondInstance: (next) => (launch = next) },
     deepLinks: { onUrl: (url) => (link = url) },
+    // Files dropped on the window go into the Dropzone below, which filters them by its accept.
+    fileDrop: { target: () => dropzone },
     tray: {
       icon: isTauri() ? defaultWindowIcon() : null,
       tooltip: 'Watching for new files',
@@ -87,6 +107,24 @@
     android: 'Android',
   } as const;
   const where = desktop.platform ? `A Tauri window on ${names[desktop.platform]}` : 'A browser';
+
+  async function openFiles() {
+    const files = (await desktop.files?.pick({ accept: '.txt,.md,.json', multiple: true })) ?? [];
+    if (files.length) dropzone?.addFiles(files);
+  }
+
+  async function saveNotes() {
+    const notes = new File([`Received:\n${received.join('\n')}\n`], 'received.txt', {
+      type: 'text/plain',
+    });
+    const outcome = await desktop.files?.save(notes);
+    saved =
+      outcome?.method === 'filesystem'
+        ? `Saved to ${outcome.path}`
+        : outcome?.method === 'download'
+          ? 'Downloaded'
+          : 'Not saved';
+  }
 
   let count = $state(0);
   let sent = $state<boolean | null>(null);
@@ -148,6 +186,27 @@
       </p>
       <p>Switch to another app after clicking: the notification arrives three seconds later.</p>
       <Button onclick={notifyLater}>Notify in 3 seconds</Button>
+    </Section>
+    <Section title="Files" headingLevel={2}>
+      <p>
+        Drop text files anywhere on the window, or open them with the native dialog. In a browser
+        the same Dropzone takes the page's own drops and the button opens the browser's picker.
+      </p>
+      <Dropzone
+        bind:this={dropzone}
+        accept=".txt,.md,.json"
+        multiple
+        window
+        externalDragging={desktop.fileDrop?.dragging}
+        hint="Text, Markdown or JSON"
+        onFiles={(accepted) => (received = [...received, ...accepted.map((file) => file.name)])}
+      />
+      <p>{received.length ? `Received: ${received.join(', ')}` : 'No files yet.'}</p>
+      <div class="ldt-cluster">
+        <Button onclick={openFiles}>Open files…</Button>
+        <Button variant="quiet" onclick={saveNotes}>Save the list…</Button>
+      </div>
+      {#if saved}<p role="status">{saved}</p>{/if}
     </Section>
     <Section title="In the background" headingLevel={2}>
       <p>

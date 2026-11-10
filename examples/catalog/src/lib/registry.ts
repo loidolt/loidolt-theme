@@ -282,6 +282,7 @@ export const entries: Entry[] = [
       '`onFiles(accepted, rejected)` fires for every batch, whatever its source. Rejections carry a `reason` (`type`, `size` or `count`); `rejectedLabel` words the message shown under the area and announced through a live region.',
       'Files from elsewhere — a native window drop event, a paste handler, a test — go through `addFiles(files)` on the component instance (`bind:this`), which runs the same filtering, message and callback. It takes a `File[]` or a `FileList` and returns `{ accepted, rejected }`.',
       'The root carries `data-dragging` while files are over the area. With `window`, files dropped anywhere on the page are taken too: the root gets `data-window-dragging` and an overlay covers the viewport. A drop another target already handled (`preventDefault`) is left alone.',
+      '`externalDragging` shows the same window overlay for a drag the page cannot see itself, such as files dragged over a Tauri window (see the desktop pattern): pair it with `addFiles()` for the drop.',
     ],
   },
   {

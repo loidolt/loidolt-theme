@@ -44,6 +44,13 @@ quickest check that the Rust side builds.
   pauses and resumes, and quits. Run `npm run tauri:dev`, then launch the binary again with a file
   path after it (`src-tauri/target/debug/theme-tauri-example notes.md`) to see the second launch
   arrive in the first window.
+- Files: `tauri-plugin-dialog` and `tauri-plugin-fs` registered in `src-tauri/src/lib.rs`, with
+  `dialog:default`, `fs:allow-read-file` and `fs:allow-write-file` in the capability file, and
+  `@tauri-apps/plugin-dialog`, `@tauri-apps/plugin-fs` and `getCurrentWebview` passed to
+  `setupTauri`. Drop text files anywhere on the window and they land in the `Dropzone` (with its
+  window overlay while you drag), or pick them with "Open files…" through the native open dialog;
+  "Save the list…" writes the received names through the native save dialog. In a browser the same
+  `Dropzone` takes the page's own drops, and the buttons use a file input and a download.
 - The platform badge reads `desktop.platform`: `null` in a browser, the OS in a window.
 - `@loidolt/theme-tauri/styles.css` after the theme's stylesheet.
 - Window chrome: `getCurrentWindow` and the `createTheme` store passed to `setupTauri`, with
