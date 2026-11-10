@@ -75,6 +75,21 @@ export interface TabBarItem {
   icon?: Snippet;
 }
 
+/** Where one `StageStepper` step stands. */
+export type StageState = 'pending' | 'running' | 'done' | 'skipped' | 'failed';
+
+/** One named step of a `StageStepper` run. */
+export interface StageStep {
+  /** Stable key: a step whose `state` changes under the same id is announced. */
+  id: string;
+  label: string;
+  state: StageState;
+  /** 0 to 100, the scale `Progress` defaults to. Omit for a step with no measurable progress. */
+  progress?: number;
+  /** A secondary line: what the step does, or what went wrong. */
+  description?: string;
+}
+
 /** One step in a breadcrumb trail. The final crumb is the current page and takes no `href`. */
 export interface Crumb {
   label: string;

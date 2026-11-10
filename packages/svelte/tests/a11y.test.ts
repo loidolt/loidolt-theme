@@ -60,6 +60,7 @@ import Separator from '../src/lib/components/Separator.svelte';
 import Skeleton from '../src/lib/components/Skeleton.svelte';
 import SkipLink from '../src/lib/components/SkipLink.svelte';
 import Spinner from '../src/lib/components/Spinner.svelte';
+import StageStepper from '../src/lib/components/StageStepper.svelte';
 import LiveRegion from '../src/lib/components/LiveRegion.svelte';
 import Switch from '../src/lib/components/Switch.svelte';
 import Table from '../src/lib/components/Table.svelte';
@@ -324,6 +325,31 @@ const cases: Array<[string, Parameters<typeof render>[0], Record<string, unknown
   ['SignaturePad (typed)', SignaturePad, { label: 'Signature', mode: 'type' }],
   ['Spinner', Spinner, { label: 'Generating preview' }],
   ['LiveRegion', LiveRegion, { message: 'Three results' }],
+  [
+    'StageStepper',
+    StageStepper,
+    {
+      steps: [
+        { id: 'upload', label: 'Upload', state: 'done' },
+        { id: 'convert', label: 'Convert', state: 'skipped', description: 'Nothing to convert.' },
+        { id: 'package', label: 'Package', state: 'running', progress: 40 },
+        { id: 'verify', label: 'Verify', state: 'failed' },
+        { id: 'publish', label: 'Publish', state: 'pending' },
+      ],
+    },
+  ],
+  [
+    'StageStepper (vertical, selectable)',
+    StageStepper,
+    {
+      orientation: 'vertical',
+      steps: [
+        { id: 'upload', label: 'Upload', state: 'done', progress: 100 },
+        { id: 'package', label: 'Package', state: 'running' },
+      ],
+      onSelect: () => {},
+    },
+  ],
   ['Switch', Switch, { children: text('Live preview') }],
   [
     'Table',
