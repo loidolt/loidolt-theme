@@ -464,6 +464,21 @@ collapsed pane stays in the tab order.
 nearest sizing wrapper; the panes stack when that wrapper is 760px or narrower. The viewport media
 query remains as a fallback for existing markup.
 
+`resizable` puts a divider between the main pane and the inspector. It drags with a mouse, pen or
+finger, and from the keyboard it is a `role="separator"`: Left/Right move it (Shift for bigger
+steps), Home/End jump to the limits and Enter collapses and restores the inspector. Sizes are the
+inspector's percentage of the width the two panes share, bindable as `inspectorSize` and bounded by
+`inspectorMinSize`/`inspectorMaxSize`; the divider reports the same numbers as
+`aria-valuenow`/`aria-valuemin`/`aria-valuemax`. Give it a `storageKey` to remember the size in
+`localStorage`. When the panes stack, the divider is hidden.
+
+```svelte
+<Workspace resizable bind:inspectorSize storageKey="review-split">
+  <img src={page.src} alt={page.alt} />
+  {#snippet inspector()}<Sidebar side="right" label="Notes">…</Sidebar>{/snippet}
+</Workspace>
+```
+
 On coarse-pointer devices, interactive components expand to 44px touch targets while mouse and
 keyboard layouts retain the compact density shown by the size tokens.
 

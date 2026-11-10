@@ -239,6 +239,28 @@ describe('server-side rendering', () => {
     expect(render(lib.TabBar, { props }).body).toBe(first.body);
   });
 
+  it('server-renders a resizable workspace with a pre-paint size restore', () => {
+    const props = {
+      children: text('Main'),
+      inspector: text('Notes'),
+      resizable: true,
+      inspectorSize: 40,
+      storageKey: '</script><b>key',
+    };
+    const { body } = render(lib.Workspace, { props: props as never });
+    expect(body).toContain('role="separator"');
+    expect(body).toContain('aria-valuenow="40"');
+    expect(body).toContain('--ldt-inspector-share: 40fr');
+    expect(body).toContain('--ldt-main-share: 60fr');
+    // The key is JSON-escaped: it cannot close the script it sits in.
+    expect(body).toContain('localStorage.getItem("\\u003c/script>\\u003cb>key")');
+    expect(body.match(/<\/script>/g)).toHaveLength(1);
+    const withoutKey = render(lib.Workspace, {
+      props: { ...props, storageKey: undefined } as never,
+    });
+    expect(withoutKey.body).not.toContain('<script');
+  });
+
   it('renders SSR-stable generated ids', () => {
     const first = render(lib.Field as Parameters<typeof render>[0], {
       props: { label: 'Email', children: fieldControl } as never,
