@@ -39,6 +39,8 @@ import Card from '../src/lib/components/Card.svelte';
 import Checkbox from '../src/lib/components/Checkbox.svelte';
 import ContextBar from '../src/lib/components/ContextBar.svelte';
 import Dialog from '../src/lib/components/Dialog.svelte';
+import ShortcutHelp from '../src/lib/components/ShortcutHelp.svelte';
+import { createCommands } from '../src/lib/commands.svelte.js';
 import Drawer from '../src/lib/components/Drawer.svelte';
 import DropdownMenu from '../src/lib/components/DropdownMenu.svelte';
 import EmptyState from '../src/lib/components/EmptyState.svelte';
@@ -455,6 +457,25 @@ describe('component accessibility', () => {
     });
     await user.click(view.getByRole('button', { name: 'Menu' }));
     expect((await scan(document.body)).violations).toEqual([]);
+  });
+
+  it('has no violations while the shortcut help is open', async () => {
+    const commands = createCommands({ platform: 'mac' });
+    commands.registerAll([
+      { id: 'save', label: 'Save', shortcut: 'Mod+S', handler: () => {} },
+      {
+        id: 'next',
+        label: 'Next item',
+        group: 'Navigation',
+        shortcut: ['Alt+ArrowDown', 'J'],
+        handler: () => {},
+      },
+    ]);
+    const user = userEvent.setup();
+    const view = render(ShortcutHelp, { commands, trigger: text('Shortcuts') });
+    await user.click(view.getByRole('button', { name: 'Shortcuts' }));
+    expect((await scan(document.body)).violations).toEqual([]);
+    commands.destroy();
   });
 
   it('has no violations while a confirmation is open', async () => {

@@ -60,6 +60,7 @@ export { default as Section } from './components/Section.svelte';
 export { default as SegmentedNav } from './components/SegmentedNav.svelte';
 export { default as Select } from './components/Select.svelte';
 export { default as Separator } from './components/Separator.svelte';
+export { default as ShortcutHelp } from './components/ShortcutHelp.svelte';
 export { default as Sidebar } from './components/Sidebar.svelte';
 export { default as SignaturePad } from './components/SignaturePad.svelte';
 export { default as Skeleton } from './components/Skeleton.svelte';
@@ -202,6 +203,24 @@ export {
   readRoleColor,
 } from './token-colors.svelte.js';
 export type { TokenColors, TokenColorsOptions } from './token-colors.svelte.js';
+export { createCommands } from './commands.svelte.js';
+export type {
+  Command,
+  CommandGroup,
+  Commands,
+  CommandsOptions,
+  RegisteredCommand,
+} from './commands.svelte.js';
+export {
+  describeShortcut,
+  detectPlatform,
+  formatShortcut,
+  matchesShortcut,
+  parseShortcut,
+  shortcutKeys,
+  toAccelerator,
+} from './shortcuts.js';
+export type { ParsedShortcut, Platform, ShortcutNames } from './shortcuts.js';
 export { createAnnouncer } from './announcer.svelte.js';
 export type { Announcer, AnnouncerOptions, Politeness } from './announcer.svelte.js';
 export { createToaster } from './toaster.svelte.js';
