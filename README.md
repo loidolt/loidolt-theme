@@ -465,6 +465,21 @@ collapsed pane stays in the tab order.
 nearest sizing wrapper; the panes stack when that wrapper is 760px or narrower. The viewport media
 query remains as a fallback for existing markup.
 
+`resizable` puts a divider between the main pane and the inspector. It drags with a mouse, pen or
+finger, and from the keyboard it is a `role="separator"`: Left/Right move it (Shift for bigger
+steps), Home/End jump to the limits and Enter collapses and restores the inspector. Sizes are the
+inspector's percentage of the width the two panes share, bindable as `inspectorSize` and bounded by
+`inspectorMinSize`/`inspectorMaxSize`; the divider reports the same numbers as
+`aria-valuenow`/`aria-valuemin`/`aria-valuemax`. Give it a `storageKey` to remember the size in
+`localStorage`. When the panes stack, the divider is hidden.
+
+```svelte
+<Workspace resizable bind:inspectorSize storageKey="review-split">
+  <img src={page.src} alt={page.alt} />
+  {#snippet inspector()}<Sidebar side="right" label="Notes">…</Sidebar>{/snippet}
+</Workspace>
+```
+
 On coarse-pointer devices, interactive components expand to 44px touch targets while mouse and
 keyboard layouts retain the compact density shown by the size tokens.
 
@@ -607,14 +622,14 @@ These live in their own packages, and each README covers it in full. In short:
 ## Components
 
 - Actions: `Button` (`variant="text"` covers the former `TextButton`), `IconButton`, `ToggleGroup`, `ListRow`
-- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Combobox`, `MultiSelect`, `Slider`, `PasswordInput`, `OTPInput`, `SignaturePad`, `Checkbox`, `RadioGroup`, `Switch`, `FileInput`, `SwatchGroup`
+- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `AnnotatedText`, `NumberField`, `Select`, `Combobox`, `MultiSelect`, `Slider`, `PasswordInput`, `OTPInput`, `SignaturePad`, `Checkbox`, `RadioGroup`, `Switch`, `FileInput`, `Dropzone`, `SwatchGroup`
 - Surfaces: `Card`, `Panel`, `Section`, `PageHeader`, `Separator`, `Thumbnail`, `Stat`, `Avatar`, `Badge`
 - Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`, `DataTable`, `DataTableSearch`, `DataTableFacetedFilter`, `DataTableColumnVisibility`, `DataTablePagination`, `ActiveFilterChips`, `CodeBlock`, `CommentList`, `RecordStepper`, `Filmstrip`
-- Feedback: `Alert`, `Toast`, `ToastViewport`, `Progress`, `Spinner`, `Skeleton`, `StatusDot`, `LiveRegion`, `Marker`
+- Feedback: `Alert`, `Toast`, `ToastViewport`, `Progress`, `StageStepper`, `Spinner`, `Skeleton`, `StatusDot`, `LiveRegion`, `Marker`
 - Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`
 - Navigation: `Topbar`, `Brand`, `NavMenu`, `SkipLink`, `Breadcrumbs`, `SegmentedNav`, `TabBar`, `Tabs`, `Accordion`, `ContextBar`
 - Layout: `AppShell`, `Workspace`, `Sidebar`, `FloatingBar`, `AspectRatio`, `Toolbar`, `FilterPanel`
-- Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`, `MediaGrid`, `Lightbox`, `MediaCarousel`
+- Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`, `MediaGrid`, `Lightbox`, `MediaCarousel`, `ImageViewer`
 - Theme: `PresetPicker`, `ThemeToggle`
 
 Complex focus, portal, dismissal, and keyboard behavior is powered by Bits UI. Icons remain
@@ -712,7 +727,9 @@ setHlsLoader(() => import('hls.js').then((module) => module.default));
 
 The players are built on `createMediaPlayer()` — reactive state and commands over any `<video>`
 or `<audio>` (`{@attach player.attach}`) — for when you want your own controls.
-`createMediaZoom()` provides pinch, trackpad and drag-to-pan zoom for an image in a frame, and
+`createMediaZoom()` provides pinch, trackpad and drag-to-pan zoom for an image in a frame; given a
+`contentSize` (or `setContentSize()`) it works in the content's own pixels, with fit to width,
+height or whole, zoom around a point and `reveal()` for a rectangle, as `ImageViewer` uses it. And
 `formatDuration`, `formatDurationSpoken`, `parseEmbedUrl`, `buildEmbedSrc` and `inferMediaKind`
 are exported for your own media UI.
 
