@@ -20,6 +20,8 @@ platform around them.
 - **Native storage, native links, native text size.** The theme choice survives iOS evicting
   `localStorage`; links that leave the app open in the in-app browser in the theme's colour; text
   follows Dynamic Type and Android's font scale; copy buttons work on Android.
+- **Share like a native app.** Files, links and text go to the native share sheet, then the
+  browser's, then a download or the clipboard — one call, whichever shell it runs in.
 - **Inert on the web.** Every adapter checks for a native shell first, so the same root layout
   ships to the browser and to the server unchanged.
 
@@ -51,6 +53,8 @@ npm install @capacitor/app @capacitor/keyboard @capacitor/haptics @capacitor/pre
 | `@capacitor/browser`       | External links in the in-app browser                                     |
 | `@capacitor/text-zoom`     | Following the system text size                                           |
 | `@capacitor/clipboard`     | Copy buttons on Android                                                  |
+| `@capacitor/share`         | The native share sheet                                                   |
+| `@capacitor/filesystem`    | Sharing a `File` or Blob natively (written to the cache first)           |
 | `@capacitor/status-bar`    | Only for Android apps that opt out of edge-to-edge                       |
 
 ## Set up
@@ -136,6 +140,7 @@ Every one returns a teardown (or a store with `destroy()`), and is a no-op outsi
 | `hideSplashScreen`     | Lifts the splash after `until`, the fonts and a painted frame; no fade under reduced motion                               |
 | `followSystemTextSize` | Applies the system text size, and re-reads it on resume                                                                   |
 | `bridgeClipboard`      | Routes `navigator.clipboard.writeText` through the Clipboard plugin                                                       |
+| `createShare`          | `share(content)` through the native sheet, the Web Share API, then a download or the clipboard; `canShare(content?)`      |
 | `markNativePlatform`   | `data-native-platform="ios"` or `"android"` on `<html>`, for platform-specific CSS                                        |
 | `nativePlatform`       | `'ios'`, `'android'` or `null`                                                                                            |
 
@@ -160,6 +165,48 @@ above it. `--ldt-keyboard-height` is there for anything of your own.
 and `TabBar` links — the moments a native control ticks. Plain buttons are left alone on purpose;
 opt one in with `data-haptic` (`data-haptic="medium"` or `"heavy"` for weight). Pass
 `enabled: () => settings.vibration` to honour an in-app setting.
+
+### Sharing
+
+`setupCapacitor` returns `native.share`, which works without any plugin: in a browser it is the
+Web Share API, then a fallback. Pass `Share` (and `Filesystem`, to share files) for the native
+sheet in the app:
+
+```ts
+import { Filesystem } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
+
+const native = setupCapacitor({ plugins: { Share, Filesystem /* … */ }, toaster });
+
+const { method, cancelled } = await native.share!.share({
+  title: 'Export',
+  files: [new File([bytes], 'export.pdf', { type: 'application/pdf' })],
+});
+```
+
+Or on its own: `createShare({ Share, Filesystem, toaster })`. `share(content)` takes any of
+`title`, `text`, `url`, `files` and Android's `dialogTitle`, and tries in turn:
+
+1. **The native share sheet**, in an iOS or Android shell with `Share`. A `File` or a Blob
+   (`{ blob, name }`) is written to the cache directory with `Filesystem` first, since the sheet
+   only takes file URIs, and the cache is the folder Android shares without extra FileProvider
+   paths. The previous share's files are cleared at the start of the next one rather than right
+   away, because a receiving app may still be reading them when the sheet closes. A file already
+   on the device can be passed as `{ uri }`.
+2. **The Web Share API**, checked with `navigator.canShare({ files })` for files.
+3. **A fallback.** Files download (an object URL on a temporary `<a download>`, revoked after).
+   A link or text goes to the clipboard — the URL when there is one, otherwise the text — with a
+   `copiedLabel` toast (`'Link copied'`) when a toaster is given. `fallback: 'open'` opens the URL
+   in a new tab instead; `fallback: false` does nothing.
+
+It resolves `{ method, cancelled, activityType? }`: `method` is `'native'`, `'web'`,
+`'download'`, `'clipboard'`, `'open'` or `'none'`. Closing the sheet is `cancelled: true`, never
+a rejection; only a real failure rejects. `canShare(content?)` says whether a share sheet would
+open, to label a button "Share" or "Download". On the server both are no-ops.
+
+Files cross the native bridge as base64, so keep them to what fits in memory (Android may need
+`android:largeHeap="true"` for very large ones). `@capacitor/filesystem` needs a privacy
+manifest entry on iOS; see its README.
 
 ### Styles
 
