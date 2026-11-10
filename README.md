@@ -21,10 +21,11 @@ accessibility contract, and a generated prop table for every component.
 | `@loidolt/theme-maps`      | Accessible MapLibre maps on a token-coloured basemap, with keyboard markers and layer tools ([README](packages/maps))          |
 | `@loidolt/theme-docs`      | Safe, server-rendered Markdown documentation: pages, contents, highlighted code, diagrams ([README](packages/docs))            |
 | `@loidolt/theme-capacitor` | Capacitor adapters for native iOS and Android apps: system bars, back button, keyboard, haptics ([README](packages/capacitor)) |
+| `@loidolt/theme-tauri`     | Tauri 2 adapters for desktop apps: platform detection and desktop manners, inert in a browser ([README](packages/tauri))       |
 
-The last four are optional. Each has its own heavy peer (`echarts`, `maplibre-gl`, optionally
-`shiki`/`mermaid`, and `@capacitor/core`), so an app that draws no charts never installs ECharts.
-All seven are released together on one version.
+The last five are optional. Each has its own heavy peer (`echarts`, `maplibre-gl`, optionally
+`shiki`/`mermaid`, `@capacitor/core`, and `@tauri-apps/api`), so an app that draws no charts never
+installs ECharts. All eight are released together on one version.
 
 ## Requirements
 
@@ -464,6 +465,21 @@ collapsed pane stays in the tab order.
 nearest sizing wrapper; the panes stack when that wrapper is 760px or narrower. The viewport media
 query remains as a fallback for existing markup.
 
+`resizable` puts a divider between the main pane and the inspector. It drags with a mouse, pen or
+finger, and from the keyboard it is a `role="separator"`: Left/Right move it (Shift for bigger
+steps), Home/End jump to the limits and Enter collapses and restores the inspector. Sizes are the
+inspector's percentage of the width the two panes share, bindable as `inspectorSize` and bounded by
+`inspectorMinSize`/`inspectorMaxSize`; the divider reports the same numbers as
+`aria-valuenow`/`aria-valuemin`/`aria-valuemax`. Give it a `storageKey` to remember the size in
+`localStorage`. When the panes stack, the divider is hidden.
+
+```svelte
+<Workspace resizable bind:inspectorSize storageKey="review-split">
+  <img src={page.src} alt={page.alt} />
+  {#snippet inspector()}<Sidebar side="right" label="Notes">…</Sidebar>{/snippet}
+</Workspace>
+```
+
 On coarse-pointer devices, interactive components expand to 44px touch targets while mouse and
 keyboard layouts retain the compact density shown by the size tokens.
 
@@ -606,14 +622,14 @@ These live in their own packages, and each README covers it in full. In short:
 ## Components
 
 - Actions: `Button` (`variant="text"` covers the former `TextButton`), `IconButton`, `ToggleGroup`, `ListRow`
-- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `NumberField`, `Select`, `Combobox`, `MultiSelect`, `Slider`, `PasswordInput`, `OTPInput`, `SignaturePad`, `Checkbox`, `RadioGroup`, `Switch`, `FileInput`, `SwatchGroup`
+- Forms: `Field`, `Fieldset`, `Label`, `Input`, `Textarea`, `AnnotatedText`, `NumberField`, `Select`, `Combobox`, `MultiSelect`, `Slider`, `PasswordInput`, `OTPInput`, `SignaturePad`, `Checkbox`, `RadioGroup`, `Switch`, `FileInput`, `Dropzone`, `SwatchGroup`
 - Surfaces: `Card`, `Panel`, `Section`, `PageHeader`, `Separator`, `Thumbnail`, `Stat`, `Avatar`, `Badge`
 - Data: `Table`, `TableHeader`, `EmptyState`, `Pagination`, `DataTable`, `DataTableSearch`, `DataTableFacetedFilter`, `DataTableColumnVisibility`, `DataTablePagination`, `ActiveFilterChips`, `CodeBlock`, `CommentList`, `RecordStepper`, `Filmstrip`
-- Feedback: `Alert`, `Toast`, `ToastViewport`, `Progress`, `Spinner`, `Skeleton`, `StatusDot`, `LiveRegion`, `Marker`
-- Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`
+- Feedback: `Alert`, `Toast`, `ToastViewport`, `Progress`, `StageStepper`, `Spinner`, `Skeleton`, `StatusDot`, `LiveRegion`, `Marker`
+- Overlays: `Dialog`, `AlertDialog`, `Drawer`, `Popover`, `DropdownMenu`, `Tooltip`, `TooltipProvider`, `ShortcutHelp`
 - Navigation: `Topbar`, `Brand`, `NavMenu`, `SkipLink`, `Breadcrumbs`, `SegmentedNav`, `TabBar`, `Tabs`, `Accordion`, `ContextBar`
 - Layout: `AppShell`, `Workspace`, `Sidebar`, `FloatingBar`, `AspectRatio`, `Toolbar`, `FilterPanel`
-- Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`, `MediaGrid`, `Lightbox`, `MediaCarousel`
+- Media: `VideoPlayer`, `AudioPlayer`, `MediaEmbed`, `MediaGrid`, `Lightbox`, `MediaCarousel`, `ImageViewer`
 - Theme: `PresetPicker`, `ThemeToggle`
 
 Complex focus, portal, dismissal, and keyboard behavior is powered by Bits UI. Icons remain
@@ -711,7 +727,9 @@ setHlsLoader(() => import('hls.js').then((module) => module.default));
 
 The players are built on `createMediaPlayer()` — reactive state and commands over any `<video>`
 or `<audio>` (`{@attach player.attach}`) — for when you want your own controls.
-`createMediaZoom()` provides pinch, trackpad and drag-to-pan zoom for an image in a frame, and
+`createMediaZoom()` provides pinch, trackpad and drag-to-pan zoom for an image in a frame; given a
+`contentSize` (or `setContentSize()`) it works in the content's own pixels, with fit to width,
+height or whole, zoom around a point and `reveal()` for a rectangle, as `ImageViewer` uses it. And
 `formatDuration`, `formatDurationSpoken`, `parseEmbedUrl`, `buildEmbedSrc` and `inferMediaKind`
 are exported for your own media UI.
 
@@ -762,6 +780,59 @@ repeated message is still announced, and clears it after `clearAfter` millisecon
 <LiveRegion message={announcer.message} politeness={announcer.politeness} />
 <button onclick={() => announcer.announce('Draft saved')}>Save</button>
 ```
+
+### Commands and keyboard shortcuts
+
+`createCommands()` is a registry of commands — an id, a label, an optional shortcut and a
+handler — that runs them from the keyboard and lists them for a help dialog or a native menu:
+
+```svelte
+<script lang="ts">
+  import { createCommands, ShortcutHelp } from '@loidolt/theme-svelte';
+
+  const commands = createCommands();
+  commands.registerAll([
+    { id: 'save', label: 'Save', shortcut: 'Mod+S', allowInInputs: true, handler: save },
+    {
+      id: 'next',
+      label: 'Next item',
+      group: 'Navigation',
+      shortcut: 'Alt+ArrowDown',
+      handler: next,
+    },
+    {
+      id: 'zoom-in',
+      label: 'Zoom in',
+      group: 'View',
+      shortcut: ['Alt+=', 'Alt++'],
+      handler: zoomIn,
+    },
+  ]);
+  $effect(() => commands.listen());
+</script>
+
+<ShortcutHelp {commands} />
+```
+
+- **Shortcuts** are `Mod+Shift+S`, `Alt+ArrowDown`, `?`, `F8`. `Mod` is Command on macOS and
+  iOS and Control elsewhere (`platform: 'mac' | 'other'` overrides the detection). Modifiers
+  match exactly, except that a symbol key such as `?` ignores Shift. Letters compare
+  case-insensitively, and a non-Latin layout (or a macOS Option character) falls back to the
+  physical key.
+- **Typing is safe**: keys in a text field, select or contenteditable are ignored unless the
+  command sets `allowInInputs`, and so are keys pressed during IME composition or already
+  `preventDefault`ed. A handled key is `preventDefault`ed.
+- **`enabled`** takes a boolean or a function. A disabled command neither runs nor swallows its
+  key. When two commands share a shortcut, the one registered last wins.
+- **Listing**: `list()` (registration order) and `groups()` are reactive; `commands.version` and
+  `subscribe(listener)` signal a change, so a native menu bar can rebuild.
+- **Formatting**: `formatShortcut('Mod+Shift+S')` is `⇧⌘S` on a Mac and `Ctrl+Shift+S`
+  elsewhere, `describeShortcut` spells it out for screen readers, and `toAccelerator` gives
+  `CmdOrCtrl+Shift+S` for Tauri and Electron menus.
+
+`ShortcutHelp` registers `?` to open itself while mounted; pass `shortcut={null}` to let people
+turn a single-character shortcut off (WCAG 2.1.4). A component-scoped registry removes its
+listeners automatically; a module-scoped one must call `commands.destroy()`.
 
 `describedBy(...ids)` joins the ids that describe a control into one `aria-describedby` value,
 or `undefined` when none are present.

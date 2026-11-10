@@ -1,0 +1,19 @@
+[package]
+name = "theme-tauri-example"
+version = "0.0.0"
+description = "A minimal Tauri 2 app on @loidolt/theme-tauri"
+license = "MIT"
+edition = "2021"
+publish = false
+
+[lib]
+# The `_lib` suffix keeps the library apart from the binary of the same name on Windows.
+name = "theme_tauri_example_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-os = "2"

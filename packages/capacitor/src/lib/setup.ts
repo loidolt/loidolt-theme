@@ -29,6 +29,7 @@ import {
 import { combine, markNativePlatform } from './platform.js';
 import { bridgeClipboard, followSystemTextSize, hideSplashScreen } from './system.js';
 import type { HideSplashOptions } from './system.js';
+import { createShare, type NativeShare, type NativeShareOptions } from './share.js';
 import { createFiles, type NativeFiles, type NativeFilesOptions } from './files.js';
 import { persistTheme } from './theme-storage.svelte.js';
 import type {
@@ -45,6 +46,7 @@ import type {
   KeyboardStylePlugin,
   NetworkPlugin,
   PreferencesPlugin,
+  SharePlugin,
   SplashScreenPlugin,
   StatusBarPlugin,
   Teardown,
@@ -62,6 +64,7 @@ export interface CapacitorPlugins {
   Keyboard?: KeyboardPlugin & KeyboardStylePlugin;
   Network?: NetworkPlugin;
   Preferences?: PreferencesPlugin;
+  Share?: SharePlugin;
   SplashScreen?: SplashScreenPlugin;
   StatusBar?: StatusBarPlugin;
   TextZoom?: TextZoomPlugin;
@@ -86,6 +89,7 @@ export interface SetupCapacitorOptions {
   links?: Toggle<Omit<ExternalLinksOptions, 'Browser'>>;
   network?: Toggle<Omit<NetworkStatusOptions, 'Network' | 'toaster'>>;
   splash?: Toggle<Omit<HideSplashOptions, 'SplashScreen' | 'until'>>;
+  share?: Toggle<Omit<NativeShareOptions, 'Share' | 'Filesystem' | 'toaster'>>;
   files?: Toggle<Omit<NativeFilesOptions, 'FilePicker' | 'Filesystem'>>;
   textSize?: boolean;
   clipboard?: boolean;
@@ -100,6 +104,11 @@ export interface CapacitorSetup {
   readonly lifecycle: AppLifecycle | undefined;
   /** Present when `Network` was given. */
   readonly network: NetworkStatus | undefined;
+  /**
+   * Sharing through `Share` (and `Filesystem`, for files) in a native shell, the Web Share API or
+   * a download in a browser. Present unless `share: false`: the browser fallbacks need no plugin.
+   */
+  readonly share: NativeShare | undefined;
   /**
    * Picking files with `FilePicker` and saving them with `Filesystem` in a native shell, a file
    * input and a download in a browser. Present unless `files: false`: the browser needs no plugin.
@@ -144,7 +153,7 @@ const on = <T extends object>(value: Toggle<T> | undefined): T | null =>
 export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
   const { plugins, theme, navigate } = options;
   const { App, Browser, Clipboard, Haptics, Keyboard, Network, Preferences } = plugins;
-  const { FilePicker, Filesystem, SplashScreen, StatusBar, TextZoom } = plugins;
+  const { FilePicker, Filesystem, Share, SplashScreen, StatusBar, TextZoom } = plugins;
   const teardowns: Teardown[] = [markNativePlatform()];
 
   const appearance = on(options.appearance);
@@ -197,6 +206,11 @@ export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
   }
   if (Clipboard && options.clipboard !== false) teardowns.push(bridgeClipboard({ Clipboard }));
 
+  const shareOptions = on(options.share);
+  const share = shareOptions
+    ? createShare({ ...shareOptions, Share, Filesystem, toaster })
+    : undefined;
+
   const filesOptions = on(options.files);
   const files = filesOptions ? createFiles({ ...filesOptions, FilePicker, Filesystem }) : undefined;
 
@@ -214,5 +228,5 @@ export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
     /* module scope: the caller owns `destroy()` */
   }
 
-  return { files, haptics, keyboard, lifecycle, network, toaster, ready, destroy };
+  return { files, haptics, keyboard, lifecycle, network, share, toaster, ready, destroy };
 }

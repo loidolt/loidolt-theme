@@ -37,6 +37,17 @@ describe('on the server', () => {
     native.destroy();
   });
 
+  it('shares nothing', async () => {
+    const share = vi.fn();
+    const sharing = lib.createShare({ Share: { share, canShare: vi.fn() } });
+    expect(await sharing.share({ url: 'https://example.com/' })).toEqual({
+      method: 'none',
+      cancelled: false,
+    });
+    expect(await sharing.canShare()).toBe(false);
+    expect(share).not.toHaveBeenCalled();
+  });
+
   it('picks and saves nothing', async () => {
     const pickFiles = vi.fn();
     const writeFile = vi.fn();

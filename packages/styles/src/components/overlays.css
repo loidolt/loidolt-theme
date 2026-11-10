@@ -96,6 +96,74 @@
   overflow-wrap: anywhere;
 }
 /*
+ * ShortcutHelp: the registered commands as a definition list per group — label left, key caps
+ * right. Rows wrap rather than squeeze, so a long label never pushes the keys off a phone.
+ */
+.ldt-shortcut-help__group + .ldt-shortcut-help__group {
+  margin-top: var(--loidolt-space-6);
+}
+.ldt-shortcut-help__heading {
+  margin: 0 0 var(--loidolt-space-2);
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font-weight: var(--loidolt-label-weight);
+  letter-spacing: var(--loidolt-label-tracking-wide);
+  text-transform: var(--loidolt-label-transform);
+}
+.ldt-shortcut-help__list {
+  display: grid;
+  margin: 0;
+}
+.ldt-shortcut-help__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--loidolt-space-2) var(--loidolt-space-4);
+  padding: var(--loidolt-space-2) 0;
+  border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+}
+.ldt-shortcut-help__row:last-child {
+  border-bottom: 0;
+}
+.ldt-shortcut-help__label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ldt-shortcut-help__keys {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--loidolt-space-2);
+  margin: 0;
+}
+.ldt-shortcut-help__or {
+  color: var(--loidolt-text-muted);
+  font-size: var(--loidolt-font-size-xs);
+}
+.ldt-shortcut-help__empty {
+  margin: 0;
+  color: var(--loidolt-text-muted);
+}
+/* A key cap. A chord is an outer `.ldt-kbd-chord` holding one `.ldt-kbd` per key. */
+.ldt-kbd-chord {
+  display: inline-flex;
+  gap: var(--loidolt-space-1);
+  font: inherit;
+}
+.ldt-kbd {
+  display: inline-block;
+  min-width: 1.75em;
+  padding: 0.1em 0.45em; /* @literal em-based key cap */
+  border: var(--loidolt-border-width) solid var(--loidolt-border-strong);
+  border-bottom-width: 2px; /* @literal key-cap depth */
+  border-radius: var(--loidolt-radius-inner);
+  color: var(--loidolt-text);
+  background: var(--loidolt-surface);
+  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  text-align: center;
+}
+/*
  * Drawer: a dialog anchored to an edge. `--ldt-drawer-size` is the measure across that edge —
  * width for left/right, height for top/bottom — always capped so the scrim stays reachable and
  * the panel never becomes a full-screen trap with no visible way out.

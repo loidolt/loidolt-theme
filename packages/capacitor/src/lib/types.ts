@@ -120,6 +120,35 @@ export interface ClipboardPlugin {
   write(options: { string?: string }): Promise<void>;
 }
 
+/** `@capacitor/share`. */
+export interface SharePlugin {
+  canShare(): Promise<{ value: boolean }>;
+  share(options: {
+    title?: string;
+    text?: string;
+    url?: string;
+    files?: string[];
+    dialogTitle?: string;
+  }): Promise<{ activityType?: string }>;
+}
+
+/**
+ * `@capacitor/filesystem`, for the files these adapters write. `directory` is one of the
+ * plugin's `Directory` values (`'CACHE'`, `'DOCUMENTS'`, …); natively, `data` is base64.
+ */
+export interface FilesystemPlugin {
+  writeFile(options: {
+    path: string;
+    data: string | Blob;
+    directory?: string;
+    recursive?: boolean;
+  }): Promise<{ uri: string }>;
+  rmdir(options: { path: string; directory?: string; recursive?: boolean }): Promise<void>;
+  stat(options: { path: string; directory?: string }): Promise<{ uri: string }>;
+  checkPermissions(): Promise<{ publicStorage: string }>;
+  requestPermissions(): Promise<{ publicStorage: string }>;
+}
+
 /** A file `FilePickerPlugin.pickFiles` returns. */
 export interface PickedNativeFile {
   name: string;
@@ -142,22 +171,6 @@ export interface FilePickerPlugin {
     limit?: number;
     readData?: boolean;
   }): Promise<{ files: PickedNativeFile[] }>;
-}
-
-/**
- * `@capacitor/filesystem`, for the files these adapters write. `directory` is one of the
- * plugin's `Directory` values (`'DOCUMENTS'`, `'CACHE'`, …); natively, `data` is base64.
- */
-export interface FilesystemPlugin {
-  writeFile(options: {
-    path: string;
-    data: string | Blob;
-    directory?: string;
-    recursive?: boolean;
-  }): Promise<{ uri: string }>;
-  stat(options: { path: string; directory?: string }): Promise<{ uri: string }>;
-  checkPermissions(): Promise<{ publicStorage: string }>;
-  requestPermissions(): Promise<{ publicStorage: string }>;
 }
 
 /** Undoes whatever the adapter installed. Safe to call twice. */

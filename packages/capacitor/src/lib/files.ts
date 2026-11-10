@@ -3,6 +3,12 @@ import { blobToBase64, downloadBlob, safeFileName } from './blob.js';
 import { nativePlatform } from './platform.js';
 import type { FilePickerPlugin, FilesystemPlugin, PickedNativeFile } from './types.js';
 
+/** The part of `@capacitor/filesystem` saving uses. */
+type FilesSystemPlugin = Pick<
+  FilesystemPlugin,
+  'writeFile' | 'stat' | 'checkPermissions' | 'requestPermissions'
+>;
+
 export interface PickOptions {
   /**
    * What may be picked, written as for `<input accept>`: MIME types (`application/pdf`), wildcards
@@ -40,7 +46,7 @@ export interface NativeFilesOptions {
   /** `FilePicker` from `@capawesome/capacitor-file-picker`. Without it, the browser's picker. */
   FilePicker?: FilePickerPlugin;
   /** `Filesystem` from `@capacitor/filesystem`. Needed to save in a native shell. */
-  Filesystem?: FilesystemPlugin;
+  Filesystem?: FilesSystemPlugin;
   /**
    * The `Directory` files are saved to. Defaults to `'DOCUMENTS'`: on iOS the app's Documents
    * folder, which the Files app shows once the app opts in (see the README); on Android the
@@ -193,7 +199,7 @@ export function createFiles(options: NativeFilesOptions = {}): NativeFiles {
   const { FilePicker, Filesystem, directory = 'DOCUMENTS' } = options;
 
   /** Android 10 and older need storage access for the shared folders; it is asked for here. */
-  const ensureAccess = async (fs: FilesystemPlugin) => {
+  const ensureAccess = async (fs: FilesSystemPlugin) => {
     if (nativePlatform() !== 'android') return;
     if (directory !== 'DOCUMENTS' && directory !== 'EXTERNAL_STORAGE') return;
     if ((await fs.checkPermissions()).publicStorage === 'granted') return;
@@ -202,13 +208,13 @@ export function createFiles(options: NativeFilesOptions = {}): NativeFiles {
     }
   };
 
-  const exists = (fs: FilesystemPlugin, path: string) =>
+  const exists = (fs: FilesSystemPlugin, path: string) =>
     fs.stat({ path, directory }).then(
       () => true,
       () => false
     );
 
-  const freePath = async (fs: FilesystemPlugin, folder: string, name: string) => {
+  const freePath = async (fs: FilesSystemPlugin, folder: string, name: string) => {
     const at = (file: string) => (folder ? `${folder}/${file}` : file);
     if (!(await exists(fs, at(name)))) return at(name);
     for (let n = 1; n < 1000; n++) {

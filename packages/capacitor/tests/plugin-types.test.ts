@@ -7,6 +7,7 @@ import type { HapticsPlugin } from '@capacitor/haptics';
 import type { KeyboardPlugin } from '@capacitor/keyboard';
 import type { NetworkPlugin } from '@capacitor/network';
 import type { PreferencesPlugin } from '@capacitor/preferences';
+import type { SharePlugin } from '@capacitor/share';
 import type { SplashScreenPlugin } from '@capacitor/splash-screen';
 import type { StatusBarPlugin } from '@capacitor/status-bar';
 import type { TextZoomPlugin } from '@capacitor/text-zoom';
@@ -38,6 +39,7 @@ describe('the real plugins fit the adapters', () => {
     expectTypeOf<KeyboardPlugin>().toExtend<NonNullable<CapacitorPlugins['Keyboard']>>();
     expectTypeOf<NetworkPlugin>().toExtend<Shapes.NetworkPlugin>();
     expectTypeOf<PreferencesPlugin>().toExtend<Shapes.PreferencesPlugin>();
+    expectTypeOf<SharePlugin>().toExtend<Shapes.SharePlugin>();
     expectTypeOf<SplashScreenPlugin>().toExtend<Shapes.SplashScreenPlugin>();
     expectTypeOf<StatusBarPlugin>().toExtend<Shapes.StatusBarPlugin>();
     expectTypeOf<typeof SystemBars>().toExtend<Shapes.SystemBarsPlugin>();

@@ -58,7 +58,8 @@ jobs:
             -w @loidolt/theme-charts \
             -w @loidolt/theme-maps \
             -w @loidolt/theme-docs \
-            -w @loidolt/theme-capacitor
+            -w @loidolt/theme-capacitor \
+            -w @loidolt/theme-tauri
       - name: Validate publish contents
         working-directory: ${{ runner.temp }}/pack
         run: |
@@ -88,6 +89,9 @@ jobs:
             --ignore-rules cjs-resolves-to-esm internal-resolution-error
           # The Capacitor adapters add a Node-only `/config` subpath for capacitor.config.ts.
           npx --yes @arethetypeswrong/cli@0.18.5 loidolt-theme-capacitor-*.tgz --profile node16 \
+            --exclude-entrypoints styles.css \
+            --ignore-rules cjs-resolves-to-esm internal-resolution-error
+          npx --yes @arethetypeswrong/cli@0.18.5 loidolt-theme-tauri-*.tgz --profile node16 \
             --exclude-entrypoints styles.css \
             --ignore-rules cjs-resolves-to-esm internal-resolution-error
 

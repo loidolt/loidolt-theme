@@ -104,6 +104,13 @@ export function fakeToaster() {
   };
 }
 
+export function fakeShare(result: { activityType?: string } = {}) {
+  return {
+    canShare: vi.fn(async () => ({ value: true })),
+    share: vi.fn(async (_options: Record<string, unknown>) => result),
+  };
+}
+
 export function fakeFilePicker(files: PickedNativeFile[] = []) {
   return {
     pickFiles: vi.fn(async (_options?: { types?: string[]; limit?: number }) => ({ files })),
@@ -119,6 +126,11 @@ export function fakeFilesystem(publicStorage = 'granted', afterRequest = publicS
       const key = `${options.directory}/${options.path}`;
       files.set(key, options.data);
       return { uri: `file:///${key}` };
+    }),
+    rmdir: vi.fn(async ({ path, directory }: { path: string; directory?: string }) => {
+      for (const key of [...files.keys()]) {
+        if (key.startsWith(`${directory}/${path}/`)) files.delete(key);
+      }
     }),
     stat: vi.fn(async ({ path, directory }: { path: string; directory?: string }) => {
       const key = `${directory}/${path}`;

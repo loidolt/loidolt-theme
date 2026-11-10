@@ -1,0 +1,30 @@
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { svelteTesting } from '@testing-library/svelte/vite';
+import { defineConfig } from 'vitest/config';
+
+// Mirrors packages/svelte: the same jsdom setup (reused, not copied) plus this package's own,
+// which resets the Tauri globals a test installs to pretend it runs inside a window.
+export default defineConfig({
+  plugins: [svelte({ compilerOptions: { runes: true } }), svelteTesting({ autoCleanup: false })],
+  test: {
+    environment: 'jsdom',
+    execArgv: ['--no-experimental-webstorage'],
+    setupFiles: ['../svelte/tests/setup.ts', './tests/setup.ts'],
+    include: ['tests/**/*.test.ts'],
+    exclude: ['tests/ssr/**'],
+    coverage: {
+      // CI sets COVERAGE so the one `npm test` pass also enforces the thresholds below.
+      enabled: process.env.COVERAGE === 'true',
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'html'],
+      include: ['src/lib/**/*.ts'],
+      exclude: ['src/lib/index.ts', 'src/lib/types.ts'],
+      thresholds: {
+        statements: 90,
+        branches: 80,
+        functions: 90,
+        lines: 90,
+      },
+    },
+  },
+});
