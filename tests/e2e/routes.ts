@@ -18,6 +18,7 @@ export const staticRoutes = [
   '/components',
   '/foundations',
   '/patterns',
+  '/patterns/css-only',
   '/patterns/desktop',
   '/patterns/native',
   '/presets',

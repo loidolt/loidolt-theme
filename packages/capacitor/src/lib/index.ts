@@ -25,6 +25,15 @@ export { createNetworkStatus } from './network.svelte.js';
 export type { NetworkStatus, NetworkStatusOptions } from './network.svelte.js';
 export { openExternalLinks } from './links.js';
 export type { ExternalLinksOptions } from './links.js';
+export { createShare, SHARE_CACHE_PATH } from './share.js';
+export type {
+  NativeShare,
+  ShareableFile,
+  ShareContent,
+  ShareMethod,
+  NativeShareOptions,
+  ShareOutcome,
+} from './share.js';
 export { bridgeClipboard, followSystemTextSize, hideSplashScreen } from './system.js';
 export type { HideSplashOptions, SystemTextSizeOptions } from './system.js';
 export type {
@@ -34,12 +43,14 @@ export type {
   BackButtonPlugin,
   BrowserPlugin,
   ClipboardPlugin,
+  FilesystemPlugin,
   HapticsPlugin,
   KeyboardPlugin,
   KeyboardStylePlugin,
   NetworkPlugin,
   PluginListenerHandle,
   PreferencesPlugin,
+  SharePlugin,
   SplashScreenPlugin,
   StatusBarPlugin,
   SystemBarsPlugin,

@@ -3,5 +3,13 @@
   "identifier": "default",
   "description": "What the example's main window may call",
   "windows": ["main"],
-  "permissions": ["core:default", "os:default", "notification:default"]
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-background-color",
+    "core:window:allow-set-theme",
+    "core:window:allow-show",
+    "core:window:allow-start-dragging",
+    "notification:default",
+    "os:default"
+  ]
 }

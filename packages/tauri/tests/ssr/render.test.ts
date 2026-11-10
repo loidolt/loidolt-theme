@@ -36,3 +36,25 @@ describe('on the server', () => {
     desktop.destroy();
   });
 });
+
+describe('the window adapters on the server', () => {
+  it('do nothing with a window given', async () => {
+    const win = {
+      setBackgroundColor: vi.fn(async () => {}),
+      setTheme: vi.fn(async () => {}),
+      isFullscreen: vi.fn(async () => false),
+      onResized: vi.fn(async () => () => {}),
+      show: vi.fn(async () => {}),
+    };
+    const desktop = lib.setupTauri({ plugins: { window: win }, chrome: { titleBar: 'overlay' } });
+    await desktop.ready;
+    desktop.destroy();
+    const appearance = lib.syncWindowAppearance({ window: win });
+    await appearance.ready;
+    appearance.destroy();
+    lib.insetWindowChrome({ window: win, titleBar: 'overlay' })();
+    await lib.showWindow({ window: win });
+    for (const call of Object.values(win)) expect(call).not.toHaveBeenCalled();
+    expect(lib.windowBackground('dark')).toMatch(/^#[0-9a-f]{6}$/);
+  });
+});

@@ -10,7 +10,12 @@
     Toast,
     ToastViewport,
   } from '@loidolt/theme-svelte';
-  import { createNotifications, isTauri, tauriPlatform } from '@loidolt/theme-tauri';
+  import {
+    createNotifications,
+    isTauri,
+    tauriPlatform,
+    windowBackground,
+  } from '@loidolt/theme-tauri';
   import CodeBlock from '$lib/components/CodeBlock.svelte';
   import Demo from '$lib/components/Demo.svelte';
 
@@ -28,6 +33,9 @@
 
   const install = `npm install @loidolt/theme-tauri
 
+# the window chrome adapters take the window from @tauri-apps/api
+npm install @tauri-apps/api
+
 # optional: the platform from Rust instead of the user agent
 npm install @tauri-apps/plugin-os`;
 
@@ -36,16 +44,55 @@ npm install @tauri-apps/plugin-os`;
 @import '@loidolt/theme-tauri/styles.css';`;
 
   const layout = `<script lang="ts">
+  import { getCurrentWindow } from '@tauri-apps/api/window';
   import * as os from '@tauri-apps/plugin-os';
   import { setupTauri } from '@loidolt/theme-tauri';
+  import { theme } from '$lib/theme'; // the app's createTheme()
 
-  const desktop = setupTauri({ plugins: { os } });
+  const desktop = setupTauri({ plugins: { os, window: getCurrentWindow }, theme });
   // desktop.platform: 'macos', 'windows', 'linux', … or null in a browser
 
   let { children } = $props();
 ${endScript}
 
 {@render children()}`;
+
+  const light = windowBackground('light');
+  const dark = windowBackground('dark');
+
+  const windowConfig = `// src-tauri/tauri.conf.json, in app.windows[0]
+{
+  "visible": false,
+  "backgroundColor": "${light}",
+  "titleBarStyle": "Overlay",
+  "hiddenTitle": true
+}`;
+
+  const capability = `// src-tauri/capabilities/default.json
+{
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-background-color",
+    "core:window:allow-set-theme",
+    "core:window:allow-show",
+    "core:window:allow-start-dragging"
+  ]
+}`;
+
+  const chrome = `<script lang="ts">
+  import { getCurrentWindow } from '@tauri-apps/api/window';
+  import { Topbar } from '@loidolt/theme-svelte';
+  import { setupTauri } from '@loidolt/theme-tauri';
+  import { theme } from '$lib/theme';
+
+  const desktop = setupTauri({
+    plugins: { window: getCurrentWindow },
+    theme,
+    chrome: { titleBar: 'overlay' },
+  });
+${endScript}
+
+<Topbar dragRegion>…</Topbar>`;
 
   const notificationsCode = `<script lang="ts">
   import * as notification from '@tauri-apps/plugin-notification';
@@ -65,6 +112,16 @@ await desktop.notifications?.notify({ title: 'Export finished', body: 'The file 
     ['isTauri', 'Whether the page runs in a Tauri 2 window, without loading the Tauri runtime'],
     ['tauriPlatform', "'macos', 'windows', 'linux', 'ios', 'android' or null"],
     ['markTauriPlatform', 'data-tauri-platform on <html>, for platform-specific CSS'],
+    [
+      'syncWindowAppearance',
+      'The window background in the live page colour, and with the theme, its light or dark appearance',
+    ],
+    [
+      'insetWindowChrome',
+      'Insets the page clear of the macOS window buttons under an overlay title bar',
+    ],
+    ['showWindow', 'Shows a window that starts hidden once the theme and fonts are in'],
+    ['windowBackground', "The theme's launch colour, for backgroundColor in tauri.conf.json"],
     [
       'createNotifications',
       'permission, requestPermission() and notify(); the Web Notifications API outside Tauri',
@@ -133,6 +190,42 @@ await desktop.notifications?.notify({ title: 'Export finished', body: 'The file 
       <dd><Badge>{platform ?? 'null'}</Badge></dd>
     </dl>
   </Demo>
+</Section>
+
+<Section title="Window chrome" headingLevel={2}>
+  <p class="docs-note">
+    Pass the window, <code>getCurrentWindow</code> uncalled (it throws in a browser, so
+    <code>setupTauri</code> calls it only inside a window), and the app's <code>createTheme</code>
+    store, and the window follows the page: its background is the live page colour, through every theme
+    and preset change, and its native appearance (menus, dialogs, scroll bars) takes an explicit light
+    or dark choice, handing back to the OS for <code>system</code>.
+  </p>
+  <p class="docs-note">
+    <strong>No white flash.</strong> Start the window hidden and give it the theme's launch colour;
+    <code>setupTauri</code> shows it once the window has its colours and the fonts are in, and
+    <code>desktop.ready</code> settles after that. The launch colour is
+    <code>{light}</code> for a light-first app and <code>{dark}</code> for a dark one, from
+    <code>windowBackground()</code>.
+  </p>
+  <CodeBlock code={windowConfig} />
+  <p class="docs-note">
+    <strong>The overlay title bar</strong> (<code>titleBarStyle</code> and <code>hiddenTitle</code>
+    above) draws the page right up to the top edge on macOS. With
+    <code>chrome: &#123; titleBar: 'overlay' &#125;</code>
+    the page clears the window buttons: <code>--ldt-safe-top</code> reserves a 28px strip for them,
+    which <code>Topbar</code> grows by, and full screen, where they hide, gets the room back.
+    <code>trafficLights: 'beside'</code>
+    puts them in the bar's own row instead, inset from the left through
+    <code>--ldt-safe-left</code>; <code>top</code> and <code>left</code> change the room. Windows and
+    Linux keep their native title bar, untouched.
+  </p>
+  <p class="docs-note">
+    <strong>Dragging.</strong> <code>&lt;Topbar dragRegion&gt;</code> lets the bar move the window, as
+    a title bar would; its buttons, links and fields stay clickable. Each window call needs its permission
+    in the capability file.
+  </p>
+  <CodeBlock code={chrome} />
+  <CodeBlock code={capability} />
 </Section>
 
 <Section title="Notifications" headingLevel={2}>

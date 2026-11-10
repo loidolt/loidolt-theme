@@ -7,6 +7,7 @@ import {
   fakeKeyboard,
   fakeNetwork,
   fakePreferences,
+  fakeShare,
   flush,
   platform,
   systemBars,
@@ -21,6 +22,7 @@ function plugins() {
     Keyboard: fakeKeyboard(),
     Network: fakeNetwork(),
     Preferences: fakePreferences({ 'loidolt-theme': 'dark' }),
+    Share: fakeShare(),
     SplashScreen: { hide: vi.fn(async () => {}) },
     StatusBar: { setStyle: vi.fn(async () => {}), setBackgroundColor: vi.fn(async () => {}) },
     TextZoom: { getPreferred: vi.fn(async () => ({ value: 1 })), set: vi.fn(async () => {}) },
@@ -78,6 +80,9 @@ describe('setupCapacitor', () => {
     expect(native.lifecycle?.active).toBe(true);
     expect(native.haptics).toBeDefined();
 
+    await native.share?.share({ text: 'Hello' });
+    expect(all.Share.share).toHaveBeenCalledWith(expect.objectContaining({ text: 'Hello' }));
+
     native.destroy();
     await flush();
     expect(all.App.count('backButton')).toBe(0);
@@ -100,6 +105,7 @@ describe('setupCapacitor', () => {
       splash: false,
       textSize: false,
       clipboard: false,
+      share: false,
     });
     await native.ready;
     await flush();
@@ -112,6 +118,7 @@ describe('setupCapacitor', () => {
     expect(native.haptics).toBeUndefined();
     expect(native.network).toBeUndefined();
     expect(native.lifecycle).toBeUndefined();
+    expect(native.share).toBeUndefined();
     native.destroy();
   });
 
@@ -121,6 +128,7 @@ describe('setupCapacitor', () => {
     const native = setupCapacitor({ plugins: {}, toaster });
     await native.ready;
     expect(native.toaster).toBe(toaster);
+    expect(native.share).toBeDefined();
     native.destroy();
   });
 });

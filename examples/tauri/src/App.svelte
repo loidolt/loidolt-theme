@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { getCurrentWindow } from '@tauri-apps/api/window';
   import * as notification from '@tauri-apps/plugin-notification';
   import * as os from '@tauri-apps/plugin-os';
   import {
@@ -21,9 +22,18 @@
 
   const toaster = createToaster({ duration: 6000 });
 
-  // In a browser (`npm run dev`) this is inert: platform is null and <html> is left alone.
-  // Notifications fall back to the Web Notifications API there, and to a toast without either.
-  const desktop = setupTauri({ plugins: { os, notification }, notifications: { toaster } });
+  // In a browser (`npm run dev`) this is inert: platform is null and <html> is left alone, and
+  // notifications fall back to the Web Notifications API, or to a toast without either. In a
+  // window it paints the window in the theme, insets the page under the overlay title bar set up
+  // in tauri.conf.json, and shows the window, which starts hidden, once the theme is in.
+  // `getCurrentWindow` goes in uncalled: it needs the Tauri runtime, and setupTauri only calls it
+  // inside a window.
+  const desktop = setupTauri({
+    plugins: { os, notification, window: getCurrentWindow },
+    theme,
+    chrome: { titleBar: 'overlay' },
+    notifications: { toaster },
+  });
 
   const names = {
     macos: 'macOS',
@@ -53,7 +63,7 @@
 
 <AppShell mainId="main">
   {#snippet header()}
-    <Topbar navLabel="Example app">
+    <Topbar navLabel="Example app" dragRegion>
       {#snippet brand()}<Brand name="Theme example" meta="Desktop" />{/snippet}
       {#snippet actions()}<ThemeToggle {theme} />{/snippet}
     </Topbar>
@@ -75,6 +85,13 @@
         selectable, as in a native app.
       </p>
       <Button variant="primary" onclick={() => count++}>Clicked {count} times</Button>
+    </Section>
+    <Section title="Window chrome" headingLevel={2}>
+      <p>
+        On macOS the title bar is an overlay: the top bar runs to the window's top edge, leaves a
+        strip for the window buttons, and drags the window from anywhere but its controls. Switch
+        the theme and the window background and appearance follow; full screen gives the strip back.
+      </p>
     </Section>
     <Section title="Notifications" headingLevel={2}>
       <p>
