@@ -156,7 +156,7 @@ Every one returns a teardown (or a store with `destroy()`), and is a no-op outsi
 | `createNetworkStatus`  | Reactive `connected` and `type`; optional offline and back-online toasts                                                      |
 | `openExternalLinks`    | Other-origin links open in the in-app browser with a themed toolbar                                                           |
 | `hideSplashScreen`     | Lifts the splash after `until`, the fonts and a painted frame; no fade under reduced motion                                   |
-| `followSystemTextSize` | Applies the system text size, and re-reads it on resume                                                                       |
+| `followSystemTextSize` | Applies the system text size, and re-reads it on resume; on iOS also `--ldt-text-zoom` on `<html>`                            |
 | `bridgeClipboard`      | Routes `navigator.clipboard.writeText` through the Clipboard plugin                                                           |
 | `createShare`          | `share(content)` through the native sheet, the Web Share API, then a download or the clipboard; `canShare(content?)`          |
 | `createFiles`          | `pick({ accept, multiple })` resolves `File`s from the native picker or a file input; `save(file)` to Documents or a download |

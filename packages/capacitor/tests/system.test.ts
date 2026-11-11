@@ -101,6 +101,26 @@ describe('followSystemTextSize', () => {
     stop();
   });
 
+  it('publishes the iOS zoom as --ldt-text-zoom, and removes it on teardown', async () => {
+    platform.current = 'ios';
+    const TextZoom = fakeZoom(1.94);
+    const stop = followSystemTextSize({ TextZoom });
+    await flush();
+    expect(document.documentElement.style.getPropertyValue('--ldt-text-zoom')).toBe('1.94');
+    stop();
+    expect(document.documentElement.style.getPropertyValue('--ldt-text-zoom')).toBe('');
+  });
+
+  it('writes no variable on Android, whose web view zooms text its own way', async () => {
+    platform.current = 'android';
+    const TextZoom = fakeZoom(1.5);
+    const stop = followSystemTextSize({ TextZoom });
+    await flush();
+    expect(TextZoom.set).toHaveBeenCalledWith({ value: 1.5 });
+    expect(document.documentElement.style.getPropertyValue('--ldt-text-zoom')).toBe('');
+    stop();
+  });
+
   it('ignores a nonsense reading', async () => {
     platform.current = 'android';
     const TextZoom = fakeZoom(Number.NaN);
