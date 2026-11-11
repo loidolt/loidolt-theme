@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   release:
-    # Forks inherit the workflow but not the secrets; skip rather than fail on every fork push.
+    # Forks are not trusted publishers for these packages; skip rather than fail on every fork push.
     if: github.repository == 'loidolt/loidolt-theme'
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -24,11 +24,23 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
+      # Publishing uses npm trusted publishing: npm exchanges this job's OIDC token (hence
+      # `id-token: write`) for a short-lived publish credential, so no NPM_TOKEN secret, and no
+      # 2FA-bypassing automation token, is involved. That needs npm 11.5.1 or later, which Node
+      # 24 bundles. No `registry-url` either: it would write an .npmrc pointing at a token.
+      # Each package must list this repository and `release.yml` as its trusted publisher on
+      # npmjs.com (package Settings > Trusted publishing).
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
-          registry-url: https://registry.npmjs.org
+      - name: Check npm supports trusted publishing
+        run: |
+          version=$(npm --version)
+          if [ "$(printf '%s\n' 11.5.1 "$version" | sort -V | head -1)" != 11.5.1 ]; then
+            echo "::error::npm $version cannot use trusted publishing; 11.5.1 or later is required"
+            exit 1
+          fi
       - run: npm ci
       # No `npm run check` here: CI validates this same commit, and `npm run release`
       # rebuilds the packages before publishing.
@@ -37,8 +49,3 @@ jobs:
       - uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           publish-script: npm run release
-        env:
-          # setup-node writes an .npmrc that authenticates with NODE_AUTH_TOKEN; NPM_TOKEN alone
-          # leaves the publish unauthenticated and it 401s.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
