@@ -88,7 +88,14 @@ export function buildPieOption(
               ...(inside ? {} : { alignTo: 'edge', edgeDistance: 8, overflow: 'break' }),
             }
           : { show: false },
-        labelLine: { show: showLabels && !inside, lineStyle: { color: colors.axis } },
+        labelLine: {
+          show: showLabels && !inside,
+          // ECharts' default 15 + 30 px leader line leaves a phone-width chart about 14 px for the
+          // name, so it broke a letter a line; short legs leave room for a whole word.
+          length: 8,
+          length2: 8,
+          lineStyle: { color: colors.axis },
+        },
         emphasis: { scale: true, scaleSize: 4 },
         data: data.map((slice, index) => {
           const color = slice.color ?? seriesColor(colors, index);

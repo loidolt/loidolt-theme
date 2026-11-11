@@ -81,7 +81,9 @@ export function buildScatterOption(
       const [low, high] = [Math.min(...xs), Math.max(...xs)];
       series.push({
         type: 'line',
-        name: `${one.name} trend`,
+        // The series' own name, so one legend entry, in its colour, toggles points and line
+        // together; an entry each doubled a legend that already overflows a phone.
+        name: one.name,
         data: [
           [low, fit.intercept + fit.slope * low],
           [high, fit.intercept + fit.slope * high],

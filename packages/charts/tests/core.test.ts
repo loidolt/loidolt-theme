@@ -288,6 +288,8 @@ describe('part-to-whole charts', () => {
     // Outside labels get room beside a smaller pie, and wrap at the chart's edges.
     expect(pie.series[0].radius).toEqual(['0%', '60%']);
     expect(pie.series[0].label).toMatchObject({ alignTo: 'edge', overflow: 'break' });
+    // Short leader lines, so a phone-width chart has room for whole words beside the pie.
+    expect(pie.series[0].labelLine).toMatchObject({ show: true, length: 8, length2: 8 });
     expect(pie.title).toBeUndefined();
     expect(pie.series[0].data[0].itemStyle.color).toBe(light.categorical[0]);
     expect(pie.series[0].label.formatter).toBe('{b}');
@@ -378,8 +380,10 @@ describe('scatter', () => {
   it('adds a dashed trend line per series', () => {
     const option = buildScatterOption(points, { showTrendLine: true }, light) as Loose;
     expect(option.series).toHaveLength(2);
+    // Under the series' own name, so the pair shares one legend entry.
     expect(option.series[1]).toMatchObject({
       type: 'line',
+      name: option.series[0].name,
       data: [
         [1, 2],
         [3, 6],
