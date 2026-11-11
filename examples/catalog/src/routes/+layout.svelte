@@ -168,34 +168,35 @@
   <TooltipProvider>
     <AppShell mainId="docs-content" style={`--docs-header-height: ${headerHeight}px`}>
       {#snippet header()}
-        <Topbar navLabel="Documentation" bind:ref={headerEl}>
+        <!-- Below the compact breakpoint the sections move into the menu drawer: a second and third
+             row of chrome would take a quarter of a phone's screen. -->
+        <Topbar
+          class="docs-topbar"
+          navLabel="Documentation"
+          bind:ref={headerEl}
+          navigation={compact.matches ? undefined : sectionLinks}
+        >
           {#snippet brand()}
             <Brand name="Loidolt" meta={`Theme ${version}`} href={`${base}/`} />
           {/snippet}
-          {#snippet navigation()}
-            {#each sections as section (section.href)}
-              <a
-                class="docs-nav-link"
-                href={section.href}
-                aria-current={isCurrent(section.href) ? 'page' : undefined}>{section.label}</a
-              >
-            {/each}
-          {/snippet}
           {#snippet actions()}
-            <!-- First, so the way into the nav never scrolls out of reach on a phone. -->
             {#if compact.matches}
-              <Drawer
-                title="Components"
-                bind:open={navOpen}
-                triggerClass="ldt-button ldt-button--sm"
-              >
-                {#snippet trigger()}Browse{/snippet}
+              <ThemeToggle {theme} />
+              <Drawer title="Menu" bind:open={navOpen} triggerClass="ldt-button ldt-button--sm">
+                {#snippet trigger()}Menu{/snippet}
+                <nav class="docs-drawer-sections" aria-label="Sections">
+                  {@render sectionLinks()}
+                </nav>
+                <div class="docs-drawer-preset">
+                  <PresetPicker {theme} variant="select" />
+                </div>
                 {@render componentNav()}
               </Drawer>
+            {:else}
+              <Badge variant="accent">Svelte 5</Badge>
+              <PresetPicker {theme} variant="select" />
+              <ThemeToggle {theme} />
             {/if}
-            <Badge variant="accent">Svelte 5</Badge>
-            <PresetPicker {theme} variant="select" />
-            <ThemeToggle {theme} />
           {/snippet}
         </Topbar>
       {/snippet}
@@ -213,6 +214,17 @@
     </AppShell>
   </TooltipProvider>
 {/if}
+
+{#snippet sectionLinks()}
+  {#each sections as section (section.href)}
+    <a
+      class="docs-nav-link"
+      href={section.href}
+      aria-current={isCurrent(section.href) ? 'page' : undefined}
+      onclick={() => (navOpen = false)}>{section.label}</a
+    >
+  {/each}
+{/snippet}
 
 {#snippet componentNav()}
   <nav class="docs-sidenav" aria-label="Components">

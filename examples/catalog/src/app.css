@@ -536,6 +536,29 @@ pre {
   .ldt-app-shell > header {
     position: static;
   }
+  /* One row on a phone: the brand, then the theme toggle and the menu on the right. */
+  .docs-topbar .ldt-topbar__actions {
+    width: auto;
+    margin-left: auto;
+  }
+}
+
+/* The menu drawer on a phone: the sections, the preset, then the component outline. */
+.docs-drawer-sections {
+  display: grid;
+  margin-bottom: var(--loidolt-space-3);
+  border-bottom: 1px solid var(--loidolt-border-soft);
+}
+.docs-drawer-sections .docs-nav-link {
+  border-bottom: 0;
+  border-left: var(--loidolt-stroke-indicator) solid transparent;
+}
+.docs-drawer-sections .docs-nav-link[aria-current='page'] {
+  border-left-color: var(--loidolt-accent);
+}
+.docs-drawer-preset {
+  display: grid;
+  margin-bottom: var(--loidolt-space-4);
 }
 
 @media (pointer: coarse) {
