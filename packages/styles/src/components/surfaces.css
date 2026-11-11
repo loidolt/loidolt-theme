@@ -11,9 +11,12 @@
   color: var(--loidolt-text);
   text-decoration: none;
 }
-.ldt-card--link:hover {
-  border-color: var(--loidolt-accent);
-  text-decoration: none;
+/* Hover styles apply only where the pointer can hover: a tap leaves `:hover` stuck on touch screens. */
+@media (hover: hover) {
+  .ldt-card--link:hover {
+    border-color: var(--loidolt-accent);
+    text-decoration: none;
+  }
 }
 /* Full width even when a consumer turns the card into a centering flex/grid container —
    otherwise viewBox-only SVGs and other intrinsic-less content collapse to their fallback size. */
@@ -179,9 +182,11 @@
   background: var(--loidolt-surface);
   text-decoration: none;
 }
-a.ldt-stat:hover {
-  border-color: var(--loidolt-accent);
-  text-decoration: none;
+@media (hover: hover) {
+  a.ldt-stat:hover {
+    border-color: var(--loidolt-accent);
+    text-decoration: none;
+  }
 }
 .ldt-stat__value {
   margin: 0;

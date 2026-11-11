@@ -262,9 +262,12 @@
   border: 0;
   background: transparent;
 }
-.ldt-number-field__button:hover:not(:disabled, [aria-disabled='true']) {
-  color: var(--loidolt-text-accent);
-  background: var(--loidolt-surface-input);
+/* Hover styles apply only where the pointer can hover: a tap leaves `:hover` stuck on touch screens. */
+@media (hover: hover) {
+  .ldt-number-field__button:hover:not(:disabled, [aria-disabled='true']) {
+    color: var(--loidolt-text-accent);
+    background: var(--loidolt-surface-input);
+  }
 }
 .ldt-number-field__button[aria-disabled='true'] {
   opacity: 0.4;
@@ -284,8 +287,10 @@
   text-transform: var(--loidolt-control-transform);
   cursor: pointer;
 }
-.ldt-file-input::file-selector-button:hover {
-  color: var(--loidolt-text-accent);
+@media (hover: hover) {
+  .ldt-file-input::file-selector-button:hover {
+    color: var(--loidolt-text-accent);
+  }
 }
 /*
  * A drop target for files that is also a file picker: the area is the label of a visually hidden
@@ -312,8 +317,10 @@
   cursor: pointer;
   transition: border-color var(--loidolt-motion-fast) var(--loidolt-motion-easing);
 }
-.ldt-dropzone__target:hover {
-  border-color: var(--loidolt-accent);
+@media (hover: hover) {
+  .ldt-dropzone__target:hover {
+    border-color: var(--loidolt-accent);
+  }
 }
 /* The input is hidden, so its focus ring is drawn on the area it names. */
 .ldt-dropzone__target:has(.ldt-dropzone__input:focus-visible) {
@@ -592,9 +599,13 @@
   color: var(--loidolt-text-muted);
   background: transparent;
 }
-.ldt-password-input__toggle:hover:not(:disabled),
 .ldt-password-input__toggle[aria-pressed='true'] {
   color: var(--loidolt-text-accent);
+}
+@media (hover: hover) {
+  .ldt-password-input__toggle:hover:not(:disabled) {
+    color: var(--loidolt-text-accent);
+  }
 }
 
 /* One-time code: one square cell per character over a single hidden input. */

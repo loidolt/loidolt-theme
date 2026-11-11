@@ -54,8 +54,11 @@
 .ldt-map .maplibregl-ctrl-group button + button {
   border-top: var(--loidolt-border-width) solid var(--loidolt-border);
 }
-.ldt-map .maplibregl-ctrl-group button:not(:disabled):hover {
-  background: var(--loidolt-surface-alt);
+/* Hover styles apply only where the pointer can hover: a tap leaves `:hover` stuck on touch screens. */
+@media (hover: hover) {
+  .ldt-map .maplibregl-ctrl-group button:not(:disabled):hover {
+    background: var(--loidolt-surface-alt);
+  }
 }
 .ldt-map .maplibregl-ctrl-group button:focus-visible {
   box-shadow: none;
@@ -308,8 +311,10 @@ span.ldt-map-marker {
   text-align: start;
   cursor: pointer;
 }
-.ldt-map-features__item:hover {
-  background: var(--loidolt-surface-alt);
+@media (hover: hover) {
+  .ldt-map-features__item:hover {
+    background: var(--loidolt-surface-alt);
+  }
 }
 .ldt-map-features__item[aria-current='true'] {
   border-left-color: var(--loidolt-accent);

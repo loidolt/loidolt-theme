@@ -74,8 +74,11 @@
   text-transform: inherit;
   cursor: pointer;
 }
-.ldt-table__sort:hover {
-  color: var(--loidolt-text);
+/* Hover styles apply only where the pointer can hover: a tap leaves `:hover` stuck on touch screens. */
+@media (hover: hover) {
+  .ldt-table__sort:hover {
+    color: var(--loidolt-text);
+  }
 }
 /* A CSS triangle rather than a glyph: no icon dependency, and nothing that can fall back to
    tofu in a font that lacks the arrow. */
@@ -86,8 +89,10 @@
   border-bottom: 0.34rem solid currentColor; /* @literal CSS triangle geometry */
   opacity: 0;
 }
-.ldt-table__sort:hover .ldt-table__sort-indicator {
-  opacity: 0.4;
+@media (hover: hover) {
+  .ldt-table__sort:hover .ldt-table__sort-indicator {
+    opacity: 0.4;
+  }
 }
 .ldt-table__sort[data-sort='ascending'] .ldt-table__sort-indicator,
 .ldt-table__sort[data-sort='descending'] .ldt-table__sort-indicator {
@@ -256,8 +261,10 @@
   text-align: inherit;
   cursor: text;
 }
-.ldt-data-table__edit:hover {
-  border-bottom-color: var(--loidolt-border-control);
+@media (hover: hover) {
+  .ldt-data-table__edit:hover {
+    border-bottom-color: var(--loidolt-border-control);
+  }
 }
 .ldt-data-table__edit-input {
   width: 100%;
