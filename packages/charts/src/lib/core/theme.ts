@@ -96,6 +96,11 @@ export function applyTheme(
       icon: 'rect',
       itemWidth: 12,
       itemHeight: 12,
+      // A scrolling legend's page arrows, large enough to press on a phone.
+      pageIconSize: 16,
+      pageIconColor: colors.text,
+      pageIconInactiveColor: colors.grid,
+      pageTextStyle: { color: colors.muted, fontFamily: chartFont },
     });
   }
   if ('tooltip' in themed) {

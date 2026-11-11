@@ -14,12 +14,14 @@
   <div class="ldt-cluster">
     <Badge variant="success" dot>Approved</Badge>
     <Badge variant="warning" dot>Changes requested</Badge>
+  </div>
+  <div class="ldt-cluster">
     <Badge variant="accent" count={4} label="unread comments" />
     <Badge variant="accent" count={140} label="queued jobs" />
   </div>
   <div class="ldt-cluster">
     <Button size="md">Export</Button>
     <Badge variant="accent" size="md">Sized to match</Badge>
-    <Badge variant="accent">Inline default</Badge>
   </div>
+  <p>A job marked <Badge variant="accent">Inline default</Badge> sits in a line of text.</p>
 </div>

@@ -40,6 +40,7 @@ export const sampleMedia = (base: string): MediaItem[] => [
     title: 'Calibration tone',
     artist: 'Workshop sounds',
     artwork: `${base}/media/sample-artwork.svg`,
+    caption: 'Calibration tone — workshop sounds',
   },
   {
     kind: 'image',

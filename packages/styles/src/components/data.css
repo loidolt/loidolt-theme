@@ -198,6 +198,10 @@
 .ldt-comment__content {
   min-width: 0;
 }
+/* In a thread with numbered comments, one without a number lines its text up with theirs. */
+.ldt-comment-list:has(.ldt-marker) .ldt-comment > .ldt-comment__content:first-child {
+  margin-inline-start: calc(1.25rem + var(--loidolt-space-2)); /* @literal marker width */
+}
 .ldt-comment__meta {
   color: var(--loidolt-text-muted);
   font-size: var(--loidolt-font-size-sm);

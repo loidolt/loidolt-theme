@@ -263,6 +263,12 @@ pre.ldt-mermaid {
   margin-inline-start: auto;
   text-align: end;
 }
+/* On a phone the two cards stack full width, rather than one left and one right on two rows. */
+@media (max-width: 30rem) {
+  .ldt-markdown-page__pager a {
+    flex: 1 1 100%;
+  }
+}
 .ldt-markdown-page__direction {
   color: var(--loidolt-text-muted);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);

@@ -70,6 +70,15 @@ describe.each(cases)('%s', (name, Wrapper, data, type, firstColumn, description)
   });
 });
 
+describe('TreemapChart breadcrumb', () => {
+  it('names the first stop of the trail after the chart', async () => {
+    render(TreemapChart, { title: 'Sheet stock', data: samples.treemap });
+    await waitFor(() => expect(fake.instances[0]?.calls.length).toBeGreaterThan(0));
+    const series = fake.instances[0].option.series as Array<{ name?: string }>;
+    expect(series[0].name).toBe('Sheet stock');
+  });
+});
+
 describe('empty data', () => {
   it.each([
     ['LineChart', LineChart, { categories: [], series: [] }],

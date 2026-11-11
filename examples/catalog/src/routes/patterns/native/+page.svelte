@@ -388,8 +388,21 @@ if (saved.method === 'filesystem') console.log(saved.uri);`;
               />
             </div>
             <FloatingBar label="Zoom" placement="bottom-end">
-              <IconButton label="Zoom in" size="sm">+</IconButton>
-              <IconButton label="Zoom out" size="sm">−</IconButton>
+              <IconButton label="Zoom in" size="sm" variant="quiet"
+                ><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"
+                  ><path
+                    d="M8 3v10M3 8h10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  /></svg
+                ></IconButton
+              >
+              <IconButton label="Zoom out" size="sm" variant="quiet"
+                ><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"
+                  ><path d="M3 8h10" fill="none" stroke="currentColor" stroke-width="1.5" /></svg
+                ></IconButton
+              >
             </FloatingBar>
           </div>
           {#snippet tabBar()}

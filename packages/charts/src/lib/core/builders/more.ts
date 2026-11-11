@@ -397,6 +397,9 @@ export function buildHeatmapOption(
       left: 'center',
       bottom: 0,
       itemWidth: 12,
+      // The ends of the scale, named: a bare gradient says nothing about what its colours mean.
+      text: [format(max), format(min)],
+      textGap: 8,
       formatter: format,
       inRange: { color: colors.sequential },
     },
@@ -408,7 +411,7 @@ export function buildHeatmapOption(
         label: showValues
           ? {
               show: true,
-              fontSize: 10,
+              fontSize: 11,
               formatter: (params: { value: [number, number, number | null] }) =>
                 format(params.value[2]),
             }
@@ -487,9 +490,12 @@ export function buildTreemapOption(
         top: 8,
         left: 0,
         right: 0,
-        bottom: showBreadcrumb ? 32 : 0,
+        // Room for the breadcrumb under the tiles, tall enough to press.
+        bottom: showBreadcrumb ? 44 : 0,
         breadcrumb: {
           show: showBreadcrumb,
+          bottom: 4,
+          height: 28,
           itemStyle: {
             color: colors.surface,
             borderColor: colors.axis,
@@ -726,7 +732,8 @@ export function buildSankeyOption(
         left: 8,
         right: orientation === 'horizontal' ? 96 : 8,
         top: 8,
-        bottom: orientation === 'horizontal' ? 8 : 32,
+        // A label centres on its node, so the last node's label needs room under the chart.
+        bottom: orientation === 'horizontal' ? 16 : 32,
         nodeWidth: 12,
         nodeGap: 10,
         emphasis: { focus: 'adjacency' },

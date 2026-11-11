@@ -6,4 +6,5 @@
   <Stat value={128} label="Artworks" href="#stat-demo" />
   <Stat value="42" label="Jobs this week" />
   <Stat value="97%" label="Approval rate" eyebrow="Proofs" />
+  <Stat value="3.2 h" label="Average turnaround" eyebrow="Proofs" />
 </div>

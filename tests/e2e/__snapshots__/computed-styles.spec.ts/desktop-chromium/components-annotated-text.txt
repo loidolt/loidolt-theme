@@ -56,7 +56,7 @@ td { padding:11.2px 12.8px 11.2px 12.8px; border:bottom 1px solid rgb(221, 215, 
 td { padding:11.2px 12.8px 11.2px 12.8px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 textarea.ldt-annotated-text__input.ldt-textarea.ldt-textarea--boxed { padding:7.2px 10.4px 7.2px 10.4px; border:1px solid rgb(132, 125, 106); min-height:96px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 th.ldt-table__header { padding:11.2px 12.8px 11.2px 12.8px; border:bottom 1px solid rgb(221, 215, 201); color:rgb(95, 91, 80); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:normal; letter-spacing:1.1px; text-transform:uppercase; color-scheme:light }
-ul.ldt-stack { padding:0px 0px 0px 40px; margin:16px 0px 16px 0px; gap:16px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
+ul.ldt-stack { padding:0px 0px 0px 20px; margin:16px 0px 16px 0px; gap:16px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 
 ## dark
 a.ldt-brand { gap:8.8px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
@@ -116,7 +116,7 @@ td { padding:11.2px 12.8px 11.2px 12.8px; border:bottom 1px solid rgb(43, 46, 38
 td { padding:11.2px 12.8px 11.2px 12.8px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 textarea.ldt-annotated-text__input.ldt-textarea.ldt-textarea--boxed { padding:7.2px 10.4px 7.2px 10.4px; border:1px solid rgb(120, 124, 107); min-height:96px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 th.ldt-table__header { padding:11.2px 12.8px 11.2px 12.8px; border:bottom 1px solid rgb(43, 46, 38); color:rgb(168, 163, 148); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:normal; letter-spacing:1.1px; text-transform:uppercase; color-scheme:dark }
-ul.ldt-stack { padding:0px 0px 0px 40px; margin:16px 0px 16px 0px; gap:16px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
+ul.ldt-stack { padding:0px 0px 0px 20px; margin:16px 0px 16px 0px; gap:16px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 
 ## focus
 focus 1: a { outline-width:2px; outline-style:solid; outline-color:rgb(198, 82, 36); outline-offset:2px }

@@ -61,12 +61,18 @@
   </MapView>
   <p class="ldt-eyebrow">
     {ordered.length} stops · {formatDistance(plan.total, { locale: 'en' })} as the crow flies ·
-    <a href={googleDirectionsUrl(lngLats, { origin: depot.lngLat })} target="_blank" rel="noopener"
-      >Google Maps</a
+    <a
+      href={googleDirectionsUrl(lngLats, { origin: depot.lngLat })}
+      target="_blank"
+      rel="noopener"
+      style="white-space: nowrap">Google Maps</a
     >
     ·
-    <a href={appleDirectionsUrl(lngLats, { origin: depot.lngLat })} target="_blank" rel="noopener"
-      >Apple Maps</a
+    <a
+      href={appleDirectionsUrl(lngLats, { origin: depot.lngLat })}
+      target="_blank"
+      rel="noopener"
+      style="white-space: nowrap">Apple Maps</a
     >
   </p>
 </div>

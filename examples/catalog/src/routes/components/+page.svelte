@@ -21,7 +21,7 @@
 <PageHeader
   eyebrow="Reference"
   title="Components"
-  description={`${exported.length} components, grouped by the job they do. Every page carries a live example, the accessibility contract, and a prop table generated from source.`}
+  description={`${entries.length} components, grouped by the job they do. Every page carries a live example, the accessibility contract, and a prop table generated from source.`}
   headingLevel={1}
 />
 
@@ -30,6 +30,15 @@
     {undocumented.join(', ')} — add an entry to <code>src/lib/registry.ts</code>.
   </Alert>
 {/if}
+
+<!-- A long index on a phone: the groups are a tap away. -->
+<nav class="ldt-cluster docs-jump" aria-label="Component groups">
+  {#each grouped as section (section.group)}
+    <a class="ldt-button ldt-button--quiet ldt-button--sm" href={`#${section.group.toLowerCase()}`}
+      >{section.group}</a
+    >
+  {/each}
+</nav>
 
 {#each grouped as section (section.group)}
   <Section title={section.group} headingLevel={2} id={section.group.toLowerCase()}>

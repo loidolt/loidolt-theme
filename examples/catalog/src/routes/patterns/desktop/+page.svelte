@@ -414,7 +414,7 @@ ${endScript}
           {notifications.permission}
         </Badge>
       </p>
-      <div class="ldt-cluster">
+      <div class="ldt-grid" style="--ldt-min: 14rem; --ldt-gap: var(--loidolt-space-2)">
         <Button
           variant="quiet"
           disabled={notifications.permission !== 'default'}
@@ -612,6 +612,16 @@ ${endScript}
       margin: 0;
       min-width: 0;
       overflow-wrap: anywhere;
+    }
+  }
+  /* On a phone each name sits over its value, which then has the width to keep a path whole. */
+  @media (max-width: 30rem) {
+    .docs-desktop-facts {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.25rem;
+      & dd + dt {
+        margin-top: 0.75rem;
+      }
     }
   }
 </style>

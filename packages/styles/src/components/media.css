@@ -516,6 +516,12 @@
   align-items: center;
   gap: var(--loidolt-space-1);
 }
+/* On a phone the fit buttons share out the row they land on, rather than leaving one alone. */
+@media (max-width: 30rem) {
+  .ldt-image-viewer__controls > .ldt-button:not(.ldt-icon-button) {
+    flex: 1 1 auto;
+  }
+}
 .ldt-image-viewer__level {
   min-width: 4ch; /* @literal fits "400%" */
   color: var(--loidolt-text-muted);

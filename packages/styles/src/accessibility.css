@@ -210,6 +210,11 @@
   :where(.ldt-table__sort, .ldt-stage-stepper__action) {
     position: relative;
   }
+  :where(.ldt-footnote-back, .ldt-heading-anchor) {
+    position: relative;
+  }
+  .ldt-footnote-back::after,
+  .ldt-heading-anchor::after,
   .ldt-table__sort::after,
   .ldt-stage-stepper__action::after,
   .ldt-map .maplibregl-ctrl-attrib-button::after {

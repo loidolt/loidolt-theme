@@ -238,7 +238,7 @@
     >
       <button
         type="button"
-        class="ldt-button ldt-button--ghost ldt-button--sm ldt-icon-button"
+        class="ldt-button ldt-button--quiet ldt-button--sm ldt-icon-button"
         aria-label={zoomOutLabel}
         disabled={!zoom.canZoomOut}
         data-roving-item
@@ -247,7 +247,7 @@
       <span class="ldt-image-viewer__level" aria-hidden="true">{zoomText(percent)}</span>
       <button
         type="button"
-        class="ldt-button ldt-button--ghost ldt-button--sm ldt-icon-button"
+        class="ldt-button ldt-button--quiet ldt-button--sm ldt-icon-button"
         aria-label={zoomInLabel}
         disabled={!zoom.canZoomIn}
         data-roving-item

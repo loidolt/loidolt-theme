@@ -443,6 +443,9 @@
   padding: 0;
   list-style: none;
 }
+.docs-scale + * {
+  margin-top: var(--loidolt-space-4);
+}
 .docs-scale li {
   display: grid;
   grid-template-columns: 4rem minmax(0, 1fr) auto;
@@ -481,6 +484,10 @@
 }
 .docs-frame .ldt-workspace {
   min-height: 16rem;
+}
+/* An AppShell fills the viewport by default; framed as an example it needs only a short screen. */
+.docs-frame .ldt-app-shell {
+  min-height: 18rem;
 }
 .docs-canvas {
   /* Fills the pane beside the sidebars; stacked on a phone, where there is no height to fill,
@@ -538,11 +545,6 @@ pre {
   }
   .ldt-app-shell > header {
     position: static;
-  }
-  /* One row on a phone: the brand, then the theme toggle and the menu on the right. */
-  .docs-topbar .ldt-topbar__actions {
-    width: auto;
-    margin-left: auto;
   }
 }
 
@@ -651,4 +653,17 @@ pre {
     overflow-wrap: anywhere;
     white-space: pre-wrap;
   }
+}
+
+/* An example's first and last elements sit on the frame's padding, not on their own margins too. */
+.docs-demo__body > :first-child {
+  margin-top: 0;
+}
+.docs-demo__body > :last-child {
+  margin-bottom: 0;
+}
+
+/* The components index's jump list of groups. */
+.docs-jump {
+  margin-block: var(--loidolt-space-4) var(--loidolt-space-5);
 }

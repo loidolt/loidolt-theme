@@ -9,7 +9,7 @@ button.ldt-button.ldt-button--sm[data-state=closed] { padding:6.08px 10.4px 6.08
 caption.ldt-sr-only { margin:-1px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-app-shell { min-height:568px; color:rgb(32, 35, 29); background-color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-progress { color:rgb(32, 35, 29); background-color:rgb(221, 215, 201); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
-div.ldt-progress-field { gap:12px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
+div.ldt-progress-field { gap:4px 12px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-progress.ldt-progress--error.ldt-progress--lg { color:rgb(32, 35, 29); background-color:rgb(221, 215, 201); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-progress.ldt-progress--indeterminate { color:rgb(32, 35, 29); background-color:rgb(221, 215, 201); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-progress.ldt-progress--sm.ldt-progress--success { color:rgb(32, 35, 29); background-color:rgb(221, 215, 201); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
@@ -56,7 +56,7 @@ button.ldt-button.ldt-button--sm[data-state=closed] { padding:6.08px 10.4px 6.08
 caption.ldt-sr-only { margin:-1px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-app-shell { min-height:568px; color:rgb(235, 231, 220); background-color:rgb(22, 24, 20); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-progress { color:rgb(235, 231, 220); background-color:rgb(43, 46, 38); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
-div.ldt-progress-field { gap:12px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
+div.ldt-progress-field { gap:4px 12px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-progress.ldt-progress--error.ldt-progress--lg { color:rgb(235, 231, 220); background-color:rgb(43, 46, 38); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-progress.ldt-progress--indeterminate { color:rgb(235, 231, 220); background-color:rgb(43, 46, 38); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-progress.ldt-progress--sm.ldt-progress--success { color:rgb(235, 231, 220); background-color:rgb(43, 46, 38); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }

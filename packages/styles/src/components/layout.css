@@ -459,9 +459,9 @@
       var(--loidolt-space-3);
     gap: var(--loidolt-space-3);
   }
+  /* Beside the brand while they fit, on a row of their own once they do not; either way they
+     shrink and scroll rather than push the page sideways. */
   .ldt-topbar__actions {
-    width: 100%;
-    margin-left: 0;
     overflow-x: auto;
   }
   .ldt-contextbar {
