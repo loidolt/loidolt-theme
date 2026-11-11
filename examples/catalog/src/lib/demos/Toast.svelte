@@ -12,7 +12,8 @@
   }
 </script>
 
-<div class="ldt-cluster">
+<!-- A grid, so on a phone the four triggers pair off in even columns. -->
+<div class="ldt-grid" style="--ldt-min: 9rem; --ldt-gap: var(--loidolt-space-2);">
   <Button onclick={() => toaster.success('Saved', { description: 'Draft stored locally.' })}>
     Success
   </Button>

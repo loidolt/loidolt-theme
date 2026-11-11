@@ -236,6 +236,10 @@ describe('ImageViewer', () => {
       'true'
     );
     expect(screen.getByRole('button', { name: 'Zoom out' })).toBeDisabled();
+    // The zoom buttons are boxed, so they read as buttons beside the bare level readout.
+    for (const name of ['Zoom out', 'Zoom in']) {
+      expect(screen.getByRole('button', { name })).toHaveClass('ldt-button--quiet');
+    }
 
     frame.focus();
     await user.keyboard('+');

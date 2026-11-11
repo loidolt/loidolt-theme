@@ -170,12 +170,49 @@
   align-items: center;
   gap: 0.3rem; /* @literal page buttons sit nearly flush */
 }
+/*
+ * Previous and Next hold the ends of one row, and the page numbers wrap between them in a box of
+ * their own, so a row a little too narrow wraps page numbers rather than stranding Next. A
+ * wrapping flex row rather than inline boxes with `text-wrap: balance`: iOS 18's WebKit sizes
+ * a balanced box to its balanced lines, and wrapped a trail that fitted on one. Markup without
+ * the box keeps the old single wrapping row.
+ */
+.ldt-pagination__list:has(> .ldt-pagination__pages) {
+  flex-wrap: nowrap;
+}
+.ldt-pagination__list:has(> .ldt-pagination__pages) > .ldt-button {
+  flex: none;
+}
+.ldt-pagination__pages {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem; /* @literal the list's own gap */
+}
 .ldt-pagination__ellipsis {
   padding-inline: 0.35rem; /* @literal matches the page-button gap */
   color: var(--loidolt-text-muted);
 }
 .ldt-pagination__page {
   min-width: var(--loidolt-size-control-sm);
+}
+/*
+ * On a phone the page numbers would wrap to two or three rows, so the trail collapses to
+ * Previous, the current page and Next. A viewport query rather than a container query: a size
+ * container has no content width, and Pagination often sits in a flex row. Wider than this, the
+ * page box above does the wrapping, whatever width the row is given.
+ */
+@media (max-width: 30rem) {
+  .ldt-pagination__list {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+  .ldt-pagination__page:not([aria-current='page']),
+  .ldt-pagination__ellipsis {
+    display: none;
+  }
 }
 .ldt-pagination__page[aria-current='page'] {
   color: var(--loidolt-on-accent);
@@ -216,11 +253,27 @@
   flex-direction: column;
   gap: var(--loidolt-space-2);
 }
+/*
+ * A row with more thumbnails than room scrolls, with the scroll shadows `.ldt-table-wrap` draws
+ * (each component file stands alone, so the stack is repeated rather than shared). The strip has
+ * no surface of its own, so the covers take `--ldt-scroll-cover`: the surface it sits on.
+ */
 .ldt-filmstrip--horizontal {
+  --ldt-scroll-shadow: color-mix(in srgb, var(--loidolt-text) 22%, transparent);
   flex-direction: row;
   overflow-x: auto;
   scrollbar-width: thin;
   padding-bottom: var(--loidolt-space-1);
+  background:
+    linear-gradient(to right, var(--ldt-scroll-cover, var(--loidolt-surface)) 30%, transparent)
+      left / 2.5rem 100% no-repeat local,
+    linear-gradient(to left, var(--ldt-scroll-cover, var(--loidolt-surface)) 30%, transparent)
+      right / 2.5rem 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, var(--ldt-scroll-shadow), transparent) left / 0.75rem
+      100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, var(--ldt-scroll-shadow), transparent) right /
+      0.75rem 100% no-repeat scroll,
+    transparent;
 }
 .ldt-filmstrip__item {
   display: grid;

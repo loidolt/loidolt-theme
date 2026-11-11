@@ -71,7 +71,12 @@
 >
   {#if filename || copyable}
     <figcaption class="ldt-code__header">
-      {#if filename}<span class="ldt-code__filename">{filename}</span>{/if}
+      {#if filename}<span class="ldt-code__filename">{filename}</span
+        >{:else if lang}<!-- The bar holds the copy button anyway; the language fills its left end.
+             Hidden from assistive tech: the code is already named "‹lang› code". --><span
+          class="ldt-code__filename"
+          aria-hidden="true">{lang}</span
+        >{/if}
       {#if copyable}<button type="button" class="ldt-code__copy" data-ldt-copy>{copyLabel}</button
         >{/if}
     </figcaption>

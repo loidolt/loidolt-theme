@@ -27,7 +27,7 @@
     headingLevel={3}
   />
 {:else}
-  <Table caption={`${name} props`} regionLabel={`${name} props`}>
+  <Table caption={`${name} props`} regionLabel={`${name} props`} class="docs-stack">
     <thead>
       <tr>
         <TableHeader>Prop</TableHeader>
@@ -44,8 +44,8 @@
             {#if prop.required}<Badge variant="accent">required</Badge>{/if}
             {#if prop.bindable}<Badge variant="info">bindable</Badge>{/if}
           </td>
-          <td><code class="docs-type">{prop.type}</code></td>
-          <td><code>{shown(prop.default)}</code></td>
+          <td data-label="Type"><code class="docs-type">{prop.type}</code></td>
+          <td data-label="Default"><code>{shown(prop.default)}</code></td>
           <td
             >{#if prop.doc}<RichText value={prop.doc} />{/if}</td
           >

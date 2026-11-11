@@ -63,6 +63,21 @@ describe('chart accessibility', () => {
     expect((await axe(container)).violations).toEqual([]);
   });
 
+  it('heads a column of numbers from the side its figures line up on', () => {
+    const { container } = render(charts.ChartDataTable, {
+      table: {
+        columns: ['Month', 'Cuts', 'Note'],
+        rows: [
+          ['Jan', 4, 'ok'],
+          ['Feb', null, null],
+        ],
+      },
+      caption: 'Cuts',
+    });
+    const headers = [...container.querySelectorAll('thead th')];
+    expect(headers.map((header) => header.getAttribute('data-align'))).toEqual([null, 'end', null]);
+  });
+
   it('ChartDataTable passes axe on its own', async () => {
     const { container } = render(charts.ChartDataTable, { table, caption: 'Cuts' });
     expect((await axe(container)).violations).toEqual([]);

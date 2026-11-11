@@ -10,7 +10,6 @@
     AppShell,
     Badge,
     Brand,
-    breakpointQuery,
     createMediaQuery,
     Drawer,
     Sidebar,
@@ -27,10 +26,14 @@
   let { children } = $props();
 
   /*
-   * The site is its own first consumer: below the compact breakpoint the navigation column
-   * becomes a Drawer, exactly as an application would do it.
+   * The site is its own first consumer: where the full header cannot hold one row, the navigation
+   * column becomes a Drawer, exactly as an application would do it. Seven sections, the preset
+   * picker and the actions take about 1,125px with touch-sized controls, past the expanded
+   * breakpoint, so the width is the header's own, in rem to grow with the text. A landscape
+   * phone is too short for more than one row of chrome whatever its width. Header, drawer and
+   * sidebar all read this one query, so they never disagree; app.css mirrors it.
    */
-  const compact = createMediaQuery(breakpointQuery('compact'));
+  const compact = createMediaQuery('(max-width: 72rem), (max-height: 480px)');
   let navOpen = $state(false);
 
   const sections = [
@@ -128,6 +131,8 @@
   }
 
   afterNavigate(async () => {
+    // A deep link or the back button lands with the menu shut, not over the new page.
+    navOpen = false;
     // Arriving in a group always shows it, even one collapsed by hand earlier.
     if (currentGroup) toggled.delete(currentGroup);
     await tick();
@@ -168,34 +173,35 @@
   <TooltipProvider>
     <AppShell mainId="docs-content" style={`--docs-header-height: ${headerHeight}px`}>
       {#snippet header()}
-        <Topbar navLabel="Documentation" bind:ref={headerEl}>
+        <!-- Compact, the sections move into the menu drawer: a second and third row of chrome
+             would take a quarter of a phone's screen, and most of a landscape one. -->
+        <Topbar
+          class="docs-topbar"
+          navLabel="Documentation"
+          bind:ref={headerEl}
+          navigation={compact.matches ? undefined : sectionLinks}
+        >
           {#snippet brand()}
             <Brand name="Loidolt" meta={`Theme ${version}`} href={`${base}/`} />
           {/snippet}
-          {#snippet navigation()}
-            {#each sections as section (section.href)}
-              <a
-                class="docs-nav-link"
-                href={section.href}
-                aria-current={isCurrent(section.href) ? 'page' : undefined}>{section.label}</a
-              >
-            {/each}
-          {/snippet}
           {#snippet actions()}
-            <!-- First, so the way into the nav never scrolls out of reach on a phone. -->
             {#if compact.matches}
-              <Drawer
-                title="Components"
-                bind:open={navOpen}
-                triggerClass="ldt-button ldt-button--sm"
-              >
-                {#snippet trigger()}Browse{/snippet}
+              <ThemeToggle {theme} />
+              <Drawer title="Menu" bind:open={navOpen} triggerClass="ldt-button ldt-button--sm">
+                {#snippet trigger()}Menu{/snippet}
+                <nav class="docs-drawer-sections" aria-label="Sections">
+                  {@render sectionLinks()}
+                </nav>
+                <div class="docs-drawer-preset">
+                  <PresetPicker {theme} variant="select" />
+                </div>
                 {@render componentNav()}
               </Drawer>
+            {:else}
+              <Badge variant="accent">Svelte 5</Badge>
+              <PresetPicker {theme} variant="select" />
+              <ThemeToggle {theme} />
             {/if}
-            <Badge variant="accent">Svelte 5</Badge>
-            <PresetPicker {theme} variant="select" />
-            <ThemeToggle {theme} />
           {/snippet}
         </Topbar>
       {/snippet}
@@ -213,6 +219,17 @@
     </AppShell>
   </TooltipProvider>
 {/if}
+
+{#snippet sectionLinks()}
+  {#each sections as section (section.href)}
+    <a
+      class="docs-nav-link"
+      href={section.href}
+      aria-current={isCurrent(section.href) ? 'page' : undefined}
+      onclick={() => (navOpen = false)}>{section.label}</a
+    >
+  {/each}
+{/snippet}
 
 {#snippet componentNav()}
   <nav class="docs-sidenav" aria-label="Components">

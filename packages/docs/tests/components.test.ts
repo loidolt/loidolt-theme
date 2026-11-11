@@ -106,6 +106,16 @@ describe('Markdown', () => {
     await waitFor(() => expect(mermaid.render.mock.calls.length).toBeGreaterThan(calls));
   });
 
+  it('stops a wide diagram shrinking below three quarters of its drawn width', async () => {
+    setMermaidLoader(() => ({
+      initialize: vi.fn(),
+      render: async () => ({ svg: '<svg viewBox="0 0 900 120"><text>wide</text></svg>' }),
+    }));
+    render(Markdown, { source: '```mermaid\ngraph LR; A-->B\n```', diagramLabel: 'Wide' });
+    const picture = await screen.findByRole('img', { name: 'Wide' });
+    expect(picture.querySelector('svg')).toHaveStyle({ minWidth: '675px' });
+  });
+
   it('leaves diagram source readable when Mermaid is not there', async () => {
     const { container } = render(Markdown, { source: '```mermaid\ngraph TD; A-->B\n```' });
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -121,6 +131,19 @@ describe('CodeSnippet', () => {
     expect(block).toHaveTextContent('npm i');
     await userEvent.click(screen.getByRole('button', { name: 'Copy' }));
     expect(clipboard.writeText).toHaveBeenCalledWith('npm i');
+  });
+
+  it('shows the language in the copy bar when there is no filename', () => {
+    const { container, unmount } = render(CodeSnippet, { code: 'npm i', lang: 'sh' });
+    const label = container.querySelector('.ldt-code__filename');
+    expect(label).toHaveTextContent('sh');
+    // The code is already named "sh code"; the visible label is not read a second time.
+    expect(label).toHaveAttribute('aria-hidden', 'true');
+    unmount();
+    const named = render(CodeSnippet, { code: 'npm i', lang: 'sh', filename: 'install.sh' });
+    const filename = named.container.querySelector('.ldt-code__filename');
+    expect(filename).toHaveTextContent('install.sh');
+    expect(filename).not.toHaveAttribute('aria-hidden');
   });
 
   it('highlights with the registered loader and names itself by filename', async () => {

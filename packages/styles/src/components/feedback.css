@@ -79,6 +79,18 @@
   font-variant-numeric: tabular-nums;
   text-align: end;
 }
+/* On a phone the readout sits above the bar, as Slider's does: bars keep the full width and line
+   up whatever their readouts say. */
+@media (max-width: 30rem) {
+  .ldt-progress-field {
+    flex-wrap: wrap;
+    row-gap: var(--loidolt-space-1);
+  }
+  .ldt-progress-field__value {
+    order: -1;
+    flex-basis: 100%;
+  }
+}
 .ldt-progress--indeterminate .ldt-progress__bar {
   width: 40%;
   transform: none;

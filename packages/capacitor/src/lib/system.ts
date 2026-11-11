@@ -77,8 +77,9 @@ export interface SystemTextSizeOptions {
  *
  * On iOS the zoom arrives as `-webkit-text-size-adjust`, which scales text after every `min()`
  * and `clamp()` in the stylesheet has been resolved, so the factor is also written to `<html>` as
- * `--ldt-text-zoom`. Components that cap their text's growth — `TabBar`'s labels — read it to
- * keep the cap. Android's web view zooms text its own way and gets no variable.
+ * `--ldt-text-zoom`. Components that cap their text's growth — `TabBar`'s labels, the Topbar
+ * brand, the `PageHeader` title — read it to keep the cap. Android's web view zooms text its own
+ * way and gets no variable.
  */
 export function followSystemTextSize(options: SystemTextSizeOptions): Teardown {
   const platform = nativePlatform();

@@ -40,13 +40,19 @@
         ? formatNumber(value, valueFormat)
         : value;
   const align = (value: ChartCell) => (typeof value === 'number' ? 'end' : undefined);
+  // A column of numbers is headed from the same side its figures line up on.
+  const columnAlign = (index: number) =>
+    table.rows.some((row) => typeof row[index] === 'number') &&
+    table.rows.every((row) => row[index] == null || typeof row[index] === 'number')
+      ? 'end'
+      : undefined;
 </script>
 
 {#snippet contents()}
   <thead>
     <tr>
       {#each table.columns as column, index (index)}
-        <th scope="col">{column}</th>
+        <th scope="col" data-align={columnAlign(index)}>{column}</th>
       {/each}
     </tr>
   </thead>

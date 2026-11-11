@@ -79,9 +79,9 @@
 /*
  * Beside the page the nav column sticks under the top bar, and only the group list scrolls: the
  * filter stays put above it, and the current entry stays in reach however long the page is.
- * Below the compact breakpoint the nav lives in a Drawer instead.
+ * Where the header goes compact (the layout's `compact` query) the nav lives in a Drawer instead.
  */
-@media (min-width: 760.02px) {
+@media (width > 72rem) and (height > 480px) {
   .ldt-workspace > .ldt-sidebar:has(> .docs-sidenav) {
     position: sticky;
     top: var(--docs-header-height, 0px);
@@ -351,12 +351,14 @@
 }
 /*
  * Prop types are long by nature (`Snippet<[{ id: string; describedBy?: string }]>`). Let them
- * wrap inside the cell rather than pushing the table into horizontal scroll on every page.
+ * wrap inside the cell rather than pushing the table into horizontal scroll on every page —
+ * between words: `anywhere` also shrinks the column's minimum to a letter, and the table then
+ * squeezes it until `string` breaks as strin/g.
  */
 .docs-type {
   display: inline-block;
   max-width: 26rem;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   white-space: normal;
 }
 .docs-role-chip {
@@ -396,6 +398,24 @@
   font-weight: var(--loidolt-label-weight);
   letter-spacing: var(--loidolt-label-tracking);
   text-transform: var(--loidolt-label-transform);
+}
+/*
+ * Under a finger a frame is a picture, not a page: a scrollable frame takes every vertical swipe
+ * that starts on it, and six of them leave nothing of /presets to scroll by. "Open full page" is
+ * the way in, so it gets a full-size press.
+ */
+@media (pointer: coarse) {
+  .docs-preset-frame iframe {
+    pointer-events: none;
+  }
+  .docs-preset-frame figcaption {
+    align-items: center;
+  }
+  .docs-preset-frame figcaption a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
 }
 /* The bare sampler page a preview frame loads. */
 .docs-preview {
@@ -443,6 +463,9 @@
   padding: 0;
   list-style: none;
 }
+.docs-scale + * {
+  margin-top: var(--loidolt-space-4);
+}
 .docs-scale li {
   display: grid;
   grid-template-columns: 4rem minmax(0, 1fr) auto;
@@ -482,8 +505,15 @@
 .docs-frame .ldt-workspace {
   min-height: 16rem;
 }
+/* An AppShell fills the viewport by default; framed as an example it needs only a short screen. */
+.docs-frame .ldt-app-shell {
+  min-height: 18rem;
+}
 .docs-canvas {
-  min-height: 100%;
+  /* Fills the pane beside the sidebars; stacked on a phone, where there is no height to fill,
+     it keeps a usable size instead of shrinking to its one line. */
+  height: 100%;
+  min-height: 10rem;
   display: grid;
   place-items: center;
   background-color: var(--loidolt-surface-sunken);
@@ -533,9 +563,30 @@ pre {
   .docs-hero {
     grid-template-columns: 1fr;
   }
+}
+/* On a phone, upright or on its side, the bar scrolls away rather than hold the screen's top. */
+@media (max-width: 760px), (max-height: 480px) {
   .ldt-app-shell > header {
     position: static;
   }
+}
+
+/* The menu drawer on a phone: the sections, the preset, then the component outline. */
+.docs-drawer-sections {
+  display: grid;
+  margin-bottom: var(--loidolt-space-3);
+  border-bottom: 1px solid var(--loidolt-border-soft);
+}
+.docs-drawer-sections .docs-nav-link {
+  border-bottom: 0;
+  border-left: var(--loidolt-stroke-indicator) solid transparent;
+}
+.docs-drawer-sections .docs-nav-link[aria-current='page'] {
+  border-left-color: var(--loidolt-accent);
+}
+.docs-drawer-preset {
+  display: grid;
+  margin-bottom: var(--loidolt-space-4);
 }
 
 @media (pointer: coarse) {
@@ -548,5 +599,111 @@ pre {
   }
   .docs-sidenav__hint {
     display: none;
+  }
+}
+
+/*
+ * Reference tables on a phone or an upright tablet: each row becomes a block, its first cell a
+ * heading and the rest under it, each with its column's name from `data-label`. Squeezed into
+ * 360px, a three-column table wraps one word per line and runs to thousands of pixels; a props
+ * table needs about 830px for its four columns of code, and scrolls sideways below that.
+ */
+@media (max-width: 52rem) {
+  .docs-stack thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .docs-stack,
+  .docs-stack tbody,
+  .docs-stack tr,
+  .docs-stack td {
+    display: block;
+  }
+  .docs-stack tr {
+    padding: var(--loidolt-space-3) var(--loidolt-space-3);
+    border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+  }
+  .docs-stack tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .docs-stack.ldt-table td {
+    padding: var(--loidolt-space-1) 0;
+    border: 0;
+  }
+  .docs-stack td:first-child {
+    font-weight: var(--loidolt-strong-weight);
+  }
+  .docs-stack td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--loidolt-text-muted);
+    font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+    font-weight: var(--loidolt-label-weight);
+    letter-spacing: var(--loidolt-label-tracking);
+    text-transform: var(--loidolt-label-transform);
+  }
+  .docs-stack td:empty {
+    display: none;
+  }
+  /* Short values: the column name on the same line. */
+  .docs-stack--inline td[data-label]::before {
+    display: inline;
+    margin-inline-end: var(--loidolt-space-2);
+  }
+}
+
+/* A table is followed by breathing room, not by the next paragraph against its border. */
+.docs-page .ldt-table-wrap + * {
+  margin-top: var(--loidolt-space-4);
+}
+
+/* Code named in an uppercase caption keeps its case: `isTauri()`, not ISTAURI(). */
+.docs-demo__label code {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+@media (max-width: 30rem) {
+  /* The calls to action stack, full width, instead of leaving the last one alone on a line. */
+  .docs-hero__actions {
+    display: grid;
+  }
+  /* Code samples wrap on a phone rather than running off the right edge mid-identifier. */
+  .docs-page pre {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+}
+
+/* An example's first and last elements sit on the frame's padding, not on their own margins too. */
+.docs-demo__body > :first-child {
+  margin-top: 0;
+}
+.docs-demo__body > :last-child {
+  margin-bottom: 0;
+}
+
+/* The components index's jump list of groups. */
+.docs-jump {
+  margin-block: var(--loidolt-space-4) var(--loidolt-space-5);
+}
+/*
+ * On a phone a wrapped row of thirteen names leaves rows of four, three, five and one, so they
+ * go in three even columns, and a last one or two left over run out to the row's end.
+ */
+@media (max-width: 30rem) {
+  .docs-jump {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .docs-jump > :last-child:nth-child(3n + 1) {
+    grid-column: 1 / -1;
+  }
+  .docs-jump > :last-child:nth-child(3n + 2) {
+    grid-column: span 2;
   }
 }

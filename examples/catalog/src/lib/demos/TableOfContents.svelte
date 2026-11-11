@@ -14,7 +14,9 @@
 <div class="ldt-grid" style="--ldt-min: 14rem;">
   <div>
     <TableOfContents {items} bind:activeId={active} />
-    <p class="ldt-eyebrow">Current: {items.find((item) => item.id === active)?.text}</p>
+    <p class="ldt-eyebrow" style="margin-top: var(--loidolt-space-4)">
+      Current: {items.find((item) => item.id === active)?.text}
+    </p>
   </div>
   <article class="ldt-prose">
     <h2 id="toc-demo-prepare">Prepare the file</h2>

@@ -35,11 +35,12 @@
   <p class="ldt-utility-text">
     {current ? `Caret in “${value.slice(current.start, current.end)}”` : 'Caret outside the marks'}
   </p>
-  <ul class="ldt-stack" aria-label="Remaining marks">
+  <ul class="ldt-stack" aria-label="Remaining marks" style="padding-inline-start: 1.25rem">
     {#each marks as mark (mark.id)}
       <li>
         <Badge variant={mark.variant}>{mark.label}</Badge>
-        “{value.slice(mark.start, mark.end)}” at {mark.start}–{mark.end}
+        “{value.slice(mark.start, mark.end)}”
+        <span style="white-space: nowrap">at {mark.start}–{mark.end}</span>
       </li>
     {:else}
       <li>No marks left.</li>

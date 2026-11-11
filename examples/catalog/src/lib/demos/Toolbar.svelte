@@ -11,7 +11,7 @@
       aria-label="Search sheets"
       placeholder="Search sheets"
       boxed
-      style="max-width: 16rem"
+      style="flex: 1 1 12rem"
     />
     <Button size="sm" variant="quiet">Filters</Button>
     <span class="ldt-utility-text">24 sheets</span>

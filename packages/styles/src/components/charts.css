@@ -29,6 +29,12 @@
   min-height: var(--ldt-chart-height, 20rem);
   align-content: center;
 }
+/* On a phone a two-line message does not need the chart's full height. */
+@media (max-width: 30rem) {
+  .ldt-chart__state.ldt-empty-state {
+    min-height: min(var(--ldt-chart-height, 20rem), 12rem);
+  }
+}
 .ldt-chart__alert :where(p) {
   margin: 0 0 0.5rem;
 }

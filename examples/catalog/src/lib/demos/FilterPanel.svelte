@@ -16,6 +16,7 @@
       aria-controls="demo-filters"
       onclick={() => (open = !open)}>Filters{active ? ` (${active})` : ''}</Button
     >
+    <span class="ldt-toolbar__end ldt-utility-text">{active ? 9 : 24} sheets</span>
   </Toolbar>
   <FilterPanel
     id="demo-filters"

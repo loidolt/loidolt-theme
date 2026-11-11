@@ -57,6 +57,8 @@
  * one, and text that stays a step smaller than button text at every size.
  */
 .ldt-badge {
+  /* A two-word status ("In review") stays one pill, not a stack of two in a narrow cell. */
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   min-height: 1.4rem;

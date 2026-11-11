@@ -131,11 +131,13 @@
   }
   :where(
     .ldt-icon-button,
+    .ldt-select,
     .ldt-number-field__button,
     .ldt-combobox__trigger,
     .ldt-password-input__toggle,
     .ldt-chip__remove,
     .ldt-media-controls__button,
+    .ldt-media-controls__speed,
     .ldt-lightbox__control,
     .ldt-media-carousel__control,
     .ldt-map .maplibregl-ctrl-group button
@@ -168,6 +170,112 @@
   }
   .ldt-number-field:not(.ldt-number-field--bare) {
     grid-template-columns: 44px minmax(0, 1fr) 44px;
+  }
+  :where(.ldt-list-row) {
+    min-height: 44px;
+  }
+  .ldt-file-input::file-selector-button {
+    min-height: 44px;
+    padding-block: var(--loidolt-space-2);
+  }
+  /* The only way to pick on a phone, where there is nothing to drag. */
+  :where(.ldt-dropzone__browse) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  :where(.ldt-swatch-group__swatch) {
+    width: 44px;
+    height: 44px;
+  }
+  :where(.ldt-swatch-group) {
+    gap: var(--loidolt-space-2);
+  }
+  /* Breadcrumbs keep their small label type; an invisible 44px band around each link takes the
+     press. */
+  /* The band hangs off the item, so the link can still clip a long label with an ellipsis. */
+  .ldt-breadcrumbs__item {
+    position: relative;
+  }
+  .ldt-breadcrumbs__link::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+  /* Small in-place controls that keep their drawn size and take a 44px press around it: a stage
+     label, the folded map attribution, the brand, a field's trigger or reveal button inside its
+     border, a chip's remove button. */
+  :where(.ldt-pagination__page) {
+    min-width: 44px;
+  }
+  :where(
+    .ldt-stage-stepper__action,
+    .ldt-footnote-back,
+    .ldt-heading-anchor,
+    .ldt-brand,
+    .ldt-combobox__trigger,
+    .ldt-password-input__toggle,
+    .ldt-chip__remove
+  ) {
+    position: relative;
+  }
+  .ldt-footnote-back::after,
+  .ldt-heading-anchor::after,
+  .ldt-stage-stepper__action::after,
+  .ldt-map .maplibregl-ctrl-attrib-button::after,
+  .ldt-brand::after,
+  .ldt-combobox__trigger::after,
+  .ldt-password-input__toggle::after,
+  .ldt-chip__remove::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+  /* A row's checkbox takes the whole of its 44px column: a square hung off it would reach into the
+     next cell, or under the sort header beside it. */
+  .ldt-table :where(th, td).ldt-data-table__select {
+    padding-inline: 0;
+  }
+  :where(.ldt-data-table__select .ldt-choice) {
+    min-width: 44px;
+    justify-content: center;
+  }
+  /*
+   * A sort header's press is the whole header cell, which grows to 44px: a square hung off the
+   * button would reach past the cell into the first row, over a row link or checkbox. A sticky
+   * cell is already positioned, and must stay sticky.
+   */
+  :where(.ldt-table th:has(> .ldt-table__sort)) {
+    height: 44px;
+  }
+  :where(.ldt-table:not(.ldt-table--sticky) th:has(> .ldt-table__sort)) {
+    position: relative;
+  }
+  .ldt-table__sort::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  /* A disclosure's summary keeps its marker, so it grows by padding rather than by flex. */
+  :where(.ldt-mermaid__source summary, summary.ldt-map-legend__summary) {
+    padding-block: max(var(--loidolt-space-3), calc((44px - 1lh) / 2));
+  }
+  /* Inline radios sit far enough apart that a thumb takes one, not its neighbour. */
+  :where(.ldt-radio-group:not(.ldt-radio-group--vertical)) {
+    column-gap: var(--loidolt-space-5);
+  }
+  /* A chip inside a MultiSelect field keeps its size: at 44px it would fill the field. Its
+     remove button keeps a 44px target through the invisible square above instead. */
+  .ldt-multi-select :where(.ldt-chip) {
+    min-height: auto;
+  }
+  .ldt-multi-select :where(.ldt-chip__remove) {
+    min-width: auto;
   }
 }
 

@@ -2,6 +2,7 @@
   import { base } from '$app/paths';
   import * as theme from '@loidolt/theme-svelte';
   import { Alert, Card, PageHeader, Section } from '@loidolt/theme-svelte';
+  import RichText from '$lib/components/RichText.svelte';
   import { entries, grouped } from '$lib/registry.js';
 
   /*
@@ -20,7 +21,7 @@
 <PageHeader
   eyebrow="Reference"
   title="Components"
-  description={`${exported.length} components, grouped by the job they do. Every page carries a live example, the accessibility contract, and a prop table generated from source.`}
+  description={`${entries.length} components, grouped by the job they do. Every page carries a live example, the accessibility contract, and a prop table generated from source.`}
   headingLevel={1}
 />
 
@@ -30,12 +31,21 @@
   </Alert>
 {/if}
 
+<!-- A long index on a phone: the groups are a tap away. -->
+<nav class="ldt-cluster docs-jump" aria-label="Component groups">
+  {#each grouped as section (section.group)}
+    <a class="ldt-button ldt-button--quiet ldt-button--sm" href={`#${section.group.toLowerCase()}`}
+      >{section.group}</a
+    >
+  {/each}
+</nav>
+
 {#each grouped as section (section.group)}
   <Section title={section.group} headingLevel={2} id={section.group.toLowerCase()}>
     <div class="ldt-grid" style="--ldt-min: 18rem">
       {#each section.items as item (item.slug)}
         <a class="docs-card-link" href={`${base}/components/${item.slug}`}>
-          <Card title={item.name} headingLevel={3}>{item.summary}</Card>
+          <Card title={item.name} headingLevel={3}><RichText value={item.summary} /></Card>
         </a>
       {/each}
     </div>

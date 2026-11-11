@@ -1,6 +1,7 @@
 <script lang="ts">
   import { base } from '$app/paths';
   import { MapSource, MapView, RasterLayer } from '@loidolt/theme-maps';
+  import { Slider } from '@loidolt/theme-svelte';
   import { portland } from '$lib/sample-geo.js';
 
   let opacity = $state(0.8);
@@ -24,7 +25,12 @@
       <RasterLayer id="site-plan-image" paint={{ 'raster-opacity': opacity }} />
     </MapSource>
   </MapView>
-  <label class="ldt-eyebrow">
-    Plan opacity <input type="range" min="0" max="1" step="0.1" bind:value={opacity} />
-  </label>
+  <Slider
+    label="Plan opacity"
+    min={0}
+    max={1}
+    step={0.1}
+    bind:value={opacity}
+    formatValue={(value) => `${Math.round(value * 100)}%`}
+  />
 </div>

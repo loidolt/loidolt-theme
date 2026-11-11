@@ -212,7 +212,14 @@ function parse(source: string, options: MarkdownOptions): Parsed {
           return `<pre class="ldt-mermaid" data-ldt-mermaid>${escapeHtml(text)}</pre>\n`;
         }
         codes.push({ text, lang: language });
-        const header = `<figcaption class="ldt-code__header">${filename ? `<span class="ldt-code__filename">${escapeHtml(filename)}</span>` : ''}<button type="button" class="ldt-code__copy" data-ldt-copy>${escapeHtml(copyLabel)}</button></figcaption>`;
+        // As `CodeSnippet` does: without a filename the language fills the bar's left end, hidden
+        // from assistive tech, which already hears the block named "‹lang› code".
+        const label = filename
+          ? `<span class="ldt-code__filename">${escapeHtml(filename)}</span>`
+          : language
+            ? `<span class="ldt-code__filename" aria-hidden="true">${escapeHtml(language)}</span>`
+            : '';
+        const header = `<figcaption class="ldt-code__header">${label}<button type="button" class="ldt-code__copy" data-ldt-copy>${escapeHtml(copyLabel)}</button></figcaption>`;
         return `<figure class="ldt-code"${language ? ` data-lang="${escapeHtml(language)}"` : ''}>${header}<pre class="ldt-code__pre" tabindex="0" aria-label="${escapeHtml(filename ?? codeLabel(language))}"><code${language ? ` class="language-${escapeHtml(language)}"` : ''}>${CODE_MARK(codes.length - 1)}</code></pre></figure>\n`;
       },
       html({ text }) {

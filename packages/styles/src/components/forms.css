@@ -48,6 +48,58 @@
   padding-inline: var(--loidolt-pad-control-x-sm);
   background: var(--loidolt-surface-input);
 }
+/*
+ * The system's own select clothes ignore the theme's height and padding — WebKit draws a 28px
+ * pill whatever the box says — so a single-line select drops them and draws its own chevron.
+ * Longhands, after the boxed rule, so the box's background colour stays.
+ */
+.ldt-select:not([multiple], [size]) {
+  appearance: none;
+  padding-inline-end: calc(var(--loidolt-pad-control-x-sm) + 1rem);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--loidolt-text-muted) 50%),
+    linear-gradient(135deg, var(--loidolt-text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 0.85rem) 55%,
+    calc(100% - 0.55rem) 55%;
+  background-size: 0.3rem 0.3rem;
+  background-repeat: no-repeat;
+}
+/* The chevron sits at the inline end, where the padding makes room for it. */
+.ldt-select:not([multiple], [size]):dir(rtl) {
+  background-position:
+    0.55rem 55%,
+    0.85rem 55%;
+}
+/* Forced colours drop gradients, and with them the chevron: the system's own arrow comes back. */
+@media (forced-colors: active) {
+  .ldt-select:not([multiple], [size]) {
+    appearance: auto;
+  }
+}
+/* NumberField draws its own − and +; the browser's spinner would be a second, smaller pair. */
+.ldt-number-field__input {
+  appearance: textfield;
+}
+.ldt-number-field__input::-webkit-inner-spin-button,
+.ldt-number-field__input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+/* Disabled reads as disabled, not as an empty boxed field. */
+.ldt-input:disabled,
+.ldt-select:disabled,
+.ldt-textarea:disabled,
+.ldt-number-field__input:disabled {
+  border-style: dashed;
+  color: var(--loidolt-text-muted);
+  /* iOS WebKit paints disabled text with its own fill colour and fades the field to 40% on top,
+     so the muted colour applies only through the fill colour, at full opacity. */
+  -webkit-text-fill-color: var(--loidolt-text-muted);
+  opacity: 1;
+  /* A colour longhand, so a single-line select keeps its chevron. */
+  background-color: transparent;
+}
 /* The focus ring itself comes from the `loidolt.a11y` layer; this only tints the border. */
 .ldt-input:focus-visible,
 .ldt-select:focus-visible,
@@ -204,6 +256,11 @@
 .ldt-fieldset > :where(.ldt-field__description, .ldt-field__error) {
   margin-top: var(--loidolt-gap-field);
 }
+/* A legend sits outside the flow its siblings' gap spaces, so SwatchGroup's swatches would touch
+   it; they get the same gap as a fieldset body. */
+.ldt-legend + .ldt-swatch-group {
+  margin-top: var(--loidolt-gap-field);
+}
 .ldt-radio-group {
   display: flex;
   flex-wrap: wrap;
@@ -220,6 +277,9 @@
   border: 0;
   padding: 0;
   background: transparent;
+  /* A button, so it would take the body face; its label reads like a checkbox's or a radio's. */
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+  letter-spacing: calc(var(--loidolt-control-tracking) * 0.75);
 }
 .ldt-switch__track {
   width: 2.4rem;
@@ -273,7 +333,12 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
-/* A file picker in the system's input clothes. */
+/* A file picker in the system's input clothes. The "no file chosen" text matches the button. */
+.ldt-file-input {
+  max-width: 100%;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+}
 .ldt-file-input::file-selector-button {
   margin-inline-end: var(--loidolt-space-2);
   border: var(--loidolt-border-width) solid var(--loidolt-border-control);
@@ -530,6 +595,18 @@
   font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
   font-variant-numeric: tabular-nums;
   text-align: end;
+}
+/* On a phone the readout sits above the track, so the track keeps the full width and sliders
+   with readouts of different lengths line up. */
+@media (max-width: 30rem) {
+  .ldt-slider:not(.ldt-slider--vertical):has(> .ldt-slider__value) {
+    flex-wrap: wrap;
+    row-gap: var(--loidolt-space-1);
+  }
+  .ldt-slider:not(.ldt-slider--vertical) > .ldt-slider__value {
+    order: -1;
+    flex-basis: 100%;
+  }
 }
 .ldt-slider[data-disabled] {
   opacity: 0.45;

@@ -81,7 +81,9 @@ export function buildScatterOption(
       const [low, high] = [Math.min(...xs), Math.max(...xs)];
       series.push({
         type: 'line',
-        name: `${one.name} trend`,
+        // The series' own name, so one legend entry, in its colour, toggles points and line
+        // together; an entry each doubled a legend that already overflows a phone.
+        name: one.name,
         data: [
           [low, fit.intercept + fit.slope * low],
           [high, fit.intercept + fit.slope * high],
@@ -102,16 +104,30 @@ export function buildScatterOption(
             `${params.seriesName}<br>${formatX(params.value[0])}, ${formatY(params.value[1])}`,
         }
       : undefined,
-    grid: { left: 8, right: 16, top: showLegend ? 40 : 16, bottom: 8, containLabel: true },
+    /*
+     * Axis names sit outside what `containLabel` measures. The x name goes under the axis, centred,
+     * rather than past its end, where a narrow chart clips it; the y name keeps the top of its
+     * axis, with room above it so it clears the legend.
+     */
+    grid: {
+      left: 8,
+      right: 16,
+      top: (showLegend ? 40 : 16) + (options.yAxisName ? 20 : 0),
+      bottom: options.xAxisName ? 32 : 8,
+      containLabel: true,
+    },
     xAxis: {
       type: 'value',
       name: options.xAxisName,
+      nameLocation: 'middle',
+      nameGap: 28,
       scale: true,
       axisLabel: { formatter: formatX },
     },
     yAxis: {
       type: 'value',
       name: options.yAxisName,
+      nameTextStyle: { align: 'left' },
       scale: true,
       axisLabel: { formatter: formatY },
     },
@@ -383,6 +399,9 @@ export function buildHeatmapOption(
       left: 'center',
       bottom: 0,
       itemWidth: 12,
+      // The ends of the scale, named: a bare gradient says nothing about what its colours mean.
+      text: [format(max), format(min)],
+      textGap: 8,
       formatter: format,
       inRange: { color: colors.sequential },
     },
@@ -394,7 +413,7 @@ export function buildHeatmapOption(
         label: showValues
           ? {
               show: true,
-              fontSize: 10,
+              fontSize: 11,
               formatter: (params: { value: [number, number, number | null] }) =>
                 format(params.value[2]),
             }
@@ -473,9 +492,12 @@ export function buildTreemapOption(
         top: 8,
         left: 0,
         right: 0,
-        bottom: showBreadcrumb ? 32 : 0,
+        // Room for the breadcrumb under the tiles, tall enough to press.
+        bottom: showBreadcrumb ? 44 : 0,
         breadcrumb: {
           show: showBreadcrumb,
+          bottom: 4,
+          height: 28,
           itemStyle: {
             color: colors.surface,
             borderColor: colors.axis,
@@ -600,7 +622,8 @@ export function buildCandlestickOption(
     dataZoom: zoom
       ? [
           { type: 'inside', xAxisIndex: axes },
-          { type: 'slider', xAxisIndex: axes, bottom: 8, height: 24 },
+          // Tall enough that its handles take a finger, not only a pointer.
+          { type: 'slider', xAxisIndex: axes, bottom: 8, height: 32, moveHandleSize: 12 },
         ]
       : undefined,
     series: [
@@ -711,7 +734,8 @@ export function buildSankeyOption(
         left: 8,
         right: orientation === 'horizontal' ? 96 : 8,
         top: 8,
-        bottom: orientation === 'horizontal' ? 8 : 32,
+        // A label centres on its node, so the last node's label needs room under the chart.
+        bottom: orientation === 'horizontal' ? 16 : 32,
         nodeWidth: 12,
         nodeGap: 10,
         emphasis: { focus: 'adjacency' },

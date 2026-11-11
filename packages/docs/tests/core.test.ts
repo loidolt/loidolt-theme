@@ -259,8 +259,13 @@ describe('rendering', () => {
       '<figure class="ldt-code" data-lang="ts"><figcaption class="ldt-code__header"><span class="ldt-code__filename">app.ts</span><button type="button" class="ldt-code__copy" data-ldt-copy>Copy code</button></figcaption><pre class="ldt-code__pre" tabindex="0" aria-label="app.ts"><code class="language-ts">const a = 1 &lt; 2;</code></pre></figure>'
     );
     expect(html).toContain('<span class="ldt-code__filename">run.sh</span>');
-    expect(html).toContain('aria-label="Code"><code>plain</code>');
-    expect(render('```js\nx\n```')).toContain('aria-label="js code"');
+    expect(html).toContain(
+      '<figcaption class="ldt-code__header"><button type="button" class="ldt-code__copy" data-ldt-copy>Copy code</button></figcaption><pre class="ldt-code__pre" tabindex="0" aria-label="Code"><code>plain</code>'
+    );
+    // Without a filename the language labels the bar, as CodeSnippet's does, out of the a11y tree.
+    expect(render('```js\nx\n```')).toBe(
+      '<figure class="ldt-code" data-lang="js"><figcaption class="ldt-code__header"><span class="ldt-code__filename" aria-hidden="true">js</span><button type="button" class="ldt-code__copy" data-ldt-copy>Copy</button></figcaption><pre class="ldt-code__pre" tabindex="0" aria-label="js code"><code class="language-js">x</code></pre></figure>\n'
+    );
   });
 
   it('keeps Mermaid source, escaped, for the component to draw', () => {

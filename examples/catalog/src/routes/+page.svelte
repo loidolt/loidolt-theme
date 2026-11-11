@@ -1,8 +1,8 @@
 <script lang="ts">
   import { base } from '$app/paths';
-  import * as theme from '@loidolt/theme-svelte';
   import { Badge, Button, Card, Section } from '@loidolt/theme-svelte';
   import CodeBlock from '$lib/components/CodeBlock.svelte';
+  import { entries, packageOf } from '$lib/registry.js';
 
   /*
    * Assembled from two pieces on purpose: a closing script tag written literally anywhere in
@@ -10,9 +10,9 @@
    */
   const endScript = `</${'script'}>`;
 
-  const componentCount = Object.keys(theme).filter(
-    (name) => /^[A-Z]/.test(name) && !name.endsWith('Primitive')
-  ).length;
+  // Everything the catalog documents, across the component packages — not only theme-svelte's.
+  const componentCount = entries.length;
+  const packageCount = new Set(entries.map(packageOf)).size;
 
   const install = `npm install @loidolt/theme-svelte
 
@@ -42,7 +42,7 @@ ${endScript}
       A Svelte-first component library for dense creative tools and clean everyday applications.
       Warm surfaces, sharp edges, clear hierarchy, and no Tailwind contract.
     </p>
-    <div class="ldt-cluster">
+    <div class="ldt-cluster docs-hero__actions">
       <Button variant="primary" href={`${base}/components`}>Browse components</Button>
       <Button variant="quiet" href={`${base}/foundations`}>Foundations</Button>
       <Button variant="text" href={`${base}/patterns`}>Patterns</Button>
@@ -50,7 +50,7 @@ ${endScript}
   </div>
   <div class="docs-stats" aria-label="Library facts">
     <div class="docs-stat"><strong>{componentCount}</strong><span>Components</span></div>
-    <div class="docs-stat"><strong>3</strong><span>Packages</span></div>
+    <div class="docs-stat"><strong>{packageCount}</strong><span>Packages</span></div>
     <div class="docs-stat"><strong>AA</strong><span>Contrast target</span></div>
     <div class="docs-stat"><strong>0</strong><span>Runtime CSS deps</span></div>
   </div>

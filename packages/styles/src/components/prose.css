@@ -128,6 +128,9 @@
   list-style: none;
 }
 :where(.ldt-prose li > input[type='checkbox']):not(:where(.ldt-not-prose, .ldt-not-prose *)) {
+  /* At the system's default size a task box is 12px: smaller than the text it marks. */
+  width: 1.1em;
+  height: 1.1em;
   margin: 0 0.5em 0 -1.4em;
   vertical-align: -0.1em;
   accent-color: var(--loidolt-accent);

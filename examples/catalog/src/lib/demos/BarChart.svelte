@@ -4,7 +4,7 @@
 
   const quarter = {
     categories: monthly.categories.slice(0, 4),
-    series: monthly.series,
+    series: monthly.series.map((series) => ({ ...series, data: series.data.slice(0, 4) })),
   };
 </script>
 

@@ -58,7 +58,16 @@
   color: var(--loidolt-text);
   background: var(--loidolt-surface);
 }
+/*
+ * The brand and the page title are display type: at the largest system text sizes they would fill
+ * the first screen and break words apart, so they stop growing at a multiple of their default —
+ * the brand at 1.5x, the title at 2x, which keeps it above running text at the largest iOS size
+ * (about 3.1x) while body text keeps scaling. Under iOS text zoom, which
+ * `-webkit-text-size-adjust` applies after `min()`, they fold `--ldt-text-zoom` into the `min()`
+ * and opt out of the inherited adjustment, as the TabBar label does (see there).
+ */
 .ldt-brand {
+  -webkit-text-size-adjust: calc(var(--ldt-text-zoom) * 0% + 100%);
   display: inline-flex;
   flex: 0 0 auto;
   align-items: baseline;
@@ -70,13 +79,20 @@
   text-decoration: none;
 }
 .ldt-brand__name {
-  font-size: var(--loidolt-font-size-lg);
+  font-size: min(
+    calc(var(--loidolt-font-size-lg) * var(--ldt-text-zoom, 1)),
+    calc(var(--loidolt-font-size-lg) * 1.5)
+  );
   font-weight: var(--loidolt-heading-weight);
   letter-spacing: -0.02em; /* @literal brand lockup */
 }
 .ldt-brand__meta {
   color: var(--loidolt-text-accent);
-  font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+  font: min(
+      calc(var(--loidolt-font-size-xs) * var(--ldt-text-zoom, 1)),
+      calc(var(--loidolt-font-size-xs) * 1.5)
+    )
+    var(--loidolt-font-utility);
   font-weight: var(--loidolt-label-weight);
   letter-spacing: calc(var(--loidolt-label-tracking) * 1.2);
   text-transform: var(--loidolt-label-transform);
@@ -424,9 +440,14 @@
   padding-bottom: var(--loidolt-space-4);
   border-bottom: var(--loidolt-border-width) solid var(--loidolt-border);
 }
+/* Capped like the brand, at 2x; see `.ldt-brand`. */
 .ldt-page-header__title {
+  -webkit-text-size-adjust: calc(var(--ldt-text-zoom) * 0% + 100%);
   margin: 0;
-  font-size: var(--loidolt-font-size-xl);
+  font-size: min(
+    calc(var(--loidolt-font-size-xl) * var(--ldt-text-zoom, 1)),
+    calc(var(--loidolt-font-size-xl) * 2)
+  );
   /* A long unbroken title — a file name, an identifier — must still reflow at 320px. */
   overflow-wrap: anywhere;
 }
@@ -451,7 +472,8 @@
   font-size: var(--loidolt-font-size-lg);
 }
 
-/* Single breakpoint, mirroring `tokens.breakpoints.compact`. */
+/* The layout's breakpoint, mirroring `tokens.breakpoints.compact`. Components that only need to
+   rearrange on a phone use `30rem` instead, in rem so it follows the text size. */
 @media (max-width: 760px) {
   .ldt-topbar {
     min-height: auto;
@@ -459,9 +481,9 @@
       var(--loidolt-space-3);
     gap: var(--loidolt-space-3);
   }
+  /* Beside the brand while they fit, on a row of their own once they do not; either way they
+     shrink and scroll rather than push the page sideways. */
   .ldt-topbar__actions {
-    width: 100%;
-    margin-left: 0;
     overflow-x: auto;
   }
   .ldt-contextbar {

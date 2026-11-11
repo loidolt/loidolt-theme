@@ -163,6 +163,7 @@ export const entries: Entry[] = [
     notes: [
       'The placeholder stays selectable unless the field is `required`.',
       'Pass `{ label, options }` entries to group options under native `<optgroup>` headings.',
+      'A single-line select draws the theme’s own chevron and takes the theme’s height and padding, which the system’s select clothes ignore. `multiple` and `size` keep the native list; forced colours bring the system arrow back.',
     ],
   },
   {
@@ -409,6 +410,7 @@ export const entries: Entry[] = [
     notes: [
       '`count` is the number of items, not the number of pages.',
       'The ellipsis is `aria-hidden`: read between page numbers it is noise, and the buttons either side already say where the trail jumps.',
+      'At phone width the trail collapses to Previous, the current page and Next.',
     ],
   },
 
@@ -712,6 +714,7 @@ export const entries: Entry[] = [
     notes: [
       'Plain nav links take the `.ldt-topbar__link` class; the router marks the active page with `aria-current="page"`.',
       'Under `viewport-fit=cover` the bar runs under the notch and pads its content clear of it; the insets are 0 on desktop. Set `--ldt-safe-top: 0px` on a bar that is not at the top of the screen.',
+      'At compact widths the actions sit beside the brand while they fit and take a row of their own once they do not; either way they scroll rather than push the page sideways.',
       'In a desktop app, `dragRegion` makes the bar drag its window: it sets `data-tauri-drag-region` on the bar and its regions, and the buttons, links and fields in it stay clickable. A plain attribute in a browser. See the Desktop apps pattern for the overlay title bar it pairs with.',
     ],
   },
@@ -1117,6 +1120,7 @@ export const entries: Entry[] = [
       'The canvas is named by `label` and described by `description` plus a sentence on the keyboard controls. Arrow keys pan and + and − zoom when it has focus; after a keyboard move, where the map landed is announced.',
       'A theme change repaints the basemap in place — no reload — and data layers with a paint function follow it too.',
       '`center` and `zoom` are bindable both ways. MapLibre loads in the browser only; the server renders the frame and description, and a browser without WebGL gets a message instead of a broken canvas.',
+      'On a map no wider than 640px the attribution starts folded behind its (i) button, where MapLibre would only fold it after the first drag: open, it covers a fifth of a phone-width map.',
     ],
   },
   {

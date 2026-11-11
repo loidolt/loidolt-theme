@@ -6,6 +6,7 @@
   import PropsTable from '$lib/components/PropsTable.svelte';
   import RichText from '$lib/components/RichText.svelte';
   import { packageOf } from '$lib/registry';
+  import { plainText } from '$lib/rich-text';
 
   let { data } = $props();
 
@@ -17,9 +18,15 @@
     eager: true,
   });
 
-  const demo = $derived(
-    modules[`/src/lib/demos/${data.entry.name}.svelte`]?.default as Component | undefined
+  // Keyed by file name: the glob's keys are relative to the Vite root, which is not always this
+  // app's (examples/catalog-native builds these same routes from its own package).
+  const demos = new Map(
+    Object.entries(modules).map(([path, module]) => [
+      path.slice(path.lastIndexOf('/') + 1, -'.svelte'.length),
+      module.default,
+    ])
   );
+  const demo = $derived(demos.get(data.entry.name));
 </script>
 
 <svelte:head><title>{data.entry.name} — Loidolt Theme</title></svelte:head>
@@ -32,10 +39,12 @@
   ]}
 />
 
+<!-- PageHeader's description is a string, not a snippet, so the summary's code marks are dropped
+     here rather than shown as literal backticks. -->
 <PageHeader
   eyebrow="Component"
   title={data.entry.name}
-  description={data.entry.summary}
+  description={plainText(data.entry.summary)}
   headingLevel={1}
 />
 

@@ -21,6 +21,7 @@
           'fill-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.45, 0.25],
         })}
         onHover={(event) => (hovered = (event?.feature.properties?.name as string) ?? null)}
+        onClick={(event) => (hovered = (event.feature.properties?.name as string) ?? null)}
       />
       <LineLayer
         id="zone-outline"
@@ -28,5 +29,5 @@
       />
     </MapSource>
   </MapView>
-  <p class="ldt-eyebrow">{hovered ?? 'Hover a zone'}</p>
+  <p class="ldt-eyebrow">{hovered ?? 'Hover or tap a zone'}</p>
 </div>
