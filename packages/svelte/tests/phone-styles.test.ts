@@ -47,12 +47,12 @@ describe('Pagination row', () => {
     expect(list?.lastElementChild).toBe(screen.getByRole('button', { name: 'Next' }));
   });
 
-  it('keeps Previous and Next on the row and balances the wrapped numbers', () => {
+  it('keeps Previous and Next on the row and wraps the numbers between them', () => {
     const css = components('selection.css');
     expect(blocks(css, '.ldt-pagination__list:has(> .ldt-pagination__pages)')).toMatch(
       /flex-wrap:\s*nowrap/
     );
-    expect(blocks(css, '.ldt-pagination__pages')).toMatch(/text-wrap:\s*balance/);
+    expect(blocks(css, '.ldt-pagination__pages')).toMatch(/flex-wrap:\s*wrap/);
   });
 });
 

@@ -172,9 +172,10 @@
 }
 /*
  * Previous and Next hold the ends of one row, and the page numbers wrap between them in a box of
- * their own, so a row a little too narrow wraps page numbers rather than stranding Next. The box
- * lays them out as inline boxes rather than flex items so `text-wrap: balance` can even out its
- * rows: four and three, not six and one. Markup without the box keeps the old single wrapping row.
+ * their own, so a row a little too narrow wraps page numbers rather than stranding Next. A
+ * wrapping flex row rather than inline boxes with `text-wrap: balance`: iOS 18's WebKit sizes
+ * a balanced box to its balanced lines, and wrapped a trail that fitted on one. Markup without
+ * the box keeps the old single wrapping row.
  */
 .ldt-pagination__list:has(> .ldt-pagination__pages) {
   flex-wrap: nowrap;
@@ -184,19 +185,15 @@
 }
 .ldt-pagination__pages {
   min-width: 0;
-  /* The buttons' margins are the gap, and their own height the row's: no strut. */
-  line-height: 0;
-  text-align: center;
-  text-wrap: balance;
-}
-.ldt-pagination__pages > * {
-  margin: 0.15rem; /* @literal half the list's gap, either side */
-  vertical-align: middle;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem; /* @literal the list's own gap */
 }
 .ldt-pagination__ellipsis {
   padding-inline: 0.35rem; /* @literal matches the page-button gap */
   color: var(--loidolt-text-muted);
-  line-height: normal;
 }
 .ldt-pagination__page {
   min-width: var(--loidolt-size-control-sm);
