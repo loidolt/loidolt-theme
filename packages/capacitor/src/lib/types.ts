@@ -144,6 +144,8 @@ export interface FilesystemPlugin {
     recursive?: boolean;
   }): Promise<{ uri: string }>;
   rmdir(options: { path: string; directory?: string; recursive?: boolean }): Promise<void>;
+  deleteFile(options: { path: string; directory?: string }): Promise<void>;
+  getUri(options: { path: string; directory: string }): Promise<{ uri: string }>;
   stat(options: { path: string; directory?: string }): Promise<{ uri: string }>;
   checkPermissions(): Promise<{ publicStorage: string }>;
   requestPermissions(): Promise<{ publicStorage: string }>;

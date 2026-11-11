@@ -117,6 +117,9 @@ export function fakeFilePicker(files: PickedNativeFile[] = []) {
   };
 }
 
+/** Where the fake Filesystem says the app's cache directory is, as iOS reports it. */
+export const CACHE_URI = 'file:///var/mobile/Containers/Data/Application/APP/Library/Caches';
+
 /** A Filesystem that keeps what it is given, keyed `DIRECTORY/path`. */
 export function fakeFilesystem(publicStorage = 'granted', afterRequest = publicStorage) {
   const files = new Map<string, string | Blob>();
@@ -127,11 +130,27 @@ export function fakeFilesystem(publicStorage = 'granted', afterRequest = publicS
       files.set(key, options.data);
       return { uri: `file:///${key}` };
     }),
-    rmdir: vi.fn(async ({ path, directory }: { path: string; directory?: string }) => {
-      for (const key of [...files.keys()]) {
-        if (key.startsWith(`${directory}/${path}/`)) files.delete(key);
+    rmdir: vi.fn(
+      async ({
+        path,
+        directory,
+        recursive,
+      }: {
+        path: string;
+        directory?: string;
+        recursive?: boolean;
+      }) => {
+        const inside = [...files.keys()].filter((key) => key.startsWith(`${directory}/${path}/`));
+        if (inside.length && !recursive) throw new Error('Folder is not empty');
+        for (const key of inside) files.delete(key);
       }
+    ),
+    deleteFile: vi.fn(async ({ path, directory }: { path: string; directory?: string }) => {
+      if (!files.delete(`${directory}/${path}`)) throw new Error('File does not exist');
     }),
+    getUri: vi.fn(async ({ path, directory }: { path: string; directory: string }) => ({
+      uri: directory === 'CACHE' ? `${CACHE_URI}/${path}` : `file:///${directory}/${path}`,
+    })),
     stat: vi.fn(async ({ path, directory }: { path: string; directory?: string }) => {
       const key = `${directory}/${path}`;
       if (!files.has(key)) throw new Error('File does not exist');
