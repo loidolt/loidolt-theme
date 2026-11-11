@@ -1,5 +1,11 @@
 # @loidolt/theme-tokens
 
+## 0.12.1
+
+### Patch Changes
+
+- [#75](https://github.com/loidolt/loidolt-theme/pull/75) [`ecdf7a1`](https://github.com/loidolt/loidolt-theme/commit/ecdf7a14ab2500a15a96775b8f8b430cac89acbd) Thanks [@loidolt](https://github.com/loidolt)! - Published through npm trusted publishing: the release job proves who it is to npm with a short-lived GitHub token instead of a stored one. No code changes.
+
 ## 0.12.0
 
 No changes in this release.
