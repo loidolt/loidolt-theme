@@ -65,6 +65,18 @@
   background-size: 0.3rem 0.3rem;
   background-repeat: no-repeat;
 }
+/* The chevron sits at the inline end, where the padding makes room for it. */
+.ldt-select:not([multiple], [size]):dir(rtl) {
+  background-position:
+    0.55rem 55%,
+    0.85rem 55%;
+}
+/* Forced colours drop gradients, and with them the chevron: the system's own arrow comes back. */
+@media (forced-colors: active) {
+  .ldt-select:not([multiple], [size]) {
+    appearance: auto;
+  }
+}
 /* NumberField draws its own − and +; the browser's spinner would be a second, smaller pair. */
 .ldt-number-field__input {
   appearance: textfield;

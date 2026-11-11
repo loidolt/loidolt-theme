@@ -109,7 +109,19 @@
 }
 .ldt-map .maplibregl-ctrl-attrib-button {
   border-radius: 0;
+  color: var(--loidolt-text);
   background-color: transparent;
+  background-image: none;
+}
+/* The (i) is not a `button` with an icon span, so the mask above misses it and MapLibre's dark
+   image would vanish on a dark surface. It gets the same treatment on a pseudo-element, which
+   leaves the focus ring and the touch area unmasked. */
+.ldt-map .maplibregl-ctrl-attrib-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: currentColor;
+  mask: var(--ldt-map-icon) center / 1rem 1rem no-repeat;
 }
 .ldt-map .maplibregl-ctrl-scale {
   border-color: var(--loidolt-text-muted);
@@ -333,6 +345,7 @@ span.ldt-map-marker {
 }
 
 @media (forced-colors: active) {
+  .ldt-map .maplibregl-ctrl-attrib-button::before,
   .ldt-map .maplibregl-ctrl button .maplibregl-ctrl-icon {
     background-color: ButtonText;
   }

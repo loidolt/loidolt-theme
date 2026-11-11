@@ -42,10 +42,12 @@
   border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
   text-align: left;
 }
-.ldt-table th {
-  /* A header names its column in one line; a narrow table scrolls rather than stacking "LIGHT"
-     over "VALUE". */
+/* A column header names its column in one line; a narrow table scrolls rather than stacking
+   "LIGHT" over "VALUE". A row header is content, and wraps like the cells beside it. */
+.ldt-table thead th {
   white-space: nowrap;
+}
+.ldt-table th {
   color: var(--loidolt-text-muted);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
   font-weight: var(--loidolt-label-weight);
