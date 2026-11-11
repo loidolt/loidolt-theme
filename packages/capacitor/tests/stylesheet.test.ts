@@ -46,4 +46,10 @@ describe('styles.css', () => {
     expect(body).toContain('background: var(--loidolt-surface);');
     expect(body).toContain('pointer-events: none;');
   });
+
+  it('stops a double tap zooming the page in a native shell, and leaves pinch zoom', () => {
+    const rule = sheet.match(/:where\(\[data-native-platform\]\) \{([^}]*)\}/);
+    expect(rule, 'native touch manners').not.toBeNull();
+    expect(rule![1]).toContain('touch-action: manipulation;');
+  });
 });

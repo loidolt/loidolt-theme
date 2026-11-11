@@ -603,11 +603,12 @@ pre {
 }
 
 /*
- * Reference tables on a phone: each row becomes a block, its first cell a heading and the rest
- * under it, each with its column's name from `data-label`. Squeezed into 360px, a three-column
- * table wraps one word per line and runs to thousands of pixels.
+ * Reference tables on a phone or an upright tablet: each row becomes a block, its first cell a
+ * heading and the rest under it, each with its column's name from `data-label`. Squeezed into
+ * 360px, a three-column table wraps one word per line and runs to thousands of pixels; a props
+ * table needs about 830px for its four columns of code, and scrolls sideways below that.
  */
-@media (max-width: 30rem) {
+@media (max-width: 52rem) {
   .docs-stack thead {
     position: absolute;
     width: 1px;

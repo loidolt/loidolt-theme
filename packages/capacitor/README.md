@@ -286,5 +286,5 @@ reject with the plugin's error; on the server `pick` resolves `[]` and `save` `{
   Override `body::before` to restyle or remove it.
 - While the keyboard is up: the bottom safe area becomes `--ldt-keyboard-inset`, and `TabBar` is
   hidden.
-- Under `data-native-platform`: no tap highlight, and long-pressing a control does not select its
-  label or open the link callout.
+- Under `data-native-platform`: no tap highlight, long-pressing a control does not select its
+  label or open the link callout, and a double tap does not zoom the page (pinch zoom stays).

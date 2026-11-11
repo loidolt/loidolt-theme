@@ -50,10 +50,13 @@
 /*
  * Native touch manners (`data-native-platform`, written by `markNativePlatform`): no grey flash
  * on tap, and long-pressing a control does not select its label or open the link callout.
- * Content stays selectable.
+ * Content stays selectable. A double tap does not zoom the page, as it would in a browser: two
+ * quick presses of a stepper are two presses. `manipulation` on the root reaches every element,
+ * since an element's touch behaviour is cut down by its ancestors'; pinch zoom stays.
  */
 :where([data-native-platform]) {
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 :where([data-native-platform])
   :where(
