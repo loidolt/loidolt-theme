@@ -23,19 +23,24 @@
   text-transform: var(--loidolt-control-transform);
   white-space: normal;
 }
-.ldt-button:hover:not(:disabled, [aria-disabled='true']) {
-  color: var(--loidolt-text-inverse);
-  background: var(--loidolt-surface-inverse);
+/* Hover styles apply only where the pointer can hover: a tap leaves `:hover` stuck on touch screens. */
+@media (hover: hover) {
+  .ldt-button:hover:not(:disabled, [aria-disabled='true']) {
+    color: var(--loidolt-text-inverse);
+    background: var(--loidolt-surface-inverse);
+  }
 }
 .ldt-button--primary {
   color: var(--loidolt-on-accent);
   border-color: var(--loidolt-accent);
   background: var(--loidolt-accent);
 }
-.ldt-button--primary:hover:not(:disabled, [aria-disabled='true']) {
-  color: var(--loidolt-on-accent);
-  border-color: var(--loidolt-accent-hover);
-  background: var(--loidolt-accent-hover);
+@media (hover: hover) {
+  .ldt-button--primary:hover:not(:disabled, [aria-disabled='true']) {
+    color: var(--loidolt-on-accent);
+    border-color: var(--loidolt-accent-hover);
+    background: var(--loidolt-accent-hover);
+  }
 }
 .ldt-button--quiet {
   color: var(--loidolt-text-muted);
@@ -48,10 +53,12 @@
 }
 /* Without this, the base hover would flip a destructive button to the neutral inverse
    surface — the danger affordance must survive hover. */
-.ldt-button--danger:hover:not(:disabled, [aria-disabled='true']) {
-  color: var(--loidolt-on-danger);
-  border-color: var(--loidolt-danger-hover);
-  background: var(--loidolt-danger-hover);
+@media (hover: hover) {
+  .ldt-button--danger:hover:not(:disabled, [aria-disabled='true']) {
+    color: var(--loidolt-on-danger);
+    border-color: var(--loidolt-danger-hover);
+    background: var(--loidolt-danger-hover);
+  }
 }
 .ldt-button--ghost,
 .ldt-button--text {
@@ -64,9 +71,11 @@
   padding: var(--loidolt-space-1);
   color: var(--loidolt-text-muted);
 }
-.ldt-button--text:hover:not(:disabled, [aria-disabled='true']) {
-  color: var(--loidolt-text-accent);
-  background: transparent;
+@media (hover: hover) {
+  .ldt-button--text:hover:not(:disabled, [aria-disabled='true']) {
+    color: var(--loidolt-text-accent);
+    background: transparent;
+  }
 }
 .ldt-button--sm {
   min-height: var(--loidolt-size-control-sm);
@@ -139,9 +148,11 @@
   text-decoration: none;
   cursor: pointer;
 }
-.ldt-list-row:hover {
-  background: var(--loidolt-surface-sunken);
-  text-decoration: none;
+@media (hover: hover) {
+  .ldt-list-row:hover {
+    background: var(--loidolt-surface-sunken);
+    text-decoration: none;
+  }
 }
 .ldt-list-row--selected {
   box-shadow: inset var(--loidolt-stroke-indicator) 0 0 var(--loidolt-accent);

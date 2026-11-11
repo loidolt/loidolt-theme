@@ -64,8 +64,11 @@
   text-transform: var(--loidolt-label-transform);
   cursor: pointer;
 }
-.ldt-code__copy:hover {
-  background: var(--loidolt-surface);
+/* Hover styles apply only where the pointer can hover: a tap leaves `:hover` stuck on touch screens. */
+@media (hover: hover) {
+  .ldt-code__copy:hover {
+    background: var(--loidolt-surface);
+  }
 }
 .ldt-code__pre {
   margin: 0;
@@ -180,8 +183,10 @@ pre.ldt-mermaid {
   color: var(--loidolt-text-muted);
   text-decoration: none;
 }
-.ldt-toc__link:hover {
-  color: var(--loidolt-text);
+@media (hover: hover) {
+  .ldt-toc__link:hover {
+    color: var(--loidolt-text);
+  }
 }
 .ldt-toc__link[aria-current='location'] {
   border-inline-start-color: var(--loidolt-accent);
@@ -249,8 +254,10 @@ pre.ldt-mermaid {
   color: var(--loidolt-text);
   text-decoration: none;
 }
-.ldt-markdown-page__pager a:hover {
-  border-color: var(--loidolt-border-strong);
+@media (hover: hover) {
+  .ldt-markdown-page__pager a:hover {
+    border-color: var(--loidolt-border-strong);
+  }
 }
 .ldt-markdown-page__next {
   margin-inline-start: auto;

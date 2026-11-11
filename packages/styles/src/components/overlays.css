@@ -316,10 +316,16 @@
   text-align: left;
   text-decoration: none;
 }
-.ldt-menu__item:hover:not(:disabled, [data-disabled]),
 .ldt-menu__item[data-highlighted] {
   color: var(--loidolt-text-inverse);
   background: var(--loidolt-surface-inverse);
+}
+/* Hover styles apply only where the pointer can hover: a tap leaves `:hover` stuck on touch screens. */
+@media (hover: hover) {
+  .ldt-menu__item:hover:not(:disabled, [data-disabled]) {
+    color: var(--loidolt-text-inverse);
+    background: var(--loidolt-surface-inverse);
+  }
 }
 /* Exposed to assistive tech (no aria-hidden): a shortcut nobody can hear may as well
    not exist. Muted normally; inherits the inverse ink while highlighted. */
@@ -328,9 +334,13 @@
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
   letter-spacing: var(--loidolt-control-tracking);
 }
-.ldt-menu__item:hover:not(:disabled, [data-disabled]) .ldt-menu__hint,
 .ldt-menu__item[data-highlighted] .ldt-menu__hint {
   color: inherit;
+}
+@media (hover: hover) {
+  .ldt-menu__item:hover:not(:disabled, [data-disabled]) .ldt-menu__hint {
+    color: inherit;
+  }
 }
 .ldt-menu__item[data-disabled],
 .ldt-menu__item:disabled {
@@ -341,10 +351,15 @@
 .ldt-menu__item--danger {
   color: var(--loidolt-text-danger);
 }
-.ldt-menu__item--danger:hover:not(:disabled, [data-disabled]),
 .ldt-menu__item--danger[data-highlighted] {
   color: var(--loidolt-on-danger);
   background: var(--loidolt-danger);
+}
+@media (hover: hover) {
+  .ldt-menu__item--danger:hover:not(:disabled, [data-disabled]) {
+    color: var(--loidolt-on-danger);
+    background: var(--loidolt-danger);
+  }
 }
 .ldt-menu__group {
   display: grid;
@@ -572,9 +587,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.ldt-tabs--rail .ldt-tabs__trigger:hover:not([data-disabled]) {
-  color: var(--loidolt-text);
-  background: var(--loidolt-surface-alt);
+@media (hover: hover) {
+  .ldt-tabs--rail .ldt-tabs__trigger:hover:not([data-disabled]) {
+    color: var(--loidolt-text);
+    background: var(--loidolt-surface-alt);
+  }
 }
 .ldt-tabs--rail .ldt-tabs__trigger[data-state='active'] {
   color: var(--loidolt-text-accent);

@@ -120,9 +120,14 @@
   color: inherit;
   background: transparent;
 }
-.ldt-media-controls__button:hover,
 .ldt-media-controls__button[aria-pressed='true'] {
   color: var(--loidolt-accent);
+}
+/* Hover styles apply only where the pointer can hover: a tap leaves `:hover` stuck on touch screens. */
+@media (hover: hover) {
+  .ldt-media-controls__button:hover {
+    color: var(--loidolt-accent);
+  }
 }
 .ldt-media-controls__text {
   letter-spacing: var(--loidolt-label-tracking);
@@ -222,8 +227,10 @@
   background: var(--loidolt-accent);
   transition: background var(--loidolt-motion-fast) var(--loidolt-motion-easing);
 }
-.ldt-media-embed__facade:hover .ldt-media-embed__play {
-  background: var(--loidolt-accent-hover);
+@media (hover: hover) {
+  .ldt-media-embed__facade:hover .ldt-media-embed__play {
+    background: var(--loidolt-accent-hover);
+  }
 }
 .ldt-media-embed__title {
   max-width: 32rem;
@@ -309,8 +316,10 @@
 .ldt-media-tile .ldt-thumbnail {
   transition: border-color var(--loidolt-motion-fast) var(--loidolt-motion-easing);
 }
-.ldt-media-tile:hover .ldt-thumbnail {
-  border-color: var(--loidolt-accent);
+@media (hover: hover) {
+  .ldt-media-tile:hover .ldt-thumbnail {
+    border-color: var(--loidolt-accent);
+  }
 }
 .ldt-media-tile__kind {
   padding: 0.1rem 0.4rem; /* @literal kind chip */
@@ -371,10 +380,12 @@
   font: var(--loidolt-font-size-base) var(--loidolt-font-utility);
   text-decoration: none;
 }
-.ldt-lightbox__control:hover:not(:disabled) {
-  color: var(--loidolt-on-accent);
-  border-color: var(--loidolt-accent);
-  background: var(--loidolt-accent);
+@media (hover: hover) {
+  .ldt-lightbox__control:hover:not(:disabled) {
+    color: var(--loidolt-on-accent);
+    border-color: var(--loidolt-accent);
+    background: var(--loidolt-accent);
+  }
 }
 .ldt-lightbox__control:disabled {
   opacity: 0.4;
@@ -447,10 +458,12 @@
   color: var(--loidolt-text);
   background: var(--loidolt-surface);
 }
-.ldt-media-carousel__control:hover:not(:disabled) {
-  color: var(--loidolt-text-inverse);
-  border-color: var(--loidolt-surface-inverse);
-  background: var(--loidolt-surface-inverse);
+@media (hover: hover) {
+  .ldt-media-carousel__control:hover:not(:disabled) {
+    color: var(--loidolt-text-inverse);
+    border-color: var(--loidolt-surface-inverse);
+    background: var(--loidolt-surface-inverse);
+  }
 }
 .ldt-media-carousel__control:disabled {
   opacity: 0.4;
@@ -552,9 +565,13 @@
   background: color-mix(in srgb, var(--ldt-image-viewer-region) 8%, transparent);
   cursor: pointer;
 }
-.ldt-image-viewer__region:hover,
 .ldt-image-viewer__region[data-hovered] {
   background: color-mix(in srgb, var(--ldt-image-viewer-region) 22%, transparent);
+}
+@media (hover: hover) {
+  .ldt-image-viewer__region:hover {
+    background: color-mix(in srgb, var(--ldt-image-viewer-region) 22%, transparent);
+  }
 }
 /* Selected reads in greyscale too: a heavier edge and a stronger fill, not only a colour. */
 .ldt-image-viewer__region[aria-selected='true'] {

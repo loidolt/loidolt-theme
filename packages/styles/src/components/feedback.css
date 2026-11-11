@@ -368,9 +368,12 @@
   text-align: start;
   cursor: pointer;
 }
-.ldt-stage-stepper__action:hover {
-  color: var(--loidolt-text-accent);
-  text-decoration: underline;
+/* Hover styles apply only where the pointer can hover: a tap leaves `:hover` stuck on touch screens. */
+@media (hover: hover) {
+  .ldt-stage-stepper__action:hover {
+    color: var(--loidolt-text-accent);
+    text-decoration: underline;
+  }
 }
 .ldt-stage-stepper__description {
   margin: 0;

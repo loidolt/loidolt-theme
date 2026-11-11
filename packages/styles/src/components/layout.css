@@ -115,8 +115,11 @@
   letter-spacing: var(--loidolt-control-tracking);
   text-transform: var(--loidolt-control-transform);
 }
-.ldt-nav-menu:hover:not(:disabled, [aria-disabled='true']) {
-  color: var(--loidolt-text);
+/* Hover styles apply only where the pointer can hover: a tap leaves `:hover` stuck on touch screens. */
+@media (hover: hover) {
+  .ldt-nav-menu:hover:not(:disabled, [aria-disabled='true']) {
+    color: var(--loidolt-text);
+  }
 }
 .ldt-nav-menu[data-state='open'] {
   color: var(--loidolt-text);
@@ -138,9 +141,11 @@
   font-size: var(--loidolt-font-size-sm);
   text-decoration: none;
 }
-.ldt-topbar__link:hover {
-  color: var(--loidolt-text);
-  text-decoration: none;
+@media (hover: hover) {
+  .ldt-topbar__link:hover {
+    color: var(--loidolt-text);
+    text-decoration: none;
+  }
 }
 .ldt-topbar__link[aria-current='page'] {
   color: var(--loidolt-text);
