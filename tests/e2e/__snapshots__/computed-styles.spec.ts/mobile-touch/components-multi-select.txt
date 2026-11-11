@@ -1,5 +1,6 @@
 ## light
 a.ldt-brand { gap:8.8px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
+a.ldt-brand::after { color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 a.ldt-breadcrumbs__link { min-height:24px; color:rgb(95, 91, 80); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:normal; letter-spacing:1.1px; text-transform:uppercase; color-scheme:light }
 a.ldt-breadcrumbs__link::after { color:rgb(95, 91, 80); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:normal; letter-spacing:1.1px; text-transform:uppercase; color-scheme:light }
 a.ldt-skip-link { padding:12px 16px 12px 16px; color:rgb(255, 255, 255); background-color:rgb(198, 82, 36); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
@@ -9,6 +10,7 @@ button.ldt-button.ldt-button--sm[data-state=closed] { padding:6.08px 10.4px 6.08
 button.ldt-chip__remove { min-height:24px; color:rgb(95, 91, 80); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:12px; font-weight:400; line-height:normal; color-scheme:light }
 button.ldt-chip__remove::after { color:rgb(95, 91, 80); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:12px; font-weight:400; line-height:normal; color-scheme:light }
 button.ldt-combobox__trigger[data-state=closed] { min-height:24px; min-width:44px; color:rgb(95, 91, 80); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
+button.ldt-combobox__trigger[data-state=closed]::after { color:rgb(95, 91, 80); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 caption.ldt-sr-only { margin:-1px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-app-shell { min-height:568px; color:rgb(32, 35, 29); background-color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 div.ldt-combobox.ldt-combobox--boxed.ldt-multi-select { padding:3.2px 0px 3.2px 8px; border:1px solid rgb(132, 125, 106); gap:4.8px; min-height:44px; color:rgb(32, 35, 29); background-color:rgb(255, 255, 255); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
@@ -49,6 +51,7 @@ ul.ldt-multi-select__chips { gap:4.8px; color:rgb(32, 35, 29); font-family:Jost,
 
 ## dark
 a.ldt-brand { gap:8.8px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
+a.ldt-brand::after { color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 a.ldt-breadcrumbs__link { min-height:24px; color:rgb(168, 163, 148); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:normal; letter-spacing:1.1px; text-transform:uppercase; color-scheme:dark }
 a.ldt-breadcrumbs__link::after { color:rgb(168, 163, 148); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:normal; letter-spacing:1.1px; text-transform:uppercase; color-scheme:dark }
 a.ldt-skip-link { padding:12px 16px 12px 16px; color:rgb(22, 24, 20); background-color:rgb(224, 103, 47); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
@@ -58,6 +61,7 @@ button.ldt-button.ldt-button--sm[data-state=closed] { padding:6.08px 10.4px 6.08
 button.ldt-chip__remove { min-height:24px; color:rgb(168, 163, 148); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:12px; font-weight:400; line-height:normal; color-scheme:dark }
 button.ldt-chip__remove::after { color:rgb(168, 163, 148); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:12px; font-weight:400; line-height:normal; color-scheme:dark }
 button.ldt-combobox__trigger[data-state=closed] { min-height:24px; min-width:44px; color:rgb(168, 163, 148); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
+button.ldt-combobox__trigger[data-state=closed]::after { color:rgb(168, 163, 148); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 caption.ldt-sr-only { margin:-1px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-app-shell { min-height:568px; color:rgb(235, 231, 220); background-color:rgb(22, 24, 20); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 div.ldt-combobox.ldt-combobox--boxed.ldt-multi-select { padding:3.2px 0px 3.2px 8px; border:1px solid rgb(120, 124, 107); gap:4.8px; min-height:44px; color:rgb(235, 231, 220); background-color:rgb(36, 39, 31); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
