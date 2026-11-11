@@ -133,6 +133,19 @@ describe('CodeSnippet', () => {
     expect(clipboard.writeText).toHaveBeenCalledWith('npm i');
   });
 
+  it('shows the language in the copy bar when there is no filename', () => {
+    const { container, unmount } = render(CodeSnippet, { code: 'npm i', lang: 'sh' });
+    const label = container.querySelector('.ldt-code__filename');
+    expect(label).toHaveTextContent('sh');
+    // The code is already named "sh code"; the visible label is not read a second time.
+    expect(label).toHaveAttribute('aria-hidden', 'true');
+    unmount();
+    const named = render(CodeSnippet, { code: 'npm i', lang: 'sh', filename: 'install.sh' });
+    const filename = named.container.querySelector('.ldt-code__filename');
+    expect(filename).toHaveTextContent('install.sh');
+    expect(filename).not.toHaveAttribute('aria-hidden');
+  });
+
   it('highlights with the registered loader and names itself by filename', async () => {
     setHighlighterLoader(() => fakeShiki);
     const { container } = render(CodeSnippet, {

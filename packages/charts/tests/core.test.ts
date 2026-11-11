@@ -107,6 +107,9 @@ describe('theming', () => {
     expect(themed.xAxis[1]).toBe('not an axis');
     expect(themed.yAxis.axisLabel.color).toBe('red');
     expect(themed.legend.textStyle.color).toBe(darkSemantic.text);
+    // A scrolling legend's page arrows are large enough to press, in the theme's ink.
+    expect(themed.legend).toMatchObject({ pageIconSize: 16, pageIconColor: dark.text });
+    expect(themed.legend.pageTextStyle.color).toBe(dark.muted);
     expect(themed.tooltip.className).toBe('ldt-chart-tooltip');
     expect(themed.tooltip.extraCssText).toContain('background-color: var(--loidolt-surface)');
     expect(themed.radar.splitLine.lineStyle.color).toBe(darkSemantic.borderSoft);
@@ -403,6 +406,19 @@ describe('scatter', () => {
     expect(flat.tooltip).toBeUndefined();
   });
 
+  it('puts the x axis name under the axis and leaves room for both names', () => {
+    const named = buildScatterOption(
+      points,
+      { xAxisName: 'Speed', yAxisName: 'Power', showLegend: false },
+      light
+    ) as Loose;
+    expect(named.xAxis).toMatchObject({ name: 'Speed', nameLocation: 'middle', nameGap: 28 });
+    expect(named.yAxis.nameTextStyle).toEqual({ align: 'left' });
+    expect(named.grid).toMatchObject({ top: 36, bottom: 32 });
+    const bare = buildScatterOption(points, { showLegend: false }, light) as Loose;
+    expect(bare.grid).toMatchObject({ top: 16, bottom: 8 });
+  });
+
   it('describes and tabulates', () => {
     expect(describeScatter(points)).toBe(
       'Scatter chart of 3 points in 1 series. Runs: 3 points, y rising with x.'
@@ -508,7 +524,10 @@ describe('heatmap', () => {
       min: 0,
       max: 9,
       inRange: { color: light.sequential },
+      // The ends of the scale are named, high end first.
+      text: ['9', '0'],
     });
+    expect(option.series[0].label.fontSize).toBe(11);
     expect(option.series[0].label.formatter({ value: [0, 0, 1234] })).toBe('1,234');
     expect(option.tooltip.formatter({ value: [1, 1, 9] })).toBe('PM · Tue<br>9');
     const fixed = buildHeatmapOption(grid, {
@@ -571,6 +590,10 @@ describe('treemap', () => {
     expect(option.series[0].data[1].itemStyle.color).toBe('#654321');
     expect(option.series[0].bottom).toBe(0);
     expect(option.tooltip).toBeUndefined();
+    // With its breadcrumb, the tiles leave a strip under them tall enough to press.
+    const trail = buildTreemapOption(tree, {}, light) as Loose;
+    expect(trail.series[0].bottom).toBe(44);
+    expect(trail.series[0].breadcrumb).toMatchObject({ show: true, bottom: 4, height: 28 });
     expect(() => buildTreemapOption([{ name: 'Bad', value: -2 }])).toThrow(RangeError);
   });
 
@@ -608,6 +631,8 @@ describe('candlestick', () => {
     ]);
     expect(option.grid).toHaveLength(2);
     expect(option.dataZoom).toHaveLength(2);
+    // The slider is tall enough for a finger.
+    expect(option.dataZoom[1]).toMatchObject({ type: 'slider', height: 32, moveHandleSize: 12 });
     expect(option.series[0].data[0]).toEqual([10, 12, 9, 13]);
     expect(option.yAxis[1].axisLabel.formatter(1500)).toBe('1.5K');
   });
@@ -664,6 +689,11 @@ describe('sankey', () => {
     expect(option.series[0]).toMatchObject({ orient: 'vertical', right: 8, bottom: 32 });
     expect(option.series[0].data[2].itemStyle.color).toBe('#777777');
     expect(option.tooltip).toBeUndefined();
+    // Across, the last node's label needs room under the chart.
+    expect((buildSankeyOption(flow, {}, light) as Loose).series[0]).toMatchObject({
+      orient: 'horizontal',
+      bottom: 16,
+    });
   });
 
   it('refuses unknown nodes, loops and empty flows', () => {
