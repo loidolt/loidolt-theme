@@ -352,7 +352,8 @@
   align-items: center;
   justify-content: center;
   gap: var(--loidolt-space-1);
-  padding: var(--loidolt-space-2) var(--loidolt-space-1);
+  /* The sides stop growing with the text size: at 200% they would take a fifth of the label's room. */
+  padding: var(--loidolt-space-2) min(var(--loidolt-space-1), 4px);
   color: inherit;
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
   font-weight: var(--loidolt-control-weight);
@@ -386,11 +387,23 @@
   width: 1.5rem; /* @literal icons are sized for the eye, not the label */
   height: 1.5rem; /* @literal icons are sized for the eye, not the label */
 }
+/*
+ * A fifth of a phone is not much room once the system text size doubles every rem. Native tab bars
+ * keep their labels at a fixed size; this one lets the label grow with the text size up to about
+ * a quarter more than its default (14px), which still fits a short word in each of five tabs at
+ * 375px, and then wraps rather than ellipsizing, so the whole name stays on screen. A word too long
+ * for its tab is hyphenated, or broken as a last resort, never clipped. Text zoom that arrives as
+ * `-webkit-text-size-adjust` (Capacitor's TextZoom on iOS) is applied after this cap, so there the
+ * label keeps growing and the wrapping carries it.
+ */
 .ldt-tab-bar__label {
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: min(1em, 14px);
+  line-height: var(--loidolt-font-line-height-tight);
+  text-align: center;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 .ldt-page-header {
   display: flex;
