@@ -74,21 +74,36 @@ export interface SystemTextSizeOptions {
  * Makes the page's text follow the system text size — iOS Dynamic Type and Android's font scale —
  * which a web view otherwise ignores, so people who need larger text get it in the app as they
  * do everywhere else (WCAG 1.4.4). Re-reads on resume when given `App`. Returns the teardown.
+ *
+ * On iOS the zoom arrives as `-webkit-text-size-adjust`, which scales text after every `min()`
+ * and `clamp()` in the stylesheet has been resolved, so the factor is also written to `<html>` as
+ * `--ldt-text-zoom`. Components that cap their text's growth — `TabBar`'s labels — read it to
+ * keep the cap. Android's web view zooms text its own way and gets no variable.
  */
 export function followSystemTextSize(options: SystemTextSizeOptions): Teardown {
-  if (!nativePlatform()) return () => {};
+  const platform = nativePlatform();
+  if (!platform) return () => {};
   const { TextZoom, App } = options;
+  const root = document.documentElement;
   let last: number | undefined;
+  let stopped = false;
   const apply = () =>
     quietly(
-      TextZoom.getPreferred().then(({ value }) => {
+      TextZoom.getPreferred().then(async ({ value }) => {
         if (!Number.isFinite(value) || value <= 0 || value === last) return;
         last = value;
-        return TextZoom.set({ value });
+        await TextZoom.set({ value });
+        if (platform === 'ios' && !stopped)
+          root.style.setProperty('--ldt-text-zoom', String(value));
       })
     );
   apply();
-  return App ? listen(App.addListener('resume', apply)) : () => {};
+  const stopListening = App ? listen(App.addListener('resume', apply)) : () => {};
+  return () => {
+    stopped = true;
+    stopListening();
+    root.style.removeProperty('--ldt-text-zoom');
+  };
 }
 
 /**

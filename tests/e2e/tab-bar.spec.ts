@@ -67,3 +67,24 @@ test('five short TabBar labels stay whole at 200% text size on a 375px phone', a
   }
   expect(Math.max(...measured.map((label) => label.right))).toBeLessThanOrEqual(375.5);
 });
+
+/*
+ * On iOS the text size arrives as `-webkit-text-size-adjust`, which desktop Chromium ignores, so
+ * this only pins the other half: with `--ldt-text-zoom` published, the label's own size takes the
+ * zoom and stops at the cap. (The opt-out from the adjustment itself was checked on iOS Safari.)
+ */
+test('a published --ldt-text-zoom grows the TabBar label up to the same cap', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'One viewport is sufficient.');
+  await page.goto('/components/tab-bar');
+  const label = page.locator('#tab-bar-demo .ldt-tab-bar__label').first();
+  const sizeAt = (zoom: string) =>
+    label.evaluate((element, zoom) => {
+      document.documentElement.style.setProperty('--ldt-text-zoom', zoom);
+      return getComputedStyle(element).fontSize;
+    }, zoom);
+  expect(await sizeAt('1')).toBe('11px');
+  expect(await sizeAt('1.2')).toBe('13.2px');
+  expect(await sizeAt('1.94')).toBe('14px');
+});
