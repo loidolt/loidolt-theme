@@ -55,29 +55,34 @@
       <PaginationPrimitive.PrevButton class="ldt-button ldt-button--quiet ldt-button--sm"
         >{previousLabel}</PaginationPrimitive.PrevButton
       >
-      {#each pages as item (item.key)}
-        {#if item.type === 'ellipsis'}
-          <!-- Presentational: the gap is a rendering device, and "…" read aloud between page
-               numbers is noise. The page buttons either side already say where the trail jumps. -->
-          <span class="ldt-pagination__ellipsis" aria-hidden="true">…</span>
-        {:else}
-          <!--
-            Rendered through Bits' `child` snippet rather than as a styled primitive: the
-            primitive merges its own `aria-label` last and would overwrite `pageLabel`. Spreading
-            `props` first leaves its behaviour intact while the naming stays ours.
-          -->
-          <PaginationPrimitive.Page page={item}>
-            {#snippet child({ props })}
-              <button
-                {...props}
-                class="ldt-button ldt-button--quiet ldt-button--sm ldt-pagination__page"
-                aria-label={pageLabel(item.value)}
-                aria-current={item.value === currentPage ? 'page' : undefined}>{item.value}</button
-              >
-            {/snippet}
-          </PaginationPrimitive.Page>
-        {/if}
-      {/each}
+      <!-- The page trail wraps inside its own box, between Previous and Next, so a narrow row
+           wraps page numbers rather than leaving Next on a line by itself. -->
+      <span class="ldt-pagination__pages">
+        {#each pages as item (item.key)}
+          {#if item.type === 'ellipsis'}
+            <!-- Presentational: the gap is a rendering device, and "…" read aloud between page
+                 numbers is noise. The page buttons either side already say where the trail jumps. -->
+            <span class="ldt-pagination__ellipsis" aria-hidden="true">…</span>
+          {:else}
+            <!--
+              Rendered through Bits' `child` snippet rather than as a styled primitive: the
+              primitive merges its own `aria-label` last and would overwrite `pageLabel`. Spreading
+              `props` first leaves its behaviour intact while the naming stays ours.
+            -->
+            <PaginationPrimitive.Page page={item}>
+              {#snippet child({ props })}
+                <button
+                  {...props}
+                  class="ldt-button ldt-button--quiet ldt-button--sm ldt-pagination__page"
+                  aria-label={pageLabel(item.value)}
+                  aria-current={item.value === currentPage ? 'page' : undefined}
+                  >{item.value}</button
+                >
+              {/snippet}
+            </PaginationPrimitive.Page>
+          {/if}
+        {/each}
+      </span>
       <PaginationPrimitive.NextButton class="ldt-button ldt-button--quiet ldt-button--sm"
         >{nextLabel}</PaginationPrimitive.NextButton
       >

@@ -116,7 +116,10 @@
 }
 
 /* --- Diagrams -------------------------------------------------------------------------------- */
+/* A diagram too wide to shrink scrolls, with the scroll shadows `.ldt-table-wrap` draws (each
+   component file stands alone, so the stack is repeated rather than shared). */
 .ldt-mermaid {
+  --ldt-scroll-shadow: color-mix(in srgb, var(--loidolt-text) 22%, transparent);
   display: grid;
   gap: var(--loidolt-space-2);
   margin: 0 0 1.1em;
@@ -124,7 +127,16 @@
   overflow-x: auto;
   border: var(--loidolt-border-width) solid var(--loidolt-border);
   border-radius: var(--loidolt-radius-surface);
-  background: var(--loidolt-background);
+  background:
+    linear-gradient(to right, var(--loidolt-background) 30%, transparent) left / 2.5rem 100%
+      no-repeat local,
+    linear-gradient(to left, var(--loidolt-background) 30%, transparent) right / 2.5rem 100%
+      no-repeat local,
+    radial-gradient(farthest-side at 0 50%, var(--ldt-scroll-shadow), transparent) left / 0.75rem
+      100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, var(--ldt-scroll-shadow), transparent) right /
+      0.75rem 100% no-repeat scroll,
+    var(--loidolt-background);
 }
 .ldt-mermaid__diagram[hidden] {
   display: none;

@@ -433,6 +433,8 @@
   text-align: center;
 }
 .ldt-lightbox__strip {
+  --ldt-scroll-cover: var(--loidolt-surface-inverse);
+  --ldt-scroll-shadow: color-mix(in srgb, var(--loidolt-text-inverse) 30%, transparent);
   justify-content: center;
 }
 .ldt-lightbox__strip .ldt-filmstrip__item {

@@ -93,6 +93,11 @@
 .ldt-number-field__input:disabled {
   border-style: dashed;
   color: var(--loidolt-text-muted);
+  /* iOS WebKit paints disabled text with its own fill colour and fades the field to 40% on top,
+     so the muted colour applies only through the fill colour, at full opacity. */
+  -webkit-text-fill-color: var(--loidolt-text-muted);
+  opacity: 1;
+  /* A colour longhand, so a single-line select keeps its chevron. */
   background-color: transparent;
 }
 /* The focus ring itself comes from the `loidolt.a11y` layer; this only tints the border. */

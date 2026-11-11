@@ -453,6 +453,14 @@ properties, because `@media` cannot read `var()`. `breakpointQuery()` turns one 
 </Workspace>
 ```
 
+A few components also rearrange below a phone threshold of `30rem` (480px at the default text
+size). It is in rem, so it follows the browser's text size: with larger text a wider screen counts
+as a phone, because the same content needs the room. It is a stylesheet threshold, not a token.
+Below it Pagination keeps only Previous, the current page and Next; Slider and Progress put their
+readout above the track; ImageViewer's fit buttons share out their row; MarkdownPage stacks its
+previous and next cards; an open LayerManager stops at half the map's height; and a chart's empty
+state gives up its full height.
+
 A query created inside a component unsubscribes with it; one created at module scope is yours to
 `destroy()`. On the server `matches` is the `fallback` and nothing subscribes, so markup that
 switches on a query hydrates with the fallback branch and swaps on the first client frame.
