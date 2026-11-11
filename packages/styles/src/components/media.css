@@ -172,7 +172,10 @@
   white-space: nowrap;
 }
 .ldt-media-controls__speed {
+  /* The system's select clothes ignore the box's height: WebKit draws an 18px pill. */
+  appearance: none;
   min-height: 1.5rem;
+  text-align: center;
   border: var(--loidolt-border-width) solid currentColor;
   border-radius: var(--loidolt-radius-control);
   padding: 0 0.3rem; /* @literal compact readout */

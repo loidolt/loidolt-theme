@@ -102,16 +102,30 @@ export function buildScatterOption(
             `${params.seriesName}<br>${formatX(params.value[0])}, ${formatY(params.value[1])}`,
         }
       : undefined,
-    grid: { left: 8, right: 16, top: showLegend ? 40 : 16, bottom: 8, containLabel: true },
+    /*
+     * Axis names sit outside what `containLabel` measures. The x name goes under the axis, centred,
+     * rather than past its end, where a narrow chart clips it; the y name keeps the top of its
+     * axis, with room above it so it clears the legend.
+     */
+    grid: {
+      left: 8,
+      right: 16,
+      top: (showLegend ? 40 : 16) + (options.yAxisName ? 20 : 0),
+      bottom: options.xAxisName ? 32 : 8,
+      containLabel: true,
+    },
     xAxis: {
       type: 'value',
       name: options.xAxisName,
+      nameLocation: 'middle',
+      nameGap: 28,
       scale: true,
       axisLabel: { formatter: formatX },
     },
     yAxis: {
       type: 'value',
       name: options.yAxisName,
+      nameTextStyle: { align: 'left' },
       scale: true,
       axisLabel: { formatter: formatY },
     },
@@ -600,7 +614,8 @@ export function buildCandlestickOption(
     dataZoom: zoom
       ? [
           { type: 'inside', xAxisIndex: axes },
-          { type: 'slider', xAxisIndex: axes, bottom: 8, height: 24 },
+          // Tall enough that its handles take a finger, not only a pointer.
+          { type: 'slider', xAxisIndex: axes, bottom: 8, height: 32, moveHandleSize: 12 },
         ]
       : undefined,
     series: [

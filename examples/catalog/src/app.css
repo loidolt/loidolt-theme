@@ -483,7 +483,10 @@
   min-height: 16rem;
 }
 .docs-canvas {
-  min-height: 100%;
+  /* Fills the pane beside the sidebars; stacked on a phone, where there is no height to fill,
+     it keeps a usable size instead of shrinking to its one line. */
+  height: 100%;
+  min-height: 10rem;
   display: grid;
   place-items: center;
   background-color: var(--loidolt-surface-sunken);
@@ -571,5 +574,81 @@ pre {
   }
   .docs-sidenav__hint {
     display: none;
+  }
+}
+
+/*
+ * Reference tables on a phone: each row becomes a block, its first cell a heading and the rest
+ * under it, each with its column's name from `data-label`. Squeezed into 360px, a three-column
+ * table wraps one word per line and runs to thousands of pixels.
+ */
+@media (max-width: 30rem) {
+  .docs-stack thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .docs-stack,
+  .docs-stack tbody,
+  .docs-stack tr,
+  .docs-stack td {
+    display: block;
+  }
+  .docs-stack tr {
+    padding: var(--loidolt-space-3) var(--loidolt-space-3);
+    border-bottom: var(--loidolt-border-width) solid var(--loidolt-border-soft);
+  }
+  .docs-stack tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .docs-stack.ldt-table td {
+    padding: var(--loidolt-space-1) 0;
+    border: 0;
+  }
+  .docs-stack td:first-child {
+    font-weight: var(--loidolt-strong-weight);
+  }
+  .docs-stack td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--loidolt-text-muted);
+    font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
+    font-weight: var(--loidolt-label-weight);
+    letter-spacing: var(--loidolt-label-tracking);
+    text-transform: var(--loidolt-label-transform);
+  }
+  .docs-stack td:empty {
+    display: none;
+  }
+  /* Short values: the column name on the same line. */
+  .docs-stack--inline td[data-label]::before {
+    display: inline;
+    margin-inline-end: var(--loidolt-space-2);
+  }
+}
+
+/* A table is followed by breathing room, not by the next paragraph against its border. */
+.docs-page .ldt-table-wrap + * {
+  margin-top: var(--loidolt-space-4);
+}
+
+/* Code named in an uppercase caption keeps its case: `isTauri()`, not ISTAURI(). */
+.docs-demo__label code {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+@media (max-width: 30rem) {
+  /* The calls to action stack, full width, instead of leaving the last one alone on a line. */
+  .docs-hero__actions {
+    display: grid;
+  }
+  /* Code samples wrap on a phone rather than running off the right edge mid-identifier. */
+  .docs-page pre {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
   }
 }

@@ -188,7 +188,7 @@ expect(auditContrast(studio.resolved.dark).filter((check) => !check.pass)).toEqu
     </div>
   </Demo>
 
-  <Table caption="Semantic roles">
+  <Table caption="Semantic roles" class="docs-stack docs-stack--inline">
     <thead>
       <tr>
         <TableHeader>Role</TableHeader>
@@ -203,8 +203,8 @@ expect(auditContrast(studio.resolved.dark).filter((check) => !check.pass)).toEqu
             <span class="docs-role-chip" style:background={`var(--loidolt-${role})`}></span>
             {role}
           </td>
-          <td><code>--loidolt-{role}</code></td>
-          <td><code>{value}</code></td>
+          <td data-label="Property"><code>--loidolt-{role}</code></td>
+          <td data-label="Light"><code>{value}</code></td>
         </tr>
       {/each}
     </tbody>
@@ -262,7 +262,7 @@ expect(auditContrast(studio.resolved.dark).filter((check) => !check.pass)).toEqu
     </div>
   </Demo>
 
-  <Table caption="Shape and voice roles by preset">
+  <Table caption="Shape and voice roles by preset" class="docs-stack docs-stack--inline">
     <thead>
       <tr>
         <TableHeader>Custom property</TableHeader>
@@ -276,7 +276,7 @@ expect(auditContrast(studio.resolved.dark).filter((check) => !check.pass)).toEqu
         <tr>
           <td><code>--loidolt-{cssName(role)}</code></td>
           {#each builtInPresets as preset (preset.name)}
-            <td><code>{preset.resolved.roles[role]}</code></td>
+            <td data-label={preset.label}><code>{preset.resolved.roles[role]}</code></td>
           {/each}
         </tr>
       {/each}

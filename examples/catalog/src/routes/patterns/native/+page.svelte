@@ -307,7 +307,7 @@ if (saved.method === 'filesystem') console.log(saved.uri);`;
     package: install only the ones you want, and each adapter turns on when you hand it its plugin.
   </p>
   <CodeBlock code={install} />
-  <Table caption="Plugins and what they turn on">
+  <Table caption="Plugins and what they turn on" class="docs-stack">
     <thead>
       <tr>
         <TableHeader>Plugin</TableHeader>
@@ -438,7 +438,7 @@ if (saved.method === 'filesystem') console.log(saved.uri);`;
     the Web Share API and then falls back. It resolves with the channel it used and whether the user
     closed the sheet: a cancel is <code>cancelled: true</code>, never an error.
   </p>
-  <Table caption="What share() tries, in order">
+  <Table caption="What share() tries, in order" class="docs-stack">
     <thead>
       <tr>
         <TableHeader>Channel</TableHeader>
@@ -450,8 +450,8 @@ if (saved.method === 'filesystem') console.log(saved.uri);`;
       {#each shareSteps as [channel, when, does] (channel)}
         <tr>
           <td>{channel}</td>
-          <td>{when}</td>
-          <td>{does}</td>
+          <td data-label="When">{when}</td>
+          <td data-label="Does">{does}</td>
         </tr>
       {/each}
     </tbody>
@@ -468,7 +468,7 @@ if (saved.method === 'filesystem') console.log(saved.uri);`;
     <code>File</code> objects either way, the same ones a <code>FileInput</code> hands you, so one upload
     path serves both.
   </p>
-  <Table caption="What pick() and save() do in an app and in a browser">
+  <Table caption="What pick() and save() do in an app and in a browser" class="docs-stack">
     <thead>
       <tr>
         <TableHeader>Call</TableHeader>
@@ -480,8 +480,8 @@ if (saved.method === 'filesystem') console.log(saved.uri);`;
       {#each fileSteps as [call, app, browser] (call)}
         <tr>
           <td><code>{call}</code></td>
-          <td>{app}</td>
-          <td>{browser}</td>
+          <td data-label="In an app">{app}</td>
+          <td data-label="In a browser">{browser}</td>
         </tr>
       {/each}
     </tbody>
@@ -501,7 +501,7 @@ if (saved.method === 'filesystem') console.log(saved.uri);`;
     want only one or wire them differently; every one returns a teardown (or a store with
     <code>destroy()</code>) and is a no-op outside a native shell.
   </p>
-  <Table caption="Adapters exported by @loidolt/theme-capacitor">
+  <Table caption="Adapters exported by @loidolt/theme-capacitor" class="docs-stack">
     <thead>
       <tr>
         <TableHeader>Export</TableHeader>
@@ -513,10 +513,10 @@ if (saved.method === 'filesystem') console.log(saved.uri);`;
       {#each adapters as [name, plugin, does] (name)}
         <tr>
           <td><code>{name}</code></td>
-          <td
+          <td data-label="Plugin"
             >{#if plugin === '—'}—{:else}<code>{plugin}</code>{/if}</td
           >
-          <td>{does}</td>
+          <td data-label="Does">{does}</td>
         </tr>
       {/each}
     </tbody>

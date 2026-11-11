@@ -22,5 +22,5 @@
       </MapMarker>
     {/each}
   </MapView>
-  <p class="ldt-eyebrow">Tab to a stop and press Enter to open it.</p>
+  <p class="ldt-eyebrow">Tap a stop, or Tab to it and press Enter, to open it.</p>
 </div>

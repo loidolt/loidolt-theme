@@ -351,7 +351,7 @@ ${endScript}
     <code>tauriPlatform()</code> names the OS, which later adapters use for macOS-only behaviour such
     as the menu bar.
   </p>
-  <Demo label="isTauri() and tauriPlatform() on this page">
+  <Demo label="`isTauri()` and `tauriPlatform()` on this page">
     <dl class="docs-desktop-facts">
       <dt><code>isTauri()</code></dt>
       <dd><Badge variant={inTauri ? 'success' : 'default'}>{inTauri ? 'true' : 'false'}</Badge></dd>
@@ -406,7 +406,7 @@ ${endScript}
     <code>requestPermission()</code> from a click.
   </p>
   <CodeBlock code={notificationsCode} />
-  <Demo label="createNotifications on this page, through the Web Notifications API">
+  <Demo label="`createNotifications` on this page, through the Web Notifications API">
     <div class="ldt-stack">
       <p>
         Backend <Badge>{notifications.backend}</Badge> Permission
@@ -459,7 +459,7 @@ ${endScript}
     <code>tauri dev</code>.
   </p>
   <CodeBlock code={deepLinkConfig} />
-  <Demo label="deepLinkPath() and filesFromArgs() on sample input">
+  <Demo label="`deepLinkPath()` and `filesFromArgs()` on sample input">
     <dl class="docs-desktop-facts">
       <dt><code>deepLinkPath</code></dt>
       <dd><code>{sampleLink}</code> → <code>{deepLinkPath(sampleLink)}</code></dd>
@@ -503,7 +503,7 @@ ${endScript}
     paths.
   </p>
   <CodeBlock code={dropConfig} />
-  <Demo label="createDesktopFiles() and a Dropzone on this page, through the browser">
+  <Demo label="`createDesktopFiles()` and a Dropzone on this page, through the browser">
     <div class="ldt-stack">
       <Dropzone
         bind:this={fileDemoDropzone}
@@ -579,7 +579,7 @@ ${endScript}
 </Section>
 
 <Section title="Exports" headingLevel={2}>
-  <Table caption="Exports of @loidolt/theme-tauri">
+  <Table caption="Exports of @loidolt/theme-tauri" class="docs-stack">
     <thead>
       <tr>
         <TableHeader>Export</TableHeader>

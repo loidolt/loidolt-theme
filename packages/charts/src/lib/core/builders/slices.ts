@@ -72,7 +72,8 @@ export function buildPieOption(
     series: [
       {
         type: 'pie',
-        radius: [`${innerRadius}%`, '70%'],
+        // Outside labels need room beside the pie, or on a phone they break a letter a line.
+        radius: [`${innerRadius}%`, showLabels && !inside ? '60%' : '70%'],
         center: ['50%', showLegend ? '45%' : '50%'],
         // Slices are divided by the surface colour, not an outline that competes with the data.
         itemStyle: { borderColor: colors.surface, borderWidth: 2 },
@@ -82,6 +83,9 @@ export function buildPieOption(
               position: inside ? 'inside' : 'outside',
               color: colors.text,
               formatter: inside ? '{d}%' : '{b}',
+              // Outside labels run to the chart's edges and wrap there, instead of off them: on a
+              // phone a slice's name past the side of the canvas is simply gone.
+              ...(inside ? {} : { alignTo: 'edge', edgeDistance: 8, overflow: 'break' }),
             }
           : { show: false },
         labelLine: { show: showLabels && !inside, lineStyle: { color: colors.axis } },

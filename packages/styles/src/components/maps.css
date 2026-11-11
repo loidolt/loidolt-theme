@@ -204,6 +204,13 @@
   max-height: calc(var(--ldt-map-height, 25rem) - 4.5rem);
   overflow-y: auto;
 }
+/* On a phone the open panel would cover most of the map: it stops at about half its height and
+   scrolls, and the title still folds it away. */
+@media (max-width: 30rem) {
+  .ldt-layer-manager {
+    max-height: calc(var(--ldt-map-height, 25rem) * 0.5);
+  }
+}
 .ldt-layer-manager__title {
   margin: 0;
 }

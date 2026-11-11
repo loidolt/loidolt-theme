@@ -1,6 +1,7 @@
 ## light
 a.ldt-brand { gap:8.8px; color:rgb(32, 35, 29); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 a.ldt-breadcrumbs__link { min-height:24px; color:rgb(95, 91, 80); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:normal; letter-spacing:1.1px; text-transform:uppercase; color-scheme:light }
+a.ldt-breadcrumbs__link::after { color:rgb(95, 91, 80); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:normal; letter-spacing:1.1px; text-transform:uppercase; color-scheme:light }
 a.ldt-skip-link { padding:12px 16px 12px 16px; color:rgb(255, 255, 255); background-color:rgb(198, 82, 36); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 body { min-height:568px; min-width:320px; color:rgb(32, 35, 29); background-color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:light }
 button.ldt-button.ldt-button--ghost.ldt-button--sm.ldt-icon-button { border:1px solid rgba(0, 0, 0, 0); gap:8px; min-height:44px; min-width:44px; color:rgb(32, 35, 29); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:13.2px; letter-spacing:0.88px; text-transform:uppercase; color-scheme:light }
@@ -38,6 +39,7 @@ strong.ldt-brand__name { color:rgb(32, 35, 29); font-family:Jost, "Avenir Next",
 ## dark
 a.ldt-brand { gap:8.8px; color:rgb(235, 231, 220); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 a.ldt-breadcrumbs__link { min-height:24px; color:rgb(168, 163, 148); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:normal; letter-spacing:1.1px; text-transform:uppercase; color-scheme:dark }
+a.ldt-breadcrumbs__link::after { color:rgb(168, 163, 148); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:normal; letter-spacing:1.1px; text-transform:uppercase; color-scheme:dark }
 a.ldt-skip-link { padding:12px 16px 12px 16px; color:rgb(22, 24, 20); background-color:rgb(224, 103, 47); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 body { min-height:568px; min-width:320px; color:rgb(235, 231, 220); background-color:rgb(22, 24, 20); font-family:Jost, "Avenir Next", sans-serif; font-size:16px; font-weight:400; line-height:23.2px; color-scheme:dark }
 button.ldt-button.ldt-button--ghost.ldt-button--sm.ldt-icon-button { border:1px solid rgba(0, 0, 0, 0); gap:8px; min-height:44px; min-width:44px; color:rgb(235, 231, 220); font-family:Archivo, "Helvetica Neue", sans-serif; font-size:11px; font-weight:400; line-height:13.2px; letter-spacing:0.88px; text-transform:uppercase; color-scheme:dark }

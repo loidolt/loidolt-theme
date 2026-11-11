@@ -43,6 +43,21 @@ export const themeVariables = (colors: DiagramColors): Record<string, string> =>
 let counter = 0;
 
 /**
+ * Mermaid sizes a diagram to its container, so a wide flowchart on a phone shrinks until its
+ * labels are a few pixels tall. Below three quarters of its drawn size it stops shrinking and the
+ * figure scrolls sideways instead.
+ */
+function keepLegible(svg: SVGSVGElement | null): void {
+  const width = Number(
+    svg
+      ?.getAttribute('viewBox')
+      ?.trim()
+      .split(/[\s,]+/)[2]
+  );
+  if (svg && width > 0) svg.style.minWidth = `${Math.round(width * 0.75)}px`;
+}
+
+/**
  * Draws a diagram into `target` from `source`. Leaves `target` alone — still showing the source —
  * when Mermaid is not available or the source does not parse.
  */
@@ -57,6 +72,7 @@ export async function drawDiagram(
     counter += 1;
     const svg = await renderMermaid(api, `ldt-mermaid-${counter}`, source, themeVariables(colors));
     target.innerHTML = svg;
+    keepLegible(target.querySelector('svg'));
     return true;
   } catch {
     return false;

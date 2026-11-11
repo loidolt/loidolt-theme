@@ -42,7 +42,7 @@ ${endScript}
       A Svelte-first component library for dense creative tools and clean everyday applications.
       Warm surfaces, sharp edges, clear hierarchy, and no Tailwind contract.
     </p>
-    <div class="ldt-cluster">
+    <div class="ldt-cluster docs-hero__actions">
       <Button variant="primary" href={`${base}/components`}>Browse components</Button>
       <Button variant="quiet" href={`${base}/foundations`}>Foundations</Button>
       <Button variant="text" href={`${base}/patterns`}>Patterns</Button>

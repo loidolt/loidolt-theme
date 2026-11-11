@@ -177,6 +177,21 @@
 .ldt-pagination__page {
   min-width: var(--loidolt-size-control-sm);
 }
+/*
+ * On a phone a row of page buttons wraps, stranding Next on a line of its own, so the trail
+ * collapses to Previous, the current page and Next. A viewport query rather than a container
+ * query: a size container has no content width, and Pagination often sits in a flex row.
+ */
+@media (max-width: 30rem) {
+  .ldt-pagination__list {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+  .ldt-pagination__page:not([aria-current='page']),
+  .ldt-pagination__ellipsis {
+    display: none;
+  }
+}
 .ldt-pagination__page[aria-current='page'] {
   color: var(--loidolt-on-accent);
   border-color: var(--loidolt-accent);

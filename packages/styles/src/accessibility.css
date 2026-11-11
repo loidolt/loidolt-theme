@@ -169,6 +169,81 @@
   .ldt-number-field:not(.ldt-number-field--bare) {
     grid-template-columns: 44px minmax(0, 1fr) 44px;
   }
+  :where(.ldt-list-row) {
+    min-height: 44px;
+  }
+  .ldt-file-input::file-selector-button {
+    min-height: 44px;
+    padding-block: var(--loidolt-space-2);
+  }
+  /* The only way to pick on a phone, where there is nothing to drag. */
+  :where(.ldt-dropzone__browse) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  :where(.ldt-swatch-group__swatch) {
+    width: 44px;
+    height: 44px;
+  }
+  :where(.ldt-swatch-group) {
+    gap: var(--loidolt-space-2);
+  }
+  /* Breadcrumbs keep their small label type; an invisible 44px band around each link takes the
+     press. */
+  /* The band hangs off the item, so the link can still clip a long label with an ellipsis. */
+  .ldt-breadcrumbs__item {
+    position: relative;
+  }
+  .ldt-breadcrumbs__link::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+  /* Small in-place controls that keep their drawn size and take a 44px press around it: a sort
+     header, a stage label, the folded map attribution. */
+  :where(.ldt-pagination__page) {
+    min-width: 44px;
+  }
+  :where(.ldt-table__sort, .ldt-stage-stepper__action) {
+    position: relative;
+  }
+  .ldt-table__sort::after,
+  .ldt-stage-stepper__action::after,
+  .ldt-map .maplibregl-ctrl-attrib-button::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+  :where(.ldt-mermaid__source summary) {
+    padding-block: var(--loidolt-space-3);
+  }
+  /* Inline radios sit far enough apart that a thumb takes one, not its neighbour. */
+  :where(.ldt-radio-group:not(.ldt-radio-group--vertical)) {
+    column-gap: var(--loidolt-space-5);
+  }
+  /* A chip inside a MultiSelect field keeps its size: at 44px it would fill the field. Its
+     remove button keeps a 44px target through an invisible square instead. */
+  .ldt-multi-select :where(.ldt-chip) {
+    min-height: auto;
+  }
+  .ldt-multi-select :where(.ldt-chip__remove) {
+    position: relative;
+    min-width: auto;
+  }
+  .ldt-multi-select .ldt-chip__remove::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
 }
 
 /*

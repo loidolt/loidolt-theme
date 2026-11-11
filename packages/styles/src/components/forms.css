@@ -48,6 +48,41 @@
   padding-inline: var(--loidolt-pad-control-x-sm);
   background: var(--loidolt-surface-input);
 }
+/*
+ * The system's own select clothes ignore the theme's height and padding — WebKit draws a 28px
+ * pill whatever the box says — so a single-line select drops them and draws its own chevron.
+ * Longhands, after the boxed rule, so the box's background colour stays.
+ */
+.ldt-select:not([multiple], [size]) {
+  appearance: none;
+  padding-inline-end: calc(var(--loidolt-pad-control-x-sm) + 1rem);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--loidolt-text-muted) 50%),
+    linear-gradient(135deg, var(--loidolt-text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 0.85rem) 55%,
+    calc(100% - 0.55rem) 55%;
+  background-size: 0.3rem 0.3rem;
+  background-repeat: no-repeat;
+}
+/* NumberField draws its own − and +; the browser's spinner would be a second, smaller pair. */
+.ldt-number-field__input {
+  appearance: textfield;
+}
+.ldt-number-field__input::-webkit-inner-spin-button,
+.ldt-number-field__input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+/* Disabled reads as disabled, not as an empty boxed field. */
+.ldt-input:disabled,
+.ldt-select:disabled,
+.ldt-textarea:disabled,
+.ldt-number-field__input:disabled {
+  border-style: dashed;
+  color: var(--loidolt-text-muted);
+  background-color: transparent;
+}
 /* The focus ring itself comes from the `loidolt.a11y` layer; this only tints the border. */
 .ldt-input:focus-visible,
 .ldt-select:focus-visible,
@@ -273,7 +308,12 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
-/* A file picker in the system's input clothes. */
+/* A file picker in the system's input clothes. The "no file chosen" text matches the button. */
+.ldt-file-input {
+  max-width: 100%;
+  color: var(--loidolt-text-muted);
+  font: var(--loidolt-font-size-sm) var(--loidolt-font-utility);
+}
 .ldt-file-input::file-selector-button {
   margin-inline-end: var(--loidolt-space-2);
   border: var(--loidolt-border-width) solid var(--loidolt-border-control);

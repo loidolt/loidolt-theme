@@ -289,6 +289,18 @@
       const created = current;
       untrack(() => {
         created.addControl(new maplibre.AttributionControl({ compact: true }), 'bottom-right');
+        /*
+         * MapLibre opens a compact attribution on load and folds it only at the first drag. On a
+         * phone-width map the open box covers a fifth of it — legends, markers, stops — so it
+         * starts folded there, behind its (i) button, as MapLibre would leave it after a drag.
+         */
+        created.once('idle', () => {
+          if (created.getCanvasContainer().offsetWidth > 640) return;
+          created
+            .getContainer()
+            .querySelector('.maplibregl-ctrl-attrib.maplibregl-compact-show')
+            ?.classList.remove('maplibregl-compact-show');
+        });
         if (navigationControl) {
           created.addControl(
             new maplibre.NavigationControl({ visualizePitch: true }),

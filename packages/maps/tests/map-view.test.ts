@@ -34,6 +34,29 @@ describe('MapView', () => {
     expect(onLoad).toHaveBeenCalledWith(map);
   });
 
+  it('folds the open attribution once the map is idle when the map is phone-width', async () => {
+    render(MapView, { label: 'Narrow' });
+    const map = await loaded();
+    const attribution = document.createElement('details');
+    attribution.className = 'maplibregl-ctrl-attrib maplibregl-compact maplibregl-compact-show';
+    map.getContainer().append(attribution);
+    Object.defineProperty(map.getCanvasContainer(), 'offsetWidth', { value: 360 });
+    map.fire('idle');
+    expect(attribution.classList.contains('maplibregl-compact-show')).toBe(false);
+    expect(attribution.classList.contains('maplibregl-compact')).toBe(true);
+  });
+
+  it('leaves the attribution open on a wide map', async () => {
+    render(MapView, { label: 'Wide' });
+    const map = await loaded();
+    const attribution = document.createElement('details');
+    attribution.className = 'maplibregl-ctrl-attrib maplibregl-compact maplibregl-compact-show';
+    map.getContainer().append(attribution);
+    Object.defineProperty(map.getCanvasContainer(), 'offsetWidth', { value: 900 });
+    map.fire('idle');
+    expect(attribution.classList.contains('maplibregl-compact-show')).toBe(true);
+  });
+
   it('adds the optional controls where asked', async () => {
     render(MapView, {
       label: 'Controls',

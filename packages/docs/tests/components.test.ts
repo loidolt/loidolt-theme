@@ -106,6 +106,16 @@ describe('Markdown', () => {
     await waitFor(() => expect(mermaid.render.mock.calls.length).toBeGreaterThan(calls));
   });
 
+  it('stops a wide diagram shrinking below three quarters of its drawn width', async () => {
+    setMermaidLoader(() => ({
+      initialize: vi.fn(),
+      render: async () => ({ svg: '<svg viewBox="0 0 900 120"><text>wide</text></svg>' }),
+    }));
+    render(Markdown, { source: '```mermaid\ngraph LR; A-->B\n```', diagramLabel: 'Wide' });
+    const picture = await screen.findByRole('img', { name: 'Wide' });
+    expect(picture.querySelector('svg')).toHaveStyle({ minWidth: '675px' });
+  });
+
   it('leaves diagram source readable when Mermaid is not there', async () => {
     const { container } = render(Markdown, { source: '```mermaid\ngraph TD; A-->B\n```' });
     await new Promise((resolve) => setTimeout(resolve, 20));

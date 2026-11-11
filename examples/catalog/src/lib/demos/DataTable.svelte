@@ -56,7 +56,7 @@
 
 <div class="ldt-stack">
   <Toolbar label="Sheet tools">
-    <DataTableSearch {table} placeholder="Search sheets" style="max-width: 16rem" />
+    <DataTableSearch {table} placeholder="Search sheets" style="flex: 1 1 12rem" />
     <DataTableFacetedFilter {table} column="stock" />
     <DataTableFacetedFilter {table} column="status" />
     {#snippet end()}<DataTableColumnVisibility {table} />{/snippet}

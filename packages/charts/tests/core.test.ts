@@ -282,7 +282,9 @@ describe('part-to-whole charts', () => {
 
   it('builds pies and donuts with a centre label', () => {
     const pie = buildPieOption(parts, {}, light) as Loose;
-    expect(pie.series[0].radius).toEqual(['0%', '70%']);
+    // Outside labels get room beside a smaller pie, and wrap at the chart's edges.
+    expect(pie.series[0].radius).toEqual(['0%', '60%']);
+    expect(pie.series[0].label).toMatchObject({ alignTo: 'edge', overflow: 'break' });
     expect(pie.title).toBeUndefined();
     expect(pie.series[0].data[0].itemStyle.color).toBe(light.categorical[0]);
     expect(pie.series[0].label.formatter).toBe('{b}');

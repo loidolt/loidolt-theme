@@ -5,11 +5,31 @@
  * to where the last row would have been.
  */
 .ldt-table-wrap {
+  --ldt-table-shadow: color-mix(in srgb, var(--loidolt-text) 22%, transparent);
   position: relative;
   width: 100%;
   overflow-x: auto;
   border: var(--loidolt-border-width) solid var(--loidolt-border);
   border-radius: var(--loidolt-radius-surface);
+  /*
+   * A shadow on whichever side has more columns to scroll to. The two covers scroll with the
+   * content (`local`) and hide the fixed shadows (`scroll`) only while that edge is in view, so
+   * a table cut off at the right of a phone says so. The table itself is see-through inside
+   * the wrapper for the shadows to show; the wrapper paints its surface.
+   */
+  background:
+    linear-gradient(to right, var(--loidolt-surface) 30%, transparent) left / 2.5rem 100% no-repeat
+      local,
+    linear-gradient(to left, var(--loidolt-surface) 30%, transparent) right / 2.5rem 100% no-repeat
+      local,
+    radial-gradient(farthest-side at 0 50%, var(--ldt-table-shadow), transparent) left / 0.75rem
+      100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, var(--ldt-table-shadow), transparent) right / 0.75rem
+      100% no-repeat scroll,
+    var(--loidolt-surface);
+}
+.ldt-table-wrap > .ldt-table {
+  background: transparent;
 }
 .ldt-table {
   width: 100%;
@@ -23,6 +43,9 @@
   text-align: left;
 }
 .ldt-table th {
+  /* A header names its column in one line; a narrow table scrolls rather than stacking "LIGHT"
+     over "VALUE". */
+  white-space: nowrap;
   color: var(--loidolt-text-muted);
   font: var(--loidolt-font-size-xs) var(--loidolt-font-utility);
   font-weight: var(--loidolt-label-weight);
