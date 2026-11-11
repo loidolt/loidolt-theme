@@ -10,7 +10,7 @@ describe('themeConfig', () => {
       android: { backgroundColor: semantic.background },
       plugins: {
         SystemBars: { insetsHandling: 'css' },
-        SplashScreen: { launchAutoHide: false, backgroundColor: semantic.background },
+        SplashScreen: { launchAutoHide: false },
         Keyboard: { resize: 'native' },
       },
     });
@@ -47,15 +47,21 @@ describe('withTheme', () => {
       android: { backgroundColor: '#000000' },
       plugins: {
         SystemBars: { insetsHandling: 'css' },
-        SplashScreen: {
-          launchAutoHide: false,
-          backgroundColor: darkSemantic.background,
-          launchShowDuration: 0,
-        },
+        SplashScreen: { launchAutoHide: false, launchShowDuration: 0 },
         Keyboard: { resize: 'none' },
         LocalNotifications: { iconColor: '#d65a26' },
       },
     });
+  });
+
+  it('leaves the splash colour to the launch screen, so iOS can follow dark mode', () => {
+    // SplashScreen paints its backgroundColor over LaunchScreen.storyboard on iOS, which hid a
+    // launch colour asset's dark variant behind one fixed colour.
+    expect(themeConfig({ scheme: 'dark' }).plugins.SplashScreen).not.toHaveProperty(
+      'backgroundColor'
+    );
+    const own = withTheme({ plugins: { SplashScreen: { backgroundColor: '#101010' } } });
+    expect(own.plugins.SplashScreen).toEqual({ launchAutoHide: false, backgroundColor: '#101010' });
   });
 
   it('keeps an app background colour', () => {

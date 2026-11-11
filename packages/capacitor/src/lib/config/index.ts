@@ -7,8 +7,8 @@ import { darkSemantic, semantic } from '@loidolt/theme-tokens';
 export interface ThemeConfigOptions {
   /**
    * Which reference theme the launch is painted in: the colour behind the web view before its
-   * first frame, and the splash screen's. Match the theme most people will see — `light` (the
-   * default) for a light-first app.
+   * first frame. Match the theme most people will see — `light` (the default) for a light-first
+   * app. The splash screen itself is the native launch screen's (see the README).
    */
   scheme?: 'light' | 'dark';
   /** A colour of your own instead of the theme's `background`. */
@@ -28,7 +28,7 @@ export interface ThemeConfig {
   android: { backgroundColor: string };
   plugins: {
     SystemBars: { insetsHandling: 'css' };
-    SplashScreen: { launchAutoHide: false; backgroundColor: string };
+    SplashScreen: { launchAutoHide: false };
     Keyboard: { resize: NonNullable<ThemeConfigOptions['keyboardResize']> };
   };
 }
@@ -40,7 +40,9 @@ export interface ThemeConfig {
  *   first frame (or the reverse).
  * - `SystemBars` injecting the safe-area variables `styles.css` reads on older Android web views.
  * - A splash screen that waits for `hideSplashScreen` (or `setupCapacitor`), which lifts it once
- *   the stored theme and the fonts are in.
+ *   the stored theme and the fonts are in. Its colour is left to the native launch screen: the
+ *   plugin's `backgroundColor` would paint one fixed colour over it, and on iOS hide a launch
+ *   colour that follows dark mode.
  * - The keyboard resize mode.
  */
 export function themeConfig(options: ThemeConfigOptions = {}): ThemeConfig {
@@ -53,7 +55,7 @@ export function themeConfig(options: ThemeConfigOptions = {}): ThemeConfig {
     android: { backgroundColor },
     plugins: {
       SystemBars: { insetsHandling: 'css' },
-      SplashScreen: { launchAutoHide: false, backgroundColor },
+      SplashScreen: { launchAutoHide: false },
       Keyboard: { resize: keyboardResize },
     },
   };

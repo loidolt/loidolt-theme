@@ -28,7 +28,9 @@ npm run ios:open   # the project in Xcode
 
 `LDT_DEV=http://localhost:5175 npm run ios:sync` points the app at the Vite dev server (run
 `npm run dev` alongside) for live reload; sync again without it before a real build.
-`LDT_LAUNCH=dark npm run ios:sync` paints the launch screen and splash in the dark theme.
+`LDT_LAUNCH=dark npm run ios:sync` paints the web view's launch background in the dark theme.
+The launch screen and splash take the `LaunchBackground` colour asset, which has the theme's light
+and dark backgrounds and follows the system's dark mode.
 
 `[ldt]` lines go to the app's console, so a run can be followed from a terminal:
 
