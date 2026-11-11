@@ -1,6 +1,6 @@
 {
   "name": "@loidolt/theme-catalog-native",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "description": "The catalog site, unchanged, inside a Capacitor 8 shell with @loidolt/theme-capacitor, for testing every component in the iOS Simulator",
@@ -28,8 +28,8 @@
     "@capacitor/status-bar": "^8.0.4",
     "@capacitor/text-zoom": "^8.0.1",
     "@capawesome/capacitor-file-picker": "^8.1.1",
-    "@loidolt/theme-capacitor": "^0.11.1",
-    "@loidolt/theme-catalog": "^0.0.9"
+    "@loidolt/theme-capacitor": "^0.12.0",
+    "@loidolt/theme-catalog": "^0.0.10"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.6.0",
