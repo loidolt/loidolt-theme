@@ -79,9 +79,9 @@
 /*
  * Beside the page the nav column sticks under the top bar, and only the group list scrolls: the
  * filter stays put above it, and the current entry stays in reach however long the page is.
- * Below the compact breakpoint the nav lives in a Drawer instead.
+ * Where the header goes compact (the layout's `compact` query) the nav lives in a Drawer instead.
  */
-@media (min-width: 760.02px) {
+@media (width > 72rem) and (height > 480px) {
   .ldt-workspace > .ldt-sidebar:has(> .docs-sidenav) {
     position: sticky;
     top: var(--docs-header-height, 0px);
@@ -351,12 +351,14 @@
 }
 /*
  * Prop types are long by nature (`Snippet<[{ id: string; describedBy?: string }]>`). Let them
- * wrap inside the cell rather than pushing the table into horizontal scroll on every page.
+ * wrap inside the cell rather than pushing the table into horizontal scroll on every page —
+ * between words: `anywhere` also shrinks the column's minimum to a letter, and the table then
+ * squeezes it until `string` breaks as strin/g.
  */
 .docs-type {
   display: inline-block;
   max-width: 26rem;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   white-space: normal;
 }
 .docs-role-chip {
@@ -396,6 +398,24 @@
   font-weight: var(--loidolt-label-weight);
   letter-spacing: var(--loidolt-label-tracking);
   text-transform: var(--loidolt-label-transform);
+}
+/*
+ * Under a finger a frame is a picture, not a page: a scrollable frame takes every vertical swipe
+ * that starts on it, and six of them leave nothing of /presets to scroll by. "Open full page" is
+ * the way in, so it gets a full-size press.
+ */
+@media (pointer: coarse) {
+  .docs-preset-frame iframe {
+    pointer-events: none;
+  }
+  .docs-preset-frame figcaption {
+    align-items: center;
+  }
+  .docs-preset-frame figcaption a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
 }
 /* The bare sampler page a preview frame loads. */
 .docs-preview {
@@ -543,6 +563,9 @@ pre {
   .docs-hero {
     grid-template-columns: 1fr;
   }
+}
+/* On a phone, upright or on its side, the bar scrolls away rather than hold the screen's top. */
+@media (max-width: 760px), (max-height: 480px) {
   .ldt-app-shell > header {
     position: static;
   }
@@ -666,4 +689,20 @@ pre {
 /* The components index's jump list of groups. */
 .docs-jump {
   margin-block: var(--loidolt-space-4) var(--loidolt-space-5);
+}
+/*
+ * On a phone a wrapped row of thirteen names leaves rows of four, three, five and one, so they
+ * go in three even columns, and a last one or two left over run out to the row's end.
+ */
+@media (max-width: 30rem) {
+  .docs-jump {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .docs-jump > :last-child:nth-child(3n + 1) {
+    grid-column: 1 / -1;
+  }
+  .docs-jump > :last-child:nth-child(3n + 2) {
+    grid-column: span 2;
+  }
 }

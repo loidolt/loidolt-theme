@@ -9,6 +9,7 @@ import { Network } from '@capacitor/network';
 import { Preferences } from '@capacitor/preferences';
 import { Share } from '@capacitor/share';
 import { SplashScreen } from '@capacitor/splash-screen';
+import { StatusBar } from '@capacitor/status-bar';
 import { TextZoom } from '@capacitor/text-zoom';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
 import type { ClientInit } from '@sveltejs/kit';
@@ -49,6 +50,7 @@ export const init: ClientInit = () => {
       Preferences,
       Share,
       SplashScreen,
+      StatusBar,
       TextZoom,
     },
     theme,

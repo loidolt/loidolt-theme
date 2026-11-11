@@ -10,7 +10,6 @@
     AppShell,
     Badge,
     Brand,
-    breakpointQuery,
     createMediaQuery,
     Drawer,
     Sidebar,
@@ -27,10 +26,14 @@
   let { children } = $props();
 
   /*
-   * The site is its own first consumer: below the compact breakpoint the navigation column
-   * becomes a Drawer, exactly as an application would do it.
+   * The site is its own first consumer: where the full header cannot hold one row, the navigation
+   * column becomes a Drawer, exactly as an application would do it. Seven sections, the preset
+   * picker and the actions take about 1,125px with touch-sized controls, past the expanded
+   * breakpoint, so the width is the header's own, in rem to grow with the text. A landscape
+   * phone is too short for more than one row of chrome whatever its width. Header, drawer and
+   * sidebar all read this one query, so they never disagree; app.css mirrors it.
    */
-  const compact = createMediaQuery(breakpointQuery('compact'));
+  const compact = createMediaQuery('(max-width: 72rem), (max-height: 480px)');
   let navOpen = $state(false);
 
   const sections = [
@@ -128,6 +131,8 @@
   }
 
   afterNavigate(async () => {
+    // A deep link or the back button lands with the menu shut, not over the new page.
+    navOpen = false;
     // Arriving in a group always shows it, even one collapsed by hand earlier.
     if (currentGroup) toggled.delete(currentGroup);
     await tick();
@@ -168,8 +173,8 @@
   <TooltipProvider>
     <AppShell mainId="docs-content" style={`--docs-header-height: ${headerHeight}px`}>
       {#snippet header()}
-        <!-- Below the compact breakpoint the sections move into the menu drawer: a second and third
-             row of chrome would take a quarter of a phone's screen. -->
+        <!-- Compact, the sections move into the menu drawer: a second and third row of chrome
+             would take a quarter of a phone's screen, and most of a landscape one. -->
         <Topbar
           class="docs-topbar"
           navLabel="Documentation"

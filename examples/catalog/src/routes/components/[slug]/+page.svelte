@@ -6,6 +6,7 @@
   import PropsTable from '$lib/components/PropsTable.svelte';
   import RichText from '$lib/components/RichText.svelte';
   import { packageOf } from '$lib/registry';
+  import { plainText } from '$lib/rich-text';
 
   let { data } = $props();
 
@@ -38,10 +39,12 @@
   ]}
 />
 
+<!-- PageHeader's description is a string, not a snippet, so the summary's code marks are dropped
+     here rather than shown as literal backticks. -->
 <PageHeader
   eyebrow="Component"
   title={data.entry.name}
-  description={data.entry.summary}
+  description={plainText(data.entry.summary)}
   headingLevel={1}
 />
 

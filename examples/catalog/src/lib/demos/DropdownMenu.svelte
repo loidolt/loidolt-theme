@@ -40,16 +40,21 @@
   ]);
 </script>
 
-<div class="ldt-cluster">
-  <DropdownMenu
-    {items}
-    onSelect={(value) => (selected = value)}
-    onCheckedChange={(value, checked) => (value === 'grid' ? (grid = checked) : (rulers = checked))}
-    onValueChange={(_name, value) => (sort = value)}
-  >
-    {#snippet trigger()}File{/snippet}
-  </DropdownMenu>
-  <Badge size="md">{selected}</Badge>
+<!-- The menu's state on a line of its own: beside the trigger and the badge it wraps on a phone,
+     a few words stranded under the row. -->
+<div class="ldt-stack">
+  <div class="ldt-cluster">
+    <DropdownMenu
+      {items}
+      onSelect={(value) => (selected = value)}
+      onCheckedChange={(value, checked) =>
+        value === 'grid' ? (grid = checked) : (rulers = checked)}
+      onValueChange={(_name, value) => (sort = value)}
+    >
+      {#snippet trigger()}File{/snippet}
+    </DropdownMenu>
+    <Badge size="md">{selected}</Badge>
+  </div>
   <span class="ldt-utility-text"
     >Grid {grid ? 'on' : 'off'} · rulers {rulers ? 'on' : 'off'} · by {sort}</span
   >

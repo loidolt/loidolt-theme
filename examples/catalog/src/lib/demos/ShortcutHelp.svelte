@@ -75,11 +75,15 @@
   <p>
     Sheet {index + 1} of {sheets.length}: <strong>{sheets[index]}</strong> at {zoom}%
   </p>
-  <div class="ldt-cluster">
+  <!-- A grid, so on a phone the four commands pair off in even columns; the list of them has a
+       line of its own rather than whatever a wrapped row leaves it. -->
+  <div class="ldt-grid" style="--ldt-min: 8rem; --ldt-gap: var(--loidolt-space-2);">
     <Button size="sm" onclick={() => commands.execute('previous')}>Previous</Button>
     <Button size="sm" onclick={() => commands.execute('next')}>Next</Button>
     <Button size="sm" variant="quiet" onclick={() => commands.execute('zoom-out')}>Zoom out</Button>
     <Button size="sm" variant="quiet" onclick={() => commands.execute('zoom-in')}>Zoom in</Button>
+  </div>
+  <div>
     <ShortcutHelp {commands} shortcut={singleKey ? '?' : null} triggerSize="sm">
       {#snippet trigger()}Keyboard shortcuts{/snippet}
     </ShortcutHelp>

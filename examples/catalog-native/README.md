@@ -37,14 +37,37 @@ npm run ios:run    # sync, then build and launch on a simulator you pick
 npm run ios:open   # the project in Xcode
 ```
 
+`ios:run` goes through the Capacitor CLI. To build without it, as CI or a script would, sync
+and then call Xcode directly, with a simulator id from `xcrun simctl list devices`:
+
+```sh
+xcodebuild -project ios/App/App.xcodeproj -scheme App -destination 'id=<simulator id>' -derivedDataPath ios/DerivedData build
+```
+
+The app lands in `ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app`, ready for
+`xcrun simctl install booted` and `xcrun simctl launch booted space.loidolt.theme.catalog`.
+
 For live reload, run `npm run dev` and
 `LDT_DEV=http://localhost:5376 npm run ios:sync`; sync again without it before a real build.
+
+The launch is painted in the light theme's background. To test a dark-first app, sync with
+`LDT_LAUNCH=dark npm run ios:sync`: the colour behind the web view before its first frame becomes
+the dark theme's, so there is no light flash under a dark device. Like `LDT_DEV`, it is read at
+sync time and lasts until the next sync.
 
 Deep links use the `ldtcatalog://` scheme and open the matching page:
 
 ```sh
 xcrun simctl openurl booted ldtcatalog://components/tab-bar
 ```
+
+The first `openurl` on a simulator asks _Open in "Theme catalog"?_; tap Open once and later links
+go straight in.
+
+The page follows the system text size (Dynamic Type). It is read at launch and again whenever the
+app returns to the foreground, so a size changed in Settings applies on switching back. A change
+from Control Center over the running app only leaves it inactive, not backgrounded, so it applies
+after switching away and back, or a relaunch.
 
 `Info.plist` sets `UIFileSharingEnabled` and `LSSupportsOpeningDocumentsInPlace`, so files the
 demos save show in the Files app under _On My iPhone › Theme catalog_.
