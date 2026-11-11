@@ -1,6 +1,6 @@
 {
   "name": "@loidolt/theme-capacitor",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "Capacitor adapters that carry the Loidolt theme into native iOS and Android apps",
   "license": "MIT",
   "type": "module",
@@ -34,8 +34,8 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@loidolt/theme-svelte": "^0.12.0",
-    "@loidolt/theme-tokens": "^0.12.0"
+    "@loidolt/theme-svelte": "^0.12.1",
+    "@loidolt/theme-tokens": "^0.12.1"
   },
   "peerDependencies": {
     "@capacitor/app": "^8.0.0",
