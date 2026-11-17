@@ -1,4 +1,4 @@
-import { base } from '$app/paths';
+import { resolve } from '$app/paths';
 import { createTheme } from '@loidolt/theme-svelte';
 import { parsePreview, presets } from './presets.js';
 
@@ -12,7 +12,8 @@ export { presets };
  * that is never attached.
  */
 const previewing =
-  typeof location !== 'undefined' && parsePreview(location.pathname.slice(base.length)) !== null;
+  typeof location !== 'undefined' &&
+  parsePreview(location.pathname.slice(resolve('/').length - 1)) !== null;
 
 /**
  * One theme instance for the whole site. Created at module scope on purpose: every page reads

@@ -1,5 +1,5 @@
-import type { Handle } from '@sveltejs/kit';
-import { base } from '$app/paths';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { resolve as resolvePath } from '$app/paths';
 import { themeScript } from '@loidolt/theme-svelte';
 import { parsePreview, presets } from '$lib/presets.js';
 
@@ -13,7 +13,7 @@ import { parsePreview, presets } from '$lib/presets.js';
  * matches known names, so the values are safe to interpolate.
  */
 export const handle: Handle = ({ event, resolve }) => {
-  const preview = parsePreview(event.url.pathname.slice(base.length));
+  const preview = parsePreview(event.url.pathname.slice(resolvePath('/').length - 1));
   return resolve(event, {
     transformPageChunk: ({ html }) =>
       preview

@@ -12,9 +12,9 @@ import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar } from '@capacitor/status-bar';
 import { TextZoom } from '@capacitor/text-zoom';
 import { FilePicker } from '@capawesome/capacitor-file-picker';
-import type { ClientInit } from '@sveltejs/kit';
+import type { ClientInit } from '@sveltejs/kit/hooks';
 import { goto } from '$app/navigation';
-import { base } from '$app/paths';
+import { resolve } from '$app/paths';
 import { setupCapacitor } from '@loidolt/theme-capacitor';
 import { parsePreview } from '$lib/presets.js';
 import { theme } from '$lib/theme.js';
@@ -30,7 +30,7 @@ export const init: ClientInit = () => {
    * the catalog's server hook writes them into the prerendered page; this build renders on the
    * client, so they are written here, before the frame's first paint.
    */
-  const preview = parsePreview(location.pathname.slice(base.length));
+  const preview = parsePreview(location.pathname.slice(resolve('/').length - 1));
   if (preview) {
     document.documentElement.dataset.preset = preview.preset;
     document.documentElement.dataset.theme = preview.scheme;

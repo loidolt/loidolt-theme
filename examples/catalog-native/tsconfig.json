@@ -1,6 +1,8 @@
 {
   // SvelteKit generates the real base; the shared options are layered on top of it.
-  "extends": "./.svelte-kit/tsconfig.json",
+  "extends": "$app/tsconfig",
+  // The routes, `$lib` and server hook are the catalog's own (see vite.config.ts).
+  "include": ["src", "*", "../catalog/src"],
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { base } from '$app/paths';
+  import { resolve } from '$app/paths';
   import { Button, EmptyState } from '@loidolt/theme-svelte';
 </script>
 
@@ -16,7 +16,7 @@
   headingLevel={1}
 >
   {#snippet actions()}
-    <Button variant="primary" href={`${base}/components`}>Browse components</Button>
-    <Button variant="quiet" href={`${base}/`}>Overview</Button>
+    <Button variant="primary" href={resolve('/components')}>Browse components</Button>
+    <Button variant="quiet" href={resolve('/')}>Overview</Button>
   {/snippet}
 </EmptyState>

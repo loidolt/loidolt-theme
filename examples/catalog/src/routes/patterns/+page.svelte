@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { base } from '$app/paths';
+  import { resolve } from '$app/paths';
   import {
     Badge,
     Brand,
@@ -133,17 +133,17 @@ ${endScript}
     <code>Drawer</code>: same content, modal presentation, focus trapped while it is open. This site
     does exactly that — narrow the window and the component list moves behind
     <em>Browse</em>. Shipping the same app to a phone as a native shell? See
-    <a href={`${base}/patterns/native`}>Native apps</a> for safe areas, the back button and the
+    <a href={resolve('/patterns/native')}>Native apps</a> for safe areas, the back button and the
     keyboard, or
-    <a href={`${base}/patterns/desktop`}>Desktop apps</a> for a Tauri window.
+    <a href={resolve('/patterns/desktop')}>Desktop apps</a> for a Tauri window.
   </p>
   <Demo label="The drawer that replaces the column">
     <Drawer title="Navigation" description="Everything in this project">
       {#snippet trigger()}Open navigation{/snippet}
       <nav class="ldt-stack" style="--ldt-gap: 0.5rem">
-        <a href={`${base}/`}>Overview</a>
-        <a href={`${base}/foundations`}>Foundations</a>
-        <a href={`${base}/components`}>Components</a>
+        <a href={resolve('/')}>Overview</a>
+        <a href={resolve('/foundations')}>Foundations</a>
+        <a href={resolve('/components')}>Components</a>
       </nav>
     </Drawer>
   </Demo>
@@ -163,6 +163,6 @@ ${endScript}
   <p class="docs-note">
     The styles do not need the components. A page with no bundler, such as a generated HTML report,
     can inline one prebuilt stylesheet and write the same <code>ldt-</code> markup by hand: see
-    <a href={`${base}/patterns/css-only`}>CSS only</a>.
+    <a href={resolve('/patterns/css-only')}>CSS only</a>.
   </p>
 </Section>
