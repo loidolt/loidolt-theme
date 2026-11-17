@@ -146,6 +146,34 @@ test.describe('responsive catalog', () => {
     expect(frameSize.scrollWidth).toBeLessThanOrEqual(frameSize.clientWidth);
   });
 
+  test('date and time inputs drop the native appearance that iOS sizes by', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'desktop-chromium', 'One viewport is sufficient.');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/components/field');
+
+    // iOS sizes a native date or time control by its content box, so `width: 100%` plus padding
+    // overflowed its column. Only iOS does that, so the check is on the style that prevents it.
+    const appearances = await page.evaluate(() =>
+      ['date', 'time', 'datetime-local', 'month', 'week', 'text'].map((type) => {
+        const input = document.createElement('input');
+        input.type = type;
+        input.className = 'ldt-input ldt-input--boxed';
+        document.querySelector('main')!.append(input);
+        return [type, getComputedStyle(input).appearance];
+      })
+    );
+    expect(Object.fromEntries(appearances)).toEqual({
+      date: 'none',
+      time: 'none',
+      'datetime-local': 'none',
+      month: 'none',
+      week: 'none',
+      text: 'auto',
+    });
+  });
+
   test('localized overlay actions wrap inside compact dialogs and drawers', async ({
     page,
   }, testInfo) => {
