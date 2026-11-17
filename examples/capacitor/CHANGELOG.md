@@ -1,5 +1,14 @@
 # @loidolt/theme-capacitor-example
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`712ec7d`](https://github.com/loidolt/loidolt-theme/commit/712ec7d460b2a66ed2803cd0e5f5b68700487c43), [`c9472e8`](https://github.com/loidolt/loidolt-theme/commit/c9472e82af466ddd9fa16432ab30dcaa8e2e14dd)]:
+  - @loidolt/theme-capacitor@0.13.0
+  - @loidolt/theme-styles@0.13.0
+  - @loidolt/theme-svelte@0.13.0
+
 ## 0.0.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @loidolt/theme-tauri
 
+## 0.13.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @loidolt/theme-svelte@0.13.0
+  - @loidolt/theme-tokens@0.13.0
+
 ## 0.12.2
 
 ### Patch Changes
