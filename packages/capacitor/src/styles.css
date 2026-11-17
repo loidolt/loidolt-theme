@@ -54,13 +54,20 @@
  * and every `--ldt-safe-*` reader (AppShell, Topbar, toasts, drawers) then clears it as a whole.
  * Top to bottom it holds what the system reserves (`--ldt-bar-start`), Topbar's actions, and the
  * TabBar at the foot, within reach of the thumb. Topbar stays as a slim header in the content.
+ *
+ * iOS lines its own items (the clock, the status icons) up in a 4.5rem column on the content side
+ * of the strip, and leaves what's left of a wider strip as margin at the bezel; on iPhone Duo the
+ * strip is 84pt and the column's centre 48pt in from the edge. The page's controls share that
+ * column (`--ldt-bar-outer` is the margin), so they sit in line under the clock.
  */
 :where(:root[data-bar-edge='right']) {
   --ldt-bar-width: max(var(--safe-area-inset-right, env(safe-area-inset-right, 0px)), 4.5rem);
+  --ldt-bar-outer: calc(var(--ldt-bar-width) - 4.5rem);
   --ldt-safe-right: var(--ldt-bar-width);
 }
 :where(:root[data-bar-edge='left']) {
   --ldt-bar-width: max(var(--safe-area-inset-left, env(safe-area-inset-left, 0px)), 4.5rem);
+  --ldt-bar-outer: calc(var(--ldt-bar-width) - 4.5rem);
   --ldt-safe-left: var(--ldt-bar-width);
 }
 /* The strip's surface, full height, under the system's items and the page's own. */
@@ -93,9 +100,11 @@
 }
 :where([data-bar-edge='right'] .ldt-topbar__actions) {
   right: 0;
+  padding-right: var(--ldt-bar-outer);
 }
 :where([data-bar-edge='left'] .ldt-topbar__actions) {
   left: 0;
+  padding-left: var(--ldt-bar-outer);
 }
 :where([data-bar-edge] .ldt-app-shell > .ldt-tab-bar) {
   position: fixed;
@@ -107,15 +116,16 @@
   overflow-y: auto;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 0 0 var(--ldt-safe-bottom);
   border-top: 0;
   background: transparent;
 }
 :where([data-bar-edge='right'] .ldt-app-shell > .ldt-tab-bar) {
   right: 0;
+  padding: 0 var(--ldt-bar-outer) var(--ldt-safe-bottom) 0;
 }
 :where([data-bar-edge='left'] .ldt-app-shell > .ldt-tab-bar) {
   left: 0;
+  padding: 0 0 var(--ldt-safe-bottom) var(--ldt-bar-outer);
 }
 :where([data-bar-edge] .ldt-tab-bar__item) {
   flex: none;
@@ -131,6 +141,42 @@
    full-screen shell has bars at the side, and its page row is `<main>`. */
 :where([data-bar-edge] .ldt-app-shell > main) {
   padding-bottom: var(--ldt-safe-bottom, env(safe-area-inset-bottom, 0px));
+}
+
+/*
+ * A camera cutout in one top corner (`data-top-cutout`, with `--ldt-cutout-width` and
+ * `--ldt-cutout-height`): iPhone Duo's inner screen in portrait. The status bar lives in the
+ * cutout, so the top inset spans the whole width though only that corner is taken. Topbar moves
+ * up into the band beside it, ending where the cutout ends and stopping short of it at the side,
+ * rather than starting below a blank strip; its row then lines up with the clock. Only Topbar:
+ * overlays still clear the band. The cutout comes with a phone-width screen, where Topbar pads a
+ * row of 44px touch targets by `space-3` above and below.
+ */
+:where([data-top-cutout] .ldt-topbar) {
+  --ldt-safe-top: max(0px, calc(var(--ldt-cutout-height) - 2 * var(--loidolt-space-3) - 44px));
+}
+:where([data-top-cutout='right'] .ldt-topbar) {
+  --ldt-safe-right: max(
+    var(--safe-area-inset-right, env(safe-area-inset-right, 0px)),
+    calc(var(--ldt-cutout-width) - var(--loidolt-pad-bar-x))
+  );
+}
+:where([data-top-cutout='left'] .ldt-topbar) {
+  --ldt-safe-left: max(
+    var(--safe-area-inset-left, env(safe-area-inset-left, 0px)),
+    calc(var(--ldt-cutout-width) - var(--loidolt-pad-bar-x))
+  );
+}
+/* The status bar backdrop covers the cutout only, not the header beside it. */
+:where([data-native-platform][data-top-cutout] body)::before {
+  width: var(--ldt-cutout-width);
+  height: var(--ldt-cutout-height);
+}
+:where([data-native-platform][data-top-cutout='right'] body)::before {
+  left: auto;
+}
+:where([data-native-platform][data-top-cutout='left'] body)::before {
+  right: auto;
 }
 
 /*

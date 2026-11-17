@@ -90,6 +90,37 @@ export function barStartOf(layout: DeviceLayoutSnapshot): number {
     .reduce((bottom, rect) => Math.max(bottom, rect.y + rect.height), 0);
 }
 
+/**
+ * The camera's cutout in a top corner, while the bars stay horizontal: iPhone Duo's inner screen
+ * in portrait keeps the camera and status bar in a block at the top of one side, and the rest of
+ * that band is free. Its width from the screen edge and its height from the top; `null` when
+ * there's a vertical bar, or no occlusion touches a top corner, as with a Dynamic Island.
+ */
+export function topCutoutOf(
+  layout: DeviceLayoutSnapshot
+): { side: 'left' | 'right'; width: number; height: number } | null {
+  if (layout.barEdge) return null;
+  const corner = layout.regions.filter(
+    (region) => region.kind === 'occlusion' && region.y <= 1 && region.width < layout.width / 2
+  );
+  const right = corner.filter((region) => region.x + region.width >= layout.width - 1);
+  const left = corner.filter((region) => region.x <= 1);
+  // One corner only: with both taken there's no free run of the band to put a header in.
+  if (right.length && left.length) return null;
+  const side = right.length ? 'right' : left.length ? 'left' : null;
+  if (!side) return null;
+  const regions = side === 'right' ? right : left;
+  return {
+    side,
+    width: Math.max(
+      ...regions.map((region) =>
+        side === 'right' ? layout.width - region.x : region.x + region.width
+      )
+    ),
+    height: Math.max(...regions.map((region) => region.y + region.height)),
+  };
+}
+
 const px = (value: number) => `${Math.round(value * 100) / 100}px`;
 
 /**
@@ -100,6 +131,8 @@ const px = (value: number) => `${Math.round(value * 100) / 100}px`;
  *   side, with `--ldt-bar-start`, how far down the strip the page's controls can begin.
  * - `data-fold="vertical"` (or `"horizontal"`) while the device is partly open, with
  *   `--ldt-fold-start` and `--ldt-fold-end`, the band to keep controls out of.
+ * - `data-top-cutout="left"` or `"right"` while the camera and status bar take one top corner and
+ *   the bars stay horizontal, with `--ldt-cutout-width` and `--ldt-cutout-height`, its size.
  * - `data-hinge`, the hinge status, where the device has one.
  *
  * Needs the iOS plugin bundled with this package (run `cap sync` after installing) and iOS 27.1;
@@ -119,7 +152,14 @@ export function createDeviceLayout(options: DeviceLayoutOptions = {}): DeviceLay
       delete root.dataset.barEdge;
       delete root.dataset.fold;
       delete root.dataset.hinge;
-      for (const name of ['--ldt-bar-start', '--ldt-fold-start', '--ldt-fold-end']) {
+      delete root.dataset.topCutout;
+      for (const name of [
+        '--ldt-bar-start',
+        '--ldt-fold-start',
+        '--ldt-fold-end',
+        '--ldt-cutout-width',
+        '--ldt-cutout-height',
+      ]) {
         root.style.removeProperty(name);
       }
     };
@@ -136,6 +176,12 @@ export function createDeviceLayout(options: DeviceLayoutOptions = {}): DeviceLay
         root.dataset.fold = fold.axis;
         root.style.setProperty('--ldt-fold-start', px(fold.start));
         root.style.setProperty('--ldt-fold-end', px(fold.end));
+      }
+      const cutout = topCutoutOf(layout);
+      if (cutout) {
+        root.dataset.topCutout = cutout.side;
+        root.style.setProperty('--ldt-cutout-width', px(cutout.width));
+        root.style.setProperty('--ldt-cutout-height', px(cutout.height));
       }
       if (layout.hinge && layout.hinge.status !== 'unknown') {
         root.dataset.hinge = layout.hinge.status;
