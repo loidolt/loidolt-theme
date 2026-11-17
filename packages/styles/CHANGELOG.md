@@ -1,5 +1,12 @@
 # @loidolt/theme-styles
 
+## 0.13.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @loidolt/theme-tokens@0.13.0
+
 ## 0.12.2
 
 ### Patch Changes

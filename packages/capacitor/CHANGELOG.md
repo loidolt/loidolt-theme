@@ -1,5 +1,27 @@
 # @loidolt/theme-capacitor
 
+## 0.13.0
+
+### Minor Changes
+
+- [#80](https://github.com/loidolt/loidolt-theme/pull/80) [`712ec7d`](https://github.com/loidolt/loidolt-theme/commit/712ec7d460b2a66ed2803cd0e5f5b68700487c43) Thanks [@loidolt](https://github.com/loidolt)! - New `createDeviceLayout`, turned on by `setupCapacitor`: it tells a page where iOS puts its vertical bar and which parts of the display are reserved, so an app that draws its own bars can follow the system's layout on iPhone Duo.
+
+  A web page can't read these itself, so the package now has a small native iOS half, `DeviceLayout`, that `npx cap sync ios` adds to the app. It reads UIKit's vertical bar edge, its reserved regions (the camera, and the fold while the device is partly open) and the hinge (iOS 27.1), and the adapter writes them on `<html>`:
+
+  - `data-bar-edge="left"` or `"right"` while bars belong on that side, with `--ldt-bar-start`, how far down the strip controls can begin.
+  - `data-fold` with `--ldt-fold-start` and `--ldt-fold-end` while the device is partly open: the band to keep controls out of, where taps may not register.
+  - `data-hinge`: `closed`, `partially-open` or `fully-open`.
+
+  `current` holds the full report, and `foldOf` and `barStartOf` read it. Nothing is written on other devices, before iOS 27.1, in a browser, or in an app that hasn't run `cap sync` since installing this version. Building the app needs Xcode 27.1 or later.
+
+- [#82](https://github.com/loidolt/loidolt-theme/pull/82) [`c9472e8`](https://github.com/loidolt/loidolt-theme/commit/c9472e82af466ddd9fa16432ab30dcaa8e2e14dd) Thanks [@loidolt](https://github.com/loidolt)! - On iPhone Duo, `styles.css` now lays out the theme's own bars the way the system lays out its own. While `createDeviceLayout` reports a vertical bar edge (the cover screen, and the inner screen in landscape), the safe area on that edge widens into a strip of at least 4.5rem. `Topbar`'s actions move into the strip below the camera and status bar, and the `TabBar` runs down it from the foot; `Topbar` stays at the top of the content as a slim header with the brand. While the device is partly open, dialogs move to the half before the fold, top and bottom drawers cover that half only, side drawers stop short of the fold, and toasts keep to the half after it. Nothing changes on the inner screen in portrait, on other devices, or in a browser.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @loidolt/theme-svelte@0.13.0
+  - @loidolt/theme-tokens@0.13.0
+
 ## 0.12.2
 
 ### Patch Changes
