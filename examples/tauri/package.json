@@ -1,6 +1,6 @@
 {
   "name": "@loidolt/theme-tauri-example",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "type": "module",
   "description": "A minimal Tauri 2 app on @loidolt/theme-svelte and @loidolt/theme-tauri, for trying the desktop adapters in a real window",
@@ -14,8 +14,8 @@
     "tauri:build": "tauri build"
   },
   "dependencies": {
-    "@loidolt/theme-svelte": "^0.13.0",
-    "@loidolt/theme-tauri": "^0.13.0",
+    "@loidolt/theme-svelte": "^0.14.0",
+    "@loidolt/theme-tauri": "^0.14.0",
     "@tauri-apps/api": "^2.12.4",
     "@tauri-apps/plugin-deep-link": "^2.6.3",
     "@tauri-apps/plugin-dialog": "^2.8.4",

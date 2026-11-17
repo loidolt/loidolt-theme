@@ -1,5 +1,13 @@
 # @loidolt/theme-svelte
 
+## 0.14.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @loidolt/theme-styles@0.14.0
+  - @loidolt/theme-tokens@0.14.0
+
 ## 0.13.0
 
 ### Patch Changes
