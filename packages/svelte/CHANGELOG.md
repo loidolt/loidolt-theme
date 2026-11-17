@@ -1,5 +1,13 @@
 # @loidolt/theme-svelte
 
+## 0.12.2
+
+### Patch Changes
+
+- Updated dependencies [[`a80ec87`](https://github.com/loidolt/loidolt-theme/commit/a80ec876cf635ffc9d6d0420eaf48da9029ecae5)]:
+  - @loidolt/theme-styles@0.12.2
+  - @loidolt/theme-tokens@0.12.2
+
 ## 0.12.1
 
 ### Patch Changes

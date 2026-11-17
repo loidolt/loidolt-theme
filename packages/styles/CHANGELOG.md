@@ -1,5 +1,13 @@
 # @loidolt/theme-styles
 
+## 0.12.2
+
+### Patch Changes
+
+- [#77](https://github.com/loidolt/loidolt-theme/pull/77) [`a80ec87`](https://github.com/loidolt/loidolt-theme/commit/a80ec876cf635ffc9d6d0420eaf48da9029ecae5) Thanks [@loidolt](https://github.com/loidolt)! - Date and time inputs (`type="date"`, `time`, `datetime-local`, `month`, `week`) no longer run past their column on iOS. iOS sized their native control by its content box, so `width: 100%` plus the field's padding overflowed it, in Safari and in Capacitor apps alike; `.ldt-input` now drops the native appearance for these types, and their value starts where other fields' text does instead of centred. Tapping one still opens the system picker.
+- Updated dependencies []:
+  - @loidolt/theme-tokens@0.12.2
+
 ## 0.12.1
 
 ### Patch Changes
