@@ -1,5 +1,13 @@
 # @loidolt/theme-charts
 
+## 0.12.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @loidolt/theme-svelte@0.12.2
+  - @loidolt/theme-tokens@0.12.2
+
 ## 0.12.1
 
 ### Patch Changes
