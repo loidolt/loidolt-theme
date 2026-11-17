@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { base } from '$app/paths';
+  import { resolve } from '$app/paths';
   import * as theme from '@loidolt/theme-svelte';
   import { Alert, Card, PageHeader, Section } from '@loidolt/theme-svelte';
   import RichText from '$lib/components/RichText.svelte';
@@ -44,7 +44,7 @@
   <Section title={section.group} headingLevel={2} id={section.group.toLowerCase()}>
     <div class="ldt-grid" style="--ldt-min: 18rem">
       {#each section.items as item (item.slug)}
-        <a class="docs-card-link" href={`${base}/components/${item.slug}`}>
+        <a class="docs-card-link" href={resolve('/components/[slug]', { slug: item.slug })}>
           <Card title={item.name} headingLevel={3}><RichText value={item.summary} /></Card>
         </a>
       {/each}

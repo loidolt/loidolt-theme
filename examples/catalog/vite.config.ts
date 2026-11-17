@@ -1,4 +1,6 @@
+import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 
@@ -17,7 +19,20 @@ const port =
     : DEFAULT_PORT;
 
 export default defineConfig({
-  plugins: [sveltekit()],
+  plugins: [
+    sveltekit({
+      preprocess: vitePreprocess(),
+      adapter: adapter({ pages: 'dist', assets: 'dist', strict: true }),
+      // SvelteKit 3 replaced $lib with package.json's #lib; the alias keeps the catalog's imports.
+      alias: { $lib: 'src/lib' },
+      /*
+       * Absolute asset paths. The site is served from the root of its own domain, and the 404 page
+       * has to work at *any* depth — with relative paths, `404.html` served for /a/b/c would look
+       * for its stylesheet under /a/b/_app and find nothing.
+       */
+      paths: { relative: false },
+    }),
+  ],
   // MapLibre's worker uses code splitting, which only the ES worker format supports.
   worker: { format: 'es' },
   server: {

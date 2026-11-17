@@ -5,7 +5,7 @@ shell with `@loidolt/theme-capacitor`. Use it to test every component the way a 
 app built on the theme would see it: safe areas, system text size, the keyboard, the share sheet,
 haptics, dark mode and rotation, on a phone and on an iPad.
 
-Nothing here forks the catalog. `svelte.config.js` points SvelteKit's routes, `$lib`, static
+Nothing here forks the catalog. `vite.config.ts` points SvelteKit's routes, `$lib`, static
 files and server hook at `examples/catalog/src`, and this package adds only three things:
 
 - `src/hooks.client.ts`: one `setupCapacitor` call with every plugin the package supports, the

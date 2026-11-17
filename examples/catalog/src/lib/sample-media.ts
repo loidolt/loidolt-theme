@@ -1,3 +1,4 @@
+import { asset } from '$app/paths';
 import type { MediaItem } from '@loidolt/theme-svelte';
 
 /** Inline SVG "photos" so the media demos need no network. */
@@ -7,7 +8,7 @@ const plate = (fill: string, accent: string, label: string) =>
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="${fill}"/><path d="M0 220 120 140l80 60 90-90 110 110v100H0z" fill="${accent}" opacity=".85"/><circle cx="310" cy="70" r="28" fill="#ebe7dc"/><text x="20" y="40" font-family="sans-serif" font-size="22" fill="#ebe7dc">${label}</text></svg>`
   );
 
-export const sampleMedia = (base: string): MediaItem[] => [
+export const sampleMedia = (): MediaItem[] => [
   {
     kind: 'image',
     src: plate('#265162', '#3f5139', 'Ridge'),
@@ -22,10 +23,10 @@ export const sampleMedia = (base: string): MediaItem[] => [
   },
   {
     kind: 'video',
-    src: `${base}/media/sample-cut.webm`,
+    src: asset('media/sample-cut.webm'),
     title: 'Cutting a bracket',
-    poster: `${base}/media/sample-poster.svg`,
-    tracks: [{ src: `${base}/media/sample-cut.en.vtt`, srclang: 'en', label: 'English' }],
+    poster: asset('media/sample-poster.svg'),
+    tracks: [{ src: asset('media/sample-cut.en.vtt'), srclang: 'en', label: 'English' }],
     caption: 'Four-second cut, with captions',
   },
   {
@@ -36,10 +37,10 @@ export const sampleMedia = (base: string): MediaItem[] => [
   },
   {
     kind: 'audio',
-    src: `${base}/media/sample-tone.wav`,
+    src: asset('media/sample-tone.wav'),
     title: 'Calibration tone',
     artist: 'Workshop sounds',
-    artwork: `${base}/media/sample-artwork.svg`,
+    artwork: asset('media/sample-artwork.svg'),
     caption: 'Calibration tone — workshop sounds',
   },
   {

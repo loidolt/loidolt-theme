@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { base } from '$app/paths';
+  import { resolve } from '$app/paths';
   import { Button, PageHeader, Section } from '@loidolt/theme-svelte';
   import { builtInPresets } from '@loidolt/theme-tokens';
-  import { previewPath, schemes, type PresetName } from '$lib/presets.js';
+  import { schemes, type PresetName } from '$lib/presets.js';
   import { theme } from '$lib/theme.js';
 </script>
 
@@ -30,7 +30,7 @@
     {#if preset.description}<p class="docs-note">{preset.description}</p>{/if}
     <div class="docs-preset-frames">
       {#each schemes as scheme (scheme)}
-        {@const href = `${base}${previewPath(name, scheme)}`}
+        {@const href = resolve('/preview/[preset]/[scheme]', { preset: name, scheme })}
         <figure class="docs-preset-frame">
           <iframe src={href} title={`${preset.label} preset, ${scheme} scheme`} loading="lazy"
           ></iframe>

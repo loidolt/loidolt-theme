@@ -8,6 +8,9 @@
     "packages/*",
     "examples/*"
   ],
+  "overrides": {
+    "@sveltejs/kit": "^3.2.0"
+  },
   "engines": {
     "node": ">=22"
   },
