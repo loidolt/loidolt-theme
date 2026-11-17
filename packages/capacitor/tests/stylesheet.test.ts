@@ -53,3 +53,57 @@ describe('styles.css', () => {
     expect(rule![1]).toContain('touch-action: manipulation;');
   });
 });
+
+/** The declarations of the one rule whose selector is exactly `selector`. */
+const rule = (selector: string) => {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const css = sheet.replace(/\/\*[\s\S]*?\*\//g, '');
+  const found = css.match(new RegExp(`(?:^|\\})\\s*${escaped} \\{([^}]*)\\}`));
+  expect(found, selector).not.toBeNull();
+  return found![1];
+};
+
+describe('styles.css on iPhone Duo', () => {
+  it('widens the safe area on the bar edge into a strip every inset reader clears', () => {
+    for (const side of ['right', 'left']) {
+      const body = rule(`:where(:root[data-bar-edge='${side}'])`);
+      expect(body).toContain(
+        `--ldt-bar-width: max(var(--safe-area-inset-${side}, env(safe-area-inset-${side}, 0px)), 4.5rem);`
+      );
+      expect(body).toContain(`--ldt-safe-${side}: var(--ldt-bar-width);`);
+    }
+  });
+
+  it('stacks the TabBar at the foot of the strip and Topbar actions below what is reserved', () => {
+    const tabs = rule(':where([data-bar-edge] .ldt-app-shell > .ldt-tab-bar)');
+    expect(tabs).toContain('position: fixed;');
+    expect(tabs).toContain('flex-direction: column;');
+    expect(tabs).toContain('justify-content: flex-end;');
+    expect(tabs).toContain('width: var(--ldt-bar-width);');
+    const actions = rule(':where([data-bar-edge] .ldt-topbar__actions)');
+    expect(actions).toContain('top: var(--ldt-bar-start, 0px);');
+    expect(actions).toContain('flex-direction: column;');
+    // The current tab's indicator faces the content, not the screen edge.
+    expect(
+      rule(":where([data-bar-edge='right'] .ldt-tab-bar__item[aria-current='page'])")
+    ).toContain('inset var(--loidolt-stroke-indicator) 0 0');
+  });
+
+  it('moves centred overlays to one side of the fold, and keeps side drawers short of it', () => {
+    const dialog = rule(":where([data-fold='vertical'] .ldt-dialog)");
+    expect(dialog).toContain('left: calc(var(--ldt-fold-start) / 2);');
+    expect(dialog).toContain('calc(var(--ldt-fold-start) - 2rem)');
+    expect(rule(":where([data-fold='horizontal'] .ldt-dialog)")).toContain(
+      'top: calc(var(--ldt-fold-start) / 2);'
+    );
+    expect(
+      rule(":where([data-fold='vertical'] :is(.ldt-drawer--top, .ldt-drawer--bottom))")
+    ).toContain('width: var(--ldt-fold-start);');
+    expect(rule(":where([data-fold='vertical'] .ldt-drawer--right)")).toContain(
+      'calc(100vw - var(--ldt-fold-end))'
+    );
+    expect(rule(":where([data-fold='vertical'] .ldt-toast-viewport)")).toContain(
+      'var(--ldt-fold-end)'
+    );
+  });
+});
