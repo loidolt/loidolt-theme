@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { base } from '$app/paths';
+  import { resolve } from '$app/paths';
   import {
     Alert,
     Badge,
@@ -241,7 +241,7 @@ expect(auditContrast(studio.resolved.dark).filter((check) => !check.pass)).toEqu
     and typographic voice of every component. Presets and colour schemes are independent axes —
     <code>data-preset</code> and <code>data-theme</code> — so each preset has a tested light and
     dark side. Use the style picker in the top bar to switch this whole site, or compare every
-    preset in both schemes on the <a href={`${base}/presets`}>Presets</a> page.
+    preset in both schemes on the <a href={resolve('/presets')}>Presets</a> page.
   </p>
   <Demo label="The same components under each built-in preset">
     <div class="docs-theme-pair">

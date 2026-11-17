@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { base } from '$app/paths';
+  import { resolve } from '$app/paths';
   import { Breadcrumbs } from '@loidolt/theme-svelte';
 </script>
 
@@ -7,14 +7,14 @@
   <Breadcrumbs
     label="Component hierarchy"
     items={[
-      { label: 'Components', href: `${base}/components` },
-      { label: 'Navigation', href: `${base}/components` },
+      { label: 'Components', href: resolve('/components') },
+      { label: 'Navigation', href: resolve('/components') },
       { label: 'Breadcrumbs' },
     ]}
   />
   <Breadcrumbs
     label="Foundation hierarchy"
     separator=">"
-    items={[{ label: 'Foundations', href: `${base}/foundations` }, { label: 'Tokens' }]}
+    items={[{ label: 'Foundations', href: resolve('/foundations') }, { label: 'Tokens' }]}
   />
 </div>

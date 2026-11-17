@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Component } from 'svelte';
-  import { base } from '$app/paths';
+  import { resolve } from '$app/paths';
   import { Alert, Breadcrumbs, PageHeader, Section } from '@loidolt/theme-svelte';
   import Demo from '$lib/components/Demo.svelte';
   import PropsTable from '$lib/components/PropsTable.svelte';
@@ -33,8 +33,8 @@
 
 <Breadcrumbs
   items={[
-    { label: 'Components', href: `${base}/components` },
-    { label: data.entry.group, href: `${base}/components#${data.entry.group.toLowerCase()}` },
+    { label: 'Components', href: resolve('/components') },
+    { label: data.entry.group, href: resolve(`/components#${data.entry.group.toLowerCase()}`) },
     { label: data.entry.name },
   ]}
 />

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { base } from '$app/paths';
+  import { resolve } from '$app/paths';
   import { Badge, Button, Card, Section } from '@loidolt/theme-svelte';
   import CodeBlock from '$lib/components/CodeBlock.svelte';
   import { entries, packageOf } from '$lib/registry.js';
@@ -43,9 +43,9 @@ ${endScript}
       Warm surfaces, sharp edges, clear hierarchy, and no Tailwind contract.
     </p>
     <div class="ldt-cluster docs-hero__actions">
-      <Button variant="primary" href={`${base}/components`}>Browse components</Button>
-      <Button variant="quiet" href={`${base}/foundations`}>Foundations</Button>
-      <Button variant="text" href={`${base}/patterns`}>Patterns</Button>
+      <Button variant="primary" href={resolve('/components')}>Browse components</Button>
+      <Button variant="quiet" href={resolve('/foundations')}>Foundations</Button>
+      <Button variant="text" href={resolve('/patterns')}>Patterns</Button>
     </div>
   </div>
   <div class="docs-stats" aria-label="Library facts">

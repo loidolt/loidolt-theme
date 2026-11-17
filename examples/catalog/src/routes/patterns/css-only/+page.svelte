@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { base } from '$app/paths';
+  import { resolve } from '$app/paths';
   import { PageHeader, Section } from '@loidolt/theme-svelte';
   import CodeBlock from '$lib/components/CodeBlock.svelte';
   import example from '$lib/examples/standalone-report.html?raw';
@@ -75,7 +75,7 @@ Path("out/report.html").write_text(
     <code>ldt-card</code>, parts such as <code>ldt-card__title</code>, and modifiers such as
     <code>ldt-badge--success</code>. Write the same markup by hand and it looks the same. The
     quickest way to get it right is to open a component's page in
-    <a href={`${base}/components`}>Components</a> and copy the rendered HTML from the browser's inspector,
+    <a href={resolve('/components')}>Components</a> and copy the rendered HTML from the browser's inspector,
     keeping its ARIA attributes. Static pieces (cards, stats, badges, alerts, tables, prose, page headers
     and the layout utilities) need nothing else; anything that opens, closes or moves focus needs the
     script the Svelte component would have run.
@@ -96,7 +96,7 @@ Path("out/report.html").write_text(
     after the standalone CSS, then set <code>data-preset</code> on <code>&lt;html&gt;</code>. The
     resolved files live in <code>@loidolt/theme-tokens</code>; the
     <code>@loidolt/theme-styles/presets/*</code> entries only <code>@import</code> them. See
-    <a href={`${base}/presets`}>Presets</a> for what each one changes.
+    <a href={resolve('/presets')}>Presets</a> for what each one changes.
   </p>
   <CodeBlock code={presets} />
 </Section>

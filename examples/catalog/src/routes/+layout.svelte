@@ -4,7 +4,7 @@
   import { tick } from 'svelte';
   import { SvelteMap } from 'svelte/reactivity';
   import { afterNavigate, goto } from '$app/navigation';
-  import { base } from '$app/paths';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import {
     AppShell,
@@ -37,13 +37,13 @@
   let navOpen = $state(false);
 
   const sections = [
-    { href: `${base}/`, label: 'Overview' },
-    { href: `${base}/foundations`, label: 'Foundations' },
-    { href: `${base}/presets`, label: 'Presets' },
-    { href: `${base}/patterns`, label: 'Patterns' },
-    { href: `${base}/patterns/native`, label: 'Native' },
-    { href: `${base}/patterns/desktop`, label: 'Desktop' },
-    { href: `${base}/components`, label: 'Components' },
+    { href: resolve('/'), label: 'Overview' },
+    { href: resolve('/foundations'), label: 'Foundations' },
+    { href: resolve('/presets'), label: 'Presets' },
+    { href: resolve('/patterns'), label: 'Patterns' },
+    { href: resolve('/patterns/native'), label: 'Native' },
+    { href: resolve('/patterns/desktop'), label: 'Desktop' },
+    { href: resolve('/components'), label: 'Components' },
   ];
 
   const current = $derived(page.url.pathname.replace(/\/$/, ''));
@@ -54,7 +54,7 @@
    * is an outline: every group collapses to its name and count, the one holding the current page
    * opens itself, and a filter narrows the whole list at once.
    */
-  const componentHref = (slug: string) => `${base}/components/${slug}`;
+  const componentHref = (slug: string) => resolve('/components/[slug]', { slug });
   const currentGroup = $derived(
     entries.find((entry) => isCurrent(componentHref(entry.slug)))?.group
   );
@@ -182,7 +182,7 @@
           navigation={compact.matches ? undefined : sectionLinks}
         >
           {#snippet brand()}
-            <Brand name="Loidolt" meta={`Theme ${version}`} href={`${base}/`} />
+            <Brand name="Loidolt" meta={`Theme ${version}`} href={resolve('/')} />
           {/snippet}
           {#snippet actions()}
             {#if compact.matches}

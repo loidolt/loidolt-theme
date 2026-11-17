@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { base } from '$app/paths';
+  import { asset } from '$app/paths';
   import { MapSource, MapView, RasterLayer } from '@loidolt/theme-maps';
   import { Slider } from '@loidolt/theme-svelte';
   import { portland } from '$lib/sample-geo.js';
@@ -13,7 +13,7 @@
       id="site-plan"
       spec={{
         type: 'image',
-        url: `${base}/media/sample-plan.png`,
+        url: asset('media/sample-plan.png'),
         coordinates: [
           [-122.69, 45.532],
           [-122.662, 45.532],

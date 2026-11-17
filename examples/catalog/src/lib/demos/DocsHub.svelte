@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { base } from '$app/paths';
+  import { resolve } from '$app/paths';
   import { DocsHub } from '@loidolt/theme-docs';
 </script>
 
@@ -12,13 +12,13 @@
       items: [
         {
           title: 'Tokens and type',
-          href: `${base}/foundations`,
+          href: resolve('/foundations'),
           description: 'Colour, spacing and type, with their roles.',
           eyebrow: 'Guide',
         },
         {
           title: 'Patterns',
-          href: `${base}/patterns`,
+          href: resolve('/patterns'),
           description: 'Layouts assembled from the components.',
           eyebrow: 'Guide',
         },
@@ -29,12 +29,12 @@
       items: [
         {
           title: 'Charts',
-          href: `${base}/components/chart`,
+          href: resolve('/components/[slug]', { slug: 'chart' }),
           description: 'Themed, accessible ECharts.',
         },
         {
           title: 'Maps',
-          href: `${base}/components/map-view`,
+          href: resolve('/components/[slug]', { slug: 'map-view' }),
           description: 'Themed, accessible MapLibre maps.',
         },
         {

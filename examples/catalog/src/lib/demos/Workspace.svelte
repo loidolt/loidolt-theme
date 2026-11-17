@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { base } from '$app/paths';
   import { Button, Sidebar, Switch, Workspace } from '@loidolt/theme-svelte';
   import { sampleMedia } from '$lib/sample-media.js';
 
@@ -9,7 +8,7 @@
   const notesPercent = $derived(Math.round(reviewSize));
 
   // The first sample is a still: the ridge relief.
-  const plate = sampleMedia(base).find((item) => item.kind === 'image')!;
+  const plate = sampleMedia().find((item) => item.kind === 'image')!;
 </script>
 
 <div class="ldt-cluster" style="margin-bottom:0.75rem">

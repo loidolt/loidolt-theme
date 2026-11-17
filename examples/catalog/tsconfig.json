@@ -1,6 +1,7 @@
 {
   // SvelteKit generates the real base; the shared options are layered on top of it.
-  "extends": "./.svelte-kit/tsconfig.json",
+  "extends": "$app/tsconfig",
+  "include": ["src", "*"],
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
