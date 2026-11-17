@@ -39,6 +39,24 @@
   color: var(--loidolt-text);
   background: transparent;
 }
+/*
+ * iOS sizes a native date or time control by its content box whatever `box-sizing` says, so
+ * `width: 100%` plus the padding ran past its column (iOS Safari and every Capacitor web view).
+ * Without the native appearance it sizes like any input; tapping it still opens the picker.
+ */
+.ldt-input:is(
+  [type='date'],
+  [type='time'],
+  [type='datetime-local'],
+  [type='month'],
+  [type='week']
+) {
+  appearance: none;
+}
+/* iOS centres the value of a native date or time control; keep it where the other fields start. */
+.ldt-input::-webkit-date-and-time-value {
+  text-align: start;
+}
 .ldt-input--boxed,
 .ldt-select--boxed,
 .ldt-textarea--boxed,
