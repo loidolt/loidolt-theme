@@ -89,6 +89,33 @@ describe('styles.css on iPhone Duo', () => {
     ).toContain('inset var(--loidolt-stroke-indicator) 0 0');
   });
 
+  it("lines the strip's controls up in the system's column, leaving the rest at the bezel", () => {
+    for (const side of ['right', 'left']) {
+      expect(rule(`:where(:root[data-bar-edge='${side}'])`)).toContain(
+        '--ldt-bar-outer: calc(var(--ldt-bar-width) - 4.5rem);'
+      );
+      expect(rule(`:where([data-bar-edge='${side}'] .ldt-topbar__actions)`)).toContain(
+        `padding-${side}: var(--ldt-bar-outer);`
+      );
+      expect(rule(`:where([data-bar-edge='${side}'] .ldt-app-shell > .ldt-tab-bar)`)).toMatch(
+        /padding: 0 .*var\(--ldt-bar-outer\)/
+      );
+    }
+  });
+
+  it('raises Topbar into the band beside a top corner cutout, short of the cutout', () => {
+    expect(rule(':where([data-top-cutout] .ldt-topbar)')).toContain(
+      '--ldt-safe-top: max(0px, calc(var(--ldt-cutout-height) - 2 * var(--loidolt-space-3) - 44px));'
+    );
+    expect(rule(":where([data-top-cutout='right'] .ldt-topbar)")).toContain(
+      'calc(var(--ldt-cutout-width) - var(--loidolt-pad-bar-x))'
+    );
+    // The status bar backdrop stays over the cutout rather than over the raised header.
+    expect(rule(':where([data-native-platform][data-top-cutout] body)::before')).toContain(
+      'width: var(--ldt-cutout-width);'
+    );
+  });
+
   it('moves centred overlays to one side of the fold, and keeps side drawers short of it', () => {
     const dialog = rule(":where([data-fold='vertical'] .ldt-dialog)");
     expect(dialog).toContain('left: calc(var(--ldt-fold-start) / 2);');

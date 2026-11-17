@@ -4,6 +4,7 @@ import {
   createDeviceLayout,
   foldOf,
   setupCapacitor,
+  topCutoutOf,
   type DeviceLayoutSnapshot,
 } from '../src/lib/index.js';
 import { fakeDeviceLayout, flush, platform, registeredPlugins } from './fakes.js';
@@ -28,6 +29,43 @@ const partlyOpen: DeviceLayoutSnapshot = {
   regions: [{ kind: 'division', x: 455, y: 0, width: 41, height: 669, margins }],
   hinge: { status: 'partially-open', angle: 100 },
 };
+
+/** The inner screen open in portrait: the camera and status bar in the top right corner. */
+const portrait: DeviceLayoutSnapshot = {
+  width: 669,
+  height: 951,
+  regions: [{ kind: 'occlusion', x: 525, y: 0, width: 144, height: 82, margins }],
+  hinge: { status: 'fully-open', angle: 180 },
+};
+
+describe('topCutoutOf', () => {
+  it('reads a cutout in one top corner while the bars stay horizontal', () => {
+    expect(topCutoutOf(portrait)).toEqual({ side: 'right', width: 144, height: 82 });
+    const mirrored = {
+      ...portrait,
+      regions: [{ kind: 'occlusion' as const, x: 0, y: 0, width: 144, height: 82, margins }],
+    };
+    expect(topCutoutOf(mirrored)).toEqual({ side: 'left', width: 144, height: 82 });
+  });
+
+  it('ignores a vertical bar, an island in the middle, and both corners taken', () => {
+    expect(topCutoutOf(closed)).toBeNull();
+    const island = {
+      ...portrait,
+      regions: [{ kind: 'occlusion' as const, x: 270, y: 11, width: 126, height: 37, margins }],
+    };
+    expect(topCutoutOf(island)).toBeNull();
+    const both = {
+      ...portrait,
+      regions: [
+        ...portrait.regions,
+        { kind: 'occlusion' as const, x: 0, y: 0, width: 60, height: 40, margins },
+      ],
+    };
+    expect(topCutoutOf(both)).toBeNull();
+    expect(topCutoutOf(partlyOpen)).toBeNull();
+  });
+});
 
 describe('foldOf and barStartOf', () => {
   it('reads the fold as a band across the axis it divides', () => {
@@ -86,6 +124,21 @@ describe('createDeviceLayout', () => {
     expect(variable('--ldt-fold-start')).toBe('455px');
     expect(variable('--ldt-fold-end')).toBe('496px');
     expect(root).toHaveAttribute('data-hinge', 'partially-open');
+    layout.destroy();
+  });
+
+  it('marks a top corner cutout in portrait, and clears it on rotating back', async () => {
+    platform.current = 'ios';
+    const DeviceLayout = fakeDeviceLayout(portrait);
+    const layout = createDeviceLayout({ DeviceLayout });
+    await flush();
+    expect(root).toHaveAttribute('data-top-cutout', 'right');
+    expect(variable('--ldt-cutout-width')).toBe('144px');
+    expect(variable('--ldt-cutout-height')).toBe('82px');
+    expect(root).not.toHaveAttribute('data-bar-edge');
+    DeviceLayout.emit('change', closed);
+    expect(root).not.toHaveAttribute('data-top-cutout');
+    expect(variable('--ldt-cutout-width')).toBe('');
     layout.destroy();
   });
 

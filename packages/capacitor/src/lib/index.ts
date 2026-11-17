@@ -6,7 +6,7 @@ export { syncNativeAppearance, systemBarStyleFor } from './appearance.js';
 export type { NativeAppearanceOptions, SystemBarStyle } from './appearance.js';
 export { closeTopLayer, handleBackButton } from './back-button.js';
 export type { BackButtonEvent, BackButtonOptions } from './back-button.js';
-export { barStartOf, createDeviceLayout, foldOf } from './device-layout.svelte.js';
+export { barStartOf, createDeviceLayout, foldOf, topCutoutOf } from './device-layout.svelte.js';
 export type {
   DeviceLayout,
   DeviceLayoutOptions,

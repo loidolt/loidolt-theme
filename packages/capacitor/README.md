@@ -191,13 +191,15 @@ how far to stay from each edge, not that bars went to the side, nor where the fo
 device is partly open. `createDeviceLayout` reads them natively (iOS 27.1, through the plugin
 bundled with this package) and writes them on `<html>`:
 
-| Written                                  | When                                                                                    |
-| ---------------------------------------- | --------------------------------------------------------------------------------------- |
-| `data-bar-edge="left"` or `"right"`      | The system puts bars vertically on that side. A physical side, in every text direction. |
-| `--ldt-bar-start`                        | With it: how far down that strip your controls can start, below the camera and status   |
-| `data-fold="vertical"` or `"horizontal"` | The device is partly open                                                               |
-| `--ldt-fold-start`, `--ldt-fold-end`     | With it: the band across the fold to keep controls out of; taps there may not register  |
-| `data-hinge`                             | `closed`, `partially-open` or `fully-open`, on a device with a hinge                    |
+| Written                                     | When                                                                                    |
+| ------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `data-bar-edge="left"` or `"right"`         | The system puts bars vertically on that side. A physical side, in every text direction. |
+| `--ldt-bar-start`                           | With it: how far down that strip your controls can start, below the camera and status   |
+| `data-fold="vertical"` or `"horizontal"`    | The device is partly open                                                               |
+| `--ldt-fold-start`, `--ldt-fold-end`        | With it: the band across the fold to keep controls out of; taps there may not register  |
+| `data-top-cutout="left"` or `"right"`       | Bars stay horizontal and the camera and status bar take that top corner                 |
+| `--ldt-cutout-width`, `--ldt-cutout-height` | With it: the cutout's size, from the screen edge and from the top                       |
+| `data-hinge`                                | `closed`, `partially-open` or `fully-open`, on a device with a hinge                    |
 
 `current` holds the whole report, the reserved regions included, for layouts the attributes
 don't cover. `setupCapacitor` turns it on unless `deviceLayout: false`. Nothing is written on
@@ -213,12 +215,17 @@ system without code of its own:
   `AppShell`, `Topbar`, toasts and drawers all clear. `Topbar`'s actions move into the strip
   below the camera and status bar, and the `TabBar` runs down it from the foot, within reach of
   the thumb. `Topbar` stays at the top of the content as a slim header with the brand and
-  navigation. The current tab's accent edge faces the content.
+  navigation. The current tab's accent edge faces the content. The strip's controls share the
+  4.5rem column iOS centres its clock and status icons in, on the content side of the strip, so
+  they sit in line under them.
+- **A cutout in a top corner** (the inner screen in portrait). `Topbar` moves up into the band
+  beside the camera and status bar, ending where the cutout ends and stopping short of it, so its
+  row lines up with the clock instead of starting below a blank strip.
 - **The fold.** Dialogs move to the half before the fold, as the system's alerts do; top and
   bottom drawers cover that half only; side drawers stop short of it; toasts stay in the half
   after it.
 
-Inner screen in portrait, every other device and the browser are unchanged.
+Every other device and the browser are unchanged.
 
 ### Haptics
 
