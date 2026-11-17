@@ -24,6 +24,7 @@ public class DeviceLayoutPlugin: CAPPlugin, CAPBridgedPlugin {
     private var hingeAngle: Double?
     private var lastLayout: JSObject?
     private var publishScheduled = false
+    private var settleGeneration = 0
 
     override public func load() {
         Task { @MainActor [weak self] in self?.install() }
@@ -47,7 +48,7 @@ public class DeviceLayoutPlugin: CAPPlugin, CAPBridgedPlugin {
         view.isUserInteractionEnabled = false
         view.isAccessibilityElement = false
         view.backgroundColor = .clear
-        view.onChange = { [weak self] in self?.schedulePublish() }
+        view.onChange = { [weak self] in self?.layoutChanged() }
         webView.insertSubview(view, at: 0)
         observer = view
 
@@ -68,10 +69,35 @@ public class DeviceLayoutPlugin: CAPPlugin, CAPBridgedPlugin {
                     self.hingeStatus = nil
                     self.hingeAngle = nil
                 }
-                self.schedulePublish()
+                self.layoutChanged()
             })
         }
         schedulePublish()
+    }
+
+    /// Something the layout depends on changed: report it, and look again as it settles.
+    @MainActor
+    private func layoutChanged() {
+        schedulePublish()
+        scheduleSettleChecks()
+    }
+
+    /// UIKit moves the reserved regions a moment after the change that moves them, with nothing to
+    /// say so: after a rotation the web view is laid out at its new size about a second before the
+    /// camera's region turns with it, so the page would keep the old orientation's region. Look
+    /// again a few times after each change; a newer change starts over, and `schedulePublish` sends
+    /// nothing when the layout is the same.
+    @MainActor
+    private func scheduleSettleChecks() {
+        settleGeneration &+= 1
+        let generation = settleGeneration
+        Task { @MainActor [weak self] in
+            for milliseconds: UInt64 in [500, 500, 1_000] {
+                try? await Task.sleep(nanoseconds: milliseconds * 1_000_000)
+                guard let self, self.settleGeneration == generation else { return }
+                self.schedulePublish()
+            }
+        }
     }
 
     /// Several changes arrive together when the device folds; send one event after them.
