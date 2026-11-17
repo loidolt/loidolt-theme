@@ -6,6 +6,16 @@ export { syncNativeAppearance, systemBarStyleFor } from './appearance.js';
 export type { NativeAppearanceOptions, SystemBarStyle } from './appearance.js';
 export { closeTopLayer, handleBackButton } from './back-button.js';
 export type { BackButtonEvent, BackButtonOptions } from './back-button.js';
+export { barStartOf, createDeviceLayout, foldOf } from './device-layout.svelte.js';
+export type {
+  DeviceLayout,
+  DeviceLayoutOptions,
+  DeviceLayoutPlugin,
+  DeviceLayoutSnapshot,
+  DeviceRect,
+  DeviceRegion,
+  HingeStatus,
+} from './device-layout.svelte.js';
 export { createNativeKeyboard } from './keyboard.svelte.js';
 export type { NativeKeyboard, NativeKeyboardOptions } from './keyboard.svelte.js';
 export { createHaptics, SELECTION_TARGETS, withHaptics } from './haptics.js';

@@ -6,8 +6,8 @@
   "description": "The catalog site, unchanged, inside a Capacitor 8 shell with @loidolt/theme-capacitor, for testing every component in the iOS Simulator",
   "scripts": {
     "dev": "npm run props -w @loidolt/theme-catalog && vite dev --host 0.0.0.0",
-    "build": "npm run props -w @loidolt/theme-catalog && svelte-kit sync && vite build",
-    "types": "npm run props -w @loidolt/theme-catalog && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "build": "npm run props -w @loidolt/theme-catalog && (cd ../catalog && svelte-kit sync) && svelte-kit sync && vite build",
+    "types": "npm run props -w @loidolt/theme-catalog && (cd ../catalog && svelte-kit sync) && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "ios:sync": "npm run build && cap sync ios",
     "ios:run": "npm run build && cap run ios",
     "ios:open": "cap open ios"

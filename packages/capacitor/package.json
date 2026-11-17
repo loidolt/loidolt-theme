@@ -20,11 +20,18 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist"
+    "dist",
+    "ios/Sources",
+    "Package.swift"
   ],
   "sideEffects": [
     "**/*.css"
   ],
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    }
+  },
   "scripts": {
     "build": "svelte-package -i src/lib -o dist && cp src/styles.css dist/styles.css",
     "prepack": "npm run build",

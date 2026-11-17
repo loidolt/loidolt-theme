@@ -39,6 +39,29 @@ describe.skipIf(!built)('published package shape', () => {
   });
 });
 
+describe('native iOS half', () => {
+  it('is declared for `cap sync` and published with the package', async () => {
+    const pkg = JSON.parse(await readFile(path.join(packageRoot, 'package.json'), 'utf8'));
+    expect(pkg.capacitor).toEqual({ ios: { src: 'ios' } });
+    expect(pkg.files).toEqual(expect.arrayContaining(['Package.swift', 'ios/Sources']));
+    const manifest = await readFile(path.join(packageRoot, 'Package.swift'), 'utf8');
+    const source = manifest.match(/path: "([^"]+)"/)?.[1];
+    expect(source).toBe('ios/Sources/DeviceLayoutPlugin');
+    expect(existsSync(path.join(packageRoot, source!, 'DeviceLayoutPlugin.swift'))).toBe(true);
+  });
+
+  it('answers to the name the JavaScript side registers', async () => {
+    const swift = await readFile(
+      path.join(packageRoot, 'ios/Sources/DeviceLayoutPlugin/DeviceLayoutPlugin.swift'),
+      'utf8'
+    );
+    const ts = await readFile(path.join(packageRoot, 'src/lib/device-layout.svelte.ts'), 'utf8');
+    expect(swift).toMatch(/jsName = "DeviceLayout"/);
+    expect(ts).toMatch(/registerPlugin<DeviceLayoutPlugin>\('DeviceLayout'\)/);
+    expect(swift).toMatch(/notifyListeners\("change"/);
+  });
+});
+
 it('reports when the dist smoke test was skipped', () => {
   if (!built) console.warn('dist/ not built — package-shape assertions skipped');
   expect(true).toBe(true);

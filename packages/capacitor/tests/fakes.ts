@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+import type { DeviceLayoutSnapshot } from '../src/lib/device-layout.svelte.js';
 import type { PickedNativeFile } from '../src/lib/types.js';
 
 /**
@@ -13,7 +14,23 @@ export const systemBars = {
   setStyle: vi.fn(async (_options: { style: string; bar?: string }) => {}),
 };
 
+/** Plugins a test registers by name, for code that calls `registerPlugin` itself. */
+export const registeredPlugins = new Map<string, unknown>();
+
+/** What `registerPlugin` hands back for a plugin with no native half: every call rejects. */
+const unimplemented = () =>
+  new Proxy(
+    {},
+    {
+      get: () =>
+        vi.fn(async () => {
+          throw new Error('"plugin" is not implemented on ios');
+        }),
+    }
+  );
+
 export const core = {
+  registerPlugin: vi.fn((name: string) => registeredPlugins.get(name) ?? unimplemented()),
   Capacitor: {
     isNativePlatform: () => platform.current !== 'web',
     getPlatform: () => platform.current,
@@ -158,5 +175,15 @@ export function fakeFilesystem(publicStorage = 'granted', afterRequest = publicS
     }),
     checkPermissions: vi.fn(async () => ({ publicStorage })),
     requestPermissions: vi.fn(async () => ({ publicStorage: afterRequest })),
+  };
+}
+
+/** The bundled `DeviceLayout` plugin, reporting `layout` until a test emits a change. */
+export function fakeDeviceLayout(
+  layout: DeviceLayoutSnapshot = { width: 0, height: 0, regions: [] }
+) {
+  return {
+    ...emitter(),
+    getLayout: vi.fn(async () => layout),
   };
 }
