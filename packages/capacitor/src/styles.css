@@ -48,6 +48,133 @@
 }
 
 /*
+ * Bars on the side (`createDeviceLayout`'s `data-bar-edge`). On iPhone Duo's cover screen, and on
+ * its inner screen in landscape, iOS moves toolbars and tab bars into a strip on one edge, below
+ * the camera and status bar. The strip is that edge's safe area, widened if need be to fit a tab,
+ * and every `--ldt-safe-*` reader (AppShell, Topbar, toasts, drawers) then clears it as a whole.
+ * Top to bottom it holds what the system reserves (`--ldt-bar-start`), Topbar's actions, and the
+ * TabBar at the foot, within reach of the thumb. Topbar stays as a slim header in the content.
+ */
+:where(:root[data-bar-edge='right']) {
+  --ldt-bar-width: max(var(--safe-area-inset-right, env(safe-area-inset-right, 0px)), 4.5rem);
+  --ldt-safe-right: var(--ldt-bar-width);
+}
+:where(:root[data-bar-edge='left']) {
+  --ldt-bar-width: max(var(--safe-area-inset-left, env(safe-area-inset-left, 0px)), 4.5rem);
+  --ldt-safe-left: var(--ldt-bar-width);
+}
+/* The strip's surface, full height, under the system's items and the page's own. */
+:where([data-bar-edge] body)::after {
+  content: '';
+  position: fixed;
+  inset-block: 0;
+  z-index: var(--loidolt-z-sticky);
+  width: var(--ldt-bar-width);
+  background: var(--loidolt-surface);
+  pointer-events: none;
+}
+:where([data-bar-edge='right'] body)::after {
+  right: 0;
+  border-left: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+:where([data-bar-edge='left'] body)::after {
+  left: 0;
+  border-right: var(--loidolt-border-width) solid var(--loidolt-border);
+}
+:where([data-bar-edge] .ldt-topbar__actions) {
+  position: fixed;
+  top: var(--ldt-bar-start, 0px);
+  z-index: calc(var(--loidolt-z-sticky) + 1);
+  width: var(--ldt-bar-width);
+  margin: 0;
+  padding-block: var(--loidolt-space-2);
+  flex-direction: column;
+  overflow: visible;
+}
+:where([data-bar-edge='right'] .ldt-topbar__actions) {
+  right: 0;
+}
+:where([data-bar-edge='left'] .ldt-topbar__actions) {
+  left: 0;
+}
+:where([data-bar-edge] .ldt-app-shell > .ldt-tab-bar) {
+  position: fixed;
+  bottom: 0;
+  z-index: calc(var(--loidolt-z-sticky) + 1);
+  width: var(--ldt-bar-width);
+  /* Room enough below the system's items for a few of Topbar's actions above the tabs. */
+  max-height: calc(100dvh - var(--ldt-bar-start, 0px) - 6rem);
+  overflow-y: auto;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 0 var(--ldt-safe-bottom);
+  border-top: 0;
+  background: transparent;
+}
+:where([data-bar-edge='right'] .ldt-app-shell > .ldt-tab-bar) {
+  right: 0;
+}
+:where([data-bar-edge='left'] .ldt-app-shell > .ldt-tab-bar) {
+  left: 0;
+}
+:where([data-bar-edge] .ldt-tab-bar__item) {
+  flex: none;
+}
+/* The current tab's indicator stays on the edge facing the content. */
+:where([data-bar-edge='right'] .ldt-tab-bar__item[aria-current='page']) {
+  box-shadow: inset var(--loidolt-stroke-indicator) 0 0 var(--loidolt-accent);
+}
+:where([data-bar-edge='left'] .ldt-tab-bar__item[aria-current='page']) {
+  box-shadow: inset calc(-1 * var(--loidolt-stroke-indicator)) 0 0 var(--loidolt-accent);
+}
+/* With the TabBar out of the grid, the page is the last row and clears the bottom itself. Only a
+   full-screen shell has bars at the side, and its page row is `<main>`. */
+:where([data-bar-edge] .ldt-app-shell > main) {
+  padding-bottom: var(--ldt-safe-bottom, env(safe-area-inset-bottom, 0px));
+}
+
+/*
+ * The fold (`data-fold`, with `--ldt-fold-start` and `--ldt-fold-end`), while the device is partly
+ * open. Taps over it may not register, so what the theme centres on the screen moves to one side
+ * of it, as the system's alerts and sheets do: the first half, or the second for what already
+ * sits at the end (toasts). Side drawers stop short of it.
+ */
+:where([data-fold='vertical'] .ldt-dialog) {
+  left: calc(var(--ldt-fold-start) / 2);
+  width: min(var(--ldt-dialog-width, 34rem), calc(var(--ldt-fold-start) - 2rem));
+}
+:where([data-fold='horizontal'] .ldt-dialog) {
+  top: calc(var(--ldt-fold-start) / 2);
+  max-height: calc(var(--ldt-fold-start) - 2rem);
+}
+:where([data-fold='vertical'] :is(.ldt-drawer--top, .ldt-drawer--bottom)) {
+  right: auto;
+  width: var(--ldt-fold-start);
+  /* It no longer reaches the right edge, so there is no inset there to clear. */
+  padding-right: 0;
+}
+:where([data-fold='vertical'] .ldt-drawer--left) {
+  width: min(var(--ldt-drawer-size, 20rem), var(--ldt-fold-start));
+}
+:where([data-fold='vertical'] .ldt-drawer--right) {
+  width: min(var(--ldt-drawer-size, 20rem), calc(100vw - var(--ldt-fold-end)));
+}
+:where([data-fold='horizontal'] .ldt-drawer--top) {
+  height: min(var(--ldt-drawer-size, 20rem), var(--ldt-fold-start));
+}
+:where([data-fold='horizontal'] .ldt-drawer--bottom) {
+  height: min(var(--ldt-drawer-size, 20rem), calc(100dvh - var(--ldt-fold-end)));
+}
+:where([data-fold='vertical'] .ldt-toast-viewport) {
+  width: min(
+    24rem,
+    calc(
+      100vw - var(--ldt-fold-end) - 2rem - var(--ldt-safe-right, env(safe-area-inset-right, 0px))
+    )
+  );
+}
+
+/*
  * Native touch manners (`data-native-platform`, written by `markNativePlatform`): no grey flash
  * on tap, and long-pressing a control does not select its label or open the link callout.
  * Content stays selectable. A double tap does not zoom the page, as it would in a browser: two

@@ -206,6 +206,20 @@ installing this package. See Apple's
 [Designing for iPhone Duo](https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo)
 for where controls belong.
 
+`styles.css` acts on them, so an app built on `AppShell`, `Topbar` and `TabBar` follows the
+system without code of its own:
+
+- **Bars on the side.** The safe area on the bar edge widens into a strip, at least 4.5rem, that
+  `AppShell`, `Topbar`, toasts and drawers all clear. `Topbar`'s actions move into the strip
+  below the camera and status bar, and the `TabBar` runs down it from the foot, within reach of
+  the thumb. `Topbar` stays at the top of the content as a slim header with the brand and
+  navigation. The current tab's accent edge faces the content.
+- **The fold.** Dialogs move to the half before the fold, as the system's alerts do; top and
+  bottom drawers cover that half only; side drawers stop short of it; toasts stay in the half
+  after it.
+
+Inner screen in portrait, every other device and the browser are unchanged.
+
 ### Haptics
 
 `install()` ticks on activation of switches, checkboxes, radios, tabs, toggle buttons, options
