@@ -60,6 +60,9 @@ npm install @capacitor/app @capacitor/keyboard @capacitor/haptics @capacitor/pre
 | `@capacitor/filesystem`             | Saving files to the device, and sharing a `File` or Blob natively        |
 | `@capacitor/status-bar`             | Only for Android apps that opt out of edge-to-edge                       |
 
+The package also has a small native iOS half for the device layout (below). `npx cap sync ios`
+adds it to the app's Swift package; it needs Xcode 27.1 or later to build.
+
 ## Set up
 
 Three pieces: the Capacitor config, the viewport, and one call in the root layout.
@@ -142,26 +145,27 @@ and `native.ready` settles once the theme is restored and the splash is gone.
 Each piece is also exported on its own, for apps that want only one or wire them differently.
 Every one returns a teardown (or a store with `destroy()`), and is a no-op outside a native shell.
 
-| Export                 | Does                                                                                                                          |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `syncNativeAppearance` | Bar icon styles from the `surface` role (configurable per bar), legacy Android status bar colour, iOS keyboard appearance     |
-| `handleBackButton`     | Android back: closes the top layer, then `onBack`, then history, then `atRoot` (`minimize`, `exit`, `none`)                   |
-| `closeTopLayer`        | Closes the innermost open overlay the way Escape does; returns whether something took it                                      |
-| `createNativeKeyboard` | `visible` and `height`, `data-keyboard="open"`, `--ldt-keyboard-height` and `--ldt-keyboard-inset` on `<html>`                |
-| `createHaptics`        | `impact(weight)`, `selection()`, `notify(variant)`, and `install()` for delegated feedback on controls                        |
-| `withHaptics`          | Wraps a toaster so status toasts play the matching notification pattern                                                       |
-| `persistTheme`         | Restores and mirrors a `createTheme` store through `Preferences`; `ready` settles once restored                               |
-| `createAppLifecycle`   | Reactive `active`; pauses playing media in the background; `onPause` and `onResume`                                           |
-| `handleDeepLinks`      | Universal links, app links and custom schemes into the app router (`deepLinkPath` maps the URL)                               |
-| `createNetworkStatus`  | Reactive `connected` and `type`; optional offline and back-online toasts                                                      |
-| `openExternalLinks`    | Other-origin links open in the in-app browser with a themed toolbar                                                           |
-| `hideSplashScreen`     | Lifts the splash after `until`, the fonts and a painted frame; no fade under reduced motion                                   |
-| `followSystemTextSize` | Applies the system text size, and re-reads it on resume; on iOS also `--ldt-text-zoom` on `<html>`                            |
-| `bridgeClipboard`      | Routes `navigator.clipboard.writeText` through the Clipboard plugin                                                           |
-| `createShare`          | `share(content)` through the native sheet, the Web Share API, then a download or the clipboard; `canShare(content?)`          |
-| `createFiles`          | `pick({ accept, multiple })` resolves `File`s from the native picker or a file input; `save(file)` to Documents or a download |
-| `markNativePlatform`   | `data-native-platform="ios"` or `"android"` on `<html>`, for platform-specific CSS                                            |
-| `nativePlatform`       | `'ios'`, `'android'` or `null`                                                                                                |
+| Export                 | Does                                                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `syncNativeAppearance` | Bar icon styles from the `surface` role (configurable per bar), legacy Android status bar colour, iOS keyboard appearance       |
+| `handleBackButton`     | Android back: closes the top layer, then `onBack`, then history, then `atRoot` (`minimize`, `exit`, `none`)                     |
+| `closeTopLayer`        | Closes the innermost open overlay the way Escape does; returns whether something took it                                        |
+| `createDeviceLayout`   | iPhone Duo's vertical bar edge, fold and reserved regions: `data-bar-edge`, `data-fold`, `data-hinge` and variables on `<html>` |
+| `createNativeKeyboard` | `visible` and `height`, `data-keyboard="open"`, `--ldt-keyboard-height` and `--ldt-keyboard-inset` on `<html>`                  |
+| `createHaptics`        | `impact(weight)`, `selection()`, `notify(variant)`, and `install()` for delegated feedback on controls                          |
+| `withHaptics`          | Wraps a toaster so status toasts play the matching notification pattern                                                         |
+| `persistTheme`         | Restores and mirrors a `createTheme` store through `Preferences`; `ready` settles once restored                                 |
+| `createAppLifecycle`   | Reactive `active`; pauses playing media in the background; `onPause` and `onResume`                                             |
+| `handleDeepLinks`      | Universal links, app links and custom schemes into the app router (`deepLinkPath` maps the URL)                                 |
+| `createNetworkStatus`  | Reactive `connected` and `type`; optional offline and back-online toasts                                                        |
+| `openExternalLinks`    | Other-origin links open in the in-app browser with a themed toolbar                                                             |
+| `hideSplashScreen`     | Lifts the splash after `until`, the fonts and a painted frame; no fade under reduced motion                                     |
+| `followSystemTextSize` | Applies the system text size, and re-reads it on resume; on iOS also `--ldt-text-zoom` on `<html>`                              |
+| `bridgeClipboard`      | Routes `navigator.clipboard.writeText` through the Clipboard plugin                                                             |
+| `createShare`          | `share(content)` through the native sheet, the Web Share API, then a download or the clipboard; `canShare(content?)`            |
+| `createFiles`          | `pick({ accept, multiple })` resolves `File`s from the native picker or a file input; `save(file)` to Documents or a download   |
+| `markNativePlatform`   | `data-native-platform="ios"` or `"android"` on `<html>`, for platform-specific CSS                                              |
+| `nativePlatform`       | `'ios'`, `'android'` or `null`                                                                                                  |
 
 ### Back button and overlays
 
@@ -177,6 +181,30 @@ With the default `native` resize mode the web view shrinks for the keyboard and 
 needed. With `keyboardResize: 'none'` the keyboard draws over the page, and `--ldt-keyboard-inset`
 becomes the bottom safe area, so `AppShell`'s last row, toasts, floating bars and drawers lift
 above it. `--ldt-keyboard-height` is there for anything of your own.
+
+### Device layout
+
+On iPhone Duo the system moves toolbars and tab bars to one side, beside the status bar and the
+camera, on the cover screen and on the inner screen in landscape. A page that draws its own bars
+doesn't get that for free, and a web page can't see where the system put them: the safe area says
+how far to stay from each edge, not that bars went to the side, nor where the fold is when the
+device is partly open. `createDeviceLayout` reads them natively (iOS 27.1, through the plugin
+bundled with this package) and writes them on `<html>`:
+
+| Written                                  | When                                                                                    |
+| ---------------------------------------- | --------------------------------------------------------------------------------------- |
+| `data-bar-edge="left"` or `"right"`      | The system puts bars vertically on that side. A physical side, in every text direction. |
+| `--ldt-bar-start`                        | With it: how far down that strip your controls can start, below the camera and status   |
+| `data-fold="vertical"` or `"horizontal"` | The device is partly open                                                               |
+| `--ldt-fold-start`, `--ldt-fold-end`     | With it: the band across the fold to keep controls out of; taps there may not register  |
+| `data-hinge`                             | `closed`, `partially-open` or `fully-open`, on a device with a hinge                    |
+
+`current` holds the whole report, the reserved regions included, for layouts the attributes
+don't cover. `setupCapacitor` turns it on unless `deviceLayout: false`. Nothing is written on
+other devices, before iOS 27.1, in a browser, or in an app built without running `cap sync` after
+installing this package. See Apple's
+[Designing for iPhone Duo](https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo)
+for where controls belong.
 
 ### Haptics
 

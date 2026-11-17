@@ -16,6 +16,12 @@ import {
 } from './keyboard.svelte.js';
 import { handleDeepLinks, type DeepLinkOptions } from './deep-links.js';
 import {
+  createDeviceLayout,
+  type DeviceLayout,
+  type DeviceLayoutOptions,
+  type DeviceLayoutPlugin,
+} from './device-layout.svelte.js';
+import {
   createAppLifecycle,
   type AppLifecycle,
   type AppLifecycleOptions,
@@ -58,6 +64,8 @@ export interface CapacitorPlugins {
   App?: BackButtonPlugin & AppStatePlugin & AppUrlPlugin & AppResumePlugin;
   Browser?: BrowserPlugin;
   Clipboard?: ClipboardPlugin;
+  /** Defaults to the iOS plugin bundled with this package. */
+  DeviceLayout?: DeviceLayoutPlugin;
   FilePicker?: FilePickerPlugin;
   Filesystem?: FilesystemPlugin;
   Haptics?: HapticsPlugin;
@@ -91,6 +99,7 @@ export interface SetupCapacitorOptions {
   splash?: Toggle<Omit<HideSplashOptions, 'SplashScreen' | 'until'>>;
   share?: Toggle<Omit<NativeShareOptions, 'Share' | 'Filesystem' | 'toaster'>>;
   files?: Toggle<Omit<NativeFilesOptions, 'FilePicker' | 'Filesystem'>>;
+  deviceLayout?: Toggle<Omit<DeviceLayoutOptions, 'DeviceLayout'>>;
   textSize?: boolean;
   clipboard?: boolean;
 }
@@ -114,6 +123,11 @@ export interface CapacitorSetup {
    * input and a download in a browser. Present unless `files: false`: the browser needs no plugin.
    */
   readonly files: NativeFiles | undefined;
+  /**
+   * Where the system puts its vertical bar and which parts of the display are reserved (iPhone
+   * Duo). Present unless `deviceLayout: false`; it reports nothing outside iOS 27.1.
+   */
+  readonly deviceLayout: DeviceLayout | undefined;
   /** The toaster you passed, with haptics on its status toasts when `Haptics` was given. */
   readonly toaster: Toaster | undefined;
   /** Settles once the stored theme is restored and the splash screen has lifted. */
@@ -152,7 +166,8 @@ const on = <T extends object>(value: Toggle<T> | undefined): T | null =>
  */
 export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
   const { plugins, theme, navigate } = options;
-  const { App, Browser, Clipboard, Haptics, Keyboard, Network, Preferences } = plugins;
+  const { App, Browser, Clipboard, DeviceLayout, Haptics, Keyboard, Network, Preferences } =
+    plugins;
   const { FilePicker, Filesystem, Share, SplashScreen, StatusBar, TextZoom } = plugins;
   const teardowns: Teardown[] = [markNativePlatform()];
 
@@ -214,6 +229,12 @@ export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
   const filesOptions = on(options.files);
   const files = filesOptions ? createFiles({ ...filesOptions, FilePicker, Filesystem }) : undefined;
 
+  const deviceLayoutOptions = on(options.deviceLayout);
+  const deviceLayout = deviceLayoutOptions
+    ? createDeviceLayout({ ...deviceLayoutOptions, DeviceLayout })
+    : undefined;
+  if (deviceLayout) teardowns.push(deviceLayout.destroy);
+
   const restored = persisted?.ready ?? Promise.resolve();
   const splash = on(options.splash);
   const ready =
@@ -228,5 +249,16 @@ export function setupCapacitor(options: SetupCapacitorOptions): CapacitorSetup {
     /* module scope: the caller owns `destroy()` */
   }
 
-  return { files, haptics, keyboard, lifecycle, network, share, toaster, ready, destroy };
+  return {
+    deviceLayout,
+    files,
+    haptics,
+    keyboard,
+    lifecycle,
+    network,
+    share,
+    toaster,
+    ready,
+    destroy,
+  };
 }
