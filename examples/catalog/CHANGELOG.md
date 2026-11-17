@@ -1,5 +1,18 @@
 # @loidolt/theme-catalog
 
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @loidolt/theme-charts@0.14.0
+  - @loidolt/theme-docs@0.14.0
+  - @loidolt/theme-maps@0.14.0
+  - @loidolt/theme-styles@0.14.0
+  - @loidolt/theme-svelte@0.14.0
+  - @loidolt/theme-tauri@0.14.0
+  - @loidolt/theme-tokens@0.14.0
+
 ## 0.0.11
 
 ### Patch Changes
